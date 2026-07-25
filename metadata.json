@@ -1,0 +1,8 @@
+{
+  "name": "Amir Finance",
+  "description": "مدیریت مالی شخصی - Personal finance management application",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
