@@ -1056,7 +1056,141 @@
             const [contactFilter, setContactFilter] = useState('all');
             const [profileFilter, setProfileFilter] = useState('all');
             const [searchQuery, setSearchQuery] = useState('');
-            const [theme, setTheme] = useState('light');
+            const [theme, setTheme] = useState(() => {
+                try {
+                    return localStorage.getItem('amir_fin_theme') || 'system';
+                } catch (e) {
+                    return 'system';
+                }
+            });
+
+            const [openSettingsSection, setOpenSettingsSection] = useState('appearance');
+            const [allTxsPage, setAllTxsPage] = useState(1);
+            const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
+            const [showRestoreConfirmModal, setShowRestoreConfirmModal] = useState(false);
+            const [pendingRestoreData, setPendingRestoreData] = useState(null);
+            const [enableReminders, setEnableReminders] = useState(true);
+            const [enableDailyAlerts, setEnableDailyAlerts] = useState(true);
+            const restoreInputRef = useRef(null);
+
+            useEffect(() => {
+                try {
+                    localStorage.setItem('amir_fin_theme', theme);
+                } catch (e) {}
+
+                const applyTheme = () => {
+                    let isDark = false;
+                    if (theme === 'dark') {
+                        isDark = true;
+                    } else if (theme === 'light') {
+                        isDark = false;
+                    } else if (theme === 'system') {
+                        isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    }
+
+                    if (isDark) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                };
+
+                applyTheme();
+
+                if (theme === 'system' && window.matchMedia) {
+                    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                    const handleChange = () => applyTheme();
+                    if (mediaQuery.addEventListener) {
+                        mediaQuery.addEventListener('change', handleChange);
+                        return () => mediaQuery.removeEventListener('change', handleChange);
+                    } else if (mediaQuery.addListener) {
+                        mediaQuery.addListener(handleChange);
+                        return () => mediaQuery.removeListener(handleChange);
+                    }
+                }
+            }, [theme]);
+
+            const handleExportBackup = () => {
+                try {
+                    const data = {
+                        appName: "Amir Finance",
+                        version: "1.0.0",
+                        exportDate: new Date().toISOString(),
+                        contacts,
+                        loans,
+                        transactions,
+                        reminders,
+                        completedPeriods,
+                        theme
+                    };
+                    const jsonStr = JSON.stringify(data, null, 2);
+                    const blob = new Blob([jsonStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const now = getDeviceJalaliDate();
+                    a.download = `amir-finance-backup-${now.year}-${now.month}-${now.day}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    showToast('فایل پشتیبان با موفقیت دانلود شد');
+                } catch (e) {
+                    showToast('خطا در ایجاد فایل پشتیبان');
+                }
+            };
+
+            const handleRestoreFileChange = (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const parsed = JSON.parse(event.target.result);
+                        if (!parsed || typeof parsed !== 'object') {
+                            showToast('فایل پشتیبان معتبر نمی‌باشد');
+                            return;
+                        }
+                        setPendingRestoreData(parsed);
+                        setShowRestoreConfirmModal(true);
+                    } catch (err) {
+                        showToast('خطا در خواندن فایل پشتیبان');
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = '';
+            };
+
+            const handleConfirmRestoreData = () => {
+                if (!pendingRestoreData) return;
+                try {
+                    if (Array.isArray(pendingRestoreData.contacts)) setContacts(pendingRestoreData.contacts);
+                    if (Array.isArray(pendingRestoreData.loans)) setLoans(pendingRestoreData.loans);
+                    if (Array.isArray(pendingRestoreData.transactions)) setTransactions(pendingRestoreData.transactions);
+                    if (Array.isArray(pendingRestoreData.reminders)) setReminders(pendingRestoreData.reminders);
+                    if (Array.isArray(pendingRestoreData.completedPeriods)) setCompletedPeriods(pendingRestoreData.completedPeriods);
+                    if (pendingRestoreData.theme) setTheme(pendingRestoreData.theme);
+
+                    setShowRestoreConfirmModal(false);
+                    setPendingRestoreData(null);
+                    showToast('اطلاعات دیتابیس با موفقیت بازیابی شد');
+                } catch (e) {
+                    showToast('خطا در اعمال اطلاعات پشتیبان');
+                }
+            };
+
+            const handleConfirmDeleteAllData = () => {
+                setContacts([]);
+                setLoans([]);
+                setTransactions([]);
+                setReminders([]);
+                setCompletedPeriods([]);
+                localStorage.removeItem('amir_fin_contacts_v2');
+                localStorage.removeItem('amir_fin_loans_v2');
+                localStorage.removeItem('amir_fin_txs_v2');
+                localStorage.removeItem('amir_fin_completed_periods');
+                setShowResetConfirmModal(false);
+                showToast('کلیه اطلاعات دیتابیس برنامه حذف گردید');
+            };
 
             useEffect(() => {
                 localStorage.setItem('amir_fin_contacts_v2', JSON.stringify(contacts));
@@ -2895,7 +3029,7 @@
                                             <i data-lucide="history" className="w-4 h-4 text-indigo-600"></i>
                                             <span>آخرین تراکنش‌ها</span>
                                         </h3>
-                                        <button onClick={() => setCurrentTab('accounts')} className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
+                                        <button onClick={() => { setAllTxsPage(1); setCurrentTab('all-transactions'); }} className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
                                             مشاهده همه
                                         </button>
                                     </div>
@@ -3067,17 +3201,17 @@
 
                                     <div className="flex space-x-1.5 space-x-reverse overflow-x-auto hide-scrollbar pb-1 text-[11px] font-bold">
                                         {[
-                                            { id: 'all', label: 'همه' },
-                                            { id: 'demand', label: 'طلبکاران' },
-                                            { id: 'debt', label: 'بدهکاران' },
-                                            { id: 'loan', label: 'دارای وام' },
-                                            { id: 'favorite', label: 'علاقه‌مندی‌ها' }
+                                            { id: 'all', label: 'همه', activeClass: 'bg-indigo-600 text-white border-indigo-600 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700' },
+                                            { id: 'demand', label: 'طلبکاران', activeClass: 'bg-emerald-600 text-white border-emerald-600 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/60' },
+                                            { id: 'debt', label: 'بدهکاران', activeClass: 'bg-rose-600 text-white border-rose-600 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60' },
+                                            { id: 'loan', label: 'دارای وام', activeClass: 'bg-blue-600 text-white border-blue-600 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/60' },
+                                            { id: 'favorite', label: 'علاقه‌مندی‌ها', activeClass: 'bg-amber-500 text-white border-amber-500 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-amber-500 dark:text-amber-400 border border-amber-200 dark:border-amber-900/60' }
                                         ].map(f => (
                                             <button 
                                                 key={f.id}
                                                 onClick={() => setContactFilter(f.id)}
-                                                className={`px-3 py-1.5 rounded-full whitespace-nowrap transition-all ${
-                                                    contactFilter === f.id ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                                                className={`px-3 py-1.5 rounded-full whitespace-nowrap transition-all border ${
+                                                    contactFilter === f.id ? f.activeClass : f.inactiveClass
                                                 }`}>
                                                 {f.label}
                                             </button>
@@ -3115,11 +3249,14 @@
                                                 </div>
                                                 
                                                 <div className="flex items-center space-x-2 space-x-reverse">
+                                                    {loans.some(l => l.contactId === contact.id) && (
+                                                        <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-400 px-2 py-0.5 rounded-md">وام</span>
+                                                    )}
                                                     {contact.totalDemand > 0 && (
-                                                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">طلبکار</span>
+                                                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-2 py-0.5 rounded-md">طلبکار</span>
                                                     )}
                                                     {contact.totalDebt > 0 && (
-                                                        <span className="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-md">بدهکار</span>
+                                                        <span className="text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/60 dark:text-rose-400 px-2 py-0.5 rounded-md">بدهکار</span>
                                                     )}
                                                     <i data-lucide="chevron-left" className="w-4 h-4 text-slate-300"></i>
                                                 </div>
@@ -3672,24 +3809,366 @@
                             </div>
                         )}
 
+                        {/* View All Transactions Tab */}
+                        {currentTab === 'all-transactions' && (
+                            <div className="space-y-4 animate-fade-in pb-12">
+                                <div className="flex justify-between items-center py-2">
+                                    <button 
+                                        onClick={() => setCurrentTab('dashboard')} 
+                                        className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
+                                        <i data-lucide="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200"></i>
+                                    </button>
+                                    <div className="text-center">
+                                        <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">همه تراکنش‌ها</h3>
+                                        <p className="text-[10px] text-slate-400">لیست کامل تراکنش‌های ثبت شده</p>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-full border border-indigo-200 dark:border-indigo-800/60">
+                                        {transactions.length} مورد
+                                    </span>
+                                </div>
+
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-3">
+                                    <div className="space-y-2.5">
+                                        {transactions.slice((allTxsPage - 1) * 20, allTxsPage * 20).map((tx) => (
+                                            <div key={tx.id} className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700/40 last:border-0">
+                                                <div className="flex items-center space-x-2.5 space-x-reverse">
+                                                    <div className={`w-9 h-9 rounded-full flex items-center justify-center ${tx.isPositive ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60' : 'bg-red-50 text-red-500 dark:bg-red-950/60'}`}>
+                                                        <i data-lucide={tx.isPositive ? 'arrow-down-left' : 'arrow-up-right'} className="w-4.5 h-4.5"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200">{tx.title}</div>
+                                                        <div className="text-[10px] text-slate-400 mt-0.5">{formatDateToNumericJalali(tx.dateStr)}</div>
+                                                    </div>
+                                                </div>
+                                                <span className={`text-xs font-black ${tx.isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                                                    {tx.isPositive ? `+${tx.amount.toLocaleString()}` : `${tx.amount.toLocaleString()}`} تومان
+                                                </span>
+                                            </div>
+                                        ))}
+
+                                        {transactions.length === 0 && (
+                                            <div className="text-center py-8 text-xs text-slate-400">
+                                                تراکنشی ثبت نشده است
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {transactions.length > 0 && (() => {
+                                        const totalPages = Math.max(1, Math.ceil(transactions.length / 20));
+                                        return (
+                                            <div className="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-xs font-bold">
+                                                <button 
+                                                    disabled={allTxsPage <= 1}
+                                                    onClick={() => setAllTxsPage(p => Math.max(1, p - 1))}
+                                                    className={`px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all ${
+                                                        allTxsPage <= 1 
+                                                            ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' 
+                                                            : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'
+                                                    }`}>
+                                                    <i data-lucide="chevron-right" className="w-4 h-4"></i>
+                                                    <span>صفحه قبل</span>
+                                                </button>
+
+                                                <span className="text-slate-600 dark:text-slate-300 font-extrabold px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-700/60">
+                                                    صفحه {allTxsPage} از {totalPages}
+                                                </span>
+
+                                                <button 
+                                                    disabled={allTxsPage >= totalPages}
+                                                    onClick={() => setAllTxsPage(p => Math.min(totalPages, p + 1))}
+                                                    className={`px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all ${
+                                                        allTxsPage >= totalPages 
+                                                            ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' 
+                                                            : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'
+                                                    }`}>
+                                                    <span>صفحه بعد</span>
+                                                    <i data-lucide="chevron-left" className="w-4 h-4"></i>
+                                                </button>
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Settings Tab */}
                         {currentTab === 'settings' && (
-                            <div className="space-y-4 animate-fade-in">
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-5 text-center shadow-sm border border-slate-100 dark:border-slate-700">
-                                    <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Amir Finance</h2>
-                                    <p className="text-xs text-slate-400 mt-0.5">تنظیمات تم و برنامه</p>
+                            <div className="space-y-3.5 animate-fade-in pb-12">
+                                {/* Header Card */}
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+                                    <div className="flex items-center space-x-3.5 space-x-reverse">
+                                        <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-slate-900 text-white flex items-center justify-center shadow-md border border-indigo-400/30 shrink-0">
+                                            <i data-lucide="wallet" className="w-7 h-7 text-amber-300"></i>
+                                        </div>
+                                        <div>
+                                            <h2 className="text-base font-black text-slate-900 dark:text-white">Amir Finance</h2>
+                                            <div className="flex items-center space-x-2 space-x-reverse mt-1">
+                                                <span className="text-xs text-slate-400 font-mono">نسخه 1.0.0</span>
+                                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse">
+                                                    <i data-lucide="check-circle-2" className="w-3 h-3"></i>
+                                                    <span>آخرین نسخه</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 space-y-3 text-xs">
-                                    <label className="font-bold block">تم رنگی</label>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center space-x-2 space-x-reverse">
-                                            <input type="radio" name="theme" checked={theme === 'light'} onChange={() => setTheme('light')} />
-                                            <span>روشن (Light Mode)</span>
-                                        </label>
-                                        <label className="flex items-center space-x-2 space-x-reverse">
-                                            <input type="radio" name="theme" checked={theme === 'dark'} onChange={() => setTheme('dark')} />
-                                            <span>تیره (Dark Mode)</span>
-                                        </label>
+
+                                {/* Accordion List */}
+                                <div className="space-y-2.5">
+                                    {/* 1. Appearance */}
+                                    <div 
+                                        onClick={() => setOpenSettingsSection(openSettingsSection === 'appearance' ? null : 'appearance')}
+                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-3.5 space-x-reverse">
+                                                <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                                    <i data-lucide="palette" className="w-5 h-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">ظاهر</h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">تم برنامه و رنگ‌بندی</p>
+                                                </div>
+                                            </div>
+                                            <i data-lucide={openSettingsSection === 'appearance' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                        </div>
+
+                                        {openSettingsSection === 'appearance' && (
+                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-3 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">انتخاب حالت تم:</label>
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {[
+                                                        { id: 'dark', label: 'تیره', icon: 'moon', desc: 'حالت تیره' },
+                                                        { id: 'light', label: 'روشن', icon: 'sun', desc: 'حالت روشن' },
+                                                        { id: 'system', label: 'سیستم', icon: 'monitor', desc: 'از خود سیستم' }
+                                                    ].map(t => {
+                                                        const isSelected = theme === t.id;
+                                                        return (
+                                                            <button
+                                                                key={t.id}
+                                                                onClick={() => setTheme(t.id)}
+                                                                className={`p-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center space-y-1.5 ${
+                                                                    isSelected 
+                                                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md scale-[1.02]' 
+                                                                        : 'bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-indigo-300'
+                                                                }`}>
+                                                                <i data-lucide={t.icon} className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-indigo-600 dark:text-indigo-400'}`}></i>
+                                                                <span className="text-xs font-bold">{t.label}</span>
+                                                                {isSelected && (
+                                                                    <span className="text-[9px] bg-white/20 text-white px-1.5 py-0.2 rounded-full font-bold">فعال</span>
+                                                                )}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* 2. Backup & Restore */}
+                                    <div 
+                                        onClick={() => setOpenSettingsSection(openSettingsSection === 'backup' ? null : 'backup')}
+                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-3.5 space-x-reverse">
+                                                <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                                    <i data-lucide="cloud" className="w-5 h-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">پشتیبان‌گیری</h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">بکاپ و بازیابی اطلاعات</p>
+                                                </div>
+                                            </div>
+                                            <i data-lucide={openSettingsSection === 'backup' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                        </div>
+
+                                        {openSettingsSection === 'backup' && (
+                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2.5 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                                <input 
+                                                    type="file" 
+                                                    ref={restoreInputRef} 
+                                                    onChange={handleRestoreFileChange} 
+                                                    accept=".json" 
+                                                    className="hidden" 
+                                                />
+
+                                                <button 
+                                                    onClick={handleExportBackup}
+                                                    className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white p-3 rounded-2xl font-bold text-xs shadow-md flex items-center justify-between active:scale-98 transition-all">
+                                                    <div className="flex items-center space-x-2.5 space-x-reverse">
+                                                        <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                                            <i data-lucide="download" className="w-4 h-4 text-white"></i>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-xs font-bold">پشتیبان‌گیری</div>
+                                                            <div className="text-[10px] text-white/80 font-normal">دانلود فایل کامل دیتابیس (JSON)</div>
+                                                        </div>
+                                                    </div>
+                                                    <i data-lucide="chevron-left" className="w-4 h-4 text-white/70"></i>
+                                                </button>
+
+                                                <button 
+                                                    onClick={() => restoreInputRef.current && restoreInputRef.current.click()}
+                                                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white p-3 rounded-2xl font-bold text-xs shadow-md flex items-center justify-between active:scale-98 transition-all">
+                                                    <div className="flex items-center space-x-2.5 space-x-reverse">
+                                                        <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                                            <i data-lucide="upload" className="w-4 h-4 text-white"></i>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-xs font-bold">بازیابی اطلاعات</div>
+                                                            <div className="text-[10px] text-white/80 font-normal">جایگزینی دیتابیس از فایل پشتیبان</div>
+                                                        </div>
+                                                    </div>
+                                                    <i data-lucide="chevron-left" className="w-4 h-4 text-white/70"></i>
+                                                </button>
+
+                                                <button 
+                                                    onClick={() => setShowResetConfirmModal(true)}
+                                                    className="w-full bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white p-3 rounded-2xl font-bold text-xs shadow-md flex items-center justify-between active:scale-98 transition-all">
+                                                    <div className="flex items-center space-x-2.5 space-x-reverse">
+                                                        <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                                            <i data-lucide="trash-2" className="w-4 h-4 text-white"></i>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-xs font-bold">حذف کلیه اطلاعات</div>
+                                                            <div className="text-[10px] text-white/80 font-normal">پاکسازی کامل کلیه حساب‌ها و تراکنش‌ها</div>
+                                                        </div>
+                                                    </div>
+                                                    <i data-lucide="chevron-left" className="w-4 h-4 text-white/70"></i>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* 3. Notifications */}
+                                    <div 
+                                        onClick={() => setOpenSettingsSection(openSettingsSection === 'notifications' ? null : 'notifications')}
+                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-3.5 space-x-reverse">
+                                                <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                    <i data-lucide="bell" className="w-5 h-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">اعلان‌ها</h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">مدیریت یادآوری‌ها و اعلان‌ها</p>
+                                                </div>
+                                            </div>
+                                            <i data-lucide={openSettingsSection === 'notifications' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                        </div>
+
+                                        {openSettingsSection === 'notifications' && (
+                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2.5 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700">
+                                                    <div>
+                                                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200">یادآوری سررسید اقساط</div>
+                                                        <div className="text-[10px] text-slate-400 mt-0.5">هشدار پیش‌فرض قبل از سررسید قسط وام</div>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => setEnableReminders(!enableReminders)}
+                                                        className={`w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableReminders ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`}>
+                                                        <div className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableReminders ? '-translate-x-5' : 'translate-x-0'}`}></div>
+                                                    </button>
+                                                </div>
+
+                                                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700">
+                                                    <div>
+                                                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200">خلاصه روزانه حساب‌ها</div>
+                                                        <div className="text-[10px] text-slate-400 mt-0.5">اعلان وضعیت کلی اقساط و سررسیدها</div>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => setEnableDailyAlerts(!enableDailyAlerts)}
+                                                        className={`w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableDailyAlerts ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`}>
+                                                        <div className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableDailyAlerts ? '-translate-x-5' : 'translate-x-0'}`}></div>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* 4. Security */}
+                                    <div 
+                                        onClick={() => setOpenSettingsSection(openSettingsSection === 'security' ? null : 'security')}
+                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-3.5 space-x-reverse">
+                                                <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                                    <i data-lucide="shield-check" className="w-5 h-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">امنیت</h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">قفل برنامه و حریم خصوصی</p>
+                                                </div>
+                                            </div>
+                                            <i data-lucide={openSettingsSection === 'security' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                        </div>
+
+                                        {openSettingsSection === 'security' && (
+                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2.5 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                                    تمامی داده‌ها و تراکنش‌های شما صرفاً روی حافظه دستگاه ذخیره می‌شوند و دارای بالاترین سطح حریم خصوصی می‌باشند.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* 5. Data Management */}
+                                    <div 
+                                        onClick={() => setOpenSettingsSection(openSettingsSection === 'data' ? null : 'data')}
+                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-3.5 space-x-reverse">
+                                                <div className="w-10 h-10 rounded-2xl bg-cyan-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
+                                                    <i data-lucide="folder" className="w-5 h-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">داده‌ها</h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">مدیریت داده‌ها و حافظه</p>
+                                                </div>
+                                            </div>
+                                            <i data-lucide={openSettingsSection === 'data' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                        </div>
+
+                                        {openSettingsSection === 'data' && (
+                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2 animate-fade-in text-xs" onClick={e => e.stopPropagation()}>
+                                                <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50">
+                                                    <span className="text-slate-500">تعداد مخاطبین:</span>
+                                                    <span className="font-bold">{contacts.length} مورد</span>
+                                                </div>
+                                                <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50">
+                                                    <span className="text-slate-500">پرونده‌های وام:</span>
+                                                    <span className="font-bold">{loans.length} مورد</span>
+                                                </div>
+                                                <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50">
+                                                    <span className="text-slate-500">تراکنش‌های ثبت‌شده:</span>
+                                                    <span className="font-bold">{transactions.length} مورد</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* 6. About App */}
+                                    <div 
+                                        onClick={() => setOpenSettingsSection(openSettingsSection === 'about' ? null : 'about')}
+                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-3.5 space-x-reverse">
+                                                <div className="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                                    <i data-lucide="info" className="w-5 h-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">درباره برنامه</h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5">اطلاعات برنامه و ارتباط با ما</p>
+                                                </div>
+                                            </div>
+                                            <i data-lucide={openSettingsSection === 'about' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                        </div>
+
+                                        {openSettingsSection === 'about' && (
+                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2 animate-fade-in text-xs text-slate-600 dark:text-slate-300 leading-relaxed" onClick={e => e.stopPropagation()}>
+                                                <p>برنامه مدیریت مالی Amir Finance ابزاری جهت ثبت و مدیریت وام‌ها، اقساط، طلب‌ها و بدهی‌های شخصی.</p>
+                                                <p className="text-[11px] text-slate-400">طراحی و توسعه: Amir Finance</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -4170,6 +4649,64 @@
                                         onClick={() => setShowDeleteConfirmModal(false)}
                                         className="flex-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
                                         خیر، انصراف
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal: Confirm Database Restore */}
+                    {showRestoreConfirmModal && (
+                        <div className="absolute inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 animate-fade-in">
+                            <div className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700 text-center animate-scale-up">
+                                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center">
+                                    <i data-lucide="upload-cloud" className="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">بازیابی اطلاعات</h4>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                                        آیا از بازیابی فایل پشتیبان اطمینان دارید؟ تمامی اطلاعات فعلی با اطلاعات فایل پشتیبان جایگزین خواهند شد.
+                                    </p>
+                                </div>
+                                <div className="flex space-x-2 space-x-reverse pt-1">
+                                    <button 
+                                        onClick={handleConfirmRestoreData}
+                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all active:scale-95">
+                                        تأیید و بازیابی
+                                    </button>
+                                    <button 
+                                        onClick={() => { setShowRestoreConfirmModal(false); setPendingRestoreData(null); }}
+                                        className="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
+                                        انصراف
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal: Confirm Delete All Data */}
+                    {showResetConfirmModal && (
+                        <div className="absolute inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 animate-fade-in">
+                            <div className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700 text-center animate-scale-up">
+                                <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center">
+                                    <i data-lucide="alert-triangle" className="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">حذف کلیه اطلاعات</h4>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                                        آیا از پاکسازی کامل دیتابیس اطمینان دارید؟ تمام مخاطبین، وام‌ها، طلب‌ها، بدهی‌ها و تراکنش‌ها به صورت دائمی حذف خواهند شد.
+                                    </p>
+                                </div>
+                                <div className="flex space-x-2 space-x-reverse pt-1">
+                                    <button 
+                                        onClick={handleConfirmDeleteAllData}
+                                        className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all active:scale-95">
+                                        حذف کامل
+                                    </button>
+                                    <button 
+                                        onClick={() => setShowResetConfirmModal(false)}
+                                        className="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
+                                        انصراف
                                     </button>
                                 </div>
                             </div>
