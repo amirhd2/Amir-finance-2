@@ -1064,14 +1064,32 @@
                 }
             });
 
+            const [isDark, setIsDark] = useState(() => {
+                const savedTheme = typeof window !== 'undefined' ? localStorage.getItem('amir_fin_theme') || 'system' : 'system';
+                if (savedTheme === 'dark') return true;
+                if (savedTheme === 'light') return false;
+                return typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            });
+
             const [openSettingsSection, setOpenSettingsSection] = useState('appearance');
             const [allTxsPage, setAllTxsPage] = useState(1);
             const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
             const [showRestoreConfirmModal, setShowRestoreConfirmModal] = useState(false);
+            const [showDeleteLoanModal, setShowDeleteLoanModal] = useState(false);
+            const [isPlusMenuClosing, setIsPlusMenuClosing] = useState(false);
             const [pendingRestoreData, setPendingRestoreData] = useState(null);
             const [enableReminders, setEnableReminders] = useState(true);
             const [enableDailyAlerts, setEnableDailyAlerts] = useState(true);
             const restoreInputRef = useRef(null);
+
+            const closePlusMenu = (callback) => {
+                setIsPlusMenuClosing(true);
+                setTimeout(() => {
+                    setShowPlusMenu(false);
+                    setIsPlusMenuClosing(false);
+                    if (callback) callback();
+                }, 220);
+            };
 
             useEffect(() => {
                 try {
@@ -1079,16 +1097,18 @@
                 } catch (e) {}
 
                 const applyTheme = () => {
-                    let isDark = false;
+                    let activeDark = false;
                     if (theme === 'dark') {
-                        isDark = true;
+                        activeDark = true;
                     } else if (theme === 'light') {
-                        isDark = false;
+                        activeDark = false;
                     } else if (theme === 'system') {
-                        isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        activeDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
                     }
 
-                    if (isDark) {
+                    setIsDark(activeDark);
+
+                    if (activeDark) {
                         document.documentElement.classList.add('dark');
                     } else {
                         document.documentElement.classList.remove('dark');
@@ -1474,8 +1494,9 @@
                             notes: data.notes || ''
                         });
                     } else {
-                        const defaultName = selectedContact ? `${selectedContact.firstName} ${selectedContact.lastName}` : 'بانک یا سازمان';
-                        const defaultId = selectedContact ? selectedContact.id : 'bank';
+                        const isFromFab = data && data.fromFab;
+                        const defaultName = isFromFab ? '' : (selectedContact ? `${selectedContact.firstName} ${selectedContact.lastName}` : 'بانک یا سازمان');
+                        const defaultId = isFromFab ? '' : (selectedContact ? selectedContact.id : 'bank');
                         setLoanForm({
                             id: null,
                             title: '',
@@ -1492,7 +1513,8 @@
                         });
                     }
                 } else if (type === 'demand' || type === 'debt') {
-                    const defaultContactId = selectedContact ? selectedContact.id : (contacts.length > 0 ? contacts[0].id : '');
+                    const isFromFab = data && data.fromFab;
+                    const defaultContactId = isFromFab ? '' : (selectedContact ? selectedContact.id : (contacts.length > 0 ? contacts[0].id : ''));
                     const isEditTx = mode === 'edit' && data && data.id;
                     const editAmt = isEditTx ? Math.abs(data.amount || 0) : (mode === 'edit' && data ? Math.abs(data.amount || 0) : '');
                     const editNotes = (mode === 'edit' && data && data.notes) ? data.notes : '';
@@ -1505,12 +1527,15 @@
                         notes: editNotes
                     });
                 } else if (type === 'installment') {
-                    const contactLoans = selectedContact ? loans.filter(l => l.contactId === selectedContact.id) : loans;
-                    const firstLoan = contactLoans.length > 0 ? contactLoans[0] : null;
-                    const isEditTx = mode === 'edit' && data && data.id;
-                    const editAmt = isEditTx ? Math.abs(data.amount || 0) : (firstLoan ? firstLoan.installmentAmount : '');
+                    const isFromFab = data && data.fromFab;
+                    const isEditTx = mode === 'edit' && data && data.id && (data.amount !== undefined);
+                    const passedLoan = (data && data.id && !isEditTx && !isFromFab) ? data : null;
+                    const activeTargetLoan = passedLoan || selectedLoan || (selectedContact ? loans.find(l => l.contactId === selectedContact.id) : null) || (loans.length > 0 ? loans[0] : null);
+                    
+                    const editLoanId = isEditTx ? (data.loanId || (activeTargetLoan ? activeTargetLoan.id : '')) : (isFromFab ? '' : (activeTargetLoan ? activeTargetLoan.id : ''));
+                    const targetLoan = editLoanId ? (loans.find(l => l.id === Number(editLoanId)) || activeTargetLoan) : null;
+                    const editAmt = isEditTx ? Math.abs(data.amount || 0) : (targetLoan ? targetLoan.installmentAmount : '');
                     const editNotes = (isEditTx && data && data.notes) ? data.notes : '';
-                    const editLoanId = (isEditTx && data && data.loanId) ? data.loanId : (firstLoan ? firstLoan.id : (selectedLoan ? selectedLoan.id : ''));
 
                     if (isEditTx && data && data.dateStr) {
                         const parsedDate = parseJalaliDateStr(data.dateStr);
@@ -1518,7 +1543,6 @@
                         setPickerMonth(parsedDate.month);
                         setPickerYear(parsedDate.year);
                     } else {
-                        const targetLoan = loans.find(l => l.id === Number(editLoanId)) || firstLoan || selectedLoan;
                         const nextInstDate = calculateNextInstallmentDate(targetLoan, transactions);
                         setPickerDay(nextInstDate.day);
                         setPickerMonth(nextInstDate.month);
@@ -1527,14 +1551,16 @@
 
                     setInstallmentForm({
                         id: isEditTx ? data.id : null,
-                        selectedLoanId: editLoanId,
+                        selectedLoanId: targetLoan ? targetLoan.id : '',
                         amount: editAmt,
                         notes: editNotes
                     });
                 } else if (type === 'debt_repayment' || type === 'demand_repayment') {
+                    const isFromFab = data && data.fromFab;
                     const isEditTx = mode === 'edit' && data && data.id;
                     const editAmt = isEditTx ? Math.abs(data.amount || 0) : '';
                     const editNotes = (isEditTx && data && data.notes) ? data.notes : '';
+                    const defaultContactId = (isFromFab ? '' : (selectedContact ? selectedContact.id : (contacts.length > 0 ? contacts[0].id : '')));
 
                     if (isEditTx && data && data.dateStr) {
                         const parsedDate = parseJalaliDateStr(data.dateStr);
@@ -1542,6 +1568,12 @@
                         setPickerMonth(parsedDate.month);
                         setPickerYear(parsedDate.year);
                     }
+
+                    setDemandDebtForm(prev => ({
+                        ...prev,
+                        selectedContactId: (data && data.contactId) ? data.contactId : defaultContactId,
+                        contactSearchQuery: ''
+                    }));
 
                     setRepaymentForm({
                         id: isEditTx ? data.id : null,
@@ -2110,18 +2142,29 @@
             };
 
             const confirmDeleteContact = () => {
-                if (!editContactForm.id) return;
-                const contactIdToDelete = editContactForm.id;
-                setContacts(prev => prev.filter(c => c.id !== contactIdToDelete));
-                setLoans(prev => prev.filter(l => l.contactId !== contactIdToDelete));
-                setTransactions(prev => prev.filter(t => t.contactId !== contactIdToDelete));
+                const targetContactId = (selectedContact ? selectedContact.id : null) || editContactForm.id;
+                if (!targetContactId) return;
+                setContacts(prev => prev.filter(c => c.id !== targetContactId));
+                setLoans(prev => prev.filter(l => l.contactId !== targetContactId));
+                setTransactions(prev => prev.filter(t => t.contactId !== targetContactId));
                 setShowDeleteConfirmModal(false);
                 setShowEditContactModal(false);
-                if (selectedContact && selectedContact.id === contactIdToDelete) {
+                if (selectedContact && selectedContact.id === targetContactId) {
                     setSelectedContact(null);
                     setCurrentTab('contacts');
                 }
                 showToast('مخاطب با موفقیت حذف گردید');
+            };
+
+            const confirmDeleteLoan = () => {
+                if (!selectedLoan) return;
+                const loanIdToDelete = selectedLoan.id;
+                setLoans(prev => prev.filter(l => l.id !== loanIdToDelete));
+                setTransactions(prev => prev.filter(t => t.loanId !== loanIdToDelete));
+                setShowDeleteLoanModal(false);
+                setSelectedLoan(null);
+                setCurrentTab(loanReturnTab || 'accounts');
+                showToast('پرونده وام با موفقیت حذف گردید');
             };
 
             // Totals
@@ -2159,7 +2202,7 @@
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">انتخاب طرف حساب یا مخاطب</label>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">مخاطب خود را انتخاب کنید</label>
                                 <select 
                                     value={loanForm.selectedContactId}
                                     onChange={(e) => {
@@ -2174,6 +2217,7 @@
                                         }
                                     }}
                                     className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold focus:outline-none">
+                                    <option value="">مخاطب خود را انتخاب کنید</option>
                                     <option value="bank">🏦 بانک / سازمان / موسسه</option>
                                     {contacts.map(c => (
                                         <option key={c.id} value={c.id}>👤 {c.firstName} {c.lastName} ({c.phone})</option>
@@ -2285,21 +2329,46 @@
                                 onChange={(e) => setLoanForm({...loanForm, installmentAmount: e.target.value})}
                                 className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
                             />
-                            {loanForm.installmentAmount > 0 && (
-                                <div className="space-y-1.5">
-                                    <div className="text-xs text-indigo-600 font-bold text-left ltr">
+                            {loanForm.installmentAmount > 0 && (() => {
+                                const baseAmount = Number(loanForm.totalRepayment) > 0 ? Number(loanForm.totalRepayment) : Number(loanForm.principalAmount);
+                                const instAmt = Number(loanForm.installmentAmount);
+                                if (baseAmount > 0 && instAmt > 0) {
+                                    const numInst = Math.ceil(baseAmount / instAmt);
+                                    const totalCalc = numInst * instAmt;
+                                    const diff = totalCalc - baseAmount;
+
+                                    return (
+                                        <div className="space-y-2 mt-1.5">
+                                            <div className="text-xs text-indigo-600 font-bold text-left ltr">
+                                                {Number(loanForm.installmentAmount).toLocaleString()} تومان در ماه
+                                            </div>
+                                            <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-between">
+                                                <span>تعداد کل اقساط محاسبه‌شده:</span>
+                                                <span className="text-sm font-black text-indigo-600 dark:text-indigo-400">
+                                                    {numInst} قسط
+                                                </span>
+                                            </div>
+                                            {diff !== 0 && (
+                                                <div className={`p-2.5 rounded-xl text-xs font-bold border flex items-center justify-between ${
+                                                    diff > 0 
+                                                        ? 'bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800' 
+                                                        : 'bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800'
+                                                }`}>
+                                                    <span>تراز مالی محاسبه‌شده:</span>
+                                                    <span className="font-mono text-xs dir-ltr font-black">
+                                                        {diff > 0 ? `+${diff.toLocaleString()}` : diff.toLocaleString()} تومان
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                }
+                                return (
+                                    <div className="text-xs text-indigo-600 font-bold text-left ltr mt-1.5">
                                         {Number(loanForm.installmentAmount).toLocaleString()} تومان در ماه
                                     </div>
-                                    {Number(loanForm.totalRepayment) > 0 && (
-                                        <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-between">
-                                            <span>تعداد کل اقساط محاسبه‌شده:</span>
-                                            <span className="text-sm font-black text-indigo-600 dark:text-indigo-400">
-                                                {Math.ceil(Number(loanForm.totalRepayment) / Number(loanForm.installmentAmount))} قسط
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                );
+                            })()}
                         </div>
                     )
                 },
@@ -2419,7 +2488,7 @@
                 return (
                     <div className="space-y-3">
                         <label className="block text-xs text-slate-600 dark:text-slate-300 font-bold">
-                            انتخاب مخاطب طرف حساب:
+                            مخاطب خود را انتخاب کنید:
                         </label>
                         
                         {/* Search Input inside Card */}
@@ -2628,9 +2697,11 @@
             const installmentWizardCards = [
                 {
                     id: 'inst_select_loan',
-                    title: 'کارت اول: انتخاب وام شخص',
+                    title: 'کارت اول: انتخاب وام',
                     render: () => {
-                        const contactLoans = selectedContact ? loans.filter(l => l.contactId === selectedContact.id) : loans;
+                        const contactLoans = (selectedContact && installmentForm.selectedLoanId) 
+                            ? loans.filter(l => l.contactId === selectedContact.id) 
+                            : loans;
                         return (
                             <div className="space-y-3">
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">انتخاب وام جهت پرداخت قسط:</label>
@@ -2647,13 +2718,18 @@
                                             });
                                         }}
                                         className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold focus:outline-none">
-                                        {contactLoans.map(l => (
-                                            <option key={l.id} value={l.id}>📌 {l.title} (قسط: {l.installmentAmount.toLocaleString()} تومان)</option>
-                                        ))}
+                                        <option value="">-- لطفاً یک وام انتخاب کنید --</option>
+                                        {contactLoans.map(l => {
+                                            const contact = contacts.find(c => c.id === l.contactId);
+                                            const cName = contact ? `${contact.firstName} ${contact.lastName}` : (l.contactName || 'بانک/سازمان');
+                                            return (
+                                                <option key={l.id} value={l.id}>📌 {l.title} ({cName}) - {l.installmentAmount.toLocaleString()} تومان</option>
+                                            );
+                                        })}
                                     </select>
                                 ) : (
                                     <div className="text-xs text-red-500 p-3 bg-red-50 rounded-xl font-bold">
-                                        هیچ وامی برای این شخص ثبت نشده است.
+                                        هیچ وامی ثبت نشده است.
                                     </div>
                                 )}
                             </div>
@@ -2732,8 +2808,13 @@
 
             const debtRepaymentWizardCards = [
                 {
+                    id: 'debt_repay_contact',
+                    title: '۱- انتخاب مخاطب',
+                    render: () => <ContactSelectorCard />
+                },
+                {
                     id: 'debt_repay_amount',
-                    title: '۱- مبلغ بازپرداخت بدهی',
+                    title: '۲- مبلغ بازپرداخت بدهی',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">
@@ -2756,7 +2837,7 @@
                 },
                 {
                     id: 'debt_repay_date',
-                    title: '۲- تاریخ بازپرداخت (iOS Wheel Picker)',
+                    title: '۳- تاریخ بازپرداخت (iOS Wheel Picker)',
                     render: () => (
                         <div className="space-y-2">
                             <p className="text-[11px] text-slate-500 dark:text-slate-400">تاریخ بازپرداخت (به صورت خودکار تاریخ روز انتخاب شده است):</p>
@@ -2788,7 +2869,7 @@
                 },
                 {
                     id: 'debt_repay_notes',
-                    title: '۳- توضیحات تکمیلی',
+                    title: '۴- توضیحات تکمیلی',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات و بابت بازپرداخت:</label>
@@ -2806,8 +2887,13 @@
 
             const demandRepaymentWizardCards = [
                 {
+                    id: 'demand_repay_contact',
+                    title: '۱- انتخاب مخاطب',
+                    render: () => <ContactSelectorCard />
+                },
+                {
                     id: 'demand_repay_amount',
-                    title: '۱- مبلغ دریافت / تسویه طلب',
+                    title: '۲- مبلغ دریافت / تسویه طلب',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">
@@ -2830,7 +2916,7 @@
                 },
                 {
                     id: 'demand_repay_date',
-                    title: '۲- تاریخ دریافت (iOS Wheel Picker)',
+                    title: '۳- تاریخ دریافت (iOS Wheel Picker)',
                     render: () => (
                         <div className="space-y-2">
                             <p className="text-[11px] text-slate-500 dark:text-slate-400">تاریخ دریافت مبلغ (به صورت خودکار تاریخ روز انتخاب شده است):</p>
@@ -2862,13 +2948,13 @@
                 },
                 {
                     id: 'demand_repay_notes',
-                    title: '۳- توضیحات تکمیلی',
+                    title: '۴- توضیحات تکمیلی',
                     render: () => (
                         <div className="space-y-3">
-                            <label className="block text-xs text-slate-500 font-bold">توضیحات و بابت دریافت:</label>
+                            <label className="block text-xs text-slate-500 font-bold">توضیحات بابت دریافتی:</label>
                             <textarea 
                                 rows="3"
-                                placeholder="شماره پیگیری و توضیحات..."
+                                placeholder="شماره پیگیری، فیش و توضیحات..."
                                 value={repaymentForm.notes}
                                 onChange={(e) => setRepaymentForm({...repaymentForm, notes: e.target.value})}
                                 className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none"
@@ -2891,7 +2977,7 @@
             const activeCards = getCurrentWizardCards();
 
             return (
-                <div className={`w-full h-full flex flex-col justify-between ${theme === 'dark' ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
+                <div className={`w-full h-full flex flex-col justify-between ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
 
                     {/* Notification Toast */}
                     {toastMessage && (
@@ -2920,9 +3006,11 @@
                                         </p>
                                     </div>
 
-                                    <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-md">
-                                        امیر
-                                    </div>
+                                    <img 
+                                        src="/apple-touch-icon.png" 
+                                        alt="امیر" 
+                                        className="w-10 h-10 rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-transform" 
+                                    />
                                 </div>
 
                                 {/* Reminders Box */}
@@ -3276,7 +3364,7 @@
                                         <i data-lucide="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200"></i>
                                     </button>
                                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">پروفایل مخاطب</h3>
-                                    <div className="flex items-center space-x-2 space-x-reverse">
+                                    <div className="flex items-center space-x-1.5 space-x-reverse">
                                         <button 
                                             onClick={() => {
                                                 setEditContactForm({
@@ -3284,13 +3372,22 @@
                                                     firstName: selectedContact.firstName || '',
                                                     lastName: selectedContact.lastName || '',
                                                     phone: selectedContact.phone || '',
+                                                    bankName: selectedContact.bankName || '',
                                                     bankCard: selectedContact.bankCard || '',
                                                     iban: selectedContact.iban || ''
                                                 });
                                                 setShowEditContactModal(true);
                                             }}
-                                            className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+                                            className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform">
                                             <i data-lucide="pencil" className="w-4 h-4"></i>
+                                        </button>
+                                        <button 
+                                            onClick={() => {
+                                                setEditContactForm({ id: selectedContact.id });
+                                                setShowDeleteConfirmModal(true);
+                                            }}
+                                            className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400">
+                                            <i data-lucide="trash-2" className="w-4 h-4"></i>
                                         </button>
                                         <button 
                                             onClick={() => {
@@ -3299,7 +3396,7 @@
                                                 setSelectedContact({...selectedContact, isFavorite: !selectedContact.isFavorite});
                                                 showToast(selectedContact.isFavorite ? 'از علاقه مندی‌ها حذف شد' : 'به علاقه‌مندی‌ها اضافه شد');
                                             }}
-                                            className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-amber-500">
+                                            className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-amber-500 active:scale-95 transition-transform">
                                             <i data-lucide="star" className={`w-5 h-5 ${selectedContact.isFavorite ? 'fill-amber-400' : ''}`}></i>
                                         </button>
                                     </div>
@@ -3504,32 +3601,75 @@
                                     {(profileFilter === 'all' || profileFilter === 'loans') && (
                                         <div className="space-y-2">
                                             {profileFilter === 'all' && <div className="text-[10px] font-bold text-slate-400">وام‌ها</div>}
-                                            {loans.filter(l => l.contactId === selectedContact.id).length > 0 ? (
-                                                loans.filter(l => l.contactId === selectedContact.id).map(loan => (
-                                                    <div 
-                                                        key={loan.id}
-                                                        onClick={() => openLoanDetail(loan)}
-                                                        className="bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/40 p-3.5 rounded-2xl cursor-pointer flex justify-between items-center shadow-sm hover:border-blue-400 transition-all">
-                                                        <div className="flex items-center space-x-3 space-x-reverse">
-                                                            <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/70 text-blue-600 dark:text-blue-300 flex items-center justify-center font-bold">
-                                                                <i data-lucide="landmark" className="w-4 h-4"></i>
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-xs font-bold text-slate-900 dark:text-white">{loan.title}</div>
-                                                                <div className="text-[10px] text-slate-400">اقساط: {loan.installmentAmount.toLocaleString()} تومان</div>
-                                                            </div>
+                                            {(() => {
+                                                const contactLoans = loans.filter(l => l.contactId === selectedContact.id);
+                                                const activeLoans = contactLoans.filter(l => l.remainingAmount > 0);
+                                                const closedLoans = contactLoans.filter(l => l.remainingAmount <= 0);
+
+                                                if (contactLoans.length === 0) {
+                                                    return (
+                                                        <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                            هیچ وامی برای این شخص ثبت نشده است.
                                                         </div>
-                                                        <div className="flex items-center space-x-2 space-x-reverse">
-                                                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{loan.principalAmount.toLocaleString()} تومان</span>
-                                                            <i data-lucide="edit-2" className="w-3.5 h-3.5 text-slate-400"></i>
-                                                        </div>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <div className="space-y-2.5">
+                                                        {/* Active Loans */}
+                                                        {activeLoans.map(loan => (
+                                                            <div 
+                                                                key={loan.id}
+                                                                onClick={() => openLoanDetail(loan)}
+                                                                className="bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/40 p-3.5 rounded-2xl cursor-pointer flex justify-between items-center shadow-sm hover:border-blue-400 transition-all">
+                                                                <div className="flex items-center space-x-3 space-x-reverse">
+                                                                    <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/70 text-blue-600 dark:text-blue-300 flex items-center justify-center font-bold">
+                                                                        <i data-lucide="landmark" className="w-4 h-4"></i>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="text-xs font-bold text-slate-900 dark:text-white">{loan.title}</div>
+                                                                        <div className="text-[10px] text-slate-400">اقساط: {loan.installmentAmount.toLocaleString()} تومان</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center space-x-2 space-x-reverse">
+                                                                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{loan.principalAmount.toLocaleString()} تومان</span>
+                                                                    <i data-lucide="edit-2" className="w-3.5 h-3.5 text-slate-400"></i>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
+                                                        {/* Archived Closed Loans */}
+                                                        {closedLoans.length > 0 && (
+                                                            <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
+                                                                <div className="flex items-center space-x-1.5 space-x-reverse text-xs font-bold text-slate-400">
+                                                                    <i data-lucide="archive" className="w-3.5 h-3.5"></i>
+                                                                    <span>بایگانی وام‌های تسویه‌شده ({closedLoans.length})</span>
+                                                                </div>
+                                                                {closedLoans.map(loan => (
+                                                                    <div 
+                                                                        key={loan.id}
+                                                                        onClick={() => openLoanDetail(loan)}
+                                                                        className="bg-slate-100/70 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700 p-3 rounded-2xl cursor-pointer flex justify-between items-center opacity-70 hover:opacity-100 transition-all">
+                                                                        <div className="flex items-center space-x-3 space-x-reverse">
+                                                                            <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">
+                                                                                <i data-lucide="check-circle-2" className="w-4 h-4 text-emerald-600"></i>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="text-xs font-bold text-slate-700 dark:text-slate-300 line-through decoration-slate-400">{loan.title}</div>
+                                                                                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">تسویه کامل شد</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="flex items-center space-x-2 space-x-reverse">
+                                                                            <span className="text-xs font-bold text-slate-500">{loan.principalAmount.toLocaleString()} تومان</span>
+                                                                            <i data-lucide="chevron-left" className="w-3.5 h-3.5 text-slate-400"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                ))
-                                            ) : (
-                                                <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
-                                                    هیچ وامی برای این شخص ثبت نشده است.
-                                                </div>
-                                            )}
+                                                );
+                                            })()}
                                         </div>
                                     )}
 
@@ -3547,46 +3687,79 @@
                                             </div>
                                             {(() => {
                                                 const contactDebts = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
-                                                if (contactDebts.length > 0) {
-                                                    return contactDebts.map(tx => {
-                                                        const isRepay = tx.type === 'debt_repayment';
-                                                        return (
-                                                            <SwipeableTxCard 
-                                                                key={tx.id}
-                                                                tx={tx}
-                                                                colorType="rose"
-                                                                onEdit={(txItem) => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem)}
-                                                                onDelete={(txItem) => setDeleteTxModal({ show: true, tx: txItem, type: 'debt' })}
-                                                            />
-                                                        );
-                                                    });
-                                                } else if (selectedContact.totalDebt > 0) {
-                                                    return (
-                                                        <div 
-                                                            onClick={() => openStackWizard('debt', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDebt })}
-                                                            className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700/60 cursor-pointer flex justify-between items-center shadow-sm hover:border-rose-400 transition-all">
-                                                            <div className="flex items-center space-x-3 space-x-reverse">
-                                                                <div className="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center font-bold">
-                                                                    <i data-lucide="arrow-down-left" className="w-4 h-4"></i>
+                                                const archivedDebtPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'debt');
+                                                const archivedDebtTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && t.periodId);
+
+                                                return (
+                                                    <div className="space-y-2">
+                                                        {contactDebts.length > 0 ? (
+                                                            contactDebts.map(tx => {
+                                                                const isRepay = tx.type === 'debt_repayment';
+                                                                return (
+                                                                    <SwipeableTxCard 
+                                                                        key={tx.id}
+                                                                        tx={tx}
+                                                                        colorType="rose"
+                                                                        onEdit={(txItem) => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem)}
+                                                                        onDelete={(txItem) => setDeleteTxModal({ show: true, tx: txItem, type: 'debt' })}
+                                                                    />
+                                                                );
+                                                            })
+                                                        ) : selectedContact.totalDebt > 0 ? (
+                                                            <div 
+                                                                onClick={() => openStackWizard('debt', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDebt })}
+                                                                className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700/60 cursor-pointer flex justify-between items-center shadow-sm hover:border-rose-400 transition-all">
+                                                                <div className="flex items-center space-x-3 space-x-reverse">
+                                                                    <div className="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center font-bold">
+                                                                        <i data-lucide="arrow-down-left" className="w-4 h-4"></i>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="text-xs font-bold text-slate-900 dark:text-white">بدهی به {selectedContact.firstName}</div>
+                                                                        <div className="text-[10px] text-slate-400">لمس جهت ویرایش</div>
+                                                                    </div>
                                                                 </div>
-                                                                <div>
-                                                                    <div className="text-xs font-bold text-slate-900 dark:text-white">بدهی به {selectedContact.firstName}</div>
-                                                                    <div className="text-[10px] text-slate-400">لمس جهت ویرایش</div>
+                                                                <div className="flex items-center space-x-2 space-x-reverse">
+                                                                    <span className="text-xs font-bold text-rose-500">-{selectedContact.totalDebt.toLocaleString()} تومان</span>
+                                                                    <i data-lucide="edit-2" className="w-3.5 h-3.5 text-slate-400"></i>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center space-x-2 space-x-reverse">
-                                                                <span className="text-xs font-bold text-rose-500">-{selectedContact.totalDebt.toLocaleString()} تومان</span>
-                                                                <i data-lucide="edit-2" className="w-3.5 h-3.5 text-slate-400"></i>
+                                                        ) : (
+                                                            <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                                هیچ بدهی فعالی برای این شخص ثبت نشده است.
                                                             </div>
-                                                        </div>
-                                                    );
-                                                } else {
-                                                    return (
-                                                        <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
-                                                            هیچ بدهی برای این شخص ثبت نشده است.
-                                                        </div>
-                                                    );
-                                                }
+                                                        )}
+
+                                                        {/* Archived Debt Periods / Closed Cycles */}
+                                                        {(archivedDebtPeriods.length > 0 || archivedDebtTxs.length > 0) && (
+                                                            <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
+                                                                <div className="flex items-center space-x-1.5 space-x-reverse text-xs font-bold text-slate-400">
+                                                                    <i data-lucide="archive" className="w-3.5 h-3.5"></i>
+                                                                    <span>بایگانی دوره‌های تسویه‌شده بدهی</span>
+                                                                </div>
+                                                                {archivedDebtPeriods.map(period => (
+                                                                    <div 
+                                                                        key={period.id}
+                                                                        onClick={() => setShowCompletedExportModal({ show: true, contact: selectedContact, type: 'debt', period })}
+                                                                        className="bg-slate-100/70 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700/60 p-3 rounded-2xl flex justify-between items-center opacity-75 hover:opacity-100 transition-all cursor-pointer">
+                                                                        <div className="flex items-center space-x-2.5 space-x-reverse">
+                                                                            <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">
+                                                                                <i data-lucide="check-circle-2" className="w-4 h-4 text-emerald-600"></i>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{period.title || 'دوره تسویه‌شده بدهی'}</div>
+                                                                                <div className="text-[10px] text-slate-400">{formatDateToNumericJalali(period.startDate)} تا {formatDateToNumericJalali(period.endDate)}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="flex items-center space-x-1.5 space-x-reverse">
+                                                                            <span className="text-xs font-bold text-slate-500">{Number(period.totalAmount || 0).toLocaleString()} تومان</span>
+                                                                            <i data-lucide="download" className="w-3.5 h-3.5 text-slate-400"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
                                             })()}
                                         </div>
                                     )}
@@ -3605,46 +3778,79 @@
                                             </div>
                                             {(() => {
                                                 const contactDemands = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
-                                                if (contactDemands.length > 0) {
-                                                    return contactDemands.map(tx => {
-                                                        const isRepay = tx.type === 'demand_repayment';
-                                                        return (
-                                                            <SwipeableTxCard 
-                                                                key={tx.id}
-                                                                tx={tx}
-                                                                colorType="emerald"
-                                                                onEdit={(txItem) => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem)}
-                                                                onDelete={(txItem) => setDeleteTxModal({ show: true, tx: txItem, type: 'demand' })}
-                                                            />
-                                                        );
-                                                    });
-                                                } else if (selectedContact.totalDemand > 0) {
-                                                    return (
-                                                        <div 
-                                                            onClick={() => openStackWizard('demand', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDemand })}
-                                                            className="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-900/40 p-3.5 rounded-2xl cursor-pointer flex justify-between items-center shadow-sm hover:border-emerald-400 transition-all">
-                                                            <div className="flex items-center space-x-3 space-x-reverse">
-                                                                <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300 flex items-center justify-center font-bold">
-                                                                    <i data-lucide="arrow-up-right" className="w-4 h-4"></i>
+                                                const archivedDemandPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'demand');
+                                                const archivedDemandTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && t.periodId);
+
+                                                return (
+                                                    <div className="space-y-2">
+                                                        {contactDemands.length > 0 ? (
+                                                            contactDemands.map(tx => {
+                                                                const isRepay = tx.type === 'demand_repayment';
+                                                                return (
+                                                                    <SwipeableTxCard 
+                                                                        key={tx.id}
+                                                                        tx={tx}
+                                                                        colorType="emerald"
+                                                                        onEdit={(txItem) => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem)}
+                                                                        onDelete={(txItem) => setDeleteTxModal({ show: true, tx: txItem, type: 'demand' })}
+                                                                    />
+                                                                );
+                                                            })
+                                                        ) : selectedContact.totalDemand > 0 ? (
+                                                            <div 
+                                                                onClick={() => openStackWizard('demand', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDemand })}
+                                                                className="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-900/40 p-3.5 rounded-2xl cursor-pointer flex justify-between items-center shadow-sm hover:border-emerald-400 transition-all">
+                                                                <div className="flex items-center space-x-3 space-x-reverse">
+                                                                    <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300 flex items-center justify-center font-bold">
+                                                                        <i data-lucide="arrow-up-right" className="w-4 h-4"></i>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="text-xs font-bold text-slate-900 dark:text-white">طلب از {selectedContact.firstName}</div>
+                                                                        <div className="text-[10px] text-slate-400">لمس جهت ویرایش</div>
+                                                                    </div>
                                                                 </div>
-                                                                <div>
-                                                                    <div className="text-xs font-bold text-slate-900 dark:text-white">طلب از {selectedContact.firstName}</div>
-                                                                    <div className="text-[10px] text-slate-400">لمس جهت ویرایش</div>
+                                                                <div className="flex items-center space-x-2 space-x-reverse">
+                                                                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">+{selectedContact.totalDemand.toLocaleString()} تومان</span>
+                                                                    <i data-lucide="edit-2" className="w-3.5 h-3.5 text-slate-400"></i>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center space-x-2 space-x-reverse">
-                                                                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">+{selectedContact.totalDemand.toLocaleString()} تومان</span>
-                                                                <i data-lucide="edit-2" className="w-3.5 h-3.5 text-slate-400"></i>
+                                                        ) : (
+                                                            <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                                هیچ طلبی از این شخص ثبت نشده است.
                                                             </div>
-                                                        </div>
-                                                    );
-                                                } else {
-                                                    return (
-                                                        <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
-                                                            هیچ طلبی از این شخص ثبت نشده است.
-                                                        </div>
-                                                    );
-                                                }
+                                                        )}
+
+                                                        {/* Archived Demand Periods / Closed Cycles */}
+                                                        {(archivedDemandPeriods.length > 0 || archivedDemandTxs.length > 0) && (
+                                                            <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
+                                                                <div className="flex items-center space-x-1.5 space-x-reverse text-xs font-bold text-slate-400">
+                                                                    <i data-lucide="archive" className="w-3.5 h-3.5"></i>
+                                                                    <span>بایگانی دوره‌های تسویه‌شده طلب</span>
+                                                                </div>
+                                                                {archivedDemandPeriods.map(period => (
+                                                                    <div 
+                                                                        key={period.id}
+                                                                        onClick={() => setShowCompletedExportModal({ show: true, contact: selectedContact, type: 'demand', period })}
+                                                                        className="bg-slate-100/70 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700/60 p-3 rounded-2xl flex justify-between items-center opacity-75 hover:opacity-100 transition-all cursor-pointer">
+                                                                        <div className="flex items-center space-x-2.5 space-x-reverse">
+                                                                            <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">
+                                                                                <i data-lucide="check-circle-2" className="w-4 h-4 text-emerald-600"></i>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{period.title || 'دوره تسویه‌شده طلب'}</div>
+                                                                                <div className="text-[10px] text-slate-400">{formatDateToNumericJalali(period.startDate)} تا {formatDateToNumericJalali(period.endDate)}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="flex items-center space-x-1.5 space-x-reverse">
+                                                                            <span className="text-xs font-bold text-slate-500">{Number(period.totalAmount || 0).toLocaleString()} تومان</span>
+                                                                            <i data-lucide="download" className="w-3.5 h-3.5 text-slate-400"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
                                             })()}
                                         </div>
                                     )}
@@ -3660,9 +3866,14 @@
                                         <i data-lucide="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200"></i>
                                     </button>
                                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">{selectedLoan.title}</h3>
-                                    <button onClick={() => openStackWizard('loan', 'edit', selectedLoan)} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700">
-                                        <i data-lucide="pencil" className="w-4 h-4 text-slate-700 dark:text-slate-200"></i>
-                                    </button>
+                                    <div className="flex items-center space-x-1.5 space-x-reverse">
+                                        <button onClick={() => openStackWizard('loan', 'edit', selectedLoan)} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
+                                            <i data-lucide="pencil" className="w-4 h-4 text-slate-700 dark:text-slate-200"></i>
+                                        </button>
+                                        <button onClick={() => setShowDeleteLoanModal(true)} className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400">
+                                            <i data-lucide="trash-2" className="w-4 h-4"></i>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
@@ -3766,7 +3977,7 @@
                                     <div className="flex justify-between items-center">
                                         <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">اقساط ثبت و پرداخت‌شده</h4>
                                         <button 
-                                            onClick={() => openStackWizard('installment', 'add')} 
+                                            onClick={() => openStackWizard('installment', 'add', selectedLoan)} 
                                             className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold flex items-center space-x-1 space-x-reverse hover:underline">
                                             <i data-lucide="plus-circle" className="w-3.5 h-3.5"></i>
                                             <span>ثبت قسط جدید</span>
@@ -3897,9 +4108,11 @@
                                 {/* Header Card */}
                                 <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
                                     <div className="flex items-center space-x-3.5 space-x-reverse">
-                                        <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-slate-900 text-white flex items-center justify-center shadow-md border border-indigo-400/30 shrink-0">
-                                            <i data-lucide="wallet" className="w-7 h-7 text-amber-300"></i>
-                                        </div>
+                                        <img 
+                                            src="/apple-touch-icon.png" 
+                                            alt="Amir Finance" 
+                                            className="w-13 h-13 rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 shrink-0" 
+                                        />
                                         <div>
                                             <h2 className="text-base font-black text-slate-900 dark:text-white">Amir Finance</h2>
                                             <div className="flex items-center space-x-2 space-x-reverse mt-1">
@@ -3929,11 +4142,11 @@
                                                     <p className="text-xs text-slate-400 mt-0.5">تم برنامه و رنگ‌بندی</p>
                                                 </div>
                                             </div>
-                                            <i data-lucide={openSettingsSection === 'appearance' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                            <i data-lucide="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'appearance' ? 'rotate-180' : 'rotate-0'}`}></i>
                                         </div>
 
-                                        {openSettingsSection === 'appearance' && (
-                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-3 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                        <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'appearance' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
+                                            <div className="overflow-hidden space-y-3">
                                                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">انتخاب حالت تم:</label>
                                                 <div className="grid grid-cols-3 gap-2">
                                                     {[
@@ -3961,7 +4174,7 @@
                                                     })}
                                                 </div>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
 
                                     {/* 2. Backup & Restore */}
@@ -3978,11 +4191,11 @@
                                                     <p className="text-xs text-slate-400 mt-0.5">بکاپ و بازیابی اطلاعات</p>
                                                 </div>
                                             </div>
-                                            <i data-lucide={openSettingsSection === 'backup' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                            <i data-lucide="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'backup' ? 'rotate-180' : 'rotate-0'}`}></i>
                                         </div>
 
-                                        {openSettingsSection === 'backup' && (
-                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2.5 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                        <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'backup' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
+                                            <div className="overflow-hidden space-y-2.5">
                                                 <input 
                                                     type="file" 
                                                     ref={restoreInputRef} 
@@ -4036,7 +4249,7 @@
                                                     <i data-lucide="chevron-left" className="w-4 h-4 text-white/70"></i>
                                                 </button>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
 
                                     {/* 3. Notifications */}
@@ -4053,11 +4266,11 @@
                                                     <p className="text-xs text-slate-400 mt-0.5">مدیریت یادآوری‌ها و اعلان‌ها</p>
                                                 </div>
                                             </div>
-                                            <i data-lucide={openSettingsSection === 'notifications' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                            <i data-lucide="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'notifications' ? 'rotate-180' : 'rotate-0'}`}></i>
                                         </div>
 
-                                        {openSettingsSection === 'notifications' && (
-                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2.5 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                        <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'notifications' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
+                                            <div className="overflow-hidden space-y-2.5">
                                                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700">
                                                     <div>
                                                         <div className="text-xs font-bold text-slate-800 dark:text-slate-200">یادآوری سررسید اقساط</div>
@@ -4082,7 +4295,7 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
 
                                     {/* 4. Security */}
@@ -4099,16 +4312,16 @@
                                                     <p className="text-xs text-slate-400 mt-0.5">قفل برنامه و حریم خصوصی</p>
                                                 </div>
                                             </div>
-                                            <i data-lucide={openSettingsSection === 'security' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                            <i data-lucide="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'security' ? 'rotate-180' : 'rotate-0'}`}></i>
                                         </div>
 
-                                        {openSettingsSection === 'security' && (
-                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2.5 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                        <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'security' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
+                                            <div className="overflow-hidden space-y-2.5">
                                                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                                                     تمامی داده‌ها و تراکنش‌های شما صرفاً روی حافظه دستگاه ذخیره می‌شوند و دارای بالاترین سطح حریم خصوصی می‌باشند.
                                                 </p>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
 
                                     {/* 5. Data Management */}
@@ -4125,11 +4338,11 @@
                                                     <p className="text-xs text-slate-400 mt-0.5">مدیریت داده‌ها و حافظه</p>
                                                 </div>
                                             </div>
-                                            <i data-lucide={openSettingsSection === 'data' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                            <i data-lucide="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'data' ? 'rotate-180' : 'rotate-0'}`}></i>
                                         </div>
 
-                                        {openSettingsSection === 'data' && (
-                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2 animate-fade-in text-xs" onClick={e => e.stopPropagation()}>
+                                        <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'data' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
+                                            <div className="overflow-hidden space-y-2 text-xs">
                                                 <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50">
                                                     <span className="text-slate-500">تعداد مخاطبین:</span>
                                                     <span className="font-bold">{contacts.length} مورد</span>
@@ -4143,7 +4356,7 @@
                                                     <span className="font-bold">{transactions.length} مورد</span>
                                                 </div>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
 
                                     {/* 6. About App */}
@@ -4160,15 +4373,15 @@
                                                     <p className="text-xs text-slate-400 mt-0.5">اطلاعات برنامه و ارتباط با ما</p>
                                                 </div>
                                             </div>
-                                            <i data-lucide={openSettingsSection === 'about' ? "chevron-down" : "chevron-left"} className="w-5 h-5 text-slate-400 transition-transform"></i>
+                                            <i data-lucide="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'about' ? 'rotate-180' : 'rotate-0'}`}></i>
                                         </div>
 
-                                        {openSettingsSection === 'about' && (
-                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2 animate-fade-in text-xs text-slate-600 dark:text-slate-300 leading-relaxed" onClick={e => e.stopPropagation()}>
+                                        <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'about' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
+                                            <div className="overflow-hidden space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                                                 <p>برنامه مدیریت مالی Amir Finance ابزاری جهت ثبت و مدیریت وام‌ها، اقساط، طلب‌ها و بدهی‌های شخصی.</p>
                                                 <p className="text-[11px] text-slate-400">طراحی و توسعه: Amir Finance</p>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -4215,48 +4428,92 @@
 
                     {/* Plus Menu Modal */}
                     {showPlusMenu && (
-                        <div className="absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-end justify-center animate-fade-in">
-                            <div className="w-full bg-white dark:bg-slate-900 rounded-t-[32px] p-5 pb-8 space-y-3 border-t border-slate-100 dark:border-slate-800 shadow-2xl animate-slide-up">
-                                <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-2"></div>
-                                <h3 className="text-center font-extrabold text-slate-900 dark:text-white text-base mb-4">ثبت جدید</h3>
+                        <div 
+                            onClick={() => closePlusMenu()}
+                            className={`absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-end justify-center transition-opacity duration-200 ${isPlusMenuClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+                            <div 
+                                onClick={e => e.stopPropagation()}
+                                className={`w-full bg-white dark:bg-slate-900 rounded-t-[32px] p-5 pb-8 space-y-3 border-t border-slate-100 dark:border-slate-800 shadow-2xl transition-transform duration-200 ${isPlusMenuClosing ? 'translate-y-full' : 'translate-y-0 animate-slide-up'}`}>
+                                <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-1"></div>
+                                <h3 className="text-center font-extrabold text-slate-900 dark:text-white text-base mb-3">ثبت و مدیریت جدید</h3>
 
+                                {/* مخاطب جدید */}
                                 <button 
-                                    onClick={() => { setShowPlusMenu(false); setShowAddContactModal(true); }}
-                                    className="w-full bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-4 space-x-reverse border border-slate-100 dark:border-slate-700">
-                                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 flex items-center justify-center">
-                                        <i data-lucide="user-plus" className="w-5 h-5"></i>
+                                    onClick={() => closePlusMenu(() => setShowAddContactModal(true))}
+                                    className="w-full bg-slate-50 dark:bg-slate-800/80 p-3 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-98 transition-all">
+                                    <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                        <i data-lucide="user-plus" className="w-4 h-4"></i>
                                     </div>
-                                    <span className="font-bold text-xs text-slate-800 dark:text-slate-100">مخاطب جدید</span>
+                                    <div className="text-right">
+                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100 block">مخاطب جدید</span>
+                                        <span className="text-[10px] text-slate-400 font-normal">افزودن شخص جدید به دفتر مخاطبین</span>
+                                    </div>
                                 </button>
 
-                                <button 
-                                    onClick={() => openStackWizard('demand', 'add')}
-                                    className="w-full bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-4 space-x-reverse border border-slate-100 dark:border-slate-700">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
-                                        <i data-lucide="arrow-up-right" className="w-5 h-5"></i>
-                                    </div>
-                                    <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت طلب</span>
-                                </button>
+                                {/* طلب / بازپرداخت طلب */}
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button 
+                                        onClick={() => closePlusMenu(() => openStackWizard('demand', 'add', { fromFab: true }))}
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-emerald-300 active:scale-98 transition-all">
+                                        <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                            <i data-lucide="arrow-up-right" className="w-4 h-4"></i>
+                                        </div>
+                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت طلب</span>
+                                    </button>
 
-                                <button 
-                                    onClick={() => openStackWizard('debt', 'add')}
-                                    className="w-full bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-4 space-x-reverse border border-slate-100 dark:border-slate-700">
-                                    <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-950 text-red-500 flex items-center justify-center">
-                                        <i data-lucide="arrow-down-left" className="w-5 h-5"></i>
-                                    </div>
-                                    <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت بدهی</span>
-                                </button>
+                                    <button 
+                                        onClick={() => closePlusMenu(() => openStackWizard('demand_repayment', 'add', { fromFab: true }))}
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-emerald-300 active:scale-98 transition-all">
+                                        <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+                                            <i data-lucide="check-circle-2" className="w-4 h-4"></i>
+                                        </div>
+                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">بازپرداخت طلب</span>
+                                    </button>
+                                </div>
 
-                                <button 
-                                    onClick={() => openStackWizard('loan', 'add')}
-                                    className="w-full bg-slate-50 dark:bg-slate-800/80 p-3.5 rounded-2xl flex items-center space-x-4 space-x-reverse border border-slate-100 dark:border-slate-700">
-                                    <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center">
-                                        <i data-lucide="landmark" className="w-5 h-5"></i>
-                                    </div>
-                                    <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت وام</span>
-                                </button>
+                                {/* بدهی / بازپرداخت بدهی */}
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button 
+                                        onClick={() => closePlusMenu(() => openStackWizard('debt', 'add', { fromFab: true }))}
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-rose-300 active:scale-98 transition-all">
+                                        <div className="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
+                                            <i data-lucide="arrow-down-left" className="w-4 h-4"></i>
+                                        </div>
+                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت بدهی</span>
+                                    </button>
 
-                                <button onClick={() => setShowPlusMenu(false)} className="w-full py-2.5 text-center font-bold text-xs text-slate-400">
+                                    <button 
+                                        onClick={() => closePlusMenu(() => openStackWizard('debt_repayment', 'add', { fromFab: true }))}
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-rose-300 active:scale-98 transition-all">
+                                        <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                            <i data-lucide="corner-down-left" className="w-4 h-4"></i>
+                                        </div>
+                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">بازپرداخت بدهی</span>
+                                    </button>
+                                </div>
+
+                                {/* وام / پرداخت قسط */}
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button 
+                                        onClick={() => closePlusMenu(() => openStackWizard('loan', 'add', { fromFab: true }))}
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-98 transition-all">
+                                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                            <i data-lucide="landmark" className="w-4 h-4"></i>
+                                        </div>
+                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت وام</span>
+                                    </button>
+
+                                    <button 
+                                        onClick={() => closePlusMenu(() => openStackWizard('installment', 'add', { fromFab: true }))}
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-98 transition-all">
+                                        <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                            <i data-lucide="receipt" className="w-4 h-4"></i>
+                                        </div>
+                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">پرداخت قسط</span>
+                                    </button>
+                                </div>
+
+                                <button onClick={() => closePlusMenu()} className="w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
                                     انصراف
                                 </button>
                             </div>
@@ -4647,6 +4904,35 @@
                                     </button>
                                     <button 
                                         onClick={() => setShowDeleteConfirmModal(false)}
+                                        className="flex-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
+                                        خیر، انصراف
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal: Confirm Delete Loan */}
+                    {showDeleteLoanModal && (
+                        <div className="absolute inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 animate-fade-in">
+                            <div className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700 text-center animate-scale-up">
+                                <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center">
+                                    <i data-lucide="trash-2" className="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">حذف پرونده وام</h4>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                                        آیا از حذف پرونده وام «{selectedLoan?.title}» اطمینان دارید؟ کلیه اقساط ثبت‌شده برای این وام نیز پاک خواهند شد.
+                                    </p>
+                                </div>
+                                <div className="flex space-x-2 space-x-reverse pt-1">
+                                    <button 
+                                        onClick={confirmDeleteLoan}
+                                        className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all active:scale-95">
+                                        بله، حذف شود
+                                    </button>
+                                    <button 
+                                        onClick={() => setShowDeleteLoanModal(false)}
                                         className="flex-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
                                         خیر، انصراف
                                     </button>
