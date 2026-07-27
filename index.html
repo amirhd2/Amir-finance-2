@@ -364,14 +364,75 @@
             return `${y}/${m}/${d}`;
         };
 
+        const parseRawNumber = (val) => {
+            if (val === null || val === undefined) return '';
+            return String(val).replace(/\D/g, '');
+        };
+
+        const formatWithCommas = (val) => {
+            if (val === null || val === undefined || val === '') return '';
+            const clean = String(val).replace(/\D/g, '');
+            if (!clean) return '';
+            return Number(clean).toLocaleString('en-US');
+        };
+
+        const numToPersianWords = (num) => {
+            if (num === null || num === undefined || num === '') return '';
+            const n = Math.abs(Number(num));
+            if (isNaN(n) || n === 0) return '';
+
+            const yekan = ['', 'یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه'];
+            const dahna = ['ده', 'یازده', 'دوازده', 'سیزده', 'چهارده', 'پانزده', 'شانزده', 'هفده', 'هیجده', 'نوزده'];
+            const dahgan = ['', '', 'بیست', 'سی', 'چهل', 'پنجاه', 'شصت', 'هفتاد', 'هشتاد', 'نود'];
+            const sadgan = ['', 'صد', 'دویست', 'سیصد', 'چهارصد', 'پانصد', 'ششصد', 'هفتصد', 'هشتصد', 'نهصد'];
+            const maghadir = ['', 'هزار', 'میلیون', 'میلیارد', 'تریلیون'];
+
+            const threeDigitsToWords = (number) => {
+                let sad = Math.floor(number / 100);
+                let dah = Math.floor((number % 100) / 10);
+                let yek = number % 10;
+                let parts = [];
+
+                if (sad > 0) parts.push(sadgan[sad]);
+
+                if (dah === 1) {
+                    parts.push(dahna[yek]);
+                } else {
+                    if (dah > 1) parts.push(dahgan[dah]);
+                    if (yek > 0) parts.push(yekan[yek]);
+                }
+
+                return parts.join(' و ');
+            };
+
+            let splitted = [];
+            let temp = Math.floor(n);
+            while (temp > 0) {
+                splitted.push(temp % 1000);
+                temp = Math.floor(temp / 1000);
+            }
+
+            let resultParts = [];
+            for (let i = splitted.length - 1; i >= 0; i--) {
+                const val = splitted[i];
+                if (val > 0) {
+                    const word = threeDigitsToWords(val);
+                    const unit = maghadir[i];
+                    resultParts.push(word + (unit ? ' ' + unit : ''));
+                }
+            }
+
+            return resultParts.join(' و ') + ' تومان';
+        };
+
         const getLoanNextDueInfo = (loan, txList) => {
             if (!loan) return { nextDueNum: 1, nextDueDateStr: 'نامشخص', daysLeft: 0, totalInst: 12, paidInst: 0, remainingInst: 12, isCompleted: false };
 
             const instAmt = Number(loan.installmentAmount) || 0;
-            const totalRepay = Number(loan.totalRepayment) || 0;
-            const totalInst = (instAmt > 0 && totalRepay > 0)
-                ? Math.ceil(totalRepay / instAmt)
-                : (loan.totalInstallments && loan.totalInstallments > 0 ? loan.totalInstallments : 12);
+            const totalRepay = Number(loan.totalRepayment) || Number(loan.principalAmount) || 0;
+            const totalInst = (loan.totalInstallments && loan.totalInstallments > 0)
+                ? loan.totalInstallments
+                : (instAmt > 0 && totalRepay > 0 ? Math.ceil(totalRepay / instAmt) : 12);
 
             const loanTxs = (txList || []).filter(t => t.loanId === loan.id && t.type === 'repayment');
             const paidInst = loanTxs.length;
@@ -391,47 +452,37 @@
 
             const nextDueNum = paidInst + 1;
 
-            let baseYear, baseMonthIdx, baseDay;
-
-            if (paidInst > 0 && loanTxs.length > 0) {
-                // Sort to find the latest repayment transaction date
-                const sortedTxs = [...loanTxs].sort((a, b) => {
-                    const da = parseJalaliDateStr(a.dateStr);
-                    const db = parseJalaliDateStr(b.dateStr);
-                    const ma = jalaliMonths.indexOf(da.month) + 1;
-                    const mb = jalaliMonths.indexOf(db.month) + 1;
-                    const valA = da.year * 10000 + ma * 100 + da.day;
-                    const valB = db.year * 10000 + mb * 100 + db.day;
-                    return valB - valA;
-                });
-
-                const latestTx = sortedTxs[0];
-                const parsedLast = parseJalaliDateStr(latestTx.dateStr);
-                baseYear = parsedLast.year;
-                baseMonthIdx = jalaliMonths.indexOf(parsedLast.month);
-                if (baseMonthIdx === -1) baseMonthIdx = 0;
-                baseDay = loan.dueDayOfMonth || parsedLast.day || 25;
-            } else if (loan.startDate) {
+            let startYear, startMonthIdx, startDay;
+            if (loan.startDate) {
                 const parsedStart = parseJalaliDateStr(loan.startDate);
-                baseYear = parsedStart.year;
-                baseMonthIdx = jalaliMonths.indexOf(parsedStart.month);
-                if (baseMonthIdx === -1) baseMonthIdx = 0;
-                baseDay = loan.dueDayOfMonth || parsedStart.day || 25;
+                startYear = parsedStart.year;
+                startMonthIdx = jalaliMonths.indexOf(parsedStart.month);
+                if (startMonthIdx === -1) startMonthIdx = 0;
+                startDay = parsedStart.day;
             } else {
                 const todayJ = getDeviceJalaliDate();
-                baseYear = todayJ.year;
-                baseMonthIdx = jalaliMonths.indexOf(todayJ.month);
-                if (baseMonthIdx === -1) baseMonthIdx = 0;
-                baseDay = loan.dueDayOfMonth || todayJ.day || 25;
+                startYear = todayJ.year;
+                startMonthIdx = jalaliMonths.indexOf(todayJ.month);
+                if (startMonthIdx === -1) startMonthIdx = 0;
+                startDay = todayJ.day;
             }
 
-            // Exactly 1 month after base date
-            let targetMonthIdx = baseMonthIdx + 1;
-            let targetYear = baseYear;
-            if (targetMonthIdx >= 12) {
-                targetMonthIdx = 0;
-                targetYear += 1;
+            const dueDay = loan.dueDayOfMonth || startDay || 25;
+
+            let firstDueMonthIdx = startMonthIdx;
+            let firstDueYear = startYear;
+            if (dueDay <= startDay) {
+                firstDueMonthIdx += 1;
+                if (firstDueMonthIdx >= 12) {
+                    firstDueMonthIdx = 0;
+                    firstDueYear += 1;
+                }
             }
+
+            const monthsToAdd = nextDueNum - 1;
+            let targetMonthIdx = firstDueMonthIdx + monthsToAdd;
+            let targetYear = firstDueYear + Math.floor(targetMonthIdx / 12);
+            targetMonthIdx = targetMonthIdx % 12;
 
             const targetMonthName = jalaliMonths[targetMonthIdx];
 
@@ -439,7 +490,7 @@
             if (targetMonthIdx < 6) maxDaysInMonth = 31;
             else if (targetMonthIdx === 11) maxDaysInMonth = 29;
 
-            const targetDay = Math.min(baseDay, maxDaysInMonth);
+            const targetDay = Math.min(dueDay, maxDaysInMonth);
 
             const nextDueDateStr = `${targetDay} ${targetMonthName} ${targetYear}`;
             const daysLeft = getDaysDiffFromToday(targetYear, targetMonthIdx + 1, targetDay);
@@ -911,7 +962,7 @@
                         }}
                         className={`bg-white dark:bg-slate-800 p-3 flex items-center justify-between cursor-pointer transition-transform duration-200 z-10 relative ${swiped ? '-translate-x-20' : 'translate-x-0'}`}>
                         <div className="flex items-center space-x-2.5 space-x-reverse">
-                            <div className={`w-8 h-8 rounded-xl ${colorType === 'rose' ? (isRepay ? 'bg-red-100 dark:bg-red-900/70 text-red-600 dark:text-red-300' : 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300') : colorType === 'emerald' ? (isRepay ? 'bg-teal-100 dark:bg-teal-900/70 text-teal-600 dark:text-teal-300' : 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300') : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-bold text-xs shrink-0`}>
+                            <div className={`w-8 h-8 rounded-xl ${ (colorType === 'rose' || tx.type === 'demand_repayment' || tx.type === 'debt') ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : colorType === 'emerald' ? (isRepay ? 'bg-teal-100 dark:bg-teal-900/70 text-teal-600 dark:text-teal-300' : 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300') : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-bold text-xs shrink-0`}>
                                 {totalCount ? (totalCount - index) : <i data-lucide={isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-4 h-4"></i>}
                             </div>
                             <div>
@@ -921,7 +972,7 @@
                         </div>
 
                         <div className="flex items-center space-x-2 space-x-reverse">
-                            <span className={`text-xs font-bold ${tx.type === 'debt' ? 'text-rose-600 dark:text-rose-400' : tx.type === 'demand' ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                            <span className={`text-xs font-bold ${(tx.type === 'debt' || tx.type === 'demand_repayment' || colorType === 'rose') ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                 {Math.abs(tx.amount).toLocaleString()} تومان
                             </span>
                             <button 
@@ -936,10 +987,293 @@
             );
         }
 
+        function ContactSelectorCard({ contacts = [], selectedContactId, onSelect = () => {}, wizardType, wizardMode }) {
+            const [searchQuery, setSearchQuery] = useState('');
+            const [isExpanded, setIsExpanded] = useState(!selectedContactId);
+
+            React.useEffect(() => {
+                if (selectedContactId) {
+                    setIsExpanded(false);
+                } else {
+                    setIsExpanded(true);
+                }
+            }, [selectedContactId]);
+
+            const selectedC = contacts.find(c => c.id === Number(selectedContactId));
+
+            const searchQ = searchQuery.toLowerCase();
+            let filteredContacts = contacts;
+            if (wizardType === 'demand_repayment' && wizardMode === 'add') {
+                filteredContacts = contacts.filter(c => (c.totalDemand || 0) > 0);
+            } else if (wizardType === 'debt_repayment' && wizardMode === 'add') {
+                filteredContacts = contacts.filter(c => (c.totalDebt || 0) > 0);
+            }
+
+            const filtered = filteredContacts.filter(c => 
+                `${c.firstName} ${c.lastName}`.toLowerCase().includes(searchQ) || 
+                (c.phone && c.phone.includes(searchQ))
+            );
+
+            if (selectedC && !isExpanded) {
+                return (
+                    <div className="space-y-3">
+                        <label className="block text-xs text-slate-600 dark:text-slate-300 font-bold">
+                            مخاطب انتخاب‌شده:
+                        </label>
+                        <div className="bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-500 rounded-2xl p-3.5 flex items-center justify-between shadow-xs">
+                            <div className="flex items-center space-x-3 space-x-reverse">
+                                <div className={`w-10 h-10 rounded-full ${getAvatarColor(selectedC.id, selectedC.firstName + selectedC.lastName)} text-white font-bold text-sm flex items-center justify-center shadow-xs`}>
+                                    {selectedC.firstName.charAt(0)}
+                                </div>
+                                <div>
+                                    <div className="text-xs font-bold text-indigo-950 dark:text-indigo-100">
+                                        {selectedC.firstName} {selectedC.lastName}
+                                    </div>
+                                    <div className="text-[10px] text-indigo-600 dark:text-indigo-300 font-mono">
+                                        {selectedC.phone || 'بدون شماره تماس'}
+                                    </div>
+                                </div>
+                            </div>
+                            <button 
+                                type="button"
+                                onClick={() => setIsExpanded(true)}
+                                className="text-xs font-bold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-indigo-900/80 px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 active:scale-95 transition-all">
+                                تغییر مخاطب
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="space-y-3">
+                    <label className="block text-xs text-slate-600 dark:text-slate-300 font-bold">
+                        مخاطب خود را انتخاب کنید:
+                    </label>
+                    
+                    <div className="relative">
+                        <i data-lucide="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400"></i>
+                        <input 
+                            type="text"
+                            placeholder="جستجوی مخاطب (نام یا شماره تلفن)..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    <div className="max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1">
+                        {filtered.length > 0 ? (
+                            filtered.map(c => {
+                                const isSelected = Number(selectedContactId) === c.id;
+                                return (
+                                    <div 
+                                        key={c.id}
+                                        onClick={() => {
+                                            onSelect(c);
+                                            setIsExpanded(false);
+                                        }}
+                                        className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                                            isSelected 
+                                                ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 dark:border-indigo-600 font-bold text-indigo-700 dark:text-indigo-300' 
+                                                : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300'
+                                        }`}>
+                                        <div className="flex items-center space-x-2.5 space-x-reverse">
+                                            <div className={`w-8 h-8 rounded-full ${getAvatarColor(c.id, c.firstName + c.lastName)} text-white font-bold text-xs flex items-center justify-center`}>
+                                                {c.firstName.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <div className="text-xs">{c.firstName} {c.lastName}</div>
+                                                <div className="text-[10px] text-slate-400">{c.phone}</div>
+                                            </div>
+                                        </div>
+                                        {isSelected && <i data-lucide="check-circle-2" className="w-5 h-5 text-indigo-600 dark:text-indigo-400"></i>}
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div className="text-center py-6 text-xs text-slate-400">
+                                مخاطبی جهت انتخاب یافت نشد.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function LoanSelectorCard({ loans = [], transactions = [], contacts = [], selectedLoanId, onSelectLoan = () => {} }) {
+            const [searchQuery, setSearchQuery] = useState('');
+            const [isExpanded, setIsExpanded] = useState(!selectedLoanId);
+
+            React.useEffect(() => {
+                if (selectedLoanId) {
+                    setIsExpanded(false);
+                } else {
+                    setIsExpanded(true);
+                }
+            }, [selectedLoanId]);
+
+            const activeLoans = loans.filter(l => {
+                const paid = transactions.filter(t => t.loanId === l.id && t.type === 'repayment').reduce((s, t) => s + Math.abs(t.amount || 0), 0);
+                const total = (l.totalRepayment > 0) ? l.totalRepayment : l.principalAmount;
+                const remaining = total - paid;
+                return remaining > 0;
+            });
+
+            const searchQ = searchQuery.toLowerCase();
+            const filtered = activeLoans.filter(l => {
+                const contact = contacts.find(c => c.id === l.contactId);
+                const cName = contact ? `${contact.firstName} ${contact.lastName}` : (l.contactName || '');
+                return l.title.toLowerCase().includes(searchQ) || cName.toLowerCase().includes(searchQ);
+            });
+
+            const selectedLoanObj = loans.find(l => l.id === Number(selectedLoanId));
+
+            const handleSelect = (l) => {
+                onSelectLoan(l);
+                setIsExpanded(false);
+            };
+
+            if (selectedLoanObj) {
+                const repaymentTxs = transactions.filter(t => t.loanId === selectedLoanObj.id && t.type === 'repayment');
+                const paidInstCount = repaymentTxs.length;
+                const nextInstNum = paidInstCount + 1;
+                const totalInst = selectedLoanObj.totalInstallments || (selectedLoanObj.installmentAmount > 0 ? Math.ceil(selectedLoanObj.totalRepayment / selectedLoanObj.installmentAmount) : 12);
+                const contact = contacts.find(c => c.id === selectedLoanObj.contactId);
+                const contactName = contact ? `${contact.firstName} ${contact.lastName}` : (selectedLoanObj.contactName || 'بانک/سازمان');
+
+                return (
+                    <div className="space-y-3">
+                        <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 text-white rounded-2xl p-3.5 shadow-md flex items-center justify-between border border-indigo-500/30">
+                            <div className="space-y-1">
+                                <div className="text-[10px] text-indigo-200 font-bold flex items-center space-x-1 space-x-reverse">
+                                    <i data-lucide="landmark" className="w-3.5 h-3.5"></i>
+                                    <span>پرونده وام انتخاب‌شده:</span>
+                                </div>
+                                <div className="text-xs font-extrabold text-white">
+                                    {selectedLoanObj.title}
+                                </div>
+                                <div className="text-[11px] text-indigo-100">
+                                    طرف حساب: {contactName}
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-center justify-center bg-white/20 backdrop-blur-md border border-white/40 rounded-2xl w-16 h-16 shadow-inner text-white dir-rtl">
+                                <span className="text-[9px] text-indigo-100 font-bold">قسط شماره</span>
+                                <span className="text-2xl font-black tracking-tight leading-none my-0.5">{nextInstNum}</span>
+                                <span className="text-[9px] text-indigo-200 font-medium">از {totalInst}</span>
+                            </div>
+                        </div>
+
+                        {isExpanded ? (
+                            <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">انتخاب وام دیگر:</span>
+                                    <button 
+                                        type="button"
+                                        onClick={() => setIsExpanded(false)}
+                                        className="text-[11px] font-bold text-slate-500 hover:underline">
+                                        بستن منو
+                                    </button>
+                                </div>
+                                <div className="relative">
+                                    <i data-lucide="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400"></i>
+                                    <input 
+                                        type="text"
+                                        placeholder="جستجوی عنوان وام یا مخاطب..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none"
+                                    />
+                                </div>
+                                <div className="max-h-44 overflow-y-auto space-y-1.5 hide-scrollbar p-1">
+                                    {filtered.length > 0 ? (
+                                        filtered.map(l => (
+                                            <div 
+                                                key={l.id}
+                                                onClick={() => handleSelect(l)}
+                                                className="p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 flex justify-between items-center cursor-pointer hover:border-indigo-400">
+                                                <div>
+                                                    <div className="text-xs font-bold text-slate-900 dark:text-white">{l.title}</div>
+                                                    <div className="text-[10px] text-slate-400">{l.installmentAmount ? l.installmentAmount.toLocaleString() : 0} تومان در ماه</div>
+                                                </div>
+                                                <i data-lucide="chevron-left" className="w-4 h-4 text-slate-400"></i>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-4 text-xs text-slate-400">وام فعالی یافت نشد</div>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <button 
+                                type="button"
+                                onClick={() => setIsExpanded(true)}
+                                className="w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5 space-x-reverse">
+                                <i data-lucide="repeat" className="w-3.5 h-3.5 text-indigo-600"></i>
+                                <span>تغییر وام انتخاب‌شده</span>
+                            </button>
+                        )}
+                    </div>
+                );
+            }
+
+            return (
+                <div className="space-y-3">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                        یک وام فعال جهت پرداخت قسط انتخاب کنید:
+                    </label>
+                    <div className="relative">
+                        <i data-lucide="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400"></i>
+                        <input 
+                            type="text"
+                            placeholder="جستجوی عنوان وام یا نام مخاطب..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
+                    <div className="max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1">
+                        {filtered.length > 0 ? (
+                            filtered.map(l => {
+                                const contact = contacts.find(c => c.id === l.contactId);
+                                const cName = contact ? `${contact.firstName} ${contact.lastName}` : (l.contactName || 'بانک/سازمان');
+                                return (
+                                    <div 
+                                        key={l.id}
+                                        onClick={() => handleSelect(l)}
+                                        className="p-3 rounded-2xl border bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 flex items-center justify-between cursor-pointer hover:border-indigo-500 transition-all shadow-2xs">
+                                        <div className="flex items-center space-x-3 space-x-reverse">
+                                            <div className="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs">
+                                                <i data-lucide="landmark" className="w-4 h-4"></i>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs font-bold text-slate-900 dark:text-white">{l.title}</div>
+                                                <div className="text-[10px] text-slate-400">{cName}</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-left ltr">
+                                            <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{l.installmentAmount ? l.installmentAmount.toLocaleString() : '-'} تومان</div>
+                                            <div className="text-[9px] text-slate-400">مبلغ قسط</div>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div className="text-center py-6 text-xs text-slate-400">
+                                هیچ وام فعالی جهت پرداخت قسط یافت نشد.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
         function App() {
             const [currentTab, setCurrentTab] = useState('dashboard');
             const [selectedContact, setSelectedContact] = useState(null);
             const [selectedLoan, setSelectedLoan] = useState(null);
+            const [selectedPeriod, setSelectedPeriod] = useState(null);
             const [loanReturnTab, setLoanReturnTab] = useState('accounts');
             const [accountsSubTab, setAccountsSubTab] = useState('all');
             
@@ -979,12 +1313,14 @@
             const [loanForm, setLoanForm] = useState({
                 id: null,
                 title: '',
-                selectedContactId: 'bank',
-                contactName: 'بانک یا سازمان',
+                selectedContactId: '',
+                contactName: '',
+                contactSearchQuery: '',
                 startDate: '1404/05/15',
                 principalAmount: '',
                 totalRepayment: '',
                 installmentAmount: '',
+                customInstallmentCount: '',
                 dueDayOfMonth: 25,
                 reminderOption: '1روز قبل',
                 customReminderDate: '',
@@ -1478,50 +1814,57 @@
                 }
 
                 if (type === 'loan') {
-                    if (mode === 'edit' && data) {
+                    const startDayVal = (mode === 'edit' && data && data.startDate) 
+                        ? parseJalaliDateStr(data.startDate).day 
+                        : (getDeviceJalaliDate().day);
+
+                    if (mode === 'edit' && data && data.title) {
                         setLoanForm({
                             id: data.id,
                             title: data.title || '',
-                            selectedContactId: data.contactId || 'bank',
+                            selectedContactId: data.contactId || '',
                             contactName: data.contactName || '',
+                            contactSearchQuery: '',
                             startDate: data.startDate || '1404/05/15',
                             principalAmount: data.principalAmount || '',
                             totalRepayment: data.totalRepayment || '',
                             installmentAmount: data.installmentAmount || '',
-                            dueDayOfMonth: data.dueDayOfMonth || 25,
+                            customInstallmentCount: data.totalInstallments || '',
+                            dueDayOfMonth: data.dueDayOfMonth || startDayVal,
                             reminderOption: data.reminderDays || '1روز قبل',
                             customReminderDate: '',
                             notes: data.notes || ''
                         });
                     } else {
-                        const isFromFab = data && data.fromFab;
-                        const defaultName = isFromFab ? '' : (selectedContact ? `${selectedContact.firstName} ${selectedContact.lastName}` : 'بانک یا سازمان');
-                        const defaultId = isFromFab ? '' : (selectedContact ? selectedContact.id : 'bank');
+                        const passedContactId = (data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : '');
+                        const defaultContact = contacts.find(c => c.id === Number(passedContactId));
+                        const defaultName = defaultContact ? `${defaultContact.firstName} ${defaultContact.lastName}` : '';
                         setLoanForm({
                             id: null,
                             title: '',
-                            selectedContactId: defaultId,
+                            selectedContactId: passedContactId,
                             contactName: defaultName,
+                            contactSearchQuery: '',
                             startDate: '1404/05/15',
                             principalAmount: '',
                             totalRepayment: '',
                             installmentAmount: '',
-                            dueDayOfMonth: 25,
+                            customInstallmentCount: '',
+                            dueDayOfMonth: startDayVal,
                             reminderOption: '1روز قبل',
                             customReminderDate: '',
                             notes: ''
                         });
                     }
                 } else if (type === 'demand' || type === 'debt') {
-                    const isFromFab = data && data.fromFab;
-                    const defaultContactId = isFromFab ? '' : (selectedContact ? selectedContact.id : (contacts.length > 0 ? contacts[0].id : ''));
+                    const passedContactId = (data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : '');
                     const isEditTx = mode === 'edit' && data && data.id;
-                    const editAmt = isEditTx ? Math.abs(data.amount || 0) : (mode === 'edit' && data ? Math.abs(data.amount || 0) : '');
+                    const editAmt = isEditTx ? Math.abs(data.amount || 0) : (mode === 'edit' && data && data.amount ? Math.abs(data.amount || 0) : '');
                     const editNotes = (mode === 'edit' && data && data.notes) ? data.notes : '';
 
                     setDemandDebtForm({
                         id: isEditTx ? data.id : null,
-                        selectedContactId: (data && data.contactId) ? data.contactId : defaultContactId,
+                        selectedContactId: passedContactId,
                         contactSearchQuery: '',
                         amount: editAmt,
                         notes: editNotes
@@ -1530,9 +1873,14 @@
                     const isFromFab = data && data.fromFab;
                     const isEditTx = mode === 'edit' && data && data.id && (data.amount !== undefined);
                     const passedLoan = (data && data.id && !isEditTx && !isFromFab) ? data : null;
-                    const activeTargetLoan = passedLoan || selectedLoan || (selectedContact ? loans.find(l => l.contactId === selectedContact.id) : null) || (loans.length > 0 ? loans[0] : null);
+                    const activeLoans = loans.filter(l => {
+                        const paid = transactions.filter(t => t.loanId === l.id && t.type === 'repayment').reduce((s, t) => s + Math.abs(t.amount || 0), 0);
+                        const total = (l.totalRepayment > 0) ? l.totalRepayment : l.principalAmount;
+                        return (total - paid) > 0;
+                    });
+                    const activeTargetLoan = passedLoan || selectedLoan || (selectedContact ? activeLoans.find(l => l.contactId === selectedContact.id) : null) || (activeLoans.length > 0 ? activeLoans[0] : null);
                     
-                    const editLoanId = isEditTx ? (data.loanId || (activeTargetLoan ? activeTargetLoan.id : '')) : (isFromFab ? '' : (activeTargetLoan ? activeTargetLoan.id : ''));
+                    const editLoanId = isEditTx ? (data.loanId || (activeTargetLoan ? activeTargetLoan.id : '')) : (activeTargetLoan ? activeTargetLoan.id : '');
                     const targetLoan = editLoanId ? (loans.find(l => l.id === Number(editLoanId)) || activeTargetLoan) : null;
                     const editAmt = isEditTx ? Math.abs(data.amount || 0) : (targetLoan ? targetLoan.installmentAmount : '');
                     const editNotes = (isEditTx && data && data.notes) ? data.notes : '';
@@ -1556,11 +1904,10 @@
                         notes: editNotes
                     });
                 } else if (type === 'debt_repayment' || type === 'demand_repayment') {
-                    const isFromFab = data && data.fromFab;
                     const isEditTx = mode === 'edit' && data && data.id;
                     const editAmt = isEditTx ? Math.abs(data.amount || 0) : '';
                     const editNotes = (isEditTx && data && data.notes) ? data.notes : '';
-                    const defaultContactId = (isFromFab ? '' : (selectedContact ? selectedContact.id : (contacts.length > 0 ? contacts[0].id : '')));
+                    const passedContactId = (data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : '');
 
                     if (isEditTx && data && data.dateStr) {
                         const parsedDate = parseJalaliDateStr(data.dateStr);
@@ -1571,7 +1918,7 @@
 
                     setDemandDebtForm(prev => ({
                         ...prev,
-                        selectedContactId: (data && data.contactId) ? data.contactId : defaultContactId,
+                        selectedContactId: passedContactId,
                         contactSearchQuery: ''
                     }));
 
@@ -1600,11 +1947,83 @@
             const handleNextCard = (cardsList) => {
                 if (animatingCard || animatingPrevCard) return;
 
-                // Validation for contact selection on demand/debt wizards
-                if ((wizardType === 'demand' || wizardType === 'debt') && currentCardIdx === 0) {
-                    if (!demandDebtForm.selectedContactId) {
+                // Validation for contact selection on demand/debt/loan wizards
+                if ((wizardType === 'demand' || wizardType === 'debt' || wizardType === 'loan') && currentCardIdx === 0) {
+                    const selContactId = wizardType === 'loan' ? loanForm.selectedContactId : demandDebtForm.selectedContactId;
+                    if (!selContactId) {
                         showToast('لطفاً یک مخاطب انتخاب کنید');
                         return;
+                    }
+                }
+
+                // Validation for installment wizard
+                if (wizardType === 'installment') {
+                    if (currentCardIdx === 0 && !installmentForm.selectedLoanId) {
+                        showToast('لطفاً یک وام را انتخاب کنید');
+                        return;
+                    }
+                    if (currentCardIdx === 2) { // inst_amount
+                        const inputAmt = Number(installmentForm.amount) || 0;
+                        if (inputAmt <= 0) {
+                            showToast('لطفاً مبلغ معتبر وارد نمایید');
+                            return;
+                        }
+                        const targetLoan = loans.find(l => l.id === Number(installmentForm.selectedLoanId));
+                        if (targetLoan) {
+                            const loanPaid = transactions.filter(t => t.loanId === targetLoan.id && t.type === 'repayment').reduce((sum, t) => sum + Math.abs(t.amount || 0), 0);
+                            const loanTotal = (targetLoan.totalRepayment > 0) ? targetLoan.totalRepayment : targetLoan.principalAmount;
+                            const loanRemaining = Math.max(0, loanTotal - loanPaid);
+                            if (inputAmt > loanRemaining) {
+                                showToast(`مبلغ پرداختی نمی‌تواند از مانده وام (${loanRemaining.toLocaleString()} تومان) بیشتر باشد`);
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                // Validation for debt repayment wizard
+                if (wizardType === 'debt_repayment') {
+                    if (currentCardIdx === 0 && !demandDebtForm.selectedContactId) {
+                        showToast('لطفاً یک مخاطب انتخاب کنید');
+                        return;
+                    }
+                    if (currentCardIdx === 1) { // debt_repay_amount
+                        const inputAmt = Number(repaymentForm.amount) || 0;
+                        if (inputAmt <= 0) {
+                            showToast('لطفاً مبلغ معتبر وارد نمایید');
+                            return;
+                        }
+                        const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
+                        const editingTx = repaymentForm.id ? transactions.find(t => t.id === repaymentForm.id) : null;
+                        const editingTxAmt = editingTx ? Math.abs(editingTx.amount || 0) : 0;
+                        const totalDebt = (targetContact ? (targetContact.totalDebt || 0) : 0) + editingTxAmt;
+                        if (inputAmt > totalDebt) {
+                            showToast(`مبلغ پرداختی نمی‌تواند از کل بدهی (${totalDebt.toLocaleString()} تومان) بیشتر باشد`);
+                            return;
+                        }
+                    }
+                }
+
+                // Validation for demand repayment wizard
+                if (wizardType === 'demand_repayment') {
+                    if (currentCardIdx === 0 && !demandDebtForm.selectedContactId) {
+                        showToast('لطفاً یک مخاطب انتخاب کنید');
+                        return;
+                    }
+                    if (currentCardIdx === 1) { // demand_repay_amount
+                        const inputAmt = Number(repaymentForm.amount) || 0;
+                        if (inputAmt <= 0) {
+                            showToast('لطفاً مبلغ معتبر وارد نمایید');
+                            return;
+                        }
+                        const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
+                        const editingTx = repaymentForm.id ? transactions.find(t => t.id === repaymentForm.id) : null;
+                        const editingTxAmt = editingTx ? Math.abs(editingTx.amount || 0) : 0;
+                        const totalDemand = (targetContact ? (targetContact.totalDemand || 0) : 0) + editingTxAmt;
+                        if (inputAmt > totalDemand) {
+                            showToast(`مبلغ دریافتی نمی‌تواند از کل طلب (${totalDemand.toLocaleString()} تومان) بیشتر باشد`);
+                            return;
+                        }
                     }
                 }
 
@@ -2187,7 +2606,7 @@
             const loanWizardCards = [
                 {
                     id: 'title_contact',
-                    title: 'عنوان وام و طرف حساب',
+                    title: 'عنوان وام و مخاطب',
                     render: () => (
                         <div className="space-y-4">
                             <div>
@@ -2201,42 +2620,13 @@
                                 />
                             </div>
 
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">مخاطب خود را انتخاب کنید</label>
-                                <select 
-                                    value={loanForm.selectedContactId}
-                                    onChange={(e) => {
-                                        const val = e.target.value;
-                                        if (val === 'bank') {
-                                            setLoanForm({...loanForm, selectedContactId: 'bank', contactName: 'بانک یا سازمان'});
-                                        } else {
-                                            const found = contacts.find(c => c.id === Number(val));
-                                            if (found) {
-                                                setLoanForm({...loanForm, selectedContactId: found.id, contactName: `${found.firstName} ${found.lastName}`});
-                                            }
-                                        }
-                                    }}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold focus:outline-none">
-                                    <option value="">مخاطب خود را انتخاب کنید</option>
-                                    <option value="bank">🏦 بانک / سازمان / موسسه</option>
-                                    {contacts.map(c => (
-                                        <option key={c.id} value={c.id}>👤 {c.firstName} {c.lastName} ({c.phone})</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {loanForm.selectedContactId === 'bank' && (
-                                <div>
-                                    <label className="block text-[11px] font-bold text-slate-500 mb-1">نام دقیق بانک یا موسسه</label>
-                                    <input 
-                                        type="text"
-                                        placeholder="مثلاً: بانک ملی، بانک ملت"
-                                        value={loanForm.contactName}
-                                        onChange={(e) => setLoanForm({...loanForm, contactName: e.target.value})}
-                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs focus:outline-none"
-                                    />
-                                </div>
-                            )}
+                            <ContactSelectorCard 
+                                contacts={contacts}
+                                selectedContactId={loanForm.selectedContactId}
+                                onSelect={(c) => setLoanForm(prev => ({ ...prev, selectedContactId: c.id, contactName: `${c.firstName} ${c.lastName}` }))}
+                                wizardType="loan"
+                                wizardMode={wizardMode}
+                            />
                         </div>
                     )
                 },
@@ -2281,15 +2671,21 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500">مبلغ اصل وامی که دریافت کرده‌اید (تومان):</label>
                             <input 
-                                type="number"
-                                placeholder="مثلا: 500000000"
-                                value={loanForm.principalAmount}
-                                onChange={(e) => setLoanForm({...loanForm, principalAmount: e.target.value})}
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="مثلا: ۵۰۰,۰۰۰,۰۰۰"
+                                value={formatWithCommas(loanForm.principalAmount)}
+                                onChange={(e) => setLoanForm({...loanForm, principalAmount: parseRawNumber(e.target.value)})}
                                 className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
                             />
-                            {loanForm.principalAmount > 0 && (
-                                <div className="text-xs text-emerald-600 font-bold text-left ltr">
-                                    {Number(loanForm.principalAmount).toLocaleString()} تومان
+                            {loanForm.principalAmount && Number(loanForm.principalAmount) > 0 && (
+                                <div className="space-y-1.5 mt-2">
+                                    <div className="text-xs text-indigo-600 font-bold text-left ltr">
+                                        {Number(loanForm.principalAmount).toLocaleString()} تومان
+                                    </div>
+                                    <div className="p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40">
+                                        {numToPersianWords(loanForm.principalAmount)}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -2302,15 +2698,21 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500">مجموع کل مبلغ بازپرداخت شامل اصل و کارمزد:</label>
                             <input 
-                                type="number"
-                                placeholder="مثلا: 550000000"
-                                value={loanForm.totalRepayment}
-                                onChange={(e) => setLoanForm({...loanForm, totalRepayment: e.target.value})}
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="مثلا: ۵۵۰,۰۰۰,۰۰۰"
+                                value={formatWithCommas(loanForm.totalRepayment)}
+                                onChange={(e) => setLoanForm({...loanForm, totalRepayment: parseRawNumber(e.target.value)})}
                                 className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
                             />
-                            {loanForm.totalRepayment > 0 && (
-                                <div className="text-xs text-emerald-600 font-bold text-left ltr">
-                                    {Number(loanForm.totalRepayment).toLocaleString()} تومان
+                            {loanForm.totalRepayment && Number(loanForm.totalRepayment) > 0 && (
+                                <div className="space-y-1.5 mt-2">
+                                    <div className="text-xs text-indigo-600 font-bold text-left ltr">
+                                        {Number(loanForm.totalRepayment).toLocaleString()} تومان
+                                    </div>
+                                    <div className="p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40">
+                                        {numToPersianWords(loanForm.totalRepayment)}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -2323,32 +2725,99 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500">مبلغ هر قسط ماهانه (تومان):</label>
                             <input 
-                                type="number"
-                                placeholder="مثلا: 28000000"
-                                value={loanForm.installmentAmount}
-                                onChange={(e) => setLoanForm({...loanForm, installmentAmount: e.target.value})}
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="مثلا: ۲۸,۰۰۰,۰۰۰"
+                                value={formatWithCommas(loanForm.installmentAmount)}
+                                onChange={(e) => setLoanForm({...loanForm, installmentAmount: parseRawNumber(e.target.value)})}
                                 className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
                             />
-                            {loanForm.installmentAmount > 0 && (() => {
+                            {loanForm.installmentAmount && Number(loanForm.installmentAmount) > 0 && (
+                                <div className="p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40 mt-1.5">
+                                    {numToPersianWords(loanForm.installmentAmount)}
+                                </div>
+                            )}
+                            {loanForm.installmentAmount && Number(loanForm.installmentAmount) > 0 && (() => {
                                 const baseAmount = Number(loanForm.totalRepayment) > 0 ? Number(loanForm.totalRepayment) : Number(loanForm.principalAmount);
                                 const instAmt = Number(loanForm.installmentAmount);
                                 if (baseAmount > 0 && instAmt > 0) {
-                                    const numInst = Math.ceil(baseAmount / instAmt);
-                                    const totalCalc = numInst * instAmt;
+                                    const defaultNumInst = Math.ceil(baseAmount / instAmt);
+                                    const displayVal = loanForm.customInstallmentCount !== undefined ? loanForm.customInstallmentCount : defaultNumInst;
+                                    const currentNumInst = displayVal !== '' ? Number(displayVal) : defaultNumInst;
+                                    const totalCalc = currentNumInst * instAmt;
                                     const diff = totalCalc - baseAmount;
 
                                     return (
-                                        <div className="space-y-2 mt-1.5">
-                                            <div className="text-xs text-indigo-600 font-bold text-left ltr">
-                                                {Number(loanForm.installmentAmount).toLocaleString()} تومان در ماه
+                                        <div className="space-y-2 mt-2">
+                                            <div className="p-3 bg-indigo-50 dark:bg-indigo-950/60 rounded-2xl border border-indigo-200 dark:border-indigo-800/60 space-y-2">
+                                                <div className="flex items-center justify-between text-xs font-bold text-indigo-700 dark:text-indigo-300">
+                                                    <span>تعداد کل اقساط:</span>
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setLoanForm(prev => ({ ...prev, customInstallmentCount: String(defaultNumInst) }));
+                                                            showToast('تعداد اقساط مجدداً محاسبه شد');
+                                                        }}
+                                                        title="محاسبه مجدد تعداد اقساط"
+                                                        className="flex items-center space-x-1 space-x-reverse text-[11px] font-bold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-slate-900 px-2.5 py-1 rounded-xl border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-50 active:scale-95 transition-all">
+                                                        <i data-lucide="rotate-cw" className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+                                                        <span>محاسبه مجدد</span>
+                                                    </button>
+                                                </div>
+
+                                                <div className="flex items-center justify-center space-x-3 space-x-reverse pt-1">
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const cur = displayVal !== '' ? Number(displayVal) : defaultNumInst;
+                                                            const newVal = Math.max(1, cur - 1);
+                                                            setLoanForm(prev => ({ ...prev, customInstallmentCount: String(newVal) }));
+                                                        }}
+                                                        className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-xl flex items-center justify-center shadow-2xs hover:bg-indigo-100 active:scale-95 transition-all cursor-pointer">
+                                                        -
+                                                    </button>
+
+                                                    <div className="flex items-center space-x-2 space-x-reverse">
+                                                        <input 
+                                                            type="text" 
+                                                            inputMode="numeric"
+                                                            value={displayVal} 
+                                                            onChange={(e) => {
+                                                                const raw = e.target.value.replace(/\D/g, '');
+                                                                setLoanForm(prev => ({ ...prev, customInstallmentCount: raw }));
+                                                            }}
+                                                            onBlur={() => {
+                                                                if (loanForm.customInstallmentCount === '') {
+                                                                    setLoanForm(prev => ({ ...prev, customInstallmentCount: String(defaultNumInst) }));
+                                                                }
+                                                            }}
+                                                            className="w-20 text-center font-mono bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-600 rounded-xl py-1.5 px-1 text-base font-black text-indigo-700 dark:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                        />
+                                                        <span className="text-xs font-bold text-slate-600 dark:text-slate-300">قسط</span>
+                                                    </div>
+
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const cur = displayVal !== '' ? Number(displayVal) : defaultNumInst;
+                                                            const newVal = cur + 1;
+                                                            setLoanForm(prev => ({ ...prev, customInstallmentCount: String(newVal) }));
+                                                        }}
+                                                        className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-xl flex items-center justify-center shadow-2xs hover:bg-indigo-100 active:scale-95 transition-all cursor-pointer">
+                                                        +
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-between">
-                                                <span>تعداد کل اقساط محاسبه‌شده:</span>
-                                                <span className="text-sm font-black text-indigo-600 dark:text-indigo-400">
-                                                    {numInst} قسط
-                                                </span>
-                                            </div>
-                                            {diff !== 0 && (
+
+                                            {diff === 0 ? (
+                                                <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between">
+                                                    <div className="flex items-center space-x-1.5 space-x-reverse">
+                                                        <i data-lucide="check-circle-2" className="w-4 h-4 text-emerald-600"></i>
+                                                        <span>وضعیت تراز مالی:</span>
+                                                    </div>
+                                                    <span className="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">تراز ok</span>
+                                                </div>
+                                            ) : (
                                                 <div className={`p-2.5 rounded-xl text-xs font-bold border flex items-center justify-between ${
                                                     diff > 0 
                                                         ? 'bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800' 
@@ -2363,11 +2832,7 @@
                                         </div>
                                     );
                                 }
-                                return (
-                                    <div className="text-xs text-indigo-600 font-bold text-left ltr mt-1.5">
-                                        {Number(loanForm.installmentAmount).toLocaleString()} تومان در ماه
-                                    </div>
-                                );
+                                return null;
                             })()}
                         </div>
                     )
@@ -2375,27 +2840,34 @@
                 {
                     id: 'due_date',
                     title: '۵- موعد سررسید هر قسط',
-                    render: () => (
-                        <div className="space-y-2">
-                            <label className="block text-xs text-slate-500">روز سررسید قسط در هر ماه:</label>
-                            <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-2.5 border border-slate-200 dark:border-slate-800">
-                                <div className="text-center font-bold text-indigo-600 dark:text-indigo-400 text-xs mb-2">
-                                    هر ماه، روز {loanForm.dueDayOfMonth} ام
-                                </div>
-                                <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold">
-                                    {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                                        <button 
-                                            key={day}
-                                            type="button"
-                                            onClick={() => setLoanForm({...loanForm, dueDayOfMonth: day})}
-                                            className={`h-7 rounded-lg flex items-center justify-center transition-all ${loanForm.dueDayOfMonth === day ? 'bg-indigo-600 text-white font-black shadow-md scale-105' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}`}>
-                                            {day}
-                                        </button>
-                                    ))}
+                    render: () => {
+                        const activeDueDay = loanForm.dueDayOfMonth || pickerDay;
+                        return (
+                            <div className="space-y-2">
+                                <label className="block text-xs text-slate-500 font-bold">روز سررسید قسط در هر ماه:</label>
+                                <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-2.5 border border-slate-200 dark:border-slate-800">
+                                    <div className="text-center font-bold text-indigo-600 dark:text-indigo-400 text-xs mb-2">
+                                        هر ماه، روز {activeDueDay} ام (پیش‌فرض: روز دریافت وام {pickerDay} ام)
+                                    </div>
+                                    <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold">
+                                        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                                            <button 
+                                                key={day}
+                                                type="button"
+                                                onClick={() => setLoanForm({...loanForm, dueDayOfMonth: day})}
+                                                className={`h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                                                    activeDueDay === day 
+                                                        ? 'bg-indigo-600 text-white font-black shadow-md scale-105' 
+                                                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                                                }`}>
+                                                {day}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )
+                        );
+                    }
                 },
                 {
                     id: 'reminder',
@@ -2477,74 +2949,19 @@
                 }
             ];
 
-            // Contact Selector Card Component for Demand/Debt Wizards
-            const ContactSelectorCard = () => {
-                const searchQ = demandDebtForm.contactSearchQuery.toLowerCase();
-                const filtered = contacts.filter(c => 
-                    `${c.firstName} ${c.lastName}`.toLowerCase().includes(searchQ) || 
-                    (c.phone && c.phone.includes(searchQ))
-                );
-
-                return (
-                    <div className="space-y-3">
-                        <label className="block text-xs text-slate-600 dark:text-slate-300 font-bold">
-                            مخاطب خود را انتخاب کنید:
-                        </label>
-                        
-                        {/* Search Input inside Card */}
-                        <div className="relative">
-                            <i data-lucide="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400"></i>
-                            <input 
-                                type="text"
-                                placeholder="جستجوی مخاطب (نام یا شماره تلفن)..."
-                                value={demandDebtForm.contactSearchQuery}
-                                onChange={(e) => setDemandDebtForm({...demandDebtForm, contactSearchQuery: e.target.value})}
-                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                        </div>
-
-                        {/* Contacts List Box */}
-                        <div className="max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1">
-                            {filtered.length > 0 ? (
-                                filtered.map(c => {
-                                    const isSelected = Number(demandDebtForm.selectedContactId) === c.id;
-                                    return (
-                                        <div 
-                                            key={c.id}
-                                            onClick={() => setDemandDebtForm({...demandDebtForm, selectedContactId: c.id})}
-                                            className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                                                isSelected 
-                                                    ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 dark:border-indigo-600 font-bold text-indigo-700 dark:text-indigo-300' 
-                                                    : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300'
-                                            }`}>
-                                            <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                <div className={`w-8 h-8 rounded-full ${getAvatarColor(c.id, c.firstName + c.lastName)} text-white font-bold text-xs flex items-center justify-center`}>
-                                                    {c.firstName.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <div className="text-xs">{c.firstName} {c.lastName}</div>
-                                                    <div className="text-[10px] text-slate-400">{c.phone}</div>
-                                                </div>
-                                            </div>
-                                            {isSelected && <i data-lucide="check-circle-2" className="w-5 h-5 text-indigo-600 dark:text-indigo-400"></i>}
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <div className="text-center py-6 text-xs text-slate-400">
-                                    مخاطبی یافت نشد.
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                );
-            };
-
             const demandWizardCards = [
                 {
                     id: 'demand_contact',
                     title: 'کارت اول: انتخاب مخاطب',
-                    render: () => <ContactSelectorCard />
+                    render: () => (
+                        <ContactSelectorCard 
+                            contacts={contacts}
+                            selectedContactId={demandDebtForm.selectedContactId}
+                            onSelect={(c) => setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }))}
+                            wizardType="demand"
+                            wizardMode={wizardMode}
+                        />
+                    )
                 },
                 {
                     id: 'demand_amount',
@@ -2553,15 +2970,21 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ طلب (تومان):</label>
                             <input 
-                                type="number"
-                                placeholder="مثلاً: 5000000"
-                                value={demandDebtForm.amount}
-                                onChange={(e) => setDemandDebtForm({...demandDebtForm, amount: e.target.value})}
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="مثلاً: ۵,۰۰۰,۰۰۰"
+                                value={formatWithCommas(demandDebtForm.amount)}
+                                onChange={(e) => setDemandDebtForm({...demandDebtForm, amount: parseRawNumber(e.target.value)})}
                                 className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
                             />
-                            {demandDebtForm.amount > 0 && (
-                                <div className="text-xs text-emerald-600 font-bold text-left ltr">
-                                    {Number(demandDebtForm.amount).toLocaleString()} تومان
+                            {demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && (
+                                <div className="space-y-1.5 mt-2">
+                                    <div className="text-xs text-emerald-600 font-bold text-left ltr">
+                                        {Number(demandDebtForm.amount).toLocaleString()} تومان
+                                    </div>
+                                    <div className="p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40">
+                                        {numToPersianWords(demandDebtForm.amount)}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -2621,7 +3044,15 @@
                 {
                     id: 'debt_contact',
                     title: 'کارت اول: انتخاب مخاطب',
-                    render: () => <ContactSelectorCard />
+                    render: () => (
+                        <ContactSelectorCard 
+                            contacts={contacts}
+                            selectedContactId={demandDebtForm.selectedContactId}
+                            onSelect={(c) => setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }))}
+                            wizardType="debt"
+                            wizardMode={wizardMode}
+                        />
+                    )
                 },
                 {
                     id: 'debt_amount',
@@ -2630,15 +3061,21 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ قرض (تومان):</label>
                             <input 
-                                type="number"
-                                placeholder="مثلاً: 2000000"
-                                value={demandDebtForm.amount}
-                                onChange={(e) => setDemandDebtForm({...demandDebtForm, amount: e.target.value})}
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="مثلاً: ۲,۰۰۰,۰۰۰"
+                                value={formatWithCommas(demandDebtForm.amount)}
+                                onChange={(e) => setDemandDebtForm({...demandDebtForm, amount: parseRawNumber(e.target.value)})}
                                 className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
                             />
-                            {demandDebtForm.amount > 0 && (
-                                <div className="text-xs text-rose-500 font-bold text-left ltr">
-                                    {Number(demandDebtForm.amount).toLocaleString()} تومان
+                            {demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && (
+                                <div className="space-y-1.5 mt-2">
+                                    <div className="text-xs text-rose-500 font-bold text-left ltr">
+                                        {Number(demandDebtForm.amount).toLocaleString()} تومان
+                                    </div>
+                                    <div className="p-2.5 bg-rose-50/80 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40">
+                                        {numToPersianWords(demandDebtForm.amount)}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -2698,43 +3135,16 @@
                 {
                     id: 'inst_select_loan',
                     title: 'کارت اول: انتخاب وام',
-                    render: () => {
-                        const contactLoans = (selectedContact && installmentForm.selectedLoanId) 
-                            ? loans.filter(l => l.contactId === selectedContact.id) 
-                            : loans;
-                        return (
-                            <div className="space-y-3">
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">انتخاب وام جهت پرداخت قسط:</label>
-                                {contactLoans.length > 0 ? (
-                                    <select 
-                                        value={installmentForm.selectedLoanId}
-                                        onChange={(e) => {
-                                            const lId = Number(e.target.value);
-                                            const foundL = loans.find(l => l.id === lId);
-                                            setInstallmentForm({
-                                                ...installmentForm,
-                                                selectedLoanId: lId,
-                                                amount: foundL ? foundL.installmentAmount : ''
-                                            });
-                                        }}
-                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-bold focus:outline-none">
-                                        <option value="">-- لطفاً یک وام انتخاب کنید --</option>
-                                        {contactLoans.map(l => {
-                                            const contact = contacts.find(c => c.id === l.contactId);
-                                            const cName = contact ? `${contact.firstName} ${contact.lastName}` : (l.contactName || 'بانک/سازمان');
-                                            return (
-                                                <option key={l.id} value={l.id}>📌 {l.title} ({cName}) - {l.installmentAmount.toLocaleString()} تومان</option>
-                                            );
-                                        })}
-                                    </select>
-                                ) : (
-                                    <div className="text-xs text-red-500 p-3 bg-red-50 rounded-xl font-bold">
-                                        هیچ وامی ثبت نشده است.
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    }
+                    render: () => (
+                        <LoanSelectorCard 
+                            loans={loans}
+                            transactions={transactions}
+                            contacts={contacts}
+                            selectedLoanId={installmentForm.selectedLoanId}
+                            onSelectLoan={(l) => setInstallmentForm(prev => ({ ...prev, selectedLoanId: l.id, amount: l.installmentAmount }))}
+                            wizardMode={wizardMode}
+                        />
+                    )
                 },
                 {
                     id: 'inst_date',
@@ -2771,22 +3181,58 @@
                 {
                     id: 'inst_amount',
                     title: 'کارت سوم: مبلغ پرداخت',
-                    render: () => (
-                        <div className="space-y-3">
-                            <label className="block text-xs text-slate-500 font-bold">مبلغ پرداخت قسط (بارگذاری شده از وام - قابل ویرایش):</label>
-                            <input 
-                                type="number"
-                                value={installmentForm.amount}
-                                onChange={(e) => setInstallmentForm({...installmentForm, amount: e.target.value})}
-                                className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
-                            />
-                            {installmentForm.amount > 0 && (
-                                <div className="text-xs text-indigo-600 font-bold text-left ltr">
-                                    {Number(installmentForm.amount).toLocaleString()} تومان
-                                </div>
-                            )}
-                        </div>
-                    )
+                    render: () => {
+                        const targetLoan = loans.find(l => l.id === Number(installmentForm.selectedLoanId));
+                        const loanPaid = targetLoan 
+                            ? transactions.filter(t => t.loanId === targetLoan.id && t.type === 'repayment').reduce((sum, t) => sum + Math.abs(t.amount || 0), 0)
+                            : 0;
+                        const loanTotal = targetLoan ? ((targetLoan.totalRepayment > 0) ? targetLoan.totalRepayment : targetLoan.principalAmount) : 0;
+                        const loanRemaining = Math.max(0, loanTotal - loanPaid);
+                        const inputAmt = Number(installmentForm.amount) || 0;
+                        const isOver = targetLoan && inputAmt > loanRemaining;
+
+                        return (
+                            <div className="space-y-3">
+                                <label className="block text-xs text-slate-500 font-bold">مبلغ پرداخت قسط (بارگذاری شده از وام - قابل ویرایش):</label>
+                                <input 
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={formatWithCommas(installmentForm.amount)}
+                                    onChange={(e) => setInstallmentForm({...installmentForm, amount: parseRawNumber(e.target.value)})}
+                                    className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none ${
+                                        isOver ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-200 dark:border-slate-700'
+                                    }`}
+                                />
+                                {inputAmt > 0 && (
+                                    <div className="space-y-1.5 mt-2">
+                                        <div className="text-xs text-indigo-600 font-bold text-left ltr">
+                                            {inputAmt.toLocaleString()} تومان
+                                        </div>
+                                        <div className="p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40">
+                                            {numToPersianWords(installmentForm.amount)}
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {targetLoan && (
+                                    <div className="p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700">
+                                        <div className="flex justify-between items-center text-xs">
+                                            <span className="text-slate-500 dark:text-slate-400 font-medium">کل مانده پرداختی وام:</span>
+                                            <span className="font-extrabold text-slate-800 dark:text-slate-200 font-mono">
+                                                {loanRemaining.toLocaleString()} تومان
+                                            </span>
+                                        </div>
+                                        {isOver && (
+                                            <div className="p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse">
+                                                <i data-lucide="alert-circle" className="w-4 h-4 shrink-0"></i>
+                                                <span>مبلغ وارد شده بیشتر از مانده کل وام ({loanRemaining.toLocaleString()} تومان) است!</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    }
                 },
                 {
                     id: 'inst_notes',
@@ -2810,30 +3256,70 @@
                 {
                     id: 'debt_repay_contact',
                     title: '۱- انتخاب مخاطب',
-                    render: () => <ContactSelectorCard />
+                    render: () => (
+                        <ContactSelectorCard 
+                            contacts={contacts}
+                            selectedContactId={demandDebtForm.selectedContactId}
+                            onSelect={(c) => setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }))}
+                            wizardType="debt_repayment"
+                            wizardMode={wizardMode}
+                        />
+                    )
                 },
                 {
                     id: 'debt_repay_amount',
                     title: '۲- مبلغ بازپرداخت بدهی',
-                    render: () => (
-                        <div className="space-y-3">
-                            <label className="block text-xs text-slate-500 font-bold">
-                                مبلغ پرداختی جهت کسر از بدهی به {selectedContact ? `${selectedContact.firstName} ${selectedContact.lastName}` : 'مخاطب'} (تومان):
-                            </label>
-                            <input 
-                                type="number"
-                                placeholder="مثلاً: 500000"
-                                value={repaymentForm.amount}
-                                onChange={(e) => setRepaymentForm({...repaymentForm, amount: e.target.value})}
-                                className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
-                            />
-                            {repaymentForm.amount > 0 && (
-                                <div className="text-xs text-rose-500 font-bold text-left ltr">
-                                    {Number(repaymentForm.amount).toLocaleString()} تومان
+                    render: () => {
+                        const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
+                        const editingTx = repaymentForm.id ? transactions.find(t => t.id === repaymentForm.id) : null;
+                        const editingTxAmt = editingTx ? Math.abs(editingTx.amount || 0) : 0;
+                        const totalDebt = (targetContact ? (targetContact.totalDebt || 0) : 0) + editingTxAmt;
+                        const inputAmt = Number(repaymentForm.amount) || 0;
+                        const isOver = inputAmt > totalDebt;
+
+                        return (
+                            <div className="space-y-3">
+                                <label className="block text-xs text-slate-500 font-bold">
+                                    مبلغ پرداختی جهت کسر از بدهی به {targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب'} (تومان):
+                                </label>
+                                <input 
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="مثلاً: ۵۰۰,۰۰۰"
+                                    value={formatWithCommas(repaymentForm.amount)}
+                                    onChange={(e) => setRepaymentForm({...repaymentForm, amount: parseRawNumber(e.target.value)})}
+                                    className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none ${
+                                        isOver ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-200 dark:border-slate-700'
+                                    }`}
+                                />
+                                {inputAmt > 0 && (
+                                    <div className="space-y-1.5 mt-2">
+                                        <div className="text-xs text-rose-500 font-bold text-left ltr">
+                                            {inputAmt.toLocaleString()} تومان
+                                        </div>
+                                        <div className="p-2.5 bg-rose-50/80 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40">
+                                            {numToPersianWords(repaymentForm.amount)}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700">
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-slate-500 dark:text-slate-400 font-medium">کل بدهی به این مخاطب:</span>
+                                        <span className="font-extrabold text-slate-800 dark:text-slate-200 font-mono">
+                                            {totalDebt.toLocaleString()} تومان
+                                        </span>
+                                    </div>
+                                    {isOver && (
+                                        <div className="p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse">
+                                            <i data-lucide="alert-circle" className="w-4 h-4 shrink-0"></i>
+                                            <span>مبلغ وارد شده بیشتر از کل بدهی ({totalDebt.toLocaleString()} تومان) است!</span>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    )
+                            </div>
+                        );
+                    }
                 },
                 {
                     id: 'debt_repay_date',
@@ -2889,30 +3375,70 @@
                 {
                     id: 'demand_repay_contact',
                     title: '۱- انتخاب مخاطب',
-                    render: () => <ContactSelectorCard />
+                    render: () => (
+                        <ContactSelectorCard 
+                            contacts={contacts}
+                            selectedContactId={demandDebtForm.selectedContactId}
+                            onSelect={(c) => setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }))}
+                            wizardType="demand_repayment"
+                            wizardMode={wizardMode}
+                        />
+                    )
                 },
                 {
                     id: 'demand_repay_amount',
                     title: '۲- مبلغ دریافت / تسویه طلب',
-                    render: () => (
-                        <div className="space-y-3">
-                            <label className="block text-xs text-slate-500 font-bold">
-                                مبلغ دریافتی جهت کسر از طلب از {selectedContact ? `${selectedContact.firstName} ${selectedContact.lastName}` : 'مخاطب'} (تومان):
-                            </label>
-                            <input 
-                                type="number"
-                                placeholder="مثلاً: 1000000"
-                                value={repaymentForm.amount}
-                                onChange={(e) => setRepaymentForm({...repaymentForm, amount: e.target.value})}
-                                className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
-                            />
-                            {repaymentForm.amount > 0 && (
-                                <div className="text-xs text-emerald-600 font-bold text-left ltr">
-                                    {Number(repaymentForm.amount).toLocaleString()} تومان
+                    render: () => {
+                        const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
+                        const editingTx = repaymentForm.id ? transactions.find(t => t.id === repaymentForm.id) : null;
+                        const editingTxAmt = editingTx ? Math.abs(editingTx.amount || 0) : 0;
+                        const totalDemand = (targetContact ? (targetContact.totalDemand || 0) : 0) + editingTxAmt;
+                        const inputAmt = Number(repaymentForm.amount) || 0;
+                        const isOver = inputAmt > totalDemand;
+
+                        return (
+                            <div className="space-y-3">
+                                <label className="block text-xs text-slate-500 font-bold">
+                                    مبلغ دریافتی جهت کسر از طلب از {targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب'} (تومان):
+                                </label>
+                                <input 
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="مثلاً: ۱,۰۰۰,۰۰۰"
+                                    value={formatWithCommas(repaymentForm.amount)}
+                                    onChange={(e) => setRepaymentForm({...repaymentForm, amount: parseRawNumber(e.target.value)})}
+                                    className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none ${
+                                        isOver ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-200 dark:border-slate-700'
+                                    }`}
+                                />
+                                {inputAmt > 0 && (
+                                    <div className="space-y-1.5 mt-2">
+                                        <div className="text-xs text-emerald-600 font-bold text-left ltr">
+                                            {inputAmt.toLocaleString()} تومان
+                                        </div>
+                                        <div className="p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40">
+                                            {numToPersianWords(repaymentForm.amount)}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700">
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-slate-500 dark:text-slate-400 font-medium font-sans">کل طلب از این مخاطب:</span>
+                                        <span className="font-extrabold text-slate-800 dark:text-slate-200 font-mono">
+                                            {totalDemand.toLocaleString()} تومان
+                                        </span>
+                                    </div>
+                                    {isOver && (
+                                        <div className="p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse">
+                                            <i data-lucide="alert-circle" className="w-4 h-4 shrink-0"></i>
+                                            <span>مبلغ وارد شده بیشتر از کل طلب ({totalDemand.toLocaleString()} تومان) است!</span>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    )
+                            </div>
+                        );
+                    }
                 },
                 {
                     id: 'demand_repay_date',
@@ -3000,7 +3526,7 @@
 
                                     <div className="text-center">
                                         <h1 className="text-base font-bold text-slate-900 dark:text-white">Amir Finance</h1>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">سلام امیر 👋</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">سلام وقت به خیر 👋</p>
                                         <p className="text-[11px] text-slate-400 font-medium mt-0.5">
                                             امروز: {getDeviceJalaliDate().day} {getDeviceJalaliDate().month} {getDeviceJalaliDate().year}
                                         </p>
@@ -3886,9 +4412,14 @@
                                             <div className="text-[10px] text-slate-400 mt-0.5">{selectedLoan.phone}</div>
                                         </div>
                                     </div>
-                                    <span className="bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold px-3 py-1 rounded-xl">
-                                        پرونده فعال
-                                    </span>
+                                    {(() => {
+                                        const isClosed = selectedLoan.remainingAmount <= 0 || getLoanNextDueInfo(selectedLoan, transactions).isCompleted;
+                                        return (
+                                            <span className={`text-xs font-bold px-3 py-1 rounded-xl ${isClosed ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40' : 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400'}`}>
+                                                {isClosed ? 'بسته شده (تسویه‌شده)' : 'پرونده فعال'}
+                                            </span>
+                                        );
+                                    })()}
                                 </div>
 
                                 {(() => {
@@ -3976,12 +4507,25 @@
                                 <div className="space-y-2 pt-1">
                                     <div className="flex justify-between items-center">
                                         <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">اقساط ثبت و پرداخت‌شده</h4>
-                                        <button 
-                                            onClick={() => openStackWizard('installment', 'add', selectedLoan)} 
-                                            className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold flex items-center space-x-1 space-x-reverse hover:underline">
-                                            <i data-lucide="plus-circle" className="w-3.5 h-3.5"></i>
-                                            <span>ثبت قسط جدید</span>
-                                        </button>
+                                        {(() => {
+                                            const isClosed = selectedLoan.remainingAmount <= 0 || getLoanNextDueInfo(selectedLoan, transactions).isCompleted;
+                                            if (isClosed) {
+                                                return (
+                                                    <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center space-x-1 space-x-reverse bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/40">
+                                                        <i data-lucide="check-circle-2" className="w-3.5 h-3.5"></i>
+                                                        <span>وام تسویه‌شده و بسته است</span>
+                                                    </span>
+                                                );
+                                            }
+                                            return (
+                                                <button 
+                                                    onClick={() => openStackWizard('installment', 'add', selectedLoan)} 
+                                                    className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold flex items-center space-x-1 space-x-reverse hover:underline">
+                                                    <i data-lucide="plus-circle" className="w-3.5 h-3.5"></i>
+                                                    <span>ثبت قسط جدید</span>
+                                                </button>
+                                            );
+                                        })()}
                                     </div>
 
                                     {(() => {
@@ -4015,7 +4559,7 @@
                                     onClick={() => setShowExportModal(true)}
                                     className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-3 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 space-x-reverse shadow-sm active:scale-95 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50">
                                     <i data-lucide="file-output" className="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-                                    <span>خروجی پرونده خالی</span>
+                                    <span>خروجی پرونده وام</span>
                                 </button>
                             </div>
                         )}
