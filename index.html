@@ -1123,75 +1123,145 @@
             const startYRef = useRef(0);
             const isEdgeSwipeRef = useRef(false);
             const containerRef = useRef(null);
+            const containerWidthRef = useRef(360);
 
-            const handleTouchStart = (e) => {
+            const handleStart = (clientX, clientY) => {
                 if (!enabled || !onBack) return;
-                const touch = e.touches ? e.touches[0] : e;
-                const rect = containerRef.current ? containerRef.current.getBoundingClientRect() : { left: 0 };
-                const relativeX = touch.clientX - rect.left;
+                const container = containerRef.current;
+                if (!container) return;
+                
+                const rect = container.getBoundingClientRect();
+                containerWidthRef.current = rect.width || window.innerWidth || 360;
+                const relativeX = clientX - rect.left;
 
-                if (relativeX <= 38 && touch.clientX <= 45) {
-                    startXRef.current = touch.clientX;
-                    startYRef.current = touch.clientY;
+                // Trigger if gesture starts within 64px from left edge of container
+                if (relativeX >= -10 && relativeX <= 64) {
+                    startXRef.current = clientX;
+                    startYRef.current = clientY;
                     isEdgeSwipeRef.current = true;
                     setIsDragging(true);
                 }
             };
 
-            const handleTouchMove = (e) => {
+            const handleMove = (clientX, clientY, e) => {
                 if (!isEdgeSwipeRef.current || !enabled) return;
-                const touch = e.touches ? e.touches[0] : e;
-                const deltaX = touch.clientX - startXRef.current;
-                const deltaY = Math.abs(touch.clientY - startYRef.current);
 
+                const deltaX = clientX - startXRef.current;
+                const deltaY = Math.abs(clientY - startYRef.current);
+
+                // If primary motion is horizontal to the right
                 if (deltaX > 0 && deltaX > deltaY) {
                     setTranslateX(deltaX);
-                    if (e.cancelable) e.preventDefault();
+                    if (e && e.cancelable) {
+                        e.preventDefault();
+                    }
                 } else if (deltaX <= 0) {
                     setTranslateX(0);
                 }
             };
 
-            const handleTouchEnd = () => {
+            const handleEnd = () => {
                 if (!isEdgeSwipeRef.current || !enabled) return;
                 isEdgeSwipeRef.current = false;
                 setIsDragging(false);
 
-                const width = containerRef.current ? containerRef.current.offsetWidth : (window.innerWidth || 360);
-                const threshold = width * 0.28;
+                const width = containerWidthRef.current;
+                const threshold = Math.min(100, width * 0.25);
 
                 if (translateX >= threshold) {
                     setTranslateX(width);
                     setTimeout(() => {
                         setTranslateX(0);
                         if (onBack) onBack();
-                    }, 180);
+                    }, 220);
                 } else {
                     setTranslateX(0);
                 }
             };
 
-            const progress = Math.min(1, translateX / (window.innerWidth || 360));
+            useEffect(() => {
+                const onWindowPointerMove = (e) => {
+                    if (isEdgeSwipeRef.current) {
+                        handleMove(e.clientX, e.clientY, e);
+                    }
+                };
+
+                const onWindowPointerUp = () => {
+                    if (isEdgeSwipeRef.current) {
+                        handleEnd();
+                    }
+                };
+
+                const onWindowTouchMove = (e) => {
+                    if (isEdgeSwipeRef.current && e.touches && e.touches[0]) {
+                        handleMove(e.touches[0].clientX, e.touches[0].clientY, e);
+                    }
+                };
+
+                const onWindowTouchEnd = () => {
+                    if (isEdgeSwipeRef.current) {
+                        handleEnd();
+                    }
+                };
+
+                window.addEventListener('pointermove', onWindowPointerMove, { passive: false });
+                window.addEventListener('pointerup', onWindowPointerUp);
+                window.addEventListener('pointercancel', onWindowPointerUp);
+
+                window.addEventListener('touchmove', onWindowTouchMove, { passive: false });
+                window.addEventListener('touchend', onWindowTouchEnd);
+                window.addEventListener('touchcancel', onWindowTouchEnd);
+
+                return () => {
+                    window.removeEventListener('pointermove', onWindowPointerMove);
+                    window.removeEventListener('pointerup', onWindowPointerUp);
+                    window.removeEventListener('pointercancel', onWindowPointerUp);
+
+                    window.removeEventListener('touchmove', onWindowTouchMove);
+                    window.removeEventListener('touchend', onWindowTouchEnd);
+                    window.removeEventListener('touchcancel', onWindowTouchEnd);
+                };
+            }, [translateX, enabled, onBack]);
+
+            const onPointerDown = (e) => {
+                handleStart(e.clientX, e.clientY);
+            };
+
+            const onTouchStart = (e) => {
+                if (e.touches && e.touches[0]) {
+                    handleStart(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            };
+
+            const progress = containerWidthRef.current ? Math.min(1, translateX / containerWidthRef.current) : 0;
 
             return (
                 <div 
                     ref={containerRef}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                    className={`relative w-full h-full ${className}`}
+                    onPointerDown={onPointerDown}
+                    onTouchStart={onTouchStart}
+                    className={`relative w-full h-full touch-pan-y ${className}`}
                     style={{
-                        transform: translateX > 0 ? `translateX(${translateX}px)` : 'none',
-                        transition: isDragging ? 'none' : 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+                        transform: translateX > 0 ? `translate3d(${translateX}px, 0, 0)` : 'none',
+                        transition: isDragging ? 'none' : 'transform 260ms cubic-bezier(0.16, 1, 0.3, 1)',
+                        boxShadow: translateX > 0 ? '-12px 0 32px rgba(0, 0, 0, 0.2)' : 'none',
                         willChange: 'transform'
                     }}
                 >
+                    {/* Left edge grab target strip to ensure touch/pointer events near left edge are easily caught */}
+                    <div 
+                        className="absolute top-0 bottom-0 left-0 w-12 z-30 select-none cursor-grab active:cursor-grabbing"
+                        style={{ touchAction: 'pan-y' }}
+                    />
+
+                    {/* Dark backdrop shadow indicator underneath sliding view */}
                     {translateX > 0 && (
                         <div 
-                            className="fixed inset-0 bg-black/25 pointer-events-none z-[-1] transition-opacity"
-                            style={{ opacity: 1 - progress }}
+                            className="fixed inset-0 bg-slate-950/40 pointer-events-none z-[-1] transition-opacity duration-200"
+                            style={{ opacity: progress * 0.5 }}
                         />
                     )}
+
                     {children}
                 </div>
             );
