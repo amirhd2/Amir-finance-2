@@ -1270,29 +1270,174 @@
         function IOSWheelPicker({ items = [], selectedValue, onChange, label }) {
             const containerRef = useRef(null);
             const [scrollTop, setScrollTop] = useState(0);
+            const isInteractingRef = useRef(false);
+            const animFrameRef = useRef(null);
+            const scrollTimeoutRef = useRef(null);
+
+            // Physics dragging refs
+            const startYRef = useRef(0);
+            const startScrollTopRef = useRef(0);
+            const lastYRef = useRef(0);
+            const lastTimeRef = useRef(0);
+            const velocityRef = useRef(0);
 
             const itemHeight = 40;
 
+            // Default selection safety check
             useEffect(() => {
-                if (containerRef.current && items && items.length > 0) {
-                    const idx = items.indexOf(selectedValue);
-                    if (idx !== -1) {
-                        const targetScroll = idx * itemHeight;
-                        if (Math.abs(containerRef.current.scrollTop - targetScroll) > 2) {
-                            containerRef.current.scrollTop = targetScroll;
-                            setScrollTop(targetScroll);
-                        }
+                if (items && items.length > 0) {
+                    if (selectedValue === undefined || selectedValue === null || items.indexOf(selectedValue) === -1) {
+                        const defaultVal = items[0];
+                        if (onChange) onChange(defaultVal);
+                    }
+                }
+            }, [items, selectedValue]);
+
+            // Programmatically align scroll position when selectedValue changes externally
+            useEffect(() => {
+                if (!isInteractingRef.current && containerRef.current && items && items.length > 0) {
+                    let idx = items.indexOf(selectedValue);
+                    if (idx === -1) idx = 0;
+                    const targetScroll = idx * itemHeight;
+                    if (Math.abs(containerRef.current.scrollTop - targetScroll) > 1.5) {
+                        containerRef.current.scrollTop = targetScroll;
+                        setScrollTop(targetScroll);
                     }
                 }
             }, [selectedValue, items]);
+
+            // Snap to nearest item and notify onChange
+            const snapToNearest = (currentPos) => {
+                if (!containerRef.current || !items || items.length === 0) return;
+                const maxScroll = (items.length - 1) * itemHeight;
+                const clamped = Math.max(0, Math.min(currentPos, maxScroll));
+                const index = Math.round(clamped / itemHeight);
+                const targetScroll = index * itemHeight;
+
+                if (containerRef.current) {
+                    containerRef.current.scrollTo({
+                        top: targetScroll,
+                        behavior: 'smooth'
+                    });
+                    setScrollTop(targetScroll);
+                }
+
+                if (items[index] !== undefined && items[index] !== selectedValue) {
+                    if (onChange) onChange(items[index]);
+                }
+            };
+
+            // Inertia simulation for touch/mouse release
+            const startInertia = (initialVelocity) => {
+                if (!containerRef.current) return;
+                if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+
+                let v = initialVelocity;
+                const friction = 0.93; // Smooth iOS momentum decay
+
+                const step = () => {
+                    if (!containerRef.current) {
+                        isInteractingRef.current = false;
+                        return;
+                    }
+
+                    v *= friction;
+
+                    if (Math.abs(v) < 0.4) {
+                        isInteractingRef.current = false;
+                        snapToNearest(containerRef.current.scrollTop);
+                        return;
+                    }
+
+                    let nextScroll = containerRef.current.scrollTop - v;
+                    const maxScroll = (items.length - 1) * itemHeight;
+
+                    if (nextScroll < 0) {
+                        nextScroll = 0;
+                        v = 0;
+                    } else if (nextScroll > maxScroll) {
+                        nextScroll = maxScroll;
+                        v = 0;
+                    }
+
+                    containerRef.current.scrollTop = nextScroll;
+                    setScrollTop(nextScroll);
+
+                    animFrameRef.current = requestAnimationFrame(step);
+                };
+
+                animFrameRef.current = requestAnimationFrame(step);
+            };
+
+            // Touch/Mouse event handlers
+            const handleStart = (e) => {
+                if (animFrameRef.current) {
+                    cancelAnimationFrame(animFrameRef.current);
+                    animFrameRef.current = null;
+                }
+                isInteractingRef.current = true;
+                const pageY = e.touches ? e.touches[0].pageY : e.pageY;
+                startYRef.current = pageY;
+                lastYRef.current = pageY;
+                lastTimeRef.current = performance.now();
+                startScrollTopRef.current = containerRef.current ? containerRef.current.scrollTop : 0;
+                velocityRef.current = 0;
+            };
+
+            const handleMove = (e) => {
+                if (!isInteractingRef.current || !containerRef.current) return;
+                const pageY = e.touches ? e.touches[0].pageY : e.pageY;
+                const now = performance.now();
+                const deltaY = pageY - startYRef.current;
+                const stepDeltaY = pageY - lastYRef.current;
+                const dt = now - lastTimeRef.current;
+
+                if (dt > 0) {
+                    const currentVelocity = (stepDeltaY / dt) * 16;
+                    velocityRef.current = velocityRef.current * 0.3 + currentVelocity * 0.7;
+                }
+
+                lastYRef.current = pageY;
+                lastTimeRef.current = now;
+
+                const newScroll = startScrollTopRef.current - deltaY;
+                containerRef.current.scrollTop = newScroll;
+                setScrollTop(newScroll);
+            };
+
+            const handleEnd = () => {
+                if (!isInteractingRef.current) return;
+
+                const v = velocityRef.current;
+                if (Math.abs(v) > 1.2) {
+                    startInertia(v);
+                } else if (containerRef.current) {
+                    isInteractingRef.current = false;
+                    snapToNearest(containerRef.current.scrollTop);
+                } else {
+                    isInteractingRef.current = false;
+                }
+            };
 
             const handleScroll = (e) => {
                 const currentScroll = e.target.scrollTop;
                 setScrollTop(currentScroll);
 
+                // Calculate active item continuously for responsive feedback
                 const index = Math.round(currentScroll / itemHeight);
-                if (items[index] !== undefined && items[index] !== selectedValue) {
-                    onChange(items[index]);
+                if (items[index] !== undefined && items[index] !== selectedValue && !isInteractingRef.current) {
+                    if (onChange) onChange(items[index]);
+                }
+
+                // Debounce snap for trackpad / wheel scroll
+                if (!isInteractingRef.current) {
+                    clearTimeout(scrollTimeoutRef.current);
+                    scrollTimeoutRef.current = setTimeout(() => {
+                        const finalIdx = Math.round(currentScroll / itemHeight);
+                        if (items[finalIdx] !== undefined && items[finalIdx] !== selectedValue) {
+                            if (onChange) onChange(items[finalIdx]);
+                        }
+                    }, 80);
                 }
             };
 
@@ -1300,22 +1445,29 @@
                 <div className="flex flex-col items-center flex-1 min-w-0 select-none">
                     {label && <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">{label}</span>}
                     <div className="relative w-full h-[200px] overflow-hidden rounded-2xl bg-slate-50/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-2xs">
-                        {/* iOS Selection Highlight Bar */}
+                        {/* iOS Center Selection Highlight Bar */}
                         <div className="ios-wheel-highlight"></div>
 
                         {/* Top and Bottom Cylindrical Lens Fade Gradients */}
-                        <div className="absolute inset-x-0 top-0 h-[65px] bg-gradient-to-b from-slate-100 dark:from-slate-900 via-slate-100/80 dark:via-slate-900/80 to-transparent pointer-events-none z-20" />
-                        <div className="absolute inset-x-0 bottom-0 h-[65px] bg-gradient-to-t from-slate-100 dark:from-slate-900 via-slate-100/80 dark:via-slate-900/80 to-transparent pointer-events-none z-20" />
+                        <div className="absolute inset-x-0 top-0 h-[80px] bg-gradient-to-b from-slate-100 dark:from-slate-900 via-slate-100/75 dark:via-slate-900/75 to-transparent pointer-events-none z-20" />
+                        <div className="absolute inset-x-0 bottom-0 h-[80px] bg-gradient-to-t from-slate-100 dark:from-slate-900 via-slate-100/75 dark:via-slate-900/75 to-transparent pointer-events-none z-20" />
 
-                        {/* Scroll Container with 3D Perspective */}
+                        {/* Scroll Container */}
                         <div 
                             ref={containerRef}
                             onScroll={handleScroll}
-                            className="ios-wheel-container w-full h-full overflow-y-auto overflow-x-hidden relative"
+                            onTouchStart={handleStart}
+                            onTouchMove={handleMove}
+                            onTouchEnd={handleEnd}
+                            onMouseDown={handleStart}
+                            onMouseMove={handleMove}
+                            onMouseUp={handleEnd}
+                            onMouseLeave={handleEnd}
+                            className="ios-wheel-container w-full h-full overflow-y-auto overflow-x-hidden relative cursor-grab active:cursor-grabbing hide-scrollbar"
                             style={{
-                                perspective: '320px',
+                                perspective: '350px',
                                 perspectiveOrigin: '50% 50%',
-                                touchAction: 'pan-y',
+                                touchAction: 'none',
                                 WebkitOverflowScrolling: 'touch'
                             }}
                         >
@@ -1326,33 +1478,35 @@
                                 const offset = (idx * itemHeight - scrollTop) / itemHeight;
                                 const absOffset = Math.abs(offset);
 
-                                // 3D Cylindrical Perspective Math
-                                const rotateX = Math.max(-65, Math.min(65, offset * -22));
-                                const scale = Math.max(0.72, 1 - absOffset * 0.12);
-                                const opacity = Math.max(0.2, 1 - absOffset * 0.38);
-                                const isSelected = item === selectedValue;
+                                // 3D Cylindrical Perspective Math for 5 rows
+                                const rotateX = Math.max(-60, Math.min(60, offset * -25));
+                                const scale = Math.max(0.7, 1 - absOffset * 0.12);
+
+                                let opacity = 0;
+                                if (absOffset <= 0.5) opacity = 1;
+                                else if (absOffset <= 1.5) opacity = 0.55;
+                                else if (absOffset <= 2.5) opacity = 0.22;
+                                else opacity = 0.05;
+
+                                const isSelected = item === selectedValue || Math.round(scrollTop / itemHeight) === idx;
 
                                 return (
                                     <div 
                                         key={idx}
-                                        onClick={() => {
-                                            onChange(item);
-                                            if (containerRef.current) {
-                                                containerRef.current.scrollTo({
-                                                    top: idx * itemHeight,
-                                                    behavior: 'smooth'
-                                                });
-                                            }
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            isInteractingRef.current = false;
+                                            snapToNearest(idx * itemHeight);
                                         }}
-                                        className="ios-wheel-item flex items-center justify-center w-full h-[40px] cursor-pointer transition-transform duration-75 ease-out select-none"
+                                        className="ios-wheel-item flex items-center justify-center w-full h-[40px] cursor-pointer select-none"
                                         style={{
-                                            scrollSnapAlign: 'center',
                                             transform: `rotateX(${rotateX}deg) scale(${scale})`,
                                             opacity: opacity,
-                                            transformStyle: 'preserve-3d'
+                                            transformStyle: 'preserve-3d',
+                                            willChange: 'transform, opacity'
                                         }}
                                     >
-                                        <span className={`font-mono text-center font-bold tracking-tight ${
+                                        <span className={`font-mono text-center transition-all duration-150 ${
                                             isSelected 
                                                 ? 'text-indigo-600 dark:text-indigo-400 text-base font-black scale-105' 
                                                 : 'text-slate-700 dark:text-slate-300 text-sm font-semibold'
@@ -1996,7 +2150,7 @@
                 selectedContactId: '',
                 contactName: '',
                 contactSearchQuery: '',
-                startDate: '1404/05/15',
+                startDate: `${initialDevDate.year}/${String(jalaliMonths.indexOf(initialDevDate.month) + 1).padStart(2, '0')}/${String(initialDevDate.day).padStart(2, '0')}`,
                 principalAmount: '',
                 totalRepayment: '',
                 installmentAmount: '',
@@ -2508,13 +2662,15 @@
                 setWizardMode(mode);
                 setCurrentCardIdx(0);
 
+                const deviceDate = getDeviceJalaliDate();
+                const todayFormatted = `${deviceDate.year}/${String(jalaliMonths.indexOf(deviceDate.month) + 1).padStart(2, '0')}/${String(deviceDate.day).padStart(2, '0')}`;
+
                 if (mode === 'edit' && data && (data.dateStr || data.startDate)) {
                     const parsedDate = parseJalaliDateStr(data.dateStr || data.startDate);
                     setPickerDay(parsedDate.day);
                     setPickerMonth(parsedDate.month);
                     setPickerYear(parsedDate.year);
                 } else {
-                    const deviceDate = getDeviceJalaliDate();
                     setPickerDay(deviceDate.day);
                     setPickerMonth(deviceDate.month);
                     setPickerYear(deviceDate.year);
@@ -2525,7 +2681,7 @@
                 if (type === 'loan') {
                     const startDayVal = (mode === 'edit' && data && data.startDate) 
                         ? parseJalaliDateStr(data.startDate).day 
-                        : (getDeviceJalaliDate().day);
+                        : deviceDate.day;
 
                     if (mode === 'edit' && data && data.title) {
                         setLoanForm({
@@ -2534,7 +2690,7 @@
                             selectedContactId: data.contactId || '',
                             contactName: data.contactName || '',
                             contactSearchQuery: '',
-                            startDate: data.startDate || '1404/05/15',
+                            startDate: data.startDate || todayFormatted,
                             principalAmount: data.principalAmount || '',
                             totalRepayment: data.totalRepayment || '',
                             installmentAmount: data.installmentAmount || '',
@@ -2554,7 +2710,7 @@
                             selectedContactId: passedContactId,
                             contactName: defaultName,
                             contactSearchQuery: '',
-                            startDate: '1404/05/15',
+                            startDate: todayFormatted,
                             principalAmount: '',
                             totalRepayment: '',
                             installmentAmount: '',
@@ -2600,10 +2756,11 @@
                         setPickerMonth(parsedDate.month);
                         setPickerYear(parsedDate.year);
                     } else {
-                        const nextInstDate = calculateNextInstallmentDate(targetLoan, transactions);
-                        setPickerDay(nextInstDate.day);
-                        setPickerMonth(nextInstDate.month);
-                        setPickerYear(nextInstDate.year);
+                        // Always default date selection to today's date on open
+                        const devDate = getDeviceJalaliDate();
+                        setPickerDay(devDate.day);
+                        setPickerMonth(devDate.month);
+                        setPickerYear(devDate.year);
                     }
 
                     setInstallmentForm({
