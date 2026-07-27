@@ -106,7 +106,7 @@ export function updateVersionData(newCommitMessage = null, commitType = 'patch',
 
 // Run standalone if called directly
 if (process.argv[1] && process.argv[1].endsWith('generate-version.js')) {
-  const commitMsg = process.argv[2] || null;
+  const commitMsg = process.argv[2] || 'feat: update application layout and version history';
   const commitType = process.argv[3] || 'patch';
   updateVersionData(commitMsg, commitType);
 }
