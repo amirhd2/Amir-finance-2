@@ -1819,6 +1819,8 @@
             const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
             const [expandedChangelogVersion, setExpandedChangelogVersion] = useState(null);
             const [showAllVersions, setShowAllVersions] = useState(false);
+            const [swRegistration, setSwRegistration] = useState(null);
+            const [hasSWUpdate, setHasSWUpdate] = useState(false);
 
             const toggleVersionCard = () => {
                 setIsVersionCardExpanded(prev => {
@@ -1840,56 +1842,132 @@
                 });
             };
 
+            // Register Service Worker and monitor updates
             useEffect(() => {
-                fetch('/version.json')
-                    .then(res => {
-                        if (res.ok) return res.json();
-                        throw new Error('version.json not found');
-                    })
-                    .then(data => {
-                        if (data && data.installedVersion) {
-                            setVersionData(data);
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js').then(reg => {
+                        setSwRegistration(reg);
+
+                        if (reg.waiting) {
+                            setHasSWUpdate(true);
                         }
-                    })
-                    .catch(err => {
-                        console.log('Loaded default offline version info');
+
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            if (installingWorker) {
+                                installingWorker.onstatechange = () => {
+                                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        setHasSWUpdate(true);
+                                    }
+                                };
+                            }
+                        };
+                    }).catch(err => {
+                        console.log('SW registration note:', err.message);
                     });
+
+                    let refreshing = false;
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        if (!refreshing) {
+                            refreshing = true;
+                            window.location.reload();
+                        }
+                    });
+                }
             }, []);
+
+            // Check version logic against server with cache-busting
+            const checkAppVersion = async (isManual = false) => {
+                if (isManual) setIsCheckingUpdate(true);
+
+                try {
+                    const res = await fetch('/version.json?t=' + Date.now(), { cache: 'no-store' });
+                    if (!res.ok) throw new Error('version.json fetch failed');
+                    const serverData = await res.json();
+
+                    const serverBuild = parseInt(serverData.buildNumber || '0', 10);
+                    const serverVersion = serverData.installedVersion || '1.0.0';
+
+                    let localBuildStr = localStorage.getItem('amir_installed_build');
+                    let localVersion = localStorage.getItem('amir_installed_version');
+
+                    if (!localBuildStr) {
+                        localStorage.setItem('amir_installed_build', serverBuild.toString());
+                        localStorage.setItem('amir_installed_version', serverVersion);
+                        localBuildStr = serverBuild.toString();
+                        localVersion = serverVersion;
+                    }
+
+                    const localBuild = parseInt(localBuildStr, 10);
+                    const isUpdateAvailable = (serverBuild > localBuild) || hasSWUpdate;
+
+                    setVersionData({
+                        ...serverData,
+                        installedVersion: localVersion || serverVersion,
+                        buildNumber: localBuild,
+                        latestVersion: serverVersion,
+                        latestBuild: serverBuild,
+                        isUpdateAvailable: isUpdateAvailable
+                    });
+
+                    if (isManual) {
+                        setIsCheckingUpdate(false);
+                        if (isUpdateAvailable) {
+                            showToast('یک نسخه جدیدتر (بیلد ' + serverBuild + ') موجود است');
+                        } else {
+                            showToast('شما از آخرین نسخه استفاده می‌کنید');
+                        }
+                    }
+                } catch (err) {
+                    console.log('Error checking version:', err);
+                    if (isManual) {
+                        setIsCheckingUpdate(false);
+                        showToast('شما از آخرین نسخه استفاده می‌کنید');
+                    }
+                }
+            };
+
+            useEffect(() => {
+                checkAppVersion(false);
+            }, [hasSWUpdate]);
 
             const handleCheckForUpdates = (e) => {
                 if (e) e.stopPropagation();
-                setIsCheckingUpdate(true);
-                setTimeout(() => {
-                    fetch('/version.json')
-                        .then(res => res.json())
-                        .then(data => {
-                            setVersionData(data);
-                            setIsCheckingUpdate(false);
-                            if (data.isUpdateAvailable) {
-                                showToast('یک نسخه جدیدتر موجود است');
-                            } else {
-                                showToast('شما از آخرین نسخه استفاده می‌کنید');
-                            }
-                        })
-                        .catch(() => {
-                            setIsCheckingUpdate(false);
-                            showToast('شما از آخرین نسخه استفاده می‌کنید');
-                        });
-                }, 800);
+                checkAppVersion(true);
             };
 
-            const handleApplyUpdate = (e) => {
+            const handleApplyUpdate = async (e) => {
                 if (e) e.stopPropagation();
                 setIsCheckingUpdate(true);
-                setTimeout(() => {
+
+                try {
+                    const res = await fetch('/version.json?t=' + Date.now(), { cache: 'no-store' });
+                    const latestData = await res.json();
+                    const latestBuild = parseInt(latestData.buildNumber || '0', 10);
+                    const latestVersion = latestData.installedVersion || '1.0.0';
+
+                    localStorage.setItem('amir_installed_build', latestBuild.toString());
+                    localStorage.setItem('amir_installed_version', latestVersion);
+
+                    if ('caches' in window) {
+                        const cacheKeys = await caches.keys();
+                        await Promise.all(cacheKeys.map(key => caches.delete(key)));
+                    }
+
+                    if (swRegistration && swRegistration.waiting) {
+                        swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    }
+
+                    showToast('در حال اعمال بروزرسانی و راه‌اندازی مجدد...');
+
+                    setTimeout(() => {
+                        window.location.reload(true);
+                    }, 800);
+                } catch (err) {
+                    console.error('Apply update failed:', err);
                     setIsCheckingUpdate(false);
-                    setVersionData(prev => ({
-                        ...prev,
-                        installedVersion: prev.latestVersion || prev.installedVersion,
-                        isUpdateAvailable: false
-                    }));
-                    showToast('برنامه با موفقیت به آخرین نسخه بروزرسانی شد');
-                }, 1000);
+                    showToast('خطا در اعمال بروزرسانی');
+                }
             };
             
             // Stack Wizard Modals
