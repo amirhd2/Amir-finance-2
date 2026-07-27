@@ -908,6 +908,191 @@
             return <span ref={containerRef} className="inline-flex items-center justify-center shrink-0" style={style} {...props} />;
         }
 
+        
+        function PullToRefresh({ onRefresh, children, className = "" }) {
+            const containerRef = useRef(null);
+            const [pullHeight, setPullHeight] = useState(0);
+            const [isRefreshing, setIsRefreshing] = useState(false);
+            const touchStartRef = useRef({ x: 0, y: 0 });
+            const isPullingRef = useRef(false);
+
+            const handleTouchStart = (e) => {
+                const container = containerRef.current;
+                if (!container || isRefreshing) return;
+                if (container.scrollTop <= 1) {
+                    const touch = e.touches ? e.touches[0] : e;
+                    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+                    isPullingRef.current = true;
+                }
+            };
+
+            const handleTouchMove = (e) => {
+                if (!isPullingRef.current || isRefreshing) return;
+                const container = containerRef.current;
+                if (!container) return;
+
+                const touch = e.touches ? e.touches[0] : e;
+                const deltaY = touch.clientY - touchStartRef.current.y;
+                const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
+
+                if (deltaY > 0 && deltaY > deltaX && container.scrollTop <= 1) {
+                    const damped = Math.min(75, Math.pow(deltaY, 0.8) * 0.65);
+                    setPullHeight(damped);
+                    if (e.cancelable && deltaY > 10) {
+                        e.preventDefault();
+                    }
+                } else if (deltaY <= 0) {
+                    setPullHeight(0);
+                    isPullingRef.current = false;
+                }
+            };
+
+            const handleTouchEnd = async () => {
+                if (!isPullingRef.current && !isRefreshing) return;
+                isPullingRef.current = false;
+
+                if (pullHeight >= 48) {
+                    setIsRefreshing(true);
+                    setPullHeight(48);
+                    try {
+                        if (onRefresh) {
+                            await Promise.resolve(onRefresh());
+                        }
+                        await new Promise(r => setTimeout(r, 450));
+                    } catch (err) {
+                        console.error(err);
+                    } finally {
+                        setIsRefreshing(false);
+                        setPullHeight(0);
+                    }
+                } else {
+                    setPullHeight(0);
+                }
+            };
+
+            const progress = Math.min(1, pullHeight / 48);
+
+            return (
+                <div 
+                    ref={containerRef}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    className={`relative overflow-y-auto hide-scrollbar overscroll-contain ${className}`}
+                >
+                    <div 
+                        className="w-full flex items-center justify-center overflow-hidden shrink-0 select-none pointer-events-none"
+                        style={{
+                            height: `${pullHeight}px`,
+                            transition: isPullingRef.current ? 'none' : 'height 250ms cubic-bezier(0.16, 1, 0.3, 1)'
+                        }}
+                    >
+                        <div className="flex items-center space-x-2 space-x-reverse text-indigo-600 dark:text-indigo-400 py-1.5">
+                            {isRefreshing ? (
+                                <div className="flex items-center space-x-2 space-x-reverse bg-white/90 dark:bg-slate-800/90 px-3.5 py-1.5 rounded-full shadow-sm border border-slate-200/80 dark:border-slate-700/80 backdrop-blur-xs">
+                                    <div className="w-4 h-4 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin shrink-0" />
+                                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200">در حال بروزرسانی...</span>
+                                </div>
+                            ) : (
+                                <div 
+                                    className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/80 dark:border-slate-700 backdrop-blur-xs transition-transform"
+                                    style={{
+                                        transform: `rotate(${progress * 180}deg) scale(${0.7 + progress * 0.3})`,
+                                        opacity: Math.max(0.3, progress)
+                                    }}
+                                >
+                                    <Icon name="arrow-down" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {children}
+                </div>
+            );
+        }
+
+        function SwipeBackWrapper({ onBack, enabled = true, children, className = "" }) {
+            const [translateX, setTranslateX] = useState(0);
+            const [isDragging, setIsDragging] = useState(false);
+            const startXRef = useRef(0);
+            const startYRef = useRef(0);
+            const isEdgeSwipeRef = useRef(false);
+            const containerRef = useRef(null);
+
+            const handleTouchStart = (e) => {
+                if (!enabled || !onBack) return;
+                const touch = e.touches ? e.touches[0] : e;
+                const rect = containerRef.current ? containerRef.current.getBoundingClientRect() : { left: 0 };
+                const relativeX = touch.clientX - rect.left;
+
+                if (relativeX <= 38 && touch.clientX <= 45) {
+                    startXRef.current = touch.clientX;
+                    startYRef.current = touch.clientY;
+                    isEdgeSwipeRef.current = true;
+                    setIsDragging(true);
+                }
+            };
+
+            const handleTouchMove = (e) => {
+                if (!isEdgeSwipeRef.current || !enabled) return;
+                const touch = e.touches ? e.touches[0] : e;
+                const deltaX = touch.clientX - startXRef.current;
+                const deltaY = Math.abs(touch.clientY - startYRef.current);
+
+                if (deltaX > 0 && deltaX > deltaY) {
+                    setTranslateX(deltaX);
+                    if (e.cancelable) e.preventDefault();
+                } else if (deltaX <= 0) {
+                    setTranslateX(0);
+                }
+            };
+
+            const handleTouchEnd = () => {
+                if (!isEdgeSwipeRef.current || !enabled) return;
+                isEdgeSwipeRef.current = false;
+                setIsDragging(false);
+
+                const width = containerRef.current ? containerRef.current.offsetWidth : (window.innerWidth || 360);
+                const threshold = width * 0.28;
+
+                if (translateX >= threshold) {
+                    setTranslateX(width);
+                    setTimeout(() => {
+                        setTranslateX(0);
+                        if (onBack) onBack();
+                    }, 180);
+                } else {
+                    setTranslateX(0);
+                }
+            };
+
+            const progress = Math.min(1, translateX / (window.innerWidth || 360));
+
+            return (
+                <div 
+                    ref={containerRef}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    className={`relative w-full h-full ${className}`}
+                    style={{
+                        transform: translateX > 0 ? `translateX(${translateX}px)` : 'none',
+                        transition: isDragging ? 'none' : 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+                        willChange: 'transform'
+                    }}
+                >
+                    {translateX > 0 && (
+                        <div 
+                            className="fixed inset-0 bg-black/25 pointer-events-none z-[-1] transition-opacity"
+                            style={{ opacity: 1 - progress }}
+                        />
+                    )}
+                    {children}
+                </div>
+            );
+        }
+
         function IOSWheelPicker({ items = [], selectedValue, onChange, label }) {
             const containerRef = useRef(null);
             const [scrollTop, setScrollTop] = useState(0);
@@ -1444,6 +1629,39 @@
             const [deleteTxModal, setDeleteTxModal] = useState({ show: false, tx: null, type: null });
             const [showCompletedExportModal, setShowCompletedExportModal] = useState({ show: false, contact: null, type: 'debt' });
             
+            
+            const handleRefreshData = async (tabName) => {
+                try {
+                    const savedLoans = localStorage.getItem('amir_fin_loans');
+                    if (savedLoans) setLoans(JSON.parse(savedLoans));
+
+                    const savedTx = localStorage.getItem('amir_fin_tx');
+                    if (savedTx) setTransactions(JSON.parse(savedTx));
+
+                    const savedContacts = localStorage.getItem('amir_fin_contacts');
+                    if (savedContacts) setContacts(JSON.parse(savedContacts));
+
+                    const savedPeriods = localStorage.getItem('amir_fin_completed_periods');
+                    if (savedPeriods) setCompletedPeriods(JSON.parse(savedPeriods));
+
+                    if (tabName === 'contact-detail' && selectedContact) {
+                        const currentContacts = savedContacts ? JSON.parse(savedContacts) : contacts;
+                        const updatedContact = currentContacts.find(c => c.id === selectedContact.id);
+                        if (updatedContact) setSelectedContact(updatedContact);
+                    }
+
+                    if (tabName === 'loan-detail' && selectedLoan) {
+                        const currentLoans = savedLoans ? JSON.parse(savedLoans) : loans;
+                        const updatedLoan = currentLoans.find(l => l.id === selectedLoan.id);
+                        if (updatedLoan) setSelectedLoan(updatedLoan);
+                    }
+
+                    showToast('اطلاعات با موفقیت بروزرسانی شد');
+                } catch (e) {
+                    console.error('Refresh error:', e);
+                }
+            };
+
             const [completedPeriods, setCompletedPeriods] = useState(() => {
                 try {
                     const saved = localStorage.getItem('amir_fin_completed_periods');
@@ -1650,10 +1868,10 @@
 
 
 
-            const showToast = (msg) => {
+            function showToast(msg) {
                 setToastMessage(msg);
                 setTimeout(() => setToastMessage(''), 2800);
-            };
+            }
 
             const copyToClipboard = (text, label) => {
                 if (!text) return;
@@ -3597,7 +3815,7 @@
                     )}
 
                     {/* App Content Body */}
-                    <div className="flex-1 overflow-y-auto hide-scrollbar px-4 pt-4 pb-24">
+                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24">
                         
                         {/* Dashboard Tab */}
                         {currentTab === 'dashboard' && (
@@ -3967,6 +4185,7 @@
 
                         {/* Contact Detail Tab */}
                         {currentTab === 'contact-detail' && selectedContact && (
+                            <SwipeBackWrapper onBack={() => setCurrentTab('contacts')}>
                             <div className="space-y-4 animate-fade-in">
                                 {/* Header Bar */}
                                 <div className="flex justify-between items-center py-2">
@@ -4466,10 +4685,12 @@
                                     )}
                                 </div>
                             </div>
+                            </SwipeBackWrapper>
                         )}
 
                         {/* Loan Detail Tab */}
                         {currentTab === 'loan-detail' && selectedLoan && (
+                            <SwipeBackWrapper onBack={() => setCurrentTab(loanReturnTab || 'accounts')}>
                             <div className="space-y-4 animate-fade-in">
                                 <div className="flex justify-between items-center py-2">
                                     <button onClick={() => setCurrentTab(loanReturnTab || 'accounts')} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700">
@@ -4646,10 +4867,12 @@
                                     <span>خروجی پرونده وام</span>
                                 </button>
                             </div>
+                            </SwipeBackWrapper>
                         )}
 
                         {/* View All Transactions Tab */}
                         {currentTab === 'all-transactions' && (
+                            <SwipeBackWrapper onBack={() => setCurrentTab('dashboard')}>
                             <div className="space-y-4 animate-fade-in pb-12">
                                 <div className="flex justify-between items-center py-2">
                                     <button 
@@ -4728,6 +4951,7 @@
                                     })()}
                                 </div>
                             </div>
+                            </SwipeBackWrapper>
                         )}
 
                         {/* Settings Tab */}
@@ -5014,7 +5238,7 @@
                                 </div>
                             </div>
                         )}
-                    </div>
+                    </PullToRefresh>
 
                     {/* Navigation Bar at Bottom */}
                     <div className="absolute bottom-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 z-20">
