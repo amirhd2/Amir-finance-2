@@ -1,0 +1,75 @@
+{
+  "appName": "Amir Finance",
+  "appLogo": "./apple-touch-icon.png",
+  "installedVersion": "1.1.0",
+  "buildNumber": 128,
+  "releaseDate": "2026-07-27",
+  "releaseChannel": "Stable",
+  "channelLabel": "نسخه پایدار",
+  "latestVersion": "1.1.0",
+  "isUpdateAvailable": false,
+  "history": [
+    {
+      "version": "1.1.0",
+      "buildNumber": 128,
+      "releaseDate": "2026-07-27",
+      "releaseChannel": "Stable",
+      "commitHash": "a3f89e2",
+      "commitMessage": "feat: add application version management system and gesture navigation",
+      "changes": [
+        "افزودن سیستم هوشمند مدیریت نسخه برنامه و تاریخچه بروزرسانی‌ها (Version Management)",
+        "ارتقاء روانی ژست حرکتی بازگشت (Swipe Back) به سبک سیستم‌عامل iOS",
+        "امکان بررسی بروزرسانی آنلاین و آفلاین همراه با جزئیات کامل چنج‌لاگ"
+      ]
+    },
+    {
+      "version": "1.0.3",
+      "buildNumber": 127,
+      "releaseDate": "2026-07-27",
+      "releaseChannel": "Stable",
+      "commitHash": "e92c4b1",
+      "commitMessage": "perf: improve floating action button animation and frame rate",
+      "changes": [
+        "بهبود انیمیشن دکمه شناور (FAB) با ایزینگ‌های طبیعی و نرخ فریم بالا",
+        "همگام‌سازی شفافیت، مقیاس و موقعیت مکانی منوی شناور به سبک iOS"
+      ]
+    },
+    {
+      "version": "1.0.2",
+      "buildNumber": 126,
+      "releaseDate": "2026-07-25",
+      "releaseChannel": "Stable",
+      "commitHash": "c4d12a9",
+      "commitMessage": "fix: improve wheel picker scrolling and gesture recognition",
+      "changes": [
+        "ارتقاء روانی اسکرول انتخابی تاریخ و اعداد در ویل‌پیکر iOS",
+        "رفع مشکلات پایداری رویدادهای لمسی و ژست‌های حرکتی"
+      ]
+    },
+    {
+      "version": "1.0.1",
+      "buildNumber": 125,
+      "releaseDate": "2026-07-20",
+      "releaseChannel": "Stable",
+      "commitHash": "f8911c4",
+      "commitMessage": "fix: update loan repayment recalculation and keyboard dismiss behavior",
+      "changes": [
+        "تصحیح محاسبه مجدد اقساط وام هنگام ویرایش اطلاعات",
+        "بهبود تجربه کاربری کیبورد در فرم‌های ثبت وام و حساب"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "buildNumber": 124,
+      "releaseDate": "2026-07-15",
+      "releaseChannel": "Stable",
+      "commitHash": "e02b3f1",
+      "commitMessage": "feat: initial release of Amir Finance personal finance tracker",
+      "changes": [
+        "انتشار اولیه سیستم مدیریت مالی شخصی امیر فایننس",
+        "مدیریت کامل وام‌ها، اقساط، طلب‌ها و بدهی‌ها با پشتیبانی آفلاین",
+        "گزارشات کاربردی و تم تاریک و روشن اختصاصی"
+      ]
+    }
+  ]
+}
