@@ -209,6 +209,110 @@
             border-top: 1px solid rgba(129, 140, 248, 0.3);
             border-bottom: 1px solid rgba(129, 140, 248, 0.3);
         }
+
+        /* Native iOS Smooth Animations */
+        @keyframes iosSheetIn {
+            0% {
+                transform: translateY(100%) scale(0.96);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes iosSheetOut {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100%) scale(0.96);
+                opacity: 0;
+            }
+        }
+
+        @keyframes iosFadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes iosFadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes iosStaggerUp {
+            0% {
+                opacity: 0;
+                transform: translateY(14px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(24px) scale(0.97); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-ios-sheet-in {
+            animation: iosSheetIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+            will-change: transform, opacity;
+        }
+
+        .animate-ios-sheet-out {
+            animation: iosSheetOut 350ms cubic-bezier(0.32, 0.72, 0, 1) both;
+            will-change: transform, opacity;
+        }
+
+        .animate-ios-fade-in {
+            animation: iosFadeIn 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .animate-ios-fade-out {
+            animation: iosFadeOut 350ms cubic-bezier(0.32, 0.72, 0, 1) both;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .animate-scale-up {
+            animation: scaleUp 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .ios-stagger-1 { animation: iosStaggerUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 20ms both; }
+        .ios-stagger-2 { animation: iosStaggerUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 40ms both; }
+        .ios-stagger-3 { animation: iosStaggerUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both; }
+        .ios-stagger-4 { animation: iosStaggerUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both; }
+        .ios-stagger-5 { animation: iosStaggerUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both; }
+
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex justify-center items-center p-0 sm:p-4">
@@ -1730,7 +1834,7 @@
                     setShowPlusMenu(false);
                     setIsPlusMenuClosing(false);
                     if (callback) callback();
-                }, 220);
+                }, 350);
             };
 
             useEffect(() => {
@@ -5258,9 +5362,15 @@
 
                         {/* Plus Button */}
                         <button 
-                            onClick={() => setShowPlusMenu(true)}
-                            className="w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-lg -mt-5 active:scale-90 transition-transform">
-                            <Icon name="plus" className="w-6 h-6" />
+                            onClick={() => {
+                                if (showPlusMenu) {
+                                    closePlusMenu();
+                                } else {
+                                    setShowPlusMenu(true);
+                                }
+                            }}
+                            className={`w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-lg shadow-indigo-600/30 -mt-5 transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-90 ${showPlusMenu && !isPlusMenuClosing ? 'rotate-[135deg] scale-105 z-[55] ring-4 ring-indigo-500/25' : 'rotate-0 scale-100 z-20'}`}>
+                            <Icon name="plus" className="w-6 h-6 transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" />
                         </button>
 
                         <button 
@@ -5282,17 +5392,17 @@
                     {showPlusMenu && (
                         <div 
                             onClick={() => closePlusMenu()}
-                            className={`absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-end justify-center transition-opacity duration-200 ${isPlusMenuClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+                            className={`absolute inset-0 bg-black/45 z-50 flex items-end justify-center transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] ${isPlusMenuClosing ? 'animate-ios-fade-out pointer-events-none' : 'animate-ios-fade-in'}`}>
                             <div 
                                 onClick={e => e.stopPropagation()}
-                                className={`w-full bg-white dark:bg-slate-900 rounded-t-[32px] p-5 pb-8 space-y-3 border-t border-slate-100 dark:border-slate-800 shadow-2xl transition-transform duration-200 ${isPlusMenuClosing ? 'translate-y-full' : 'translate-y-0 animate-slide-up'}`}>
-                                <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-1"></div>
-                                <h3 className="text-center font-extrabold text-slate-900 dark:text-white text-base mb-3">ثبت و مدیریت جدید</h3>
+                                className={`w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-t-[32px] p-5 pb-8 space-y-3 border-t border-slate-100 dark:border-slate-800 shadow-2xl ${isPlusMenuClosing ? 'animate-ios-sheet-out' : 'animate-ios-sheet-in'}`}>
+                                <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-1 opacity-80"></div>
+                                <h3 className="text-center font-extrabold text-slate-900 dark:text-white text-base mb-3 ios-stagger-1">ثبت و مدیریت جدید</h3>
 
                                 {/* مخاطب جدید */}
                                 <button 
                                     onClick={() => closePlusMenu(() => setShowAddContactModal(true))}
-                                    className="w-full bg-slate-50 dark:bg-slate-800/80 p-3 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-98 transition-all">
+                                    className="w-full bg-slate-50 dark:bg-slate-800/80 p-3 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-[0.97] transition-transform duration-200 ios-stagger-1">
                                     <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                                         <Icon name="user-plus" className="w-4 h-4" />
                                     </div>
@@ -5303,10 +5413,10 @@
                                 </button>
 
                                 {/* طلب / بازپرداخت طلب */}
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-2 ios-stagger-2">
                                     <button 
                                         onClick={() => closePlusMenu(() => openStackWizard('demand', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-emerald-300 active:scale-98 transition-all">
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-emerald-300 active:scale-[0.97] transition-transform duration-200">
                                         <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                             <Icon name="arrow-up-right" className="w-4 h-4" />
                                         </div>
@@ -5315,7 +5425,7 @@
 
                                     <button 
                                         onClick={() => closePlusMenu(() => openStackWizard('demand_repayment', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-emerald-300 active:scale-98 transition-all">
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-emerald-300 active:scale-[0.97] transition-transform duration-200">
                                         <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
                                             <Icon name="check-circle-2" className="w-4 h-4" />
                                         </div>
@@ -5324,10 +5434,10 @@
                                 </div>
 
                                 {/* بدهی / بازپرداخت بدهی */}
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-2 ios-stagger-3">
                                     <button 
                                         onClick={() => closePlusMenu(() => openStackWizard('debt', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-rose-300 active:scale-98 transition-all">
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-rose-300 active:scale-[0.97] transition-transform duration-200">
                                         <div className="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
                                             <Icon name="arrow-down-left" className="w-4 h-4" />
                                         </div>
@@ -5336,7 +5446,7 @@
 
                                     <button 
                                         onClick={() => closePlusMenu(() => openStackWizard('debt_repayment', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-rose-300 active:scale-98 transition-all">
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-rose-300 active:scale-[0.97] transition-transform duration-200">
                                         <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                                             <Icon name="corner-down-left" className="w-4 h-4" />
                                         </div>
@@ -5345,10 +5455,10 @@
                                 </div>
 
                                 {/* وام / پرداخت قسط */}
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-2 ios-stagger-4">
                                     <button 
                                         onClick={() => closePlusMenu(() => openStackWizard('loan', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-98 transition-all">
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-[0.97] transition-transform duration-200">
                                         <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                                             <Icon name="landmark" className="w-4 h-4" />
                                         </div>
@@ -5357,7 +5467,7 @@
 
                                     <button 
                                         onClick={() => closePlusMenu(() => openStackWizard('installment', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-98 transition-all">
+                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-[0.97] transition-transform duration-200">
                                         <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
                                             <Icon name="receipt" className="w-4 h-4" />
                                         </div>
@@ -5365,7 +5475,7 @@
                                     </button>
                                 </div>
 
-                                <button onClick={() => closePlusMenu()} className="w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                                <button onClick={() => closePlusMenu()} className="w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors ios-stagger-5">
                                     انصراف
                                 </button>
                             </div>
