@@ -5137,23 +5137,25 @@
                                                         key={contact.id}
                                                         onClick={() => { setSelectedContact(contact); setProfileFilter('demands'); setCurrentTab('contact-detail'); }}
                                                         className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-emerald-400 transition-all">
-                                                        <div className="flex items-center space-x-3 space-x-reverse">
-                                                            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
+                                                        <div className="flex items-center space-x-3 space-x-reverse min-w-0">
+                                                            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0">
                                                                 <Icon name="arrow-up-right" className="w-5 h-5" />
                                                             </div>
-                                                            <div>
-                                                                <div className="text-xs font-bold text-slate-900 dark:text-white">{contact.firstName} {contact.lastName}</div>
+                                                            <div className="min-w-0">
+                                                                <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{contact.firstName} {contact.lastName}</div>
                                                                 <div className="text-[10px] text-slate-400">طلب شخصی</div>
                                                             </div>
                                                         </div>
-                                                        <div className="text-left">
+
+                                                        {settledCount > 0 ? (
+                                                            <div className="flex flex-col items-center justify-center px-2 shrink-0" title={`${settledCount} رکورد تسویه‌شده`}>
+                                                                <Icon name="archive" className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 leading-none mt-0.5">{settledCount}</span>
+                                                            </div>
+                                                        ) : <div />}
+
+                                                        <div className="text-left shrink-0">
                                                             <div className="text-xs font-bold text-emerald-600">+{contact.totalDemand.toLocaleString()} تومان</div>
-                                                            {settledCount > 0 && (
-                                                                <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5 flex items-center justify-end space-x-1 space-x-reverse">
-                                                                    <Icon name="archive" className="w-3 h-3 text-slate-400 shrink-0" />
-                                                                    <span>{settledCount} دوره تسویه‌شده</span>
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     </div>
                                                 );
@@ -5172,23 +5174,25 @@
                                                         key={contact.id}
                                                         onClick={() => { setSelectedContact(contact); setProfileFilter('debts'); setCurrentTab('contact-detail'); }}
                                                         className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-rose-400 transition-all">
-                                                        <div className="flex items-center space-x-3 space-x-reverse">
-                                                            <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center">
+                                                        <div className="flex items-center space-x-3 space-x-reverse min-w-0">
+                                                            <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center shrink-0">
                                                                 <Icon name="arrow-down-left" className="w-5 h-5" />
                                                             </div>
-                                                            <div>
-                                                                <div className="text-xs font-bold text-slate-900 dark:text-white">{contact.firstName} {contact.lastName}</div>
+                                                            <div className="min-w-0">
+                                                                <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{contact.firstName} {contact.lastName}</div>
                                                                 <div className="text-[10px] text-slate-400">بدهی شخصی</div>
                                                             </div>
                                                         </div>
-                                                        <div className="text-left">
+
+                                                        {settledCount > 0 ? (
+                                                            <div className="flex flex-col items-center justify-center px-2 shrink-0" title={`${settledCount} رکورد تسویه‌شده`}>
+                                                                <Icon name="archive" className="w-4 h-4 text-rose-500 dark:text-rose-400" />
+                                                                <span className="text-[10px] font-bold text-rose-500 dark:text-rose-400 leading-none mt-0.5">{settledCount}</span>
+                                                            </div>
+                                                        ) : <div />}
+
+                                                        <div className="text-left shrink-0">
                                                             <div className="text-xs font-bold text-rose-500">-{contact.totalDebt.toLocaleString()} تومان</div>
-                                                            {settledCount > 0 && (
-                                                                <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5 flex items-center justify-end space-x-1 space-x-reverse">
-                                                                    <Icon name="archive" className="w-3 h-3 text-slate-400 shrink-0" />
-                                                                    <span>{settledCount} دوره تسویه‌شده</span>
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     </div>
                                                 );
@@ -5269,56 +5273,87 @@
                                 </div>
 
                                 <div className="space-y-2.5">
-                                    {filteredContacts.map((contact) => (
-                                        <div 
-                                            key={contact.id} 
-                                            onClick={() => {
-                                                setSelectedContact(contact);
-                                                if (contactFilter === 'demand') {
-                                                    setProfileFilter('demands');
-                                                } else if (contactFilter === 'debt') {
-                                                    setProfileFilter('debts');
-                                                } else if (contactFilter === 'loan') {
-                                                    setProfileFilter('loans');
-                                                } else {
-                                                    setProfileFilter('all');
-                                                }
-                                                setCurrentTab('contact-detail');
-                                            }}
-                                            className="bg-white dark:bg-slate-800 rounded-2xl p-3.5 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer hover:border-indigo-300 transition-all">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center space-x-3 space-x-reverse">
-                                                    <div className={`w-10 h-10 rounded-full ${getAvatarColor(contact.id, contact.firstName + contact.lastName)} text-white font-bold text-xs flex items-center justify-center shadow-xs`}>
-                                                        {contact.firstName.charAt(0)} {contact.lastName.charAt(0)}
+                                    {filteredContacts.map((contact) => {
+                                        const contactLoans = loans.filter(l => l.contactId === contact.id);
+                                        const hasAnyLoan = contactLoans.length > 0;
+                                        const hasSettledLoan = contactLoans.some(l => 
+                                            getLoanNextDueInfo(l, transactions).isCompleted || (l.remainingAmount !== undefined && l.remainingAmount <= 0)
+                                        );
+
+                                        const hasSettledDemand = getSettledPeriodCount(contact.id, 'demand') > 0;
+                                        const hasActiveDemand = contact.totalDemand > 0;
+
+                                        const hasSettledDebt = getSettledPeriodCount(contact.id, 'debt') > 0;
+                                        const hasActiveDebt = contact.totalDebt > 0;
+
+                                        return (
+                                            <div 
+                                                key={contact.id} 
+                                                onClick={() => {
+                                                    setSelectedContact(contact);
+                                                    if (contactFilter === 'demand') {
+                                                        setProfileFilter('demands');
+                                                    } else if (contactFilter === 'debt') {
+                                                        setProfileFilter('debts');
+                                                    } else if (contactFilter === 'loan') {
+                                                        setProfileFilter('loans');
+                                                    } else {
+                                                        setProfileFilter('all');
+                                                    }
+                                                    setCurrentTab('contact-detail');
+                                                }}
+                                                className="bg-white dark:bg-slate-800 rounded-2xl p-3.5 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer hover:border-indigo-300 transition-all">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center space-x-3 space-x-reverse min-w-0">
+                                                        <div className={`w-10 h-10 rounded-full ${getAvatarColor(contact.id, contact.firstName + contact.lastName)} text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0`}>
+                                                            {contact.firstName.charAt(0)} {contact.lastName.charAt(0)}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{contact.firstName} {contact.lastName}</h4>
+                                                            <div className="text-[10px] text-slate-400 mt-0.5 truncate">{contact.phone}</div>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <h4 className="text-xs font-bold text-slate-900 dark:text-white">{contact.firstName} {contact.lastName}</h4>
-                                                        <div className="text-[10px] text-slate-400 mt-0.5">{contact.phone}</div>
+                                                    
+                                                    <div className="flex items-center space-x-2 space-x-reverse shrink-0">
+                                                        {hasAnyLoan && (
+                                                            <div className="flex flex-col items-center justify-center">
+                                                                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-400 px-2 py-0.5 rounded-md whitespace-nowrap">
+                                                                    وام
+                                                                </span>
+                                                                {hasSettledLoan && (
+                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {(hasActiveDemand || hasSettledDemand) && (
+                                                            <div className="flex flex-col items-center justify-center">
+                                                                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-2 py-0.5 rounded-md whitespace-nowrap">
+                                                                    طلبکار
+                                                                </span>
+                                                                {hasSettledDemand && (
+                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {(hasActiveDebt || hasSettledDebt) && (
+                                                            <div className="flex flex-col items-center justify-center">
+                                                                <span className="text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/60 dark:text-rose-400 px-2 py-0.5 rounded-md whitespace-nowrap">
+                                                                    بدهکار
+                                                                </span>
+                                                                {hasSettledDebt && (
+                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400 mt-0.5" />
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        <Icon name="chevron-left" className="w-4 h-4 text-slate-300" />
                                                     </div>
-                                                </div>
-                                                
-                                                <div className="flex items-center space-x-2 space-x-reverse">
-                                                    {(getSettledPeriodCount(contact.id, 'demand') + getSettledPeriodCount(contact.id, 'debt')) > 0 && (
-                                                        <span 
-                                                            className="p-1 rounded-md bg-slate-100 dark:bg-slate-700/70 text-slate-500 dark:text-slate-300 flex items-center justify-center border border-slate-200/60 dark:border-slate-600/50 shrink-0" 
-                                                            title="دارای سوابق تسویه‌شده">
-                                                            <Icon name="archive" className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
-                                                        </span>
-                                                    )}
-                                                    {loans.some(l => l.contactId === contact.id) && (
-                                                        <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-400 px-2 py-0.5 rounded-md">وام</span>
-                                                    )}
-                                                    {contact.totalDemand > 0 && (
-                                                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-2 py-0.5 rounded-md">طلبکار</span>
-                                                    )}
-                                                    {contact.totalDebt > 0 && (
-                                                        <span className="text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/60 dark:text-rose-400 px-2 py-0.5 rounded-md">بدهکار</span>
-                                                    )}
-                                                    <Icon name="chevron-left" className="w-4 h-4 text-slate-300" />
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
