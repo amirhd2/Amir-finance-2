@@ -1887,23 +1887,31 @@
                 }
                 setCurrentTab('loan-detail');
             };
+
+            const openArchivedPeriodDetail = (period, overrideReturnTab) => {
+                setSelectedPeriod(period);
+                if (overrideReturnTab) {
+                    setLoanReturnTab(overrideReturnTab);
+                } else if (currentTab !== 'archived-period-detail') {
+                    setLoanReturnTab(currentTab);
+                }
+                setCurrentTab('archived-period-detail');
+            };
             
             const [toastMessage, setToastMessage] = useState('');
             const [showPlusMenu, setShowPlusMenu] = useState(false);
             
-            // Application Version Management State & Embedded Code Version
-            const CURRENT_EMBEDDED_BUILD = 134;
-            const CURRENT_EMBEDDED_VERSION = "1.1.6";
-
+            // Application Version Management State
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "./apple-touch-icon.png",
-                installedVersion: CURRENT_EMBEDDED_VERSION,
-                buildNumber: CURRENT_EMBEDDED_BUILD,
-                releaseDate: "2026-07-27",
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.1.8",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '136', 10),
+                releaseDate: "2026-07-28",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: CURRENT_EMBEDDED_VERSION,
+                latestVersion: "1.1.8",
+                latestBuild: 136,
                 isUpdateAvailable: false,
                 history: [
                     {
@@ -2111,21 +2119,27 @@
                     const serverBuild = parseInt(serverData.buildNumber || '0', 10);
                     const serverVersion = serverData.installedVersion || '1.0.0';
 
-                    // An update is available if the server's build is higher than the currently running app code build
-                    const isUpdateAvailable = (serverBuild > CURRENT_EMBEDDED_BUILD) || hasSWUpdate;
+                    let localBuildStr = localStorage.getItem('amir_installed_build');
+                    let localVersion = localStorage.getItem('amir_installed_version');
+
+                    if (!localBuildStr) {
+                        localStorage.setItem('amir_installed_build', serverBuild.toString());
+                        localStorage.setItem('amir_installed_version', serverVersion);
+                        localBuildStr = serverBuild.toString();
+                        localVersion = serverVersion;
+                    }
+
+                    const localBuild = parseInt(localBuildStr, 10);
+                    const isUpdateAvailable = (serverBuild > localBuild) || hasSWUpdate;
 
                     setVersionData({
                         ...serverData,
-                        installedVersion: CURRENT_EMBEDDED_VERSION,
-                        buildNumber: CURRENT_EMBEDDED_BUILD,
+                        installedVersion: localVersion || serverVersion,
+                        buildNumber: localBuild,
                         latestVersion: serverVersion,
                         latestBuild: serverBuild,
                         isUpdateAvailable: isUpdateAvailable
                     });
-
-                    // Store running build in localStorage for reference
-                    localStorage.setItem('amir_installed_build', CURRENT_EMBEDDED_BUILD.toString());
-                    localStorage.setItem('amir_installed_version', CURRENT_EMBEDDED_VERSION);
 
                     if (isManual) {
                         setIsCheckingUpdate(false);
@@ -2159,6 +2173,17 @@
 
                 try {
                     showToast('در حال دریافت جدیدترین نسخه و پاکسازی حافظه پنهان...');
+
+                    // Fetch latest version.json and update localStorage
+                    const res = await fetch('/version.json?t=' + Date.now(), { cache: 'no-store' });
+                    if (res.ok) {
+                        const serverData = await res.json();
+                        const latestBuild = parseInt(serverData.buildNumber || '0', 10);
+                        const latestVersion = serverData.installedVersion || '1.0.0';
+
+                        localStorage.setItem('amir_installed_build', latestBuild.toString());
+                        localStorage.setItem('amir_installed_version', latestVersion);
+                    }
 
                     // 1. Clear all CacheStorage caches
                     if ('caches' in window) {
@@ -2550,6 +2575,24 @@
                     const updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
                     setTransactions(updatedTxs);
 
+                    if (txToDelete.periodId) {
+                        setCompletedPeriods(prev => prev.map(p => {
+                            if (p.id === txToDelete.periodId) {
+                                const updatedPeriodTxs = (p.transactions || []).filter(t => t.id !== txToDelete.id);
+                                const updatedTotalAmt = updatedPeriodTxs.reduce((sum, t) => (t.type === 'debt' ? sum + Math.abs(t.amount) : sum), 0);
+                                return { ...p, transactions: updatedPeriodTxs, totalAmount: updatedTotalAmt };
+                            }
+                            return p;
+                        }));
+                        if (selectedPeriod && selectedPeriod.id === txToDelete.periodId) {
+                            setSelectedPeriod(prev => {
+                                const updatedPeriodTxs = (prev.transactions || []).filter(t => t.id !== txToDelete.id);
+                                const updatedTotalAmt = updatedPeriodTxs.reduce((sum, t) => (t.type === 'debt' ? sum + Math.abs(t.amount) : sum), 0);
+                                return { ...prev, transactions: updatedPeriodTxs, totalAmount: updatedTotalAmt };
+                            });
+                        }
+                    }
+
                     if (txToDelete.contactId) {
                         const contactDebts = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
                         let netDebt = 0;
@@ -2574,6 +2617,24 @@
                 } else if (txType === 'demand') {
                     const updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
                     setTransactions(updatedTxs);
+
+                    if (txToDelete.periodId) {
+                        setCompletedPeriods(prev => prev.map(p => {
+                            if (p.id === txToDelete.periodId) {
+                                const updatedPeriodTxs = (p.transactions || []).filter(t => t.id !== txToDelete.id);
+                                const updatedTotalAmt = updatedPeriodTxs.reduce((sum, t) => (t.type === 'demand' ? sum + Math.abs(t.amount) : sum), 0);
+                                return { ...p, transactions: updatedPeriodTxs, totalAmount: updatedTotalAmt };
+                            }
+                            return p;
+                        }));
+                        if (selectedPeriod && selectedPeriod.id === txToDelete.periodId) {
+                            setSelectedPeriod(prev => {
+                                const updatedPeriodTxs = (prev.transactions || []).filter(t => t.id !== txToDelete.id);
+                                const updatedTotalAmt = updatedPeriodTxs.reduce((sum, t) => (t.type === 'demand' ? sum + Math.abs(t.amount) : sum), 0);
+                                return { ...prev, transactions: updatedPeriodTxs, totalAmount: updatedTotalAmt };
+                            });
+                        }
+                    }
 
                     if (txToDelete.contactId) {
                         const contactDemands = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
@@ -5138,17 +5199,27 @@
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-center mb-1">
                                                 <div className="text-[10px] font-bold text-slate-400">قرض / بدهی‌ها و بازپرداخت‌ها</div>
-                                                <button 
-                                                    onClick={() => setShowCompletedExportModal({ show: true, contact: selectedContact, type: 'debt' })}
-                                                    className="text-[10px] font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/60 px-2.5 py-1 rounded-full border border-rose-200/60 dark:border-rose-800/40 flex items-center space-x-1 space-x-reverse hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors">
-                                                    <Icon name="download" className="w-3 h-3" />
-                                                    <span>خروجی پرونده</span>
-                                                </button>
                                             </div>
                                             {(() => {
                                                 const contactDebts = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
-                                                const archivedDebtPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'debt');
+                                                let archivedDebtPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'debt');
                                                 const archivedDebtTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && t.periodId);
+
+                                                if (archivedDebtPeriods.length === 0 && archivedDebtTxs.length > 0) {
+                                                    let sum = 0;
+                                                    archivedDebtTxs.forEach(t => { if (t.type === 'debt') sum += Math.abs(t.amount); });
+                                                    archivedDebtPeriods = [{
+                                                        id: archivedDebtTxs[0].periodId || ('p_auto_debt_' + selectedContact.id),
+                                                        contactId: selectedContact.id,
+                                                        contactName: `${selectedContact.firstName} ${selectedContact.lastName}`,
+                                                        type: 'debt',
+                                                        title: `دوره تسویه‌شده بدهی به ${selectedContact.firstName} ${selectedContact.lastName}`,
+                                                        totalAmount: sum,
+                                                        startDate: archivedDebtTxs[archivedDebtTxs.length - 1]?.dateStr || 'نامشخص',
+                                                        endDate: archivedDebtTxs[0]?.dateStr || 'امروز',
+                                                        transactions: archivedDebtTxs
+                                                    }];
+                                                }
 
                                                 return (
                                                     <div className="space-y-2">
@@ -5190,7 +5261,7 @@
                                                         )}
 
                                                         {/* Archived Debt Periods / Closed Cycles */}
-                                                        {(archivedDebtPeriods.length > 0 || archivedDebtTxs.length > 0) && (
+                                                        {archivedDebtPeriods.length > 0 && (
                                                             <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
                                                                 <div className="flex items-center space-x-1.5 space-x-reverse text-xs font-bold text-slate-400">
                                                                     <Icon name="archive" className="w-3.5 h-3.5" />
@@ -5199,7 +5270,7 @@
                                                                 {archivedDebtPeriods.map(period => (
                                                                     <div 
                                                                         key={period.id}
-                                                                        onClick={() => setShowCompletedExportModal({ show: true, contact: selectedContact, type: 'debt', period })}
+                                                                        onClick={() => openArchivedPeriodDetail(period)}
                                                                         className="bg-slate-100/70 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700/60 p-3 rounded-2xl flex justify-between items-center opacity-75 hover:opacity-100 transition-all cursor-pointer">
                                                                         <div className="flex items-center space-x-2.5 space-x-reverse">
                                                                             <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">
@@ -5212,7 +5283,7 @@
                                                                         </div>
                                                                         <div className="flex items-center space-x-1.5 space-x-reverse">
                                                                             <span className="text-xs font-bold text-slate-500">{Number(period.totalAmount || 0).toLocaleString()} تومان</span>
-                                                                            <Icon name="download" className="w-3.5 h-3.5 text-slate-400" />
+                                                                            <Icon name="chevron-left" className="w-3.5 h-3.5 text-slate-400" />
                                                                         </div>
                                                                     </div>
                                                                 ))}
@@ -5229,17 +5300,27 @@
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-center mb-1">
                                                 <div className="text-[10px] font-bold text-slate-400">طلب‌ها و دریافتی‌ها</div>
-                                                <button 
-                                                    onClick={() => setShowCompletedExportModal({ show: true, contact: selectedContact, type: 'demand' })}
-                                                    className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200/60 dark:border-emerald-800/40 flex items-center space-x-1 space-x-reverse hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors">
-                                                    <Icon name="download" className="w-3 h-3" />
-                                                    <span>خروجی پرونده</span>
-                                                </button>
                                             </div>
                                             {(() => {
                                                 const contactDemands = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
-                                                const archivedDemandPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'demand');
+                                                let archivedDemandPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'demand');
                                                 const archivedDemandTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && t.periodId);
+
+                                                if (archivedDemandPeriods.length === 0 && archivedDemandTxs.length > 0) {
+                                                    let sum = 0;
+                                                    archivedDemandTxs.forEach(t => { if (t.type === 'demand') sum += Math.abs(t.amount); });
+                                                    archivedDemandPeriods = [{
+                                                        id: archivedDemandTxs[0].periodId || ('p_auto_demand_' + selectedContact.id),
+                                                        contactId: selectedContact.id,
+                                                        contactName: `${selectedContact.firstName} ${selectedContact.lastName}`,
+                                                        type: 'demand',
+                                                        title: `دوره تسویه‌شده طلب از ${selectedContact.firstName} ${selectedContact.lastName}`,
+                                                        totalAmount: sum,
+                                                        startDate: archivedDemandTxs[archivedDemandTxs.length - 1]?.dateStr || 'نامشخص',
+                                                        endDate: archivedDemandTxs[0]?.dateStr || 'امروز',
+                                                        transactions: archivedDemandTxs
+                                                    }];
+                                                }
 
                                                 return (
                                                     <div className="space-y-2">
@@ -5281,7 +5362,7 @@
                                                         )}
 
                                                         {/* Archived Demand Periods / Closed Cycles */}
-                                                        {(archivedDemandPeriods.length > 0 || archivedDemandTxs.length > 0) && (
+                                                        {archivedDemandPeriods.length > 0 && (
                                                             <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
                                                                 <div className="flex items-center space-x-1.5 space-x-reverse text-xs font-bold text-slate-400">
                                                                     <Icon name="archive" className="w-3.5 h-3.5" />
@@ -5290,7 +5371,7 @@
                                                                 {archivedDemandPeriods.map(period => (
                                                                     <div 
                                                                         key={period.id}
-                                                                        onClick={() => setShowCompletedExportModal({ show: true, contact: selectedContact, type: 'demand', period })}
+                                                                        onClick={() => openArchivedPeriodDetail(period)}
                                                                         className="bg-slate-100/70 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700/60 p-3 rounded-2xl flex justify-between items-center opacity-75 hover:opacity-100 transition-all cursor-pointer">
                                                                         <div className="flex items-center space-x-2.5 space-x-reverse">
                                                                             <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">
@@ -5303,7 +5384,7 @@
                                                                         </div>
                                                                         <div className="flex items-center space-x-1.5 space-x-reverse">
                                                                             <span className="text-xs font-bold text-slate-500">{Number(period.totalAmount || 0).toLocaleString()} تومان</span>
-                                                                            <Icon name="download" className="w-3.5 h-3.5 text-slate-400" />
+                                                                            <Icon name="chevron-left" className="w-3.5 h-3.5 text-slate-400" />
                                                                         </div>
                                                                     </div>
                                                                 ))}
@@ -5496,6 +5577,162 @@
                                     className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-3 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 space-x-reverse shadow-sm active:scale-95 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50">
                                     <Icon name="file-output" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                     <span>خروجی پرونده وام</span>
+                                </button>
+                            </div>
+                            </SwipeBackWrapper>
+                        )}
+
+                        {/* Archived Settlement Period Detail Tab */}
+                        {currentTab === 'archived-period-detail' && selectedPeriod && (
+                            <SwipeBackWrapper onBack={() => setCurrentTab(loanReturnTab || 'contact-detail')}>
+                            <div className="space-y-4 animate-fade-in">
+                                {/* Header */}
+                                <div className="flex justify-between items-center py-2">
+                                    <button 
+                                        onClick={() => setCurrentTab(loanReturnTab || 'contact-detail')} 
+                                        className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
+                                        <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                                    </button>
+                                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                        {selectedPeriod.title || (selectedPeriod.type === 'debt' ? 'پرونده بدهی تسویه‌شده' : 'پرونده طلب تسویه‌شده')}
+                                    </h3>
+                                    <div className="w-9 h-9"></div>
+                                </div>
+
+                                {/* Contact Header Card */}
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+                                    <div className="flex items-center space-x-3 space-x-reverse">
+                                        <div className={`w-11 h-11 rounded-full ${getAvatarColor(selectedPeriod.contactId, selectedPeriod.contactName)} text-white text-base font-bold flex items-center justify-center shadow-sm`}>
+                                            <Icon name="user" className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                {selectedPeriod.contactName || (selectedContact ? `${selectedContact.firstName} ${selectedContact.lastName}` : 'مخاطب')}
+                                            </h4>
+                                            <div className="text-[10px] text-slate-400 mt-0.5">
+                                                {selectedPeriod.type === 'debt' ? 'دوره تسویه‌شده بدهی' : 'دوره تسویه‌شده طلب'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40 flex items-center space-x-1 space-x-reverse">
+                                        <Icon name="check-circle-2" className="w-3.5 h-3.5" />
+                                        <span>تسویه‌شده</span>
+                                    </span>
+                                </div>
+
+                                {/* Summary Card */}
+                                {(() => {
+                                    let periodTxs = transactions.filter(t => t.periodId === selectedPeriod.id);
+                                    if (periodTxs.length === 0 && selectedPeriod.transactions && selectedPeriod.transactions.length > 0) {
+                                        periodTxs = selectedPeriod.transactions;
+                                    }
+                                    const isDebt = selectedPeriod.type === 'debt';
+                                    const calculatedTotalAmt = periodTxs.reduce((sum, t) => {
+                                        if (t.type === selectedPeriod.type) return sum + Math.abs(t.amount);
+                                        return sum;
+                                    }, 0);
+                                    const totalAmt = calculatedTotalAmt > 0 ? calculatedTotalAmt : (selectedPeriod.totalAmount || 0);
+
+                                    return (
+                                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-2.5 text-xs">
+                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
+                                                <span className="text-slate-400">مبلغ کل تسویه‌شده</span>
+                                                <span className={`font-extrabold text-sm ${isDebt ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                                    {Number(totalAmt).toLocaleString()} تومان
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
+                                                <span className="text-slate-400">تعداد تراکنش‌های دوره</span>
+                                                <span className="font-bold text-slate-800 dark:text-slate-200">{periodTxs.length} مورد</span>
+                                            </div>
+                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
+                                                <span className="text-slate-400">تاریخ شروع دوره</span>
+                                                <span className="font-bold text-slate-700 dark:text-slate-300">{formatDateToNumericJalali(selectedPeriod.startDate) || 'نامشخص'}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
+                                                <span className="text-slate-400">تاریخ پایان و تسویه</span>
+                                                <span className="font-bold text-slate-700 dark:text-slate-300">{formatDateToNumericJalali(selectedPeriod.endDate) || 'امروز'}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
+                                                <span className="text-slate-400">نوع پرونده</span>
+                                                <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                                                    {isDebt ? 'تسویه کامل بدهی' : 'تسویه کامل طلب'}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center py-1">
+                                                <span className="text-slate-400">وضعیت پرونده</span>
+                                                <span className="font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-lg">
+                                                    بسته و تسویه‌شده
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
+
+                                {/* Transactions List */}
+                                <div className="space-y-2 pt-1">
+                                    {(() => {
+                                        let periodTxs = transactions.filter(t => t.periodId === selectedPeriod.id);
+                                        if (periodTxs.length === 0 && selectedPeriod.transactions && selectedPeriod.transactions.length > 0) {
+                                            periodTxs = selectedPeriod.transactions;
+                                        }
+                                        const isDebt = selectedPeriod.type === 'debt';
+
+                                        return (
+                                            <>
+                                                <div className="flex justify-between items-center">
+                                                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                                                        سوابق و تراکنش‌های این دوره ({periodTxs.length})
+                                                    </h4>
+                                                </div>
+
+                                                {periodTxs.length === 0 ? (
+                                                    <div className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                        هیچ تراکنشی برای این دوره یافت نشد.
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-2">
+                                                        {periodTxs.map((tx, idx) => {
+                                                            const txType = tx.type;
+                                                            const isRepay = txType === 'debt_repayment' || txType === 'demand_repayment';
+                                                            const editWizardType = isDebt 
+                                                                ? (isRepay ? 'debt_repayment' : 'debt')
+                                                                : (isRepay ? 'demand_repayment' : 'demand');
+
+                                                            return (
+                                                                <SwipeableTxCard
+                                                                    key={tx.id || idx}
+                                                                    tx={tx}
+                                                                    colorType={isDebt ? 'rose' : 'emerald'}
+                                                                    onEdit={(txItem) => openStackWizard(editWizardType, 'edit', txItem)}
+                                                                    onDelete={(txItem) => setDeleteTxModal({ show: true, tx: txItem, type: isDebt ? 'debt' : 'demand' })}
+                                                                />
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
+                                </div>
+
+                                {/* Export Button */}
+                                <button 
+                                    onClick={() => {
+                                        let periodTxs = transactions.filter(t => t.periodId === selectedPeriod.id);
+                                        if (periodTxs.length === 0 && selectedPeriod.transactions && selectedPeriod.transactions.length > 0) {
+                                            periodTxs = selectedPeriod.transactions;
+                                        }
+                                        const exportObj = {
+                                            ...selectedPeriod,
+                                            transactions: periodTxs
+                                        };
+                                        exportPeriodAsPNG(exportObj);
+                                        showToast('خروجی PNG دوره تسویه ساخته و دانلود شد');
+                                    }}
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3 rounded-2xl text-xs flex items-center justify-center space-x-2 space-x-reverse shadow-md transition-all">
+                                    <Icon name="download" className="w-4 h-4" />
+                                    <span>دانلود خروجی تصویر پرونده (PNG)</span>
                                 </button>
                             </div>
                             </SwipeBackWrapper>
