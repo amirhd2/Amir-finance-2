@@ -9,6 +9,17 @@
   "latestVersion": "1.1.16",
   "isUpdateAvailable": false,
   "history": [
+        {
+      "version": "1.1.17",
+      "buildNumber": 145,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "b144pwa",
+      "commitMessage": "fixing new swipe layout",
+      "changes": [
+        "  برطرف کردن نسبی مشکل سوایپ برای بازگشت به صفحه قبل "
+      ]
+    },
     {
       "version": "1.1.16",
       "buildNumber": 144,
