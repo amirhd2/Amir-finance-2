@@ -1155,150 +1155,258 @@
         }
 
         function SwipeBackWrapper({ onBack, enabled = true, children, className = "" }) {
-            const [translateX, setTranslateX] = useState(0);
-            const [isDragging, setIsDragging] = useState(false);
-            const startXRef = useRef(0);
-            const startYRef = useRef(0);
-            const isEdgeSwipeRef = useRef(false);
             const containerRef = useRef(null);
-            const containerWidthRef = useRef(360);
+            const backdropRef = useRef(null);
 
-            const handleStart = (clientX, clientY) => {
-                if (!enabled || !onBack) return;
-                const container = containerRef.current;
-                if (!container) return;
-                
-                const rect = container.getBoundingClientRect();
-                containerWidthRef.current = rect.width || window.innerWidth || 360;
-                const relativeX = clientX - rect.left;
-
-                // Trigger if gesture starts within 64px from left edge of container
-                if (relativeX >= -10 && relativeX <= 64) {
-                    startXRef.current = clientX;
-                    startYRef.current = clientY;
-                    isEdgeSwipeRef.current = true;
-                    setIsDragging(true);
-                }
-            };
-
-            const handleMove = (clientX, clientY, e) => {
-                if (!isEdgeSwipeRef.current || !enabled) return;
-
-                const deltaX = clientX - startXRef.current;
-                const deltaY = Math.abs(clientY - startYRef.current);
-
-                // If primary motion is horizontal to the right
-                if (deltaX > 0 && deltaX > deltaY) {
-                    setTranslateX(deltaX);
-                    if (e && e.cancelable) {
-                        e.preventDefault();
-                    }
-                } else if (deltaX <= 0) {
-                    setTranslateX(0);
-                }
-            };
-
-            const handleEnd = () => {
-                if (!isEdgeSwipeRef.current || !enabled) return;
-                isEdgeSwipeRef.current = false;
-                setIsDragging(false);
-
-                const width = containerWidthRef.current;
-                const threshold = Math.min(100, width * 0.25);
-
-                if (translateX >= threshold) {
-                    setTranslateX(width);
-                    setTimeout(() => {
-                        setTranslateX(0);
-                        if (onBack) onBack();
-                    }, 220);
-                } else {
-                    setTranslateX(0);
-                }
-            };
+            const gestureRef = useRef({
+                isCandidate: false,
+                isActive: false,
+                startX: 0,
+                startY: 0,
+                currentX: 0,
+                currentY: 0,
+                lastX: 0,
+                lastTime: 0,
+                velocity: 0,
+                containerWidth: 360,
+                rafId: null
+            });
 
             useEffect(() => {
-                const onWindowPointerMove = (e) => {
-                    if (isEdgeSwipeRef.current) {
-                        handleMove(e.clientX, e.clientY, e);
+                if (!enabled || !onBack) return;
+
+                const container = containerRef.current;
+                if (!container) return;
+
+                const EDGE_THRESHOLD = 32; // Active zone from physical left edge (0px to 32px)
+
+                const updateDOM = (tx, width, animate = false, transitionStyle = '') => {
+                    if (!containerRef.current) return;
+                    const currentWidth = width || gestureRef.current.containerWidth || 360;
+                    const ratio = Math.max(0, Math.min(1, tx / currentWidth));
+
+                    if (animate) {
+                        containerRef.current.style.transition = transitionStyle || 'transform 260ms cubic-bezier(0.32, 0.72, 0, 1)';
+                    } else {
+                        containerRef.current.style.transition = 'none';
+                    }
+
+                    containerRef.current.style.transform = tx > 0 ? `translate3d(${tx}px, 0, 0)` : '';
+                    containerRef.current.style.boxShadow = tx > 0 ? `-16px 0 36px rgba(0, 0, 0, ${0.15 + ratio * 0.2})` : '';
+
+                    if (backdropRef.current) {
+                        if (animate) {
+                            backdropRef.current.style.transition = 'opacity 260ms ease-out';
+                        } else {
+                            backdropRef.current.style.transition = 'none';
+                        }
+                        backdropRef.current.style.opacity = (ratio * 0.45).toFixed(3);
+                        backdropRef.current.style.display = tx > 0 ? 'block' : 'none';
                     }
                 };
 
-                const onWindowPointerUp = () => {
-                    if (isEdgeSwipeRef.current) {
-                        handleEnd();
+                const onTouchStart = (e) => {
+                    if (e.touches.length !== 1) return;
+                    const touch = e.touches[0];
+                    const rect = container.getBoundingClientRect();
+                    const relX = touch.clientX - rect.left;
+
+                    if (relX >= 0 && relX <= EDGE_THRESHOLD) {
+                        gestureRef.current = {
+                            isCandidate: true,
+                            isActive: false,
+                            startX: touch.clientX,
+                            startY: touch.clientY,
+                            currentX: touch.clientX,
+                            currentY: touch.clientY,
+                            lastX: touch.clientX,
+                            lastTime: performance.now(),
+                            velocity: 0,
+                            containerWidth: rect.width || window.innerWidth || 360,
+                            rafId: null
+                        };
+                    } else {
+                        gestureRef.current.isCandidate = false;
+                        gestureRef.current.isActive = false;
                     }
                 };
 
-                const onWindowTouchMove = (e) => {
-                    if (isEdgeSwipeRef.current && e.touches && e.touches[0]) {
-                        handleMove(e.touches[0].clientX, e.touches[0].clientY, e);
+                const onTouchMove = (e) => {
+                    const g = gestureRef.current;
+                    if (!g.isCandidate || e.touches.length !== 1) return;
+
+                    const touch = e.touches[0];
+                    const dx = touch.clientX - g.startX;
+                    const dy = Math.abs(touch.clientY - g.startY);
+
+                    const now = performance.now();
+                    const dt = now - g.lastTime;
+                    if (dt > 0) {
+                        g.velocity = (touch.clientX - g.lastX) / dt;
+                    }
+                    g.lastX = touch.clientX;
+                    g.lastTime = now;
+
+                    if (!g.isActive) {
+                        if (dy > 12 || dx < -5 || (dy > dx && dx > 4)) {
+                            g.isCandidate = false;
+                            return;
+                        }
+
+                        if (dx >= 8 && dx > dy * 1.2) {
+                            g.isActive = true;
+                        }
+                    }
+
+                    if (g.isActive) {
+                        if (e.cancelable) {
+                            e.preventDefault();
+                        }
+
+                        const tx = Math.max(0, dx - 8);
+                        g.currentX = tx;
+
+                        if (g.rafId) cancelAnimationFrame(g.rafId);
+                        g.rafId = requestAnimationFrame(() => {
+                            updateDOM(tx, g.containerWidth, false);
+                        });
                     }
                 };
 
-                const onWindowTouchEnd = () => {
-                    if (isEdgeSwipeRef.current) {
-                        handleEnd();
+                const onTouchEnd = (e) => {
+                    const g = gestureRef.current;
+                    if (!g.isCandidate) return;
+
+                    if (g.rafId) cancelAnimationFrame(g.rafId);
+
+                    if (g.isActive) {
+                        const tx = g.currentX;
+                        const width = g.containerWidth;
+                        const threshold = width * 0.35;
+                        const isFlick = g.velocity > 0.35 && tx > 25;
+                        const shouldPop = tx >= threshold || isFlick;
+
+                        if (shouldPop) {
+                            updateDOM(width, width, true, 'transform 240ms cubic-bezier(0.32, 0.72, 0, 1)');
+                            setTimeout(() => {
+                                updateDOM(0, width, false);
+                                if (onBack) onBack();
+                            }, 240);
+                        } else {
+                            updateDOM(0, width, true, 'transform 220ms cubic-bezier(0.2, 0.9, 0.3, 1)');
+                            setTimeout(() => {
+                                updateDOM(0, width, false);
+                            }, 220);
+                        }
+                    }
+
+                    g.isCandidate = false;
+                    g.isActive = false;
+                };
+
+                const onPointerDown = (e) => {
+                    if (e.pointerType === 'touch') return;
+                    const rect = container.getBoundingClientRect();
+                    const relX = e.clientX - rect.left;
+
+                    if (relX >= 0 && relX <= EDGE_THRESHOLD) {
+                        gestureRef.current = {
+                            isCandidate: true,
+                            isActive: false,
+                            startX: e.clientX,
+                            startY: e.clientY,
+                            currentX: e.clientX,
+                            currentY: e.clientY,
+                            lastX: e.clientX,
+                            lastTime: performance.now(),
+                            velocity: 0,
+                            containerWidth: rect.width || window.innerWidth || 360,
+                            rafId: null
+                        };
                     }
                 };
 
-                window.addEventListener('pointermove', onWindowPointerMove, { passive: false });
-                window.addEventListener('pointerup', onWindowPointerUp);
-                window.addEventListener('pointercancel', onWindowPointerUp);
+                const onPointerMove = (e) => {
+                    if (e.pointerType === 'touch') return;
+                    const g = gestureRef.current;
+                    if (!g.isCandidate) return;
 
-                window.addEventListener('touchmove', onWindowTouchMove, { passive: false });
-                window.addEventListener('touchend', onWindowTouchEnd);
-                window.addEventListener('touchcancel', onWindowTouchEnd);
+                    const dx = e.clientX - g.startX;
+                    const dy = Math.abs(e.clientY - g.startY);
+
+                    const now = performance.now();
+                    const dt = now - g.lastTime;
+                    if (dt > 0) g.velocity = (e.clientX - g.lastX) / dt;
+                    g.lastX = e.clientX;
+                    g.lastTime = now;
+
+                    if (!g.isActive) {
+                        if (dy > 12 || dx < -5 || (dy > dx && dx > 4)) {
+                            g.isCandidate = false;
+                            return;
+                        }
+                        if (dx >= 8 && dx > dy * 1.2) {
+                            g.isActive = true;
+                        }
+                    }
+
+                    if (g.isActive) {
+                        if (e.cancelable) e.preventDefault();
+                        const tx = Math.max(0, dx - 8);
+                        g.currentX = tx;
+
+                        if (g.rafId) cancelAnimationFrame(g.rafId);
+                        g.rafId = requestAnimationFrame(() => {
+                            updateDOM(tx, g.containerWidth, false);
+                        });
+                    }
+                };
+
+                const onPointerUp = (e) => {
+                    if (e.pointerType === 'touch') return;
+                    onTouchEnd(e);
+                };
+
+                container.addEventListener('touchstart', onTouchStart, { passive: true });
+                container.addEventListener('touchmove', onTouchMove, { passive: false });
+                container.addEventListener('touchend', onTouchEnd, { passive: true });
+                container.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+                container.addEventListener('pointerdown', onPointerDown);
+                window.addEventListener('pointermove', onPointerMove, { passive: false });
+                window.addEventListener('pointerup', onPointerUp);
+                window.addEventListener('pointercancel', onPointerUp);
 
                 return () => {
-                    window.removeEventListener('pointermove', onWindowPointerMove);
-                    window.removeEventListener('pointerup', onWindowPointerUp);
-                    window.removeEventListener('pointercancel', onWindowPointerUp);
+                    container.removeEventListener('touchstart', onTouchStart);
+                    container.removeEventListener('touchmove', onTouchMove);
+                    container.removeEventListener('touchend', onTouchEnd);
+                    container.removeEventListener('touchcancel', onTouchEnd);
 
-                    window.removeEventListener('touchmove', onWindowTouchMove);
-                    window.removeEventListener('touchend', onWindowTouchEnd);
-                    window.removeEventListener('touchcancel', onWindowTouchEnd);
+                    container.removeEventListener('pointerdown', onPointerDown);
+                    window.removeEventListener('pointermove', onPointerMove);
+                    window.removeEventListener('pointerup', onPointerUp);
+                    window.removeEventListener('pointercancel', onPointerUp);
+
+                    if (gestureRef.current.rafId) {
+                        cancelAnimationFrame(gestureRef.current.rafId);
+                    }
                 };
-            }, [translateX, enabled, onBack]);
-
-            const onPointerDown = (e) => {
-                handleStart(e.clientX, e.clientY);
-            };
-
-            const onTouchStart = (e) => {
-                if (e.touches && e.touches[0]) {
-                    handleStart(e.touches[0].clientX, e.touches[0].clientY);
-                }
-            };
-
-            const progress = containerWidthRef.current ? Math.min(1, translateX / containerWidthRef.current) : 0;
+            }, [enabled, onBack]);
 
             return (
                 <div 
                     ref={containerRef}
-                    onPointerDown={onPointerDown}
-                    onTouchStart={onTouchStart}
-                    className={`relative w-full min-h-full touch-pan-y ${className}`}
+                    className={`relative w-full min-h-full ${className}`}
                     style={{
-                        transform: translateX > 0 ? `translate3d(${translateX}px, 0, 0)` : 'none',
-                        transition: isDragging ? 'none' : 'transform 260ms cubic-bezier(0.16, 1, 0.3, 1)',
-                        boxShadow: translateX > 0 ? '-12px 0 32px rgba(0, 0, 0, 0.2)' : 'none',
                         willChange: 'transform'
                     }}
                 >
-                    {/* Left edge grab target strip to ensure touch/pointer events near left edge are easily caught */}
                     <div 
-                        className="absolute top-0 bottom-0 left-0 w-12 z-30 select-none cursor-grab active:cursor-grabbing"
-                        style={{ touchAction: 'pan-y' }}
+                        ref={backdropRef}
+                        className="fixed inset-0 bg-slate-950 pointer-events-none z-[-1]"
+                        style={{ opacity: 0, display: 'none' }}
                     />
-
-                    {/* Dark backdrop shadow indicator underneath sliding view */}
-                    {translateX > 0 && (
-                        <div 
-                            className="fixed inset-0 bg-slate-950/40 pointer-events-none z-[-1] transition-opacity duration-200"
-                            style={{ opacity: progress * 0.5 }}
-                        />
-                    )}
 
                     {children}
                 </div>
@@ -1563,6 +1671,76 @@
             );
         }
 
+        function GlobalConfirmDialog({
+            isOpen,
+            title,
+            message,
+            details = [],
+            iconName = "trash-2",
+            iconBgColor = "bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400",
+            confirmLabel = "حذف",
+            cancelLabel = "انصراف",
+            isDestructive = true,
+            onConfirm = () => {},
+            onCancel = () => {},
+            allowBackdropClose = true
+        }) {
+            if (!isOpen) return null;
+
+            return (
+                <div 
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget && allowBackdropClose) {
+                            onCancel();
+                        }
+                    }}
+                    className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in transition-opacity duration-300"
+                >
+                    <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl w-full max-w-xs sm:max-w-sm rounded-[28px] p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700/80 animate-scale-up transform transition-all duration-300">
+                        <div className={`w-14 h-14 rounded-full ${iconBgColor} mx-auto flex items-center justify-center shadow-sm active:scale-95 transition-transform duration-200`}>
+                            <Icon name={iconName} className="w-7 h-7" />
+                        </div>
+                        
+                        <div className="space-y-1.5">
+                            <h4 className="text-base font-extrabold text-slate-900 dark:text-white">{title}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                {message}
+                            </p>
+
+                            {details && details.length > 0 && (
+                                <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-100 dark:border-slate-700/60 text-right space-y-1.5 text-xs">
+                                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block mb-1">موارد در حال حذف:</span>
+                                    {details.map((item, idx) => (
+                                        <div key={idx} className="flex items-center space-x-2 space-x-reverse text-slate-700 dark:text-slate-300 font-bold">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                                            <span>{item}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex space-x-2.5 space-x-reverse pt-2">
+                            <button 
+                                onClick={onConfirm}
+                                className={`flex-1 font-extrabold py-3 rounded-2xl text-xs shadow-md active:scale-[0.95] transition-all duration-150 ${
+                                    isDestructive 
+                                        ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-500/20' 
+                                        : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'
+                                }`}>
+                                {confirmLabel}
+                            </button>
+                            <button 
+                                onClick={onCancel}
+                                className="flex-1 bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-2xl text-xs active:scale-[0.95] transition-all duration-150">
+                                {cancelLabel}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
         function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo' }) {
             const [swiped, setSwiped] = useState(false);
             const touchStartX = useRef(0);
@@ -1693,6 +1871,7 @@
                     <div className="relative">
                         <Icon name="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
                         <input 
+                            autoFocus
                             type="text"
                             placeholder="جستجوی مخاطب (نام یا شماره تلفن)..."
                             value={searchQuery}
@@ -2489,6 +2668,9 @@
                 notes: ''
             });
 
+            // Global Confirmation Dialog State
+            const [confirmConfig, setConfirmConfig] = useState(null);
+
             // Contact Modals & Filters
             const [showAddContactModal, setShowAddContactModal] = useState(false);
             const [showEditContactModal, setShowEditContactModal] = useState(false);
@@ -2813,14 +2995,59 @@
                             showToast('فایل پشتیبان معتبر نمی‌باشد');
                             return;
                         }
-                        setPendingRestoreData(parsed);
-                        setShowRestoreConfirmModal(true);
+                        setConfirmConfig({
+                            title: 'بازیابی اطلاعات',
+                            message: 'آیا از بازیابی فایل پشتیبان اطمینان دارید؟ تمامی اطلاعات فعلی با اطلاعات فایل پشتیبان جایگزین خواهند شد.',
+                            iconName: 'upload-cloud',
+                            iconBgColor: 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400',
+                            confirmLabel: 'تأیید و بازیابی',
+                            cancelLabel: 'انصراف',
+                            isDestructive: false,
+                            onConfirm: () => {
+                                try {
+                                    if (Array.isArray(parsed.contacts)) setContacts(parsed.contacts);
+                                    if (Array.isArray(parsed.loans)) setLoans(parsed.loans);
+                                    if (Array.isArray(parsed.transactions)) setTransactions(parsed.transactions);
+                                    if (Array.isArray(parsed.reminders)) setReminders(parsed.reminders);
+                                    if (Array.isArray(parsed.completedPeriods)) setCompletedPeriods(parsed.completedPeriods);
+                                    if (parsed.theme) setTheme(parsed.theme);
+                                    showToast('اطلاعات دیتابیس با موفقیت بازیابی شد');
+                                } catch (err) {
+                                    showToast('خطا در اعمال اطلاعات پشتیبان');
+                                }
+                                setConfirmConfig(null);
+                            },
+                            onCancel: () => setConfirmConfig(null)
+                        });
                     } catch (err) {
                         showToast('خطا در خواندن فایل پشتیبان');
                     }
                 };
                 reader.readAsText(file);
                 e.target.value = '';
+            };
+
+            const handleResetDatabaseClick = () => {
+                setConfirmConfig({
+                    title: 'حذف کلیه اطلاعات',
+                    message: 'آیا از پاکسازی کامل دیتابیس اطمینان دارید؟ تمام مخاطبین، وام‌ها، طلب‌ها، بدهی‌ها و تراکنش‌ها به صورت دائمی حذف خواهند شد.',
+                    details: [
+                        'تمام مخاطبین و حساب‌ها',
+                        'تمام پرونده‌های وام',
+                        'تمام طلب‌ها و بدهی‌ها',
+                        'سوابق و تراکنش‌ها'
+                    ],
+                    iconName: 'alert-triangle',
+                    iconBgColor: 'bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400',
+                    confirmLabel: 'حذف کامل',
+                    cancelLabel: 'انصراف',
+                    isDestructive: true,
+                    onConfirm: () => {
+                        handleConfirmDeleteAllData();
+                        setConfirmConfig(null);
+                    },
+                    onCancel: () => setConfirmConfig(null)
+                });
             };
 
             const handleConfirmRestoreData = () => {
@@ -2885,10 +3112,33 @@
                 showToast(`${label} کپی شد`);
             };
 
-            const handleConfirmDeleteTx = () => {
-                if (!deleteTxModal.tx) return;
-                const txToDelete = deleteTxModal.tx;
-                const txType = deleteTxModal.type;
+            const requestDeleteTx = (txItem, type) => {
+                if (!txItem) return;
+                const amtFormatted = Math.abs(txItem.amount || 0).toLocaleString('fa-IR');
+                const titleStr = txItem.title || (type === 'loan_installment' ? 'پرداخت قسط' : (type === 'debt' ? 'تراکنش بدهی' : 'تراکنش طلب'));
+
+                setConfirmConfig({
+                    title: 'حذف تراکنش',
+                    message: 'آیا از حذف این تراکنش اطمینان دارید؟',
+                    details: [
+                        `عنوان: ${titleStr}`,
+                        `مبلغ: ${amtFormatted} تومان`
+                    ],
+                    iconName: 'trash-2',
+                    iconBgColor: 'bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400',
+                    confirmLabel: 'حذف تراکنش',
+                    cancelLabel: 'انصراف',
+                    isDestructive: true,
+                    onConfirm: () => {
+                        performDeleteTx(txItem, type);
+                        setConfirmConfig(null);
+                    },
+                    onCancel: () => setConfirmConfig(null)
+                });
+            };
+
+            const performDeleteTx = (txToDelete, txType) => {
+                if (!txToDelete) return;
 
                 if (txType === 'loan_installment') {
                     const updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
@@ -3007,8 +3257,6 @@
                     }
                     showToast('تراکنش طلب با موفقیت حذف گردید');
                 }
-
-                setDeleteTxModal({ show: false, tx: null, type: null });
             };
 
             const exportPeriodAsPNG = (period) => {
@@ -3177,7 +3425,7 @@
                             notes: data.notes || ''
                         });
                     } else {
-                        const passedContactId = (data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : '');
+                        const passedContactId = (data && data.fromFab) ? '' : ((data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : ''));
                         const defaultContact = contacts.find(c => c.id === Number(passedContactId));
                         const defaultName = defaultContact ? `${defaultContact.firstName} ${defaultContact.lastName}` : '';
                         setLoanForm({
@@ -3198,7 +3446,7 @@
                         });
                     }
                 } else if (type === 'demand' || type === 'debt') {
-                    const passedContactId = (data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : '');
+                    const passedContactId = (data && data.fromFab) ? '' : ((data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : ''));
                     const isEditTx = mode === 'edit' && data && data.id;
                     const editAmt = isEditTx ? Math.abs(data.amount || 0) : (mode === 'edit' && data && data.amount ? Math.abs(data.amount || 0) : '');
                     const editNotes = (mode === 'edit' && data && data.notes) ? data.notes : '';
@@ -3219,7 +3467,7 @@
                         const total = (l.totalRepayment > 0) ? l.totalRepayment : l.principalAmount;
                         return (total - paid) > 0;
                     });
-                    const activeTargetLoan = passedLoan || selectedLoan || (selectedContact ? activeLoans.find(l => l.contactId === selectedContact.id) : null) || (activeLoans.length > 0 ? activeLoans[0] : null);
+                    const activeTargetLoan = isFromFab ? null : (passedLoan || selectedLoan || (selectedContact ? activeLoans.find(l => l.contactId === selectedContact.id) : null) || (activeLoans.length > 0 ? activeLoans[0] : null));
                     
                     const editLoanId = isEditTx ? (data.loanId || (activeTargetLoan ? activeTargetLoan.id : '')) : (activeTargetLoan ? activeTargetLoan.id : '');
                     const targetLoan = editLoanId ? (loans.find(l => l.id === Number(editLoanId)) || activeTargetLoan) : null;
@@ -3249,7 +3497,7 @@
                     const isEditTx = mode === 'edit' && data && data.id;
                     const editAmt = isEditTx ? Math.abs(data.amount || 0) : '';
                     const editNotes = (isEditTx && data && data.notes) ? data.notes : '';
-                    const passedContactId = (data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : '');
+                    const passedContactId = (data && data.fromFab) ? '' : ((data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : ''));
 
                     if (isEditTx && data && data.dateStr) {
                         const parsedDate = parseJalaliDateStr(data.dateStr);
@@ -3898,34 +4146,107 @@
             };
 
             const handleDeleteContact = () => {
-                if (!editContactForm.id) return;
-                setShowDeleteConfirmModal(true);
-            };
-
-            const confirmDeleteContact = () => {
                 const targetContactId = (selectedContact ? selectedContact.id : null) || editContactForm.id;
                 if (!targetContactId) return;
-                setContacts(prev => prev.filter(c => c.id !== targetContactId));
-                setLoans(prev => prev.filter(l => l.contactId !== targetContactId));
-                setTransactions(prev => prev.filter(t => t.contactId !== targetContactId));
-                setShowDeleteConfirmModal(false);
-                setShowEditContactModal(false);
-                if (selectedContact && selectedContact.id === targetContactId) {
-                    setSelectedContact(null);
-                    setCurrentTab('contacts');
-                }
-                showToast('مخاطب با موفقیت حذف گردید');
+                const targetContact = contacts.find(c => c.id === targetContactId);
+                const contactName = targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'این مخاطب';
+                const contactLoans = loans.filter(l => l.contactId === targetContactId);
+                const contactTxs = transactions.filter(t => t.contactId === targetContactId);
+
+                setConfirmConfig({
+                    title: 'حذف مخاطب',
+                    message: `آیا از حذف «${contactName}» اطمینان دارید؟ تمامی پرونده‌ها، وام‌ها و تراکنش‌های مربوط به این مخاطب نیز به صورت دائمی پاک خواهند شد.`,
+                    details: [
+                        `${contactLoans.length} پرونده وام`,
+                        `${contactTxs.length} تراکنش مرتبط`
+                    ],
+                    iconName: 'trash-2',
+                    iconBgColor: 'bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400',
+                    confirmLabel: 'حذف مخاطب',
+                    cancelLabel: 'انصراف',
+                    isDestructive: true,
+                    onConfirm: () => {
+                        setContacts(prev => prev.filter(c => c.id !== targetContactId));
+                        setLoans(prev => prev.filter(l => l.contactId !== targetContactId));
+                        setTransactions(prev => prev.filter(t => t.contactId !== targetContactId));
+                        setShowEditContactModal(false);
+                        if (selectedContact && selectedContact.id === targetContactId) {
+                            setSelectedContact(null);
+                            setCurrentTab('contacts');
+                        }
+                        setConfirmConfig(null);
+                        showToast('مخاطب با موفقیت حذف گردید');
+                    },
+                    onCancel: () => setConfirmConfig(null)
+                });
             };
 
-            const confirmDeleteLoan = () => {
-                if (!selectedLoan) return;
-                const loanIdToDelete = selectedLoan.id;
-                setLoans(prev => prev.filter(l => l.id !== loanIdToDelete));
-                setTransactions(prev => prev.filter(t => t.loanId !== loanIdToDelete));
-                setShowDeleteLoanModal(false);
-                setSelectedLoan(null);
-                setCurrentTab(loanReturnTab || 'accounts');
-                showToast('پرونده وام با موفقیت حذف گردید');
+            const handleDeleteLoanClick = (loan) => {
+                if (!loan) return;
+                const loanTxs = transactions.filter(t => t.loanId === loan.id);
+                const paymentTxs = loanTxs.filter(t => t.type === 'repayment');
+                const totalInstallmentsCount = loan.totalInstallments || loanTxs.length || 0;
+
+                setConfirmConfig({
+                    title: 'حذف پرونده وام',
+                    message: 'این وام شامل تاریخچه اقساط و تراکنش‌های مربوطه می‌باشد. حذف این وام، تمامی رکوردهای مرتبط را به صورت دائمی پاک خواهد کرد. این عملیات قابل بازگشت نیست.',
+                    details: [
+                        `${totalInstallmentsCount} قسط`,
+                        `${paymentTxs.length} پرداخت ثبت‌شده`,
+                        `${loanTxs.length} تراکنش مرتبط`
+                    ],
+                    iconName: 'trash-2',
+                    iconBgColor: 'bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400',
+                    confirmLabel: 'حذف',
+                    cancelLabel: 'انصراف',
+                    isDestructive: true,
+                    onConfirm: () => {
+                        const loanIdToDelete = loan.id;
+                        setLoans(prev => prev.filter(l => l.id !== loanIdToDelete));
+                        setTransactions(prev => prev.filter(t => t.loanId !== loanIdToDelete));
+                        setSelectedLoan(null);
+                        setCurrentTab(loanReturnTab || 'accounts');
+                        setConfirmConfig(null);
+                        showToast('پرونده وام با موفقیت حذف گردید');
+                    },
+                    onCancel: () => setConfirmConfig(null)
+                });
+            };
+
+            const handleDeleteArchivedPeriodClick = (period) => {
+                if (!period) return;
+                let periodTxs = transactions.filter(t => t.periodId === period.id);
+                if (periodTxs.length === 0 && period.transactions && period.transactions.length > 0) {
+                    periodTxs = period.transactions;
+                }
+                const repaymentTxs = periodTxs.filter(t => t.type === 'demand_repayment' || t.type === 'debt_repayment');
+                const startDateFormatted = formatDateToNumericJalali(period.startDate) || 'نامشخص';
+                const endDateFormatted = formatDateToNumericJalali(period.endDate) || 'امروز';
+
+                setConfirmConfig({
+                    title: 'حذف تسویه‌حساب آرشیو شده',
+                    message: 'این تسویه‌حساب آرشیو شده شامل تاریخچه کامل تراکنش‌ها می‌باشد. حذف آن، تسویه‌حساب و تمامی تراکنش‌های مربوطه را به صورت دائمی پاک خواهد کرد. این عملیات قابل بازگشت نیست.',
+                    details: [
+                        `${periodTxs.length} تراکنش مرتبط`,
+                        `${repaymentTxs.length} بازپرداخت/دریافت ثبت‌شده`,
+                        `دوره: ${startDateFormatted} تا ${endDateFormatted}`
+                    ],
+                    iconName: 'trash-2',
+                    iconBgColor: 'bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400',
+                    confirmLabel: 'حذف',
+                    cancelLabel: 'انصراف',
+                    isDestructive: true,
+                    onConfirm: () => {
+                        const periodIdToDelete = period.id;
+                        setCompletedPeriods(prev => prev.filter(p => p.id !== periodIdToDelete));
+                        setTransactions(prev => prev.filter(t => t.periodId !== periodIdToDelete));
+                        setSelectedPeriod(null);
+                        setCurrentTab(loanReturnTab || 'contact-detail');
+                        setConfirmConfig(null);
+                        showToast('تسویه‌حساب آرشیو شده با موفقیت حذف گردید');
+                    },
+                    onCancel: () => setConfirmConfig(null)
+                });
             };
 
             // Totals
@@ -5715,7 +6036,7 @@
                                                                         tx={tx}
                                                                         colorType="rose"
                                                                         onEdit={(txItem) => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem)}
-                                                                        onDelete={(txItem) => setDeleteTxModal({ show: true, tx: txItem, type: 'debt' })}
+                                                                        onDelete={(txItem) => requestDeleteTx(txItem, 'debt')}
                                                                     />
                                                                 );
                                                             })
@@ -5816,7 +6137,7 @@
                                                                         tx={tx}
                                                                         colorType="emerald"
                                                                         onEdit={(txItem) => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem)}
-                                                                        onDelete={(txItem) => setDeleteTxModal({ show: true, tx: txItem, type: 'demand' })}
+                                                                        onDelete={(txItem) => requestDeleteTx(txItem, 'demand')}
                                                                     />
                                                                 );
                                                             })
@@ -5897,7 +6218,7 @@
                                         <button onClick={() => openStackWizard('loan', 'edit', selectedLoan)} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
                                             <Icon name="pencil" className="w-4 h-4 text-slate-700 dark:text-slate-200" />
                                         </button>
-                                        <button onClick={() => setShowDeleteLoanModal(true)} className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400">
+                                        <button onClick={() => handleDeleteLoanClick(selectedLoan)} className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400">
                                             <Icon name="trash-2" className="w-4 h-4" />
                                         </button>
                                     </div>
@@ -6048,7 +6369,7 @@
                                                         totalCount={loanInstallmentTxs.length}
                                                         colorType="indigo"
                                                         onEdit={(txItem) => openStackWizard('installment', 'edit', txItem)}
-                                                        onDelete={(txItem) => setDeleteTxModal({ show: true, tx: txItem, type: 'loan_installment' })}
+                                                        onDelete={(txItem) => requestDeleteTx(txItem, 'loan_installment')}
                                                     />
                                                 ))}
                                             </div>
@@ -6080,7 +6401,12 @@
                                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
                                         {selectedPeriod.title || (selectedPeriod.type === 'debt' ? 'پرونده بدهی تسویه‌شده' : 'پرونده طلب تسویه‌شده')}
                                     </h3>
-                                    <div className="w-9 h-9"></div>
+                                    <button 
+                                        onClick={() => handleDeleteArchivedPeriodClick(selectedPeriod)} 
+                                        className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400"
+                                        title="حذف تسویه‌حساب آرشیو شده">
+                                        <Icon name="trash-2" className="w-4 h-4" />
+                                    </button>
                                 </div>
 
                                 {/* Contact Header Card */}
@@ -6189,7 +6515,7 @@
                                                                     tx={tx}
                                                                     colorType={isDebt ? 'rose' : 'emerald'}
                                                                     onEdit={(txItem) => openStackWizard(editWizardType, 'edit', txItem)}
-                                                                    onDelete={(txItem) => setDeleteTxModal({ show: true, tx: txItem, type: isDebt ? 'debt' : 'demand' })}
+                                                                    onDelete={(txItem) => requestDeleteTx(txItem, isDebt ? 'debt' : 'demand')}
                                                                 />
                                                             );
                                                         })}
@@ -6604,7 +6930,7 @@
                                                 </button>
 
                                                 <button 
-                                                    onClick={() => setShowResetConfirmModal(true)}
+                                                    onClick={handleResetDatabaseClick}
                                                     className="w-full bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white p-3 rounded-2xl font-bold text-xs shadow-md flex items-center justify-between active:scale-98 transition-all">
                                                     <div className="flex items-center space-x-2.5 space-x-reverse">
                                                         <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
@@ -7258,121 +7584,11 @@
                         </div>
                     )}
 
-                    {/* Modal: Confirm Delete Contact */}
-                    {showDeleteConfirmModal && (
-                        <div className="absolute inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 animate-fade-in">
-                            <div className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700 text-center animate-scale-up">
-                                <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center">
-                                    <Icon name="trash-2" className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">حذف مخاطب</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                                        آیا از حذف این مخاطب اطمینان دارید؟ تمام پرونده‌ها و تراکنش‌های مرتبط با این مخاطب نیز پاک خواهند شد.
-                                    </p>
-                                </div>
-                                <div className="flex space-x-2 space-x-reverse pt-1">
-                                    <button 
-                                        onClick={confirmDeleteContact}
-                                        className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all active:scale-95">
-                                        بله، حذف شود
-                                    </button>
-                                    <button 
-                                        onClick={() => setShowDeleteConfirmModal(false)}
-                                        className="flex-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
-                                        خیر، انصراف
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Modal: Confirm Delete Loan */}
-                    {showDeleteLoanModal && (
-                        <div className="absolute inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 animate-fade-in">
-                            <div className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700 text-center animate-scale-up">
-                                <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center">
-                                    <Icon name="trash-2" className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">حذف پرونده وام</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                                        آیا از حذف پرونده وام «{selectedLoan?.title}» اطمینان دارید؟ کلیه اقساط ثبت‌شده برای این وام نیز پاک خواهند شد.
-                                    </p>
-                                </div>
-                                <div className="flex space-x-2 space-x-reverse pt-1">
-                                    <button 
-                                        onClick={confirmDeleteLoan}
-                                        className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all active:scale-95">
-                                        بله، حذف شود
-                                    </button>
-                                    <button 
-                                        onClick={() => setShowDeleteLoanModal(false)}
-                                        className="flex-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
-                                        خیر، انصراف
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Modal: Confirm Database Restore */}
-                    {showRestoreConfirmModal && (
-                        <div className="absolute inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 animate-fade-in">
-                            <div className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700 text-center animate-scale-up">
-                                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center">
-                                    <Icon name="upload-cloud" className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">بازیابی اطلاعات</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                                        آیا از بازیابی فایل پشتیبان اطمینان دارید؟ تمامی اطلاعات فعلی با اطلاعات فایل پشتیبان جایگزین خواهند شد.
-                                    </p>
-                                </div>
-                                <div className="flex space-x-2 space-x-reverse pt-1">
-                                    <button 
-                                        onClick={handleConfirmRestoreData}
-                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all active:scale-95">
-                                        تأیید و بازیابی
-                                    </button>
-                                    <button 
-                                        onClick={() => { setShowRestoreConfirmModal(false); setPendingRestoreData(null); }}
-                                        className="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
-                                        انصراف
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Modal: Confirm Delete All Data */}
-                    {showResetConfirmModal && (
-                        <div className="absolute inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 animate-fade-in">
-                            <div className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700 text-center animate-scale-up">
-                                <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center">
-                                    <Icon name="alert-triangle" className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">حذف کلیه اطلاعات</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                                        آیا از پاکسازی کامل دیتابیس اطمینان دارید؟ تمام مخاطبین، وام‌ها، طلب‌ها، بدهی‌ها و تراکنش‌ها به صورت دائمی حذف خواهند شد.
-                                    </p>
-                                </div>
-                                <div className="flex space-x-2 space-x-reverse pt-1">
-                                    <button 
-                                        onClick={handleConfirmDeleteAllData}
-                                        className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all active:scale-95">
-                                        حذف کامل
-                                    </button>
-                                    <button 
-                                        onClick={() => setShowResetConfirmModal(false)}
-                                        className="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
-                                        انصراف
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    {/* Global Confirmation Dialog */}
+                    <GlobalConfirmDialog 
+                        isOpen={!!confirmConfig}
+                        {...confirmConfig}
+                    />
 
                 </div>
             );
