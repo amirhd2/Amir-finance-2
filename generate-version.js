@@ -41,7 +41,7 @@ function convertCommitToReleaseNote(commitMsg) {
 export function updateVersionData(newCommitMessage = null, commitType = 'patch', channel = 'Stable') {
   let data = {
     appName: "Amir Finance",
-    appLogo: "./apple-touch-icon.png",
+    appLogo: "/apple-touch-icon.png",
     installedVersion: "1.1.0",
     buildNumber: 128,
     releaseDate: new Date().toISOString().split('T')[0],

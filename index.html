@@ -5,16 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Amir Finance - مدیریت مالی شخصی</title>
 
-    <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <!-- Favicon & Application Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
+
+    <!-- Apple iOS Compatibility -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="A Finance" />
+    <meta name="apple-mobile-web-app-title" content="Amir Finance" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Web App Manifest -->
     <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- iOS Splash Screens / Apple Touch Startup Images -->
+    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(orientation: landscape)" />
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Vazirmatn -->
@@ -321,7 +341,7 @@
     <div id="root" class="w-full sm:max-w-[430px] h-[100vh] sm:h-[880px] bg-slate-50 dark:bg-slate-950 sm:rounded-[40px] shadow-2xl relative overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect, useRef, useMemo } = React;
 
         const avatarColors = [
             'bg-blue-600', 'bg-amber-600', 'bg-emerald-600', 'bg-indigo-600', 'bg-teal-600',
@@ -1015,18 +1035,23 @@
         
         function PullToRefresh({ onRefresh, children, className = "" }) {
             const containerRef = useRef(null);
-            const [pullHeight, setPullHeight] = useState(0);
+            const [pullY, setPullY] = useState(0);
             const [isRefreshing, setIsRefreshing] = useState(false);
             const touchStartRef = useRef({ x: 0, y: 0 });
             const isPullingRef = useRef(false);
 
+            const PULL_THRESHOLD = 52;
+
             const handleTouchStart = (e) => {
                 const container = containerRef.current;
                 if (!container || isRefreshing) return;
-                if (container.scrollTop <= 1) {
+
+                if (container.scrollTop <= 0) {
                     const touch = e.touches ? e.touches[0] : e;
                     touchStartRef.current = { x: touch.clientX, y: touch.clientY };
                     isPullingRef.current = true;
+                } else {
+                    isPullingRef.current = false;
                 }
             };
 
@@ -1039,14 +1064,15 @@
                 const deltaY = touch.clientY - touchStartRef.current.y;
                 const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
 
-                if (deltaY > 0 && deltaY > deltaX && container.scrollTop <= 1) {
-                    const damped = Math.min(75, Math.pow(deltaY, 0.8) * 0.65);
-                    setPullHeight(damped);
+                if (deltaY > 0 && deltaY > deltaX && container.scrollTop <= 0) {
+                    const damped = Math.min(80, Math.pow(deltaY, 0.82) * 0.72);
+                    setPullY(damped);
+
                     if (e.cancelable && deltaY > 10) {
                         e.preventDefault();
                     }
                 } else if (deltaY <= 0) {
-                    setPullHeight(0);
+                    setPullY(0);
                     isPullingRef.current = false;
                 }
             };
@@ -1055,9 +1081,9 @@
                 if (!isPullingRef.current && !isRefreshing) return;
                 isPullingRef.current = false;
 
-                if (pullHeight >= 48) {
+                if (pullY >= PULL_THRESHOLD) {
                     setIsRefreshing(true);
-                    setPullHeight(48);
+                    setPullY(48);
                     try {
                         if (onRefresh) {
                             await Promise.resolve(onRefresh());
@@ -1067,14 +1093,16 @@
                         console.error(err);
                     } finally {
                         setIsRefreshing(false);
-                        setPullHeight(0);
+                        setPullY(0);
                     }
                 } else {
-                    setPullHeight(0);
+                    setPullY(0);
                 }
             };
 
-            const progress = Math.min(1, pullHeight / 48);
+            const progress = Math.min(1, pullY / PULL_THRESHOLD);
+            const rotation = progress * 320;
+            const scale = isRefreshing ? 1 : Math.min(1, Math.max(0, (progress - 0.1) / 0.9));
 
             return (
                 <div 
@@ -1082,36 +1110,46 @@
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
-                    className={`relative overflow-y-auto hide-scrollbar overscroll-contain ${className}`}
+                    onTouchCancel={handleTouchEnd}
+                    className={`relative overflow-y-auto hide-scrollbar overscroll-y-contain ${className}`}
+                    style={{ WebkitOverflowScrolling: 'touch' }}
                 >
+                    {/* Floating Google Material Refresh Card Indicator */}
+                    {(pullY > 0 || isRefreshing) && (
+                        <div 
+                            className="absolute left-1/2 -translate-x-1/2 z-40 pointer-events-none"
+                            style={{
+                                top: '8px',
+                                transform: `translate3d(-50%, ${pullY}px, 0) scale(${scale})`,
+                                opacity: isRefreshing ? 1 : Math.min(1, pullY / 15),
+                                transition: isPullingRef.current ? 'none' : 'transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease'
+                            }}
+                        >
+                            <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-lg border border-slate-200/80 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                                {isRefreshing ? (
+                                    <div className="w-5 h-5 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin shrink-0" />
+                                ) : (
+                                    <div 
+                                        className="transition-transform duration-75 flex items-center justify-center"
+                                        style={{ transform: `rotate(${rotation}deg)` }}
+                                    >
+                                        <Icon name="refresh-cw" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Content Container */}
                     <div 
-                        className="w-full flex items-center justify-center overflow-hidden shrink-0 select-none pointer-events-none"
+                        className="w-full min-h-full"
                         style={{
-                            height: `${pullHeight}px`,
-                            transition: isPullingRef.current ? 'none' : 'height 250ms cubic-bezier(0.16, 1, 0.3, 1)'
+                            transform: pullY > 0 ? `translate3d(0, ${pullY * 0.35}px, 0)` : 'none',
+                            transition: isPullingRef.current ? 'none' : 'transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1)'
                         }}
                     >
-                        <div className="flex items-center space-x-2 space-x-reverse text-indigo-600 dark:text-indigo-400 py-1.5">
-                            {isRefreshing ? (
-                                <div className="flex items-center space-x-2 space-x-reverse bg-white/90 dark:bg-slate-800/90 px-3.5 py-1.5 rounded-full shadow-sm border border-slate-200/80 dark:border-slate-700/80 backdrop-blur-xs">
-                                    <div className="w-4 h-4 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin shrink-0" />
-                                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200">در حال بروزرسانی...</span>
-                                </div>
-                            ) : (
-                                <div 
-                                    className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/80 dark:border-slate-700 backdrop-blur-xs transition-transform"
-                                    style={{
-                                        transform: `rotate(${progress * 180}deg) scale(${0.7 + progress * 0.3})`,
-                                        opacity: Math.max(0.3, progress)
-                                    }}
-                                >
-                                    <Icon name="arrow-down" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                                </div>
-                            )}
-                        </div>
+                        {children}
                     </div>
-
-                    {children}
                 </div>
             );
         }
@@ -1240,7 +1278,7 @@
                     ref={containerRef}
                     onPointerDown={onPointerDown}
                     onTouchStart={onTouchStart}
-                    className={`relative w-full h-full touch-pan-y ${className}`}
+                    className={`relative w-full min-h-full touch-pan-y ${className}`}
                     style={{
                         transform: translateX > 0 ? `translate3d(${translateX}px, 0, 0)` : 'none',
                         transition: isDragging ? 'none' : 'transform 260ms cubic-bezier(0.16, 1, 0.3, 1)',
@@ -1563,7 +1601,7 @@
                         }}
                         className={`bg-white dark:bg-slate-800 p-3 flex items-center justify-between cursor-pointer transition-transform duration-200 z-10 relative ${swiped ? '-translate-x-20' : 'translate-x-0'}`}>
                         <div className="flex items-center space-x-2.5 space-x-reverse">
-                            <div className={`w-8 h-8 rounded-xl ${ (colorType === 'rose' || tx.type === 'demand_repayment' || tx.type === 'debt') ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : colorType === 'emerald' ? (isRepay ? 'bg-teal-100 dark:bg-teal-900/70 text-teal-600 dark:text-teal-300' : 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300') : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-bold text-xs shrink-0`}>
+                            <div className={`w-8 h-8 rounded-xl ${ tx.type === 'debt' ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : isRepay ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : colorType === 'rose' ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : colorType === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-bold text-xs shrink-0`}>
                                 {totalCount ? (totalCount - index) : <Icon name={isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-4 h-4" />}
                             </div>
                             <div>
@@ -1573,7 +1611,7 @@
                         </div>
 
                         <div className="flex items-center space-x-2 space-x-reverse">
-                            <span className={`text-xs font-bold ${(tx.type === 'debt' || tx.type === 'demand_repayment' || colorType === 'rose') ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                            <span className={`text-xs font-bold ${(tx.type === 'debt' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment')) ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                 {Math.abs(tx.amount).toLocaleString()} تومان
                             </span>
                             <button 
@@ -1904,7 +1942,7 @@
             // Application Version Management State
             const defaultVersionData = {
                 appName: "Amir Finance",
-                appLogo: "./apple-touch-icon.png",
+                appLogo: "/apple-touch-icon.png",
                 installedVersion: localStorage.getItem('amir_installed_version') || "1.1.8",
                 buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '136', 10),
                 releaseDate: "2026-07-28",
@@ -2344,6 +2382,137 @@
                 const saved = localStorage.getItem('amir_fin_txs_v2');
                 return saved ? JSON.parse(saved) : initialTransactions;
             });
+
+            const [accountsSearchQuery, setAccountsSearchQuery] = useState('');
+            const [showCompletedLoans, setShowCompletedLoans] = useState(() => {
+                try {
+                    return localStorage.getItem('showCompletedLoans') !== 'false';
+                } catch(e) {
+                    return true;
+                }
+            });
+
+            const getSettledPeriodCount = (contactId, type) => {
+                if (!contactId) return 0;
+                const directPeriods = completedPeriods.filter(p => p.contactId === contactId && p.type === type);
+                const archivedTxs = transactions.filter(t => t.contactId === contactId && t.periodId && (
+                    (type === 'debt' && (t.type === 'debt' || t.type === 'debt_repayment')) ||
+                    (type === 'demand' && (t.type === 'demand' || t.type === 'demand_repayment'))
+                ));
+                const pIds = new Set();
+                directPeriods.forEach(p => pIds.add(p.id));
+                archivedTxs.forEach(t => pIds.add(t.periodId));
+                return pIds.size;
+            };
+
+            const accountsQuery = accountsSearchQuery.trim().toLowerCase();
+
+            const filteredAccountsLoans = useMemo(() => {
+                let list = loans.filter(loan => {
+                    if (!accountsQuery) return true;
+                    const title = (loan.title || '').toLowerCase();
+                    const contactName = (loan.contactName || '').toLowerCase();
+                    const principal = (loan.principalAmount || '').toString();
+                    const repayment = (loan.totalRepayment || '').toString();
+                    const installment = (loan.installmentAmount || '').toString();
+                    const note = (loan.notes || loan.note || loan.description || '').toLowerCase();
+
+                    const matchDirect = title.includes(accountsQuery) ||
+                        contactName.includes(accountsQuery) ||
+                        principal.includes(accountsQuery) ||
+                        repayment.includes(accountsQuery) ||
+                        installment.includes(accountsQuery) ||
+                        note.includes(accountsQuery);
+
+                    if (matchDirect) return true;
+
+                    return transactions.some(t => t.loanId === loan.id && (
+                        (t.note || '').toLowerCase().includes(accountsQuery) ||
+                        (t.description || '').toLowerCase().includes(accountsQuery) ||
+                        (t.amount || '').toString().includes(accountsQuery) ||
+                        (t.dateStr || '').includes(accountsQuery)
+                    ));
+                });
+
+                if (!showCompletedLoans) {
+                    list = list.filter(loan => {
+                        const info = getLoanNextDueInfo(loan, transactions);
+                        return !info.isCompleted && (loan.remainingAmount === undefined || loan.remainingAmount > 0);
+                    });
+                }
+
+                return list.sort((a, b) => {
+                    const aCompleted = (getLoanNextDueInfo(a, transactions).isCompleted || (a.remainingAmount !== undefined && a.remainingAmount <= 0)) ? 1 : 0;
+                    const bCompleted = (getLoanNextDueInfo(b, transactions).isCompleted || (b.remainingAmount !== undefined && b.remainingAmount <= 0)) ? 1 : 0;
+                    return aCompleted - bCompleted;
+                });
+            }, [loans, transactions, accountsQuery, showCompletedLoans]);
+
+            const filteredAccountsDemands = useMemo(() => {
+                return contacts.filter(contact => {
+                    const settledCount = getSettledPeriodCount(contact.id, 'demand');
+                    const hasActiveDemand = contact.totalDemand > 0;
+                    if (!hasActiveDemand && settledCount === 0) return false;
+
+                    if (!accountsQuery) return hasActiveDemand;
+
+                    const fullName = `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase();
+                    const phone = (contact.phone || '').toLowerCase();
+                    const demandAmt = (contact.totalDemand || '').toString();
+
+                    if (fullName.includes(accountsQuery) || phone.includes(accountsQuery) || demandAmt.includes(accountsQuery)) {
+                        return true;
+                    }
+
+                    const matchTx = transactions.some(t => t.contactId === contact.id && (t.type === 'demand' || t.type === 'demand_repayment') && (
+                        (t.note || '').toLowerCase().includes(accountsQuery) ||
+                        (t.description || '').toLowerCase().includes(accountsQuery) ||
+                        (t.amount || '').toString().includes(accountsQuery) ||
+                        (t.dateStr || '').includes(accountsQuery)
+                    ));
+                    if (matchTx) return true;
+
+                    return completedPeriods.some(p => p.contactId === contact.id && p.type === 'demand' && (
+                        (p.title || '').toLowerCase().includes(accountsQuery) ||
+                        (p.totalAmount || '').toString().includes(accountsQuery) ||
+                        (p.startDate || '').includes(accountsQuery) ||
+                        (p.endDate || '').includes(accountsQuery)
+                    ));
+                });
+            }, [contacts, transactions, completedPeriods, accountsQuery]);
+
+            const filteredAccountsDebts = useMemo(() => {
+                return contacts.filter(contact => {
+                    const settledCount = getSettledPeriodCount(contact.id, 'debt');
+                    const hasActiveDebt = contact.totalDebt > 0;
+                    if (!hasActiveDebt && settledCount === 0) return false;
+
+                    if (!accountsQuery) return hasActiveDebt;
+
+                    const fullName = `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase();
+                    const phone = (contact.phone || '').toLowerCase();
+                    const debtAmt = (contact.totalDebt || '').toString();
+
+                    if (fullName.includes(accountsQuery) || phone.includes(accountsQuery) || debtAmt.includes(accountsQuery)) {
+                        return true;
+                    }
+
+                    const matchTx = transactions.some(t => t.contactId === contact.id && (t.type === 'debt' || t.type === 'debt_repayment') && (
+                        (t.note || '').toLowerCase().includes(accountsQuery) ||
+                        (t.description || '').toLowerCase().includes(accountsQuery) ||
+                        (t.amount || '').toString().includes(accountsQuery) ||
+                        (t.dateStr || '').includes(accountsQuery)
+                    ));
+                    if (matchTx) return true;
+
+                    return completedPeriods.some(p => p.contactId === contact.id && p.type === 'debt' && (
+                        (p.title || '').toLowerCase().includes(accountsQuery) ||
+                        (p.totalAmount || '').toString().includes(accountsQuery) ||
+                        (p.startDate || '').includes(accountsQuery) ||
+                        (p.endDate || '').includes(accountsQuery)
+                    ));
+                });
+            }, [contacts, transactions, completedPeriods, accountsQuery]);
 
             const [reminders, setReminders] = useState(initialReminders);
             const [expandedReminders, setExpandedReminders] = useState(false);
@@ -4526,9 +4695,9 @@
                                     </div>
 
                                     <img 
-                                        src="./apple-touch-icon.png" 
-                                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'apple-touch-icon.png'; }}
-                                        alt="امیر" 
+                                        src="/apple-touch-icon.png" 
+                                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/apple-touch-icon.png'; }}
+                                        alt="Amir Finance" 
                                         className="w-10 h-10 rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-transform" 
                                     />
                                 </div>
@@ -4674,6 +4843,27 @@
                                     </h2>
                                 </div>
 
+                                {/* Global Search Box */}
+                                <div className="flex space-x-2 space-x-reverse items-center">
+                                    <div className="relative flex-1">
+                                        <Icon name="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
+                                        <input 
+                                            type="text" 
+                                            value={accountsSearchQuery}
+                                            onChange={(e) => setAccountsSearchQuery(e.target.value)}
+                                            placeholder="جستجو در نام، عنوان، یادداشت، مبلغ و..." 
+                                            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none text-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                    <button 
+                                        onClick={() => setAccountsSearchQuery('')}
+                                        className="w-10 h-10 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm flex items-center justify-center shadow-md active:scale-90 transition-transform shrink-0"
+                                        title="پاک‌سازی جستجو">
+                                        C
+                                    </button>
+                                </div>
+
+                                {/* Filter Tabs */}
                                 <div className="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl space-x-1 space-x-reverse text-xs font-bold border border-slate-200/50 dark:border-slate-700/50">
                                     {[
                                         { id: 'all', label: 'همه موارد', activeClass: 'bg-indigo-600 text-white shadow-sm' },
@@ -4690,30 +4880,69 @@
                                     ))}
                                 </div>
 
-                                <div className="space-y-3">
-                                    {(accountsSubTab === 'all' || accountsSubTab === 'loans') && (
+                                <div className="space-y-4">
+                                    {/* LOANS SECTION */}
+                                    {(accountsSubTab === 'all' || accountsSubTab === 'loans') && filteredAccountsLoans.length > 0 && (
                                         <div className="space-y-2">
-                                            <div className="text-xs font-bold text-slate-500">پرونده‌های وام ({loans.length})</div>
-                                            {loans.map(loan => {
+                                            <div className="flex justify-between items-center text-xs font-bold text-slate-500 mb-1">
+                                                <span>پرونده‌های وام ({filteredAccountsLoans.length})</span>
+                                                <button 
+                                                    onClick={() => {
+                                                        const next = !showCompletedLoans;
+                                                        setShowCompletedLoans(next);
+                                                        try { localStorage.setItem('showCompletedLoans', next); } catch(e) {}
+                                                    }}
+                                                    className="flex items-center space-x-1.5 space-x-reverse text-[11px] text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                                    <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors ${showCompletedLoans ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800'}`}>
+                                                        {showCompletedLoans && <Icon name="check" className="w-2.5 h-2.5" />}
+                                                    </div>
+                                                    <span>نمایش تسویه‌شده‌ها</span>
+                                                </button>
+                                            </div>
+                                            {filteredAccountsLoans.map(loan => {
                                                 const nextDueInfo = getLoanNextDueInfo(loan, transactions);
+                                                const isCompleted = nextDueInfo.isCompleted || (loan.remainingAmount !== undefined && loan.remainingAmount <= 0);
+
                                                 return (
                                                     <div 
                                                         key={loan.id}
                                                         onClick={() => openLoanDetail(loan)}
-                                                        className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-indigo-300">
+                                                        className={`p-3.5 rounded-2xl border cursor-pointer flex justify-between items-center shadow-sm transition-all ${
+                                                            isCompleted 
+                                                                ? 'bg-slate-50/80 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-700/40 opacity-70 hover:opacity-100 hover:border-emerald-300' 
+                                                                : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:border-indigo-300'
+                                                        }`}>
                                                         <div className="flex items-center space-x-3 space-x-reverse">
-                                                            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 flex items-center justify-center">
-                                                                <Icon name="landmark" className="w-5 h-5" />
+                                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                                                                isCompleted 
+                                                                    ? 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400' 
+                                                                    : 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400'
+                                                            }`}>
+                                                                <Icon name={isCompleted ? "check-circle-2" : "landmark"} className="w-5 h-5" />
                                                             </div>
                                                             <div>
-                                                                <div className="text-xs font-bold text-slate-900 dark:text-white">{loan.title}</div>
-                                                                <div className="text-[10px] text-slate-400">{loan.contactName} • {nextDueInfo.paidInst}/{nextDueInfo.totalInst} قسط</div>
+                                                                <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1.5 space-x-reverse">
+                                                                    <span>{loan.title}</span>
+                                                                    {isCompleted && (
+                                                                        <Icon name="check-circle-2" className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                                                                    )}
+                                                                </div>
+                                                                <div className="text-[10px] text-slate-400 mt-0.5">{loan.contactName} • {nextDueInfo.paidInst}/{nextDueInfo.totalInst} قسط</div>
                                                             </div>
                                                         </div>
                                                         <div className="text-left">
-                                                            <div className="text-xs font-bold text-indigo-600">{loan.principalAmount.toLocaleString()} تومان</div>
-                                                            <div className="text-[10px] text-slate-500 font-bold">
-                                                                {nextDueInfo.isCompleted ? 'تکمیل شد' : `سررسید: ${nextDueInfo.nextDueDateStr}`}
+                                                            <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{loan.principalAmount.toLocaleString()} تومان</div>
+                                                            <div className="mt-0.5">
+                                                                {isCompleted ? (
+                                                                    <span className="inline-flex items-center space-x-1 space-x-reverse text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/40 px-2 py-0.5 rounded-lg">
+                                                                        <Icon name="check-circle-2" className="w-3 h-3 text-emerald-500" />
+                                                                        <span>تسویه‌شده</span>
+                                                                    </span>
+                                                                ) : (
+                                                                    <div className="text-[10px] text-slate-500 font-bold">
+                                                                        سررسید: {nextDueInfo.nextDueDateStr}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -4722,53 +4951,90 @@
                                         </div>
                                     )}
 
-                                    {(accountsSubTab === 'all' || accountsSubTab === 'demands') && (
+                                    {/* DEMANDS SECTION */}
+                                    {(accountsSubTab === 'all' || accountsSubTab === 'demands') && filteredAccountsDemands.length > 0 && (
                                         <div className="space-y-2">
                                             <div className="text-xs font-bold text-slate-500">طلب‌ها</div>
-                                            {contacts.filter(c => c.totalDemand > 0).map(contact => (
-                                                <div 
-                                                    key={contact.id}
-                                                    onClick={() => { setSelectedContact(contact); setProfileFilter('demands'); setCurrentTab('contact-detail'); }}
-                                                    className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-emerald-400 transition-all">
-                                                    <div className="flex items-center space-x-3 space-x-reverse">
-                                                        <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
-                                                            <Icon name="arrow-up-right" className="w-5 h-5" />
+                                            {filteredAccountsDemands.map(contact => {
+                                                const settledCount = getSettledPeriodCount(contact.id, 'demand');
+                                                return (
+                                                    <div 
+                                                        key={contact.id}
+                                                        onClick={() => { setSelectedContact(contact); setProfileFilter('demands'); setCurrentTab('contact-detail'); }}
+                                                        className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-emerald-400 transition-all">
+                                                        <div className="flex items-center space-x-3 space-x-reverse">
+                                                            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
+                                                                <Icon name="arrow-up-right" className="w-5 h-5" />
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-xs font-bold text-slate-900 dark:text-white">{contact.firstName} {contact.lastName}</div>
+                                                                <div className="text-[10px] text-slate-400">طلب شخصی</div>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <div className="text-xs font-bold text-slate-900 dark:text-white">{contact.firstName} {contact.lastName}</div>
-                                                            <div className="text-[10px] text-slate-400">طلب شخصی</div>
+                                                        <div className="text-left">
+                                                            <div className="text-xs font-bold text-emerald-600">+{contact.totalDemand.toLocaleString()} تومان</div>
+                                                            {settledCount > 0 && (
+                                                                <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5 flex items-center justify-end space-x-1 space-x-reverse">
+                                                                    <Icon name="archive" className="w-3 h-3 text-slate-400 shrink-0" />
+                                                                    <span>{settledCount} دوره تسویه‌شده</span>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
-                                                    <div className="text-left">
-                                                        <div className="text-xs font-bold text-emerald-600">+{contact.totalDemand.toLocaleString()} تومان</div>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     )}
 
-                                    {(accountsSubTab === 'all' || accountsSubTab === 'debts') && (
+                                    {/* DEBTS SECTION */}
+                                    {(accountsSubTab === 'all' || accountsSubTab === 'debts') && filteredAccountsDebts.length > 0 && (
                                         <div className="space-y-2">
                                             <div className="text-xs font-bold text-slate-500">بدهی‌ها</div>
-                                            {contacts.filter(c => c.totalDebt > 0).map(contact => (
-                                                <div 
-                                                    key={contact.id}
-                                                    onClick={() => { setSelectedContact(contact); setProfileFilter('debts'); setCurrentTab('contact-detail'); }}
-                                                    className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-rose-400 transition-all">
-                                                    <div className="flex items-center space-x-3 space-x-reverse">
-                                                        <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center">
-                                                            <Icon name="arrow-down-left" className="w-5 h-5" />
+                                            {filteredAccountsDebts.map(contact => {
+                                                const settledCount = getSettledPeriodCount(contact.id, 'debt');
+                                                return (
+                                                    <div 
+                                                        key={contact.id}
+                                                        onClick={() => { setSelectedContact(contact); setProfileFilter('debts'); setCurrentTab('contact-detail'); }}
+                                                        className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-rose-400 transition-all">
+                                                        <div className="flex items-center space-x-3 space-x-reverse">
+                                                            <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center">
+                                                                <Icon name="arrow-down-left" className="w-5 h-5" />
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-xs font-bold text-slate-900 dark:text-white">{contact.firstName} {contact.lastName}</div>
+                                                                <div className="text-[10px] text-slate-400">بدهی شخصی</div>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <div className="text-xs font-bold text-slate-900 dark:text-white">{contact.firstName} {contact.lastName}</div>
-                                                            <div className="text-[10px] text-slate-400">بدهی شخصی</div>
+                                                        <div className="text-left">
+                                                            <div className="text-xs font-bold text-rose-500">-{contact.totalDebt.toLocaleString()} تومان</div>
+                                                            {settledCount > 0 && (
+                                                                <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5 flex items-center justify-end space-x-1 space-x-reverse">
+                                                                    <Icon name="archive" className="w-3 h-3 text-slate-400 shrink-0" />
+                                                                    <span>{settledCount} دوره تسویه‌شده</span>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
-                                                    <div className="text-left">
-                                                        <div className="text-xs font-bold text-rose-500">-{contact.totalDebt.toLocaleString()} تومان</div>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
+                                    {/* EMPTY STATE */}
+                                    {filteredAccountsLoans.length === 0 && filteredAccountsDemands.length === 0 && filteredAccountsDebts.length === 0 && (
+                                        <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl text-center border border-slate-100 dark:border-slate-700/60 my-4">
+                                            <Icon name="search-x" className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                                            <div className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                                                {accountsSearchQuery ? `هیچ موردی با عبارت "${accountsSearchQuery}" یافت نشد.` : 'هیچ حساب یا پرونده‌ای برای نمایش وجود ندارد.'}
+                                            </div>
+                                            {accountsSearchQuery && (
+                                                <button 
+                                                    onClick={() => setAccountsSearchQuery('')}
+                                                    className="mt-3 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-xs font-bold text-indigo-600 dark:text-indigo-400 rounded-xl transition-all">
+                                                    پاک‌سازی جستجو
+                                                </button>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -4857,6 +5123,13 @@
                                                 </div>
                                                 
                                                 <div className="flex items-center space-x-2 space-x-reverse">
+                                                    {(getSettledPeriodCount(contact.id, 'demand') + getSettledPeriodCount(contact.id, 'debt')) > 0 && (
+                                                        <span 
+                                                            className="p-1 rounded-md bg-slate-100 dark:bg-slate-700/70 text-slate-500 dark:text-slate-300 flex items-center justify-center border border-slate-200/60 dark:border-slate-600/50 shrink-0" 
+                                                            title="دارای سوابق تسویه‌شده">
+                                                            <Icon name="archive" className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+                                                        </span>
+                                                    )}
                                                     {loans.some(l => l.contactId === contact.id) && (
                                                         <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-400 px-2 py-0.5 rounded-md">وام</span>
                                                     )}
@@ -5396,6 +5669,7 @@
                                         </div>
                                     )}
                                 </div>
+                                <div className="h-12 shrink-0 pointer-events-none" />
                             </div>
                             </SwipeBackWrapper>
                         )}
@@ -5832,8 +6106,8 @@
                                     <div className="flex items-center justify-between gap-2.5">
                                         <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
                                             <img 
-                                                src={versionData.appLogo || "./apple-touch-icon.png"} 
-                                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'apple-touch-icon.png'; }}
+                                                src={versionData.appLogo || "/apple-touch-icon.png"} 
+                                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/apple-touch-icon.png'; }}
                                                 alt={versionData.appName || "Amir Finance"} 
                                                 className="w-11 h-11 rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 shrink-0" 
                                             />

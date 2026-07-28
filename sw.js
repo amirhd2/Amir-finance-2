@@ -4,10 +4,14 @@ const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/site.webmanifest',
-  '/apple-touch-icon.png',
-  '/favicon-96x96.png',
+  '/favicon.ico',
   '/favicon.svg',
-  '/favicon.ico'
+  '/favicon-96x96.png',
+  '/apple-touch-icon.png',
+  '/web-app-manifest-192x192.png',
+  '/web-app-manifest-512x512.png',
+  '/splash-portrait.png',
+  '/splash-landscape.png'
 ];
 
 self.addEventListener('install', (event) => {

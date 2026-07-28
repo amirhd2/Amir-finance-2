@@ -1,14 +1,102 @@
 {
   "appName": "Amir Finance",
-  "appLogo": "./apple-touch-icon.png",
-  "installedVersion": "1.1.6",
-  "buildNumber": 134,
-  "releaseDate": "2026-07-27",
+  "appLogo": "/apple-touch-icon.png",
+  "installedVersion": "1.1.14",
+  "buildNumber": 142,
+  "releaseDate": "2026-07-28",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.1.6",
+  "latestVersion": "1.1.14",
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.1.14",
+      "buildNumber": 142,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "m3r268z",
+      "commitMessage": "feat: update application layout and version history",
+      "changes": [
+        "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+      ]
+    },
+    {
+      "version": "1.1.13",
+      "buildNumber": 141,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "lxolw03",
+      "commitMessage": "feat: update application layout and version history",
+      "changes": [
+        "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+      ]
+    },
+    {
+      "version": "1.1.12",
+      "buildNumber": 140,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "m4ybsj7",
+      "commitMessage": "feat: update application layout and version history",
+      "changes": [
+        "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+      ]
+    },
+    {
+      "version": "1.1.11",
+      "buildNumber": 139,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "lysox1p",
+      "commitMessage": "feat: update application layout and version history",
+      "changes": [
+        "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+      ]
+    },
+    {
+      "version": "1.1.10",
+      "buildNumber": 138,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "otn6ayw",
+      "commitMessage": "feat: update application layout and version history",
+      "changes": [
+        "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+      ]
+    },
+    {
+      "version": "1.1.9",
+      "buildNumber": 137,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "ikh6g3p",
+      "commitMessage": "feat: update application layout and version history",
+      "changes": [
+        "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+      ]
+    },
+    {
+      "version": "1.1.8",
+      "buildNumber": 136,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "8f1vi7c",
+      "commitMessage": "feat: update application layout and version history",
+      "changes": [
+        "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+      ]
+    },
+    {
+      "version": "1.1.7",
+      "buildNumber": 135,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "83o0e33",
+      "commitMessage": "feat: update application layout and version history",
+      "changes": [
+        "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+      ]
+    },
     {
       "version": "1.1.6",
       "buildNumber": 134,
