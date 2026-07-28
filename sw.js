@@ -1,8 +1,9 @@
-const CACHE_NAME = 'amir-finance-v1';
+const CACHE_NAME = 'amir-finance-v1.1.15-b143';
 
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
+  '/version.json',
   '/site.webmanifest',
   '/favicon.ico',
   '/favicon.svg',
@@ -39,12 +40,18 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Always fetch version.json directly from the network without caching
+  // Always fetch version.json directly from the network with cache-busting
   if (url.pathname.endsWith('/version.json')) {
     event.respondWith(
-      fetch(event.request, { cache: 'no-store' }).catch(() => {
-        return caches.match(event.request);
-      })
+      fetch(new Request(event.request.url, { cache: 'no-store' }))
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request) || caches.match('/version.json'))
     );
     return;
   }

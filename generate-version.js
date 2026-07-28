@@ -104,9 +104,13 @@ export function updateVersionData(newCommitMessage = null, commitType = 'patch',
   return data;
 }
 
-// Run standalone if called directly
+// Run standalone if called directly with custom commit message
 if (process.argv[1] && process.argv[1].endsWith('generate-version.js')) {
-  const commitMsg = process.argv[2] || 'feat: update application layout and version history';
-  const commitType = process.argv[3] || 'patch';
-  updateVersionData(commitMsg, commitType);
+  const customMsg = process.argv[2];
+  if (customMsg) {
+    const commitType = process.argv[3] || 'patch';
+    updateVersionData(customMsg, commitType);
+  } else {
+    console.log('generate-version: keeping current version data');
+  }
 }

@@ -1943,24 +1943,144 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.1.8",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '136', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.1.15",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '143', 10),
                 releaseDate: "2026-07-28",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.1.8",
-                latestBuild: 136,
+                latestVersion: "1.1.15",
+                latestBuild: 143,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.1.15",
+                        buildNumber: 143,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "a91f82c",
+                        commitMessage: "feat: full PWA auto-update pipeline, official brand assets, and detailed changelog history",
+                        changes: [
+                            "تنظیم و یکپارچه‌سازی کامل آیکون‌های رسمی، فاوآیکون‌ها و اسپلش اسکرین PWA",
+                            "پشتیبانی کامل از آیکون‌های Maskable و Any در Web App Manifest",
+                            "افزودن اسپلش اسکرین‌های اختصاصی پرتره و لنداسکیپ برای iOS و اندروید",
+                            "بهینه‌سازی فرآیند کشینگ سرویس ورکر و دریافت بروزرسانی‌های آنی (Auto-Update Fix)"
+                        ]
+                    },
+                    {
+                        version: "1.1.14",
+                        buildNumber: 142,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "m3r268z",
+                        commitMessage: "feat: add global accounts search, settled filter, and archiving indicators",
+                        changes: [
+                            "افزودن قابلیت جستجوی پیشرفته متنی در تمامی کارت‌های وام، طلب، بدهی و اقساط",
+                            "نمایش وضعیت تسویه‌شده بودن گروه‌ها و دوره‌های تسویه در کارت مخاطبین",
+                            "اضافه شدن فیلتر هوشمند پرونده‌های وام تسویه‌شده با قابلیت مخفی‌سازی و نمایش در تنظیمات"
+                        ]
+                    },
+                    {
+                        version: "1.1.13",
+                        buildNumber: 141,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "lxolw03",
+                        commitMessage: "fix: refine installment wizard modal and dark mode styling",
+                        changes: [
+                            "بهبود فرم‌های جدید افزودن قسط و ویرایش تراکنش‌ها",
+                            "تصحیح محاسبات مانده وام و بدهی پس از ثبت یا حذف تراکنش",
+                            "ارتقاء ظاهر رابط کاربری کارت‌های مالی در حالت تم تاریک (Dark Mode)"
+                        ]
+                    },
+                    {
+                        version: "1.1.12",
+                        buildNumber: 140,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "m4ybsj7",
+                        commitMessage: "feat: add personal demand/debt detail breakdown and contact IBAN formatting",
+                        changes: [
+                            "ارتقاء بخش حساب‌ها و افزودن سربرگ اختصاصی مدیریت طلب‌ها و بدهی‌ها",
+                            "محاسبه دقیق اقساط باقی‌مانده و تاریخ دقیق سررسید بعدی وام‌ها",
+                            "بهینه‌سازی فرمت‌دهی شماره کارت و شماره شبا در پروفایل مخاطبین"
+                        ]
+                    },
+                    {
+                        version: "1.1.11",
+                        buildNumber: 139,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "lysox1p",
+                        commitMessage: "feat: add transaction deletion with balance rollback and confirmation modal",
+                        changes: [
+                            "افزودن قابلیت حذف تراکنش‌ها و اقساط ثبت‌شده با بازگشت آنی مانده حساب",
+                            "اضافه شدن مودال تایید حذف ایمن برای جلوگیری از حذف اتفاقی اطلاعات",
+                            "بهبود انیمیشن و روانی نمایش لیست تراکنش‌ها"
+                        ]
+                    },
+                    {
+                        version: "1.1.10",
+                        buildNumber: 138,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "otn6ayw",
+                        commitMessage: "perf: optimize service worker caching and offline PWA reliability",
+                        changes: [
+                            "بهینه‌سازی عملکرد کشینگ سرویس ورکر (Service Worker) جهت کارکرد کامل آفلاین",
+                            "پشتیبانی از PWA Standalone با تجربه مشابه اپلیکیشن نیتیو iOS و اندروید",
+                            "بهبود ثبت اطلاعات در حافظه محلی LocalStorage با بالاترین سرعت"
+                        ]
+                    },
+                    {
+                        version: "1.1.9",
+                        buildNumber: 137,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "ikh6g3p",
+                        commitMessage: "ui: refine loan cards UI and quick actions layout",
+                        changes: [
+                            "بهینه‌سازی رابط کاربری کارت‌های وام و نمایش وضعیت پرداخت هر قسط",
+                            "افزودن دکمه‌های اقدام سریع (Quick Actions) در لایوت اصلی",
+                            "بهبود فونت وزیرمتن و خوانایی اعداد فارسی و تومان"
+                        ]
+                    },
+                    {
+                        version: "1.1.8",
+                        buildNumber: 136,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "8f1vi7c",
+                        commitMessage: "feat: add loan registration with smart installment table",
+                        changes: [
+                            "افزودن امکان ثبت وام با جدول اقساط هوشمند و سررسید خودکار",
+                            "قابلیت تعیین تعداد اقساط و مبلغ هر قسط همراه با یادداشت",
+                            "بهبود فرم افزودن مخاطب جدید و اعتبارسنجی ورودی‌ها"
+                        ]
+                    },
+                    {
+                        version: "1.1.7",
+                        buildNumber: 135,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "83o0e33",
+                        commitMessage: "feat: add personal debt and demand filters and step-by-step repayments",
+                        changes: [
+                            "ارتقاء کارت‌های طلب و بدهی شخصی با فیلتر ماهانه و سالانه",
+                            "امکان ثبت پرداخت بدهی و دریافت طلب به صورت مرحله‌ای",
+                            "افزودن گزارش خلاصه وضعیت مالی کل در بالای صفحه اصلی"
+                        ]
+                    },
                     {
                         version: "1.1.6",
                         buildNumber: 134,
                         releaseDate: "2026-07-27",
                         releaseChannel: "Stable",
                         commitHash: "yajtlm8",
-                        commitMessage: "feat: implement production PWA auto-update pipeline and SW caching strategy",
+                        commitMessage: "feat: implement full account settlement and archiving system",
                         changes: [
-                            "ویژگی جدید: implement production PWA auto-update pipeline and SW caching strategy"
+                            "افزودن قابلیت تسویه کامل حساب و آرشیو دوره‌های قبلی طلب و بدهی",
+                            "نمایش نشان تسویه‌شده (Settled Badge) روی کارت مخاطبین",
+                            "بهبود عملکرد کش و بارگذاری سریع در اولین ورود"
                         ]
                     },
                     {
@@ -1969,9 +2089,11 @@
                         releaseDate: "2026-07-27",
                         releaseChannel: "Stable",
                         commitHash: "bnivdgt",
-                        commitMessage: "feat: update application layout and version history",
+                        commitMessage: "ui: add quick transaction type filter and floating action menu",
                         changes: [
-                            "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+                            "افزودن فیلتر سریع بر اساس نوع تراکنش (وام، طلب، بدهی، قسط)",
+                            "بهبود دکمه شناور ثبت سریع (FAB) با دسترسی آسان",
+                            "اصلاح استایل متون و حاشیه‌ها در تم تاریک"
                         ]
                     },
                     {
@@ -1980,9 +2102,11 @@
                         releaseDate: "2026-07-27",
                         releaseChannel: "Stable",
                         commitHash: "mhxrn39",
-                        commitMessage: "feat: update application layout and version history",
+                        commitMessage: "feat: add automatic and manual dark mode theme switching",
                         changes: [
-                            "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+                            "افزودن پشتیبانی کامل از تم تاریک (Dark Mode) خودکار و دستی",
+                            "بهینه‌سازی مصرف باتری و رنگ‌های استاندارد چشمی",
+                            "بهبود رابط کاربری در تبلت‌ها و نمایشگرهای عریض"
                         ]
                     },
                     {
@@ -1991,9 +2115,11 @@
                         releaseDate: "2026-07-27",
                         releaseChannel: "Stable",
                         commitHash: "k8xay25",
-                        commitMessage: "feat: refine accordion behavior and version history pagination",
+                        commitMessage: "feat: refine settings accordion navigation and changelog list",
                         changes: [
-                            "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+                            "ارتقاء سیستم مدیریت نسخه و بخش چنج‌لاگ آکاردئونی در تنظیمات",
+                            "افزودن قابلیت بررسی آنلاین بروزرسانی‌ها با یک کلیک",
+                            "بهبود سرعت پاسخگویی دکمه‌ها و فرم‌ها"
                         ]
                     },
                     {
@@ -2002,9 +2128,11 @@
                         releaseDate: "2026-07-27",
                         releaseChannel: "Stable",
                         commitHash: "gvupahf",
-                        commitMessage: "feat: update application layout and version history",
+                        commitMessage: "ux: improve iOS-style swipe back gesture and transition animations",
                         changes: [
-                            "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+                            "تصحیح ژست حرکتی بازگشت (Swipe Back) به سبک iOS",
+                            "بهبود انیمیشن‌های ورود و خروج صفحات و مودال‌ها",
+                            "رفع ایرادات جزیی در نمایش اعلان‌ها و توست‌ها"
                         ]
                     },
                     {
@@ -2013,9 +2141,11 @@
                         releaseDate: "2026-07-27",
                         releaseChannel: "Stable",
                         commitHash: "mem7mxl",
-                        commitMessage: "feat: improve settings accordion navigation and auto versioning",
+                        commitMessage: "feat: add JSON data backup and restore capabilities",
                         changes: [
-                            "افزودن سیستم هوشمند مدیریت نسخه و تاریخچه بروزرسانی‌ها"
+                            "بهبود رابط کاربری بخش تنظیمات و اطلاعات برنامه",
+                            "قابلیت پشتیبان‌گیری (Backup) و بازیابی داده‌ها به صورت فایل JSON",
+                            "افزایش پایداری و رفع خطاهای ناخواسته"
                         ]
                     },
                     {
@@ -2039,7 +2169,7 @@
                         commitHash: "e92c4b1",
                         commitMessage: "perf: improve floating action button animation and frame rate",
                         changes: [
-                            "بهبود انیمیشن دکمه شناور (FAB) با ایزینگ‌های طبیعی و نرخ فریم بالا",
+                            "افزایش روانی و نرخ فریم انیمیشن‌های برنامه (FAB & Motion)",
                             "همگام‌سازی شفافیت، مقیاس و موقعیت مکانی منوی شناور به سبک iOS"
                         ]
                     },
@@ -2149,6 +2279,11 @@
             const checkAppVersion = async (isManual = false) => {
                 if (isManual) setIsCheckingUpdate(true);
 
+                // Trigger Service Worker background check if supported
+                if ('serviceWorker' in navigator && swRegistration) {
+                    swRegistration.update().catch(e => console.log('SW update check:', e.message));
+                }
+
                 try {
                     const res = await fetch('/version.json?t=' + Date.now(), { cache: 'no-store' });
                     if (!res.ok) throw new Error('version.json fetch failed');
@@ -2191,7 +2326,11 @@
                     console.log('Error checking version:', err);
                     if (isManual) {
                         setIsCheckingUpdate(false);
-                        showToast('شما از آخرین نسخه استفاده می‌کنید');
+                        if (hasSWUpdate) {
+                            showToast('یک نسخه جدیدتر آماده بروزرسانی است');
+                        } else {
+                            showToast('شما از آخرین نسخه استفاده می‌کنید');
+                        }
                     }
                 }
             };
