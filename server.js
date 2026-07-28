@@ -23,9 +23,20 @@ app.get('/sw.js', (req, res) => {
   res.sendFile(path.join(rootPath, 'sw.js'));
 });
 
+// Disable caching for index.html / navigation so app reloads always receive fresh code
+app.get(['/', '/index.html'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.sendFile(path.join(rootPath, 'index.html'));
+});
+
 app.use(express.static(rootPath));
 
 app.get('*', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.sendFile(path.join(rootPath, 'index.html'));
 });
 

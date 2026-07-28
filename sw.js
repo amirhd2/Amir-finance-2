@@ -48,7 +48,7 @@ self.addEventListener('fetch', (event) => {
   // Network-first strategy for index.html / navigation requests to ensure fresh content
   if (event.request.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html') {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-cache' })
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const responseClone = networkResponse.clone();
