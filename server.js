@@ -7,8 +7,16 @@ const HOST = '0.0.0.0';
 
 const rootPath = process.cwd();
 
+// Explicitly serve site.webmanifest with manifest JSON content type
+app.get('/site.webmanifest', (req, res) => {
+  res.setHeader('Content-Type', 'application/manifest+json; charset=UTF-8');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.sendFile(path.join(rootPath, 'site.webmanifest'));
+});
+
 // Explicitly disable HTTP caching for version.json
 app.get('/version.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json; charset=UTF-8');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
@@ -17,6 +25,8 @@ app.get('/version.json', (req, res) => {
 
 // Disable caching for service worker sw.js so updates are detected immediately
 app.get('/sw.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+  res.setHeader('Service-Worker-Allowed', '/');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
@@ -43,4 +53,5 @@ app.get('*', (req, res) => {
 app.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
 });
+
 

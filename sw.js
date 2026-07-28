@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amir-finance-v1.1.15-b143';
+const CACHE_NAME = 'amir-finance-v1.1.16-b144';
 
 const ASSETS_TO_CACHE = [
   '/',
@@ -17,8 +17,10 @@ const ASSETS_TO_CACHE = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await Promise.allSettled(
+        ASSETS_TO_CACHE.map((asset) => cache.add(asset).catch(() => {}))
+      );
     }).then(() => self.skipWaiting())
   );
 });
@@ -93,3 +95,4 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+

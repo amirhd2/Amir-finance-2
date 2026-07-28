@@ -1,14 +1,27 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.1.15",
-  "buildNumber": 143,
+  "installedVersion": "1.1.16",
+  "buildNumber": 144,
   "releaseDate": "2026-07-28",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.1.15",
+  "latestVersion": "1.1.16",
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.1.16",
+      "buildNumber": 144,
+      "releaseDate": "2026-07-28",
+      "releaseChannel": "Stable",
+      "commitHash": "b144pwa",
+      "commitMessage": "fix: resolve logo rendering fallbacks, standalone manifest headers, and immediate PWA update mechanism",
+      "changes": [
+        "حل کامل مشکل عدم نمایش آیکون برنامه در دسکتاپ و آیفون با سیستم هوشمند Multi-Fallback",
+        "تنظیم هدرهای استاندارد application/manifest+json و Service-Worker-Allowed در سرور",
+        "بهینه‌سازی ثبت و بروزرسانی خودکار سرویس ورکر PWA جهت بارگذاری فوری آیکون‌ها و اسپلش اسکرین"
+      ]
+    },
     {
       "version": "1.1.15",
       "buildNumber": 143,

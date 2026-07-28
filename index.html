@@ -1939,19 +1939,60 @@
             const [toastMessage, setToastMessage] = useState('');
             const [showPlusMenu, setShowPlusMenu] = useState(false);
             
+            // Brand Avatar Component with Multi-Fallback Strategy
+            const BrandAvatar = ({ className = "w-10 h-10", logoUrl }) => {
+                const [srcIndex, setSrcIndex] = useState(0);
+                const sources = useMemo(() => {
+                    const list = [];
+                    if (logoUrl) list.push(logoUrl);
+                    list.push('/apple-touch-icon.png', 'apple-touch-icon.png', '/favicon-96x96.png', 'favicon-96x96.png');
+                    return [...new Set(list)];
+                }, [logoUrl]);
+
+                if (srcIndex >= sources.length) {
+                    return (
+                        <div className={`rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white font-black flex items-center justify-center shadow-sm border border-indigo-400/30 shrink-0 ${className}`}>
+                            <span className="text-xs tracking-tight">AF</span>
+                        </div>
+                    );
+                }
+
+                return (
+                    <img
+                        src={sources[srcIndex]}
+                        onError={() => setSrcIndex(prev => prev + 1)}
+                        alt="Amir Finance"
+                        className={`rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-transform shrink-0 ${className}`}
+                    />
+                );
+            };
+
             // Application Version Management State
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.1.15",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '143', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.1.16",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '144', 10),
                 releaseDate: "2026-07-28",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.1.15",
-                latestBuild: 143,
+                latestVersion: "1.1.16",
+                latestBuild: 144,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.1.16",
+                        buildNumber: 144,
+                        releaseDate: "2026-07-28",
+                        releaseChannel: "Stable",
+                        commitHash: "b144pwa",
+                        commitMessage: "fix: resolve logo rendering fallbacks, standalone manifest headers, and immediate PWA update mechanism",
+                        changes: [
+                            "حل کامل مشکل عدم نمایش آیکون برنامه در دسکتاپ و آیفون با سیستم هوشمند Multi-Fallback",
+                            "تنظیم هدرهای استاندارد application/manifest+json و Service-Worker-Allowed در سرور",
+                            "بهینه‌سازی ثبت و بروزرسانی خودکار سرویس ورکر PWA جهت بارگذاری فوری آیکون‌ها و اسپلش اسکرین"
+                        ]
+                    },
                     {
                         version: "1.1.15",
                         buildNumber: 143,
@@ -4833,12 +4874,7 @@
                                         </p>
                                     </div>
 
-                                    <img 
-                                        src="/apple-touch-icon.png" 
-                                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/apple-touch-icon.png'; }}
-                                        alt="Amir Finance" 
-                                        className="w-10 h-10 rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-transform" 
-                                    />
+                                    <BrandAvatar className="w-10 h-10" logoUrl={versionData.appLogo} />
                                 </div>
 
                                 {/* Reminders Box */}
@@ -6244,12 +6280,7 @@
                                     className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300 dark:hover:border-indigo-800 overflow-hidden">
                                     <div className="flex items-center justify-between gap-2.5">
                                         <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
-                                            <img 
-                                                src={versionData.appLogo || "/apple-touch-icon.png"} 
-                                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/apple-touch-icon.png'; }}
-                                                alt={versionData.appName || "Amir Finance"} 
-                                                className="w-11 h-11 rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 shrink-0" 
-                                            />
+                                            <BrandAvatar className="w-11 h-11" logoUrl={versionData.appLogo} />
                                             <div className="min-w-0 flex-1">
                                                 <h2 className="text-base font-black text-slate-900 dark:text-white truncate">{versionData.appName || "Amir Finance"}</h2>
                                                 <div className="flex items-center flex-wrap gap-1.5 mt-1 min-w-0">
