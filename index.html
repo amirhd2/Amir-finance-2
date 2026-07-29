@@ -123,6 +123,19 @@
             box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.35), 0 0 1px rgba(0, 0, 0, 0.1);
         }
 
+        @keyframes ios-shake {
+            0%, 100% { transform: translate3d(0, 0px, 0px) scale(1); }
+            15% { transform: translate3d(-7px, 0px, 0px) scale(1); }
+            30% { transform: translate3d(7px, 0px, 0px) scale(1); }
+            45% { transform: translate3d(-5px, 0px, 0px) scale(1); }
+            60% { transform: translate3d(5px, 0px, 0px) scale(1); }
+            75% { transform: translate3d(-3px, 0px, 0px) scale(1); }
+            90% { transform: translate3d(3px, 0px, 0px) scale(1); }
+        }
+        .animate-shake {
+            animation: ios-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+        }
+
         /* Position 1: Second card stacked behind */
         .stack-card[data-depth="1"] {
             transform: translate3d(0, 10px, -20px) scale(0.965);
@@ -1554,31 +1567,8 @@
         }
 
         function playHapticTick() {
-            try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                if (!window.__appAudioCtx) {
-                    window.__appAudioCtx = new AudioContext();
-                }
-                if (window.__appAudioCtx.state === 'suspended') {
-                    window.__appAudioCtx.resume();
-                }
-                const osc = window.__appAudioCtx.createOscillator();
-                const gain = window.__appAudioCtx.createGain();
-
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(420, window.__appAudioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(120, window.__appAudioCtx.currentTime + 0.015);
-
-                gain.gain.setValueAtTime(0.08, window.__appAudioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, window.__appAudioCtx.currentTime + 0.015);
-
-                osc.connect(gain);
-                gain.connect(window.__appAudioCtx.destination);
-
-                osc.start();
-                osc.stop(window.__appAudioCtx.currentTime + 0.015);
-            } catch (e) {}
+            // Mute date picker scrolling audio feedback as requested
+            return;
         }
 
         function WheelColumn({ items = [], selectedIndex = 0, onSelectIndex, flexClass = "flex-1", ariaLabel }) {
@@ -1994,11 +1984,13 @@
             handlePrevCard, 
             handleNextCard, 
             totalCards, 
-            showStackWizard 
+            showStackWizard,
+            shakeCardId 
         }) {
             const cardRef = useRef(null);
             const depth = index - currentCardIdx;
             const isPrevReturningCard = animatingPrevCard && index === currentCardIdx - 1;
+            const isShaking = shakeCardId === card.id;
 
             // Auto focus inputs inside active card (force focus & trigger soft keyboard)
             useEffect(() => {
@@ -2043,12 +2035,16 @@
             const isExitNext = depth === 0 && animatingCard;
             const isEnterPrev = isPrevReturningCard;
 
+            const isFirstCard = currentCardIdx === 0;
+
             return (
                 <div 
                     ref={cardRef}
                     key={card.id}
                     data-depth={depthAttr}
                     className={`stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${
+                        isShaking ? 'animate-shake' : ''
+                    } ${
                         isExitNext ? 'card-exit-to-back animating-next' : ''
                     } ${
                         isEnterPrev ? 'card-enter-from-back animating-prev' : ''
@@ -2058,30 +2054,34 @@
                         {card.render()}
                     </div>
 
-                    <div className="pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse">
-                        {currentCardIdx > 0 && (
-                            <button 
-                                type="button"
-                                onClick={handlePrevCard}
-                                className="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center space-x-1 space-x-reverse cursor-pointer"
-                            >
-                                <Icon name="arrow-right" className="w-3.5 h-3.5" />
-                                <span>مرحله قبلی</span>
-                            </button>
-                        )}
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse h-12">
+                        <button 
+                            type="button"
+                            onClick={!isFirstCard ? handlePrevCard : undefined}
+                            disabled={isFirstCard}
+                            className={`w-1/3 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center space-x-1 space-x-reverse ${
+                                isFirstCard
+                                    ? 'bg-slate-100 dark:bg-slate-800/60 text-slate-300 dark:text-slate-600 border border-slate-200/50 dark:border-slate-700/50 cursor-not-allowed opacity-40 pointer-events-none'
+                                    : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 cursor-pointer opacity-100 active:scale-95 shadow-2xs'
+                            }`}
+                        >
+                            <Icon name="arrow-right" className="w-3.5 h-3.5 shrink-0" />
+                            <span>مرحله قبلی</span>
+                        </button>
+
                         <button 
                             type="button"
                             onClick={handleNextCard}
-                            className={`${currentCardIdx > 0 ? 'w-2/3' : 'w-full'} bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-colors cursor-pointer`}
+                            className="w-2/3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
                         >
-                            {index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'}
+                            <span>{index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'}</span>
                         </button>
                     </div>
                 </div>
             );
         }
 
-        function ContactSelectorCard({ contacts = [], selectedContactId, onSelect = () => {}, wizardType, wizardMode }) {
+        function ContactSelectorCard({ contacts = [], selectedContactId, onSelect = () => {}, wizardType, wizardMode, error }) {
             const [searchQuery, setSearchQuery] = useState('');
             const [isExpanded, setIsExpanded] = useState(!selectedContactId);
 
@@ -2153,11 +2153,15 @@
                             placeholder="جستجوی مخاطب (نام یا شماره تلفن)..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className={`w-full bg-slate-50 dark:bg-slate-900 border rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 ${
+                                error ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:ring-indigo-500'
+                            }`}
                         />
                     </div>
 
-                    <div className="max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1">
+                    <div className={`max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
+                        error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'
+                    }`}>
                         {filtered.length > 0 ? (
                             filtered.map(c => {
                                 const isSelected = Number(selectedContactId) === c.id;
@@ -2192,11 +2196,17 @@
                             </div>
                         )}
                     </div>
+                    {error && (
+                        <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                            <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                            <span>{error}</span>
+                        </p>
+                    )}
                 </div>
             );
         }
 
-        function LoanSelectorCard({ loans = [], transactions = [], contacts = [], selectedLoanId, onSelectLoan = () => {} }) {
+        function LoanSelectorCard({ loans = [], transactions = [], contacts = [], selectedLoanId, onSelectLoan = () => {}, error }) {
             const [searchQuery, setSearchQuery] = useState('');
             const [isExpanded, setIsExpanded] = useState(!selectedLoanId);
 
@@ -2328,7 +2338,9 @@
                             className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
-                    <div className="max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1">
+                    <div className={`max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
+                        error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'
+                    }`}>
                         {filtered.length > 0 ? (
                             filtered.map(l => {
                                 const contact = contacts.find(c => c.id === l.contactId);
@@ -2360,6 +2372,12 @@
                             </div>
                         )}
                     </div>
+                    {error && (
+                        <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                            <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                            <span>{error}</span>
+                        </p>
+                    )}
                 </div>
             );
         }
@@ -2896,6 +2914,8 @@
             const [currentCardIdx, setCurrentCardIdx] = useState(0);
             const [animatingCard, setAnimatingCard] = useState(false);
             const [animatingPrevCard, setAnimatingPrevCard] = useState(false);
+            const [validationErrors, setValidationErrors] = useState({});
+            const [shakeCardId, setShakeCardId] = useState(null);
 
             // Wheel Picker Date States
             const initialDevDate = getDeviceJalaliDate();
@@ -3811,36 +3831,58 @@
             const handleNextCard = (cardsList) => {
                 if (animatingCard || animatingPrevCard) return;
 
+                const triggerCardError = (fieldKey, errorMsg) => {
+                    setValidationErrors({ [fieldKey]: errorMsg });
+                    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+                        try { navigator.vibrate([15, 30, 15]); } catch (e) {}
+                    }
+                    const activeCard = cardsList && cardsList[currentCardIdx];
+                    if (activeCard) {
+                        setShakeCardId(activeCard.id);
+                        setTimeout(() => setShakeCardId(null), 450);
+                    }
+                    setTimeout(() => {
+                        const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
+                        if (activeCardNode) {
+                            const targetInput = activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
+                            if (targetInput) {
+                                targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                targetInput.focus({ preventScroll: true });
+                            }
+                        }
+                    }, 50);
+                };
+
                 // Validation for loan wizard
                 if (wizardType === 'loan') {
                     if (currentCardIdx === 0) {
                         if (!loanForm.title.trim()) {
-                            showToast('لطفاً عنوان وام را وارد کنید');
+                            triggerCardError('loan_title', 'لطفاً عنوان وام را وارد کنید');
                             return;
                         }
                         if (!loanForm.selectedContactId) {
-                            showToast('لطفاً یک مخاطب انتخاب کنید');
+                            triggerCardError('loan_contact', 'لطفاً یک مخاطب انتخاب کنید');
                             return;
                         }
                     }
                     if (currentCardIdx === 2) { // principal_amount
                         const amt = Number(loanForm.principalAmount) || 0;
                         if (amt <= 0) {
-                            showToast('لطفاً مبلغ اصل وام را وارد نمایید');
+                            triggerCardError('principal_amount', 'لطفاً مبلغ اصل وام را وارد نمایید');
                             return;
                         }
                     }
                     if (currentCardIdx === 3) { // total_repayment
                         const amt = Number(loanForm.totalRepayment) || 0;
                         if (amt <= 0) {
-                            showToast('لطفاً مبلغ کل بازپرداخت را وارد نمایید');
+                            triggerCardError('total_repayment', 'لطفاً مبلغ کل بازپرداخت را وارد نمایید');
                             return;
                         }
                     }
                     if (currentCardIdx === 4) { // installment_amount
                         const amt = Number(loanForm.installmentAmount) || 0;
                         if (amt <= 0) {
-                            showToast('لطفاً مبلغ هر قسط را وارد نمایید');
+                            triggerCardError('installment_amount', 'لطفاً مبلغ هر قسط را وارد نمایید');
                             return;
                         }
                     }
@@ -3849,13 +3891,13 @@
                 // Validation for demand wizard
                 if (wizardType === 'demand') {
                     if (currentCardIdx === 0 && !demandDebtForm.selectedContactId) {
-                        showToast('لطفاً یک مخاطب انتخاب کنید');
+                        triggerCardError('demand_contact', 'لطفاً یک مخاطب انتخاب کنید');
                         return;
                     }
                     if (currentCardIdx === 1) { // demand_amount
                         const amt = Number(demandDebtForm.amount) || 0;
                         if (amt <= 0) {
-                            showToast('لطفاً مبلغ طلب را وارد نمایید');
+                            triggerCardError('demand_amount', 'لطفاً مبلغ طلب را وارد نمایید');
                             return;
                         }
                     }
@@ -3864,13 +3906,13 @@
                 // Validation for debt wizard
                 if (wizardType === 'debt') {
                     if (currentCardIdx === 0 && !demandDebtForm.selectedContactId) {
-                        showToast('لطفاً یک مخاطب انتخاب کنید');
+                        triggerCardError('debt_contact', 'لطفاً یک مخاطب انتخاب کنید');
                         return;
                     }
                     if (currentCardIdx === 1) { // debt_amount
                         const amt = Number(demandDebtForm.amount) || 0;
                         if (amt <= 0) {
-                            showToast('لطفاً مبلغ قرض را وارد نمایید');
+                            triggerCardError('debt_amount', 'لطفاً مبلغ قرض را وارد نمایید');
                             return;
                         }
                     }
@@ -3879,13 +3921,13 @@
                 // Validation for installment wizard
                 if (wizardType === 'installment') {
                     if (currentCardIdx === 0 && !installmentForm.selectedLoanId) {
-                        showToast('لطفاً یک وام را انتخاب کنید');
+                        triggerCardError('inst_select_loan', 'لطفاً یک وام را انتخاب کنید');
                         return;
                     }
                     if (currentCardIdx === 2) { // inst_amount
                         const inputAmt = Number(installmentForm.amount) || 0;
                         if (inputAmt <= 0) {
-                            showToast('لطفاً مبلغ پرداخت قسط را وارد نمایید');
+                            triggerCardError('inst_amount', 'لطفاً مبلغ پرداخت قسط را وارد نمایید');
                             return;
                         }
                         const targetLoan = loans.find(l => l.id === Number(installmentForm.selectedLoanId));
@@ -3894,7 +3936,7 @@
                             const loanTotal = (targetLoan.totalRepayment > 0) ? targetLoan.totalRepayment : targetLoan.principalAmount;
                             const loanRemaining = Math.max(0, loanTotal - loanPaid);
                             if (inputAmt > loanRemaining) {
-                                showToast(`مبلغ پرداختی نمی‌تواند از مانده وام (${loanRemaining.toLocaleString()} تومان) بیشتر باشد`);
+                                triggerCardError('inst_amount', `مبلغ پرداختی نمی‌تواند از مانده وام (${loanRemaining.toLocaleString()} تومان) بیشتر باشد`);
                                 return;
                             }
                         }
@@ -3904,13 +3946,13 @@
                 // Validation for debt repayment wizard
                 if (wizardType === 'debt_repayment') {
                     if (currentCardIdx === 0 && !demandDebtForm.selectedContactId) {
-                        showToast('لطفاً یک مخاطب انتخاب کنید');
+                        triggerCardError('debt_repay_contact', 'لطفاً یک مخاطب انتخاب کنید');
                         return;
                     }
                     if (currentCardIdx === 1) { // debt_repay_amount
                         const inputAmt = Number(repaymentForm.amount) || 0;
                         if (inputAmt <= 0) {
-                            showToast('لطفاً مبلغ بازپرداخت بدهی را وارد نمایید');
+                            triggerCardError('debt_repay_amount', 'لطفاً مبلغ بازپرداخت بدهی را وارد نمایید');
                             return;
                         }
                         const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
@@ -3918,7 +3960,7 @@
                         const editingTxAmt = editingTx ? Math.abs(editingTx.amount || 0) : 0;
                         const totalDebt = (targetContact ? (targetContact.totalDebt || 0) : 0) + editingTxAmt;
                         if (inputAmt > totalDebt) {
-                            showToast(`مبلغ پرداختی نمی‌تواند از کل بدهی (${totalDebt.toLocaleString()} تومان) بیشتر باشد`);
+                            triggerCardError('debt_repay_amount', `مبلغ پرداختی نمی‌تواند از کل بدهی (${totalDebt.toLocaleString()} تومان) بیشتر باشد`);
                             return;
                         }
                     }
@@ -3927,13 +3969,13 @@
                 // Validation for demand repayment wizard
                 if (wizardType === 'demand_repayment') {
                     if (currentCardIdx === 0 && !demandDebtForm.selectedContactId) {
-                        showToast('لطفاً یک مخاطب انتخاب کنید');
+                        triggerCardError('demand_repay_contact', 'لطفاً یک مخاطب انتخاب کنید');
                         return;
                     }
                     if (currentCardIdx === 1) { // demand_repay_amount
                         const inputAmt = Number(repaymentForm.amount) || 0;
                         if (inputAmt <= 0) {
-                            showToast('لطفاً مبلغ دریافتی را وارد نمایید');
+                            triggerCardError('demand_repay_amount', 'لطفاً مبلغ دریافتی را وارد نمایید');
                             return;
                         }
                         const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
@@ -3941,12 +3983,13 @@
                         const editingTxAmt = editingTx ? Math.abs(editingTx.amount || 0) : 0;
                         const totalDemand = (targetContact ? (targetContact.totalDemand || 0) : 0) + editingTxAmt;
                         if (inputAmt > totalDemand) {
-                            showToast(`مبلغ دریافتی نمی‌تواند از کل طلب (${totalDemand.toLocaleString()} تومان) بیشتر باشد`);
+                            triggerCardError('demand_repay_amount', `مبلغ دریافتی نمی‌تواند از کل طلب (${totalDemand.toLocaleString()} تومان) بیشتر باشد`);
                             return;
                         }
                     }
                 }
 
+                setValidationErrors({});
                 setAnimatingCard(true);
                 setTimeout(() => {
                     setAnimatingCard(false);
@@ -4608,15 +4651,35 @@
                                     type="text"
                                     placeholder="مثلاً: وام خرید خودرو، وام مسکن"
                                     value={loanForm.title}
-                                    onChange={(e) => setLoanForm({...loanForm, title: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setLoanForm(prev => ({ ...prev, title: val }));
+                                        if (val.trim()) {
+                                            setValidationErrors(errs => { const { loan_title, ...rest } = errs; return rest; });
+                                        }
+                                    }}
+                                    className={`w-full bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-xs focus:outline-none transition-all ${
+                                        validationErrors.loan_title 
+                                            ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                            : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'
+                                    }`}
                                 />
+                                {validationErrors.loan_title && (
+                                    <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                        <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                        <span>{validationErrors.loan_title}</span>
+                                    </p>
+                                )}
                             </div>
 
                             <ContactSelectorCard 
                                 contacts={contacts}
                                 selectedContactId={loanForm.selectedContactId}
-                                onSelect={(c) => setLoanForm(prev => ({ ...prev, selectedContactId: c.id, contactName: `${c.firstName} ${c.lastName}` }))}
+                                onSelect={(c) => {
+                                    setLoanForm(prev => ({ ...prev, selectedContactId: c.id, contactName: `${c.firstName} ${c.lastName}` }));
+                                    setValidationErrors(errs => { const { loan_contact, ...rest } = errs; return rest; });
+                                }}
+                                error={validationErrors.loan_contact}
                                 wizardType="loan"
                                 wizardMode={wizardMode}
                             />
@@ -4644,15 +4707,31 @@
                     title: '۲- مبلغ اصل وام',
                     render: () => (
                         <div className="space-y-3">
-                            <label className="block text-xs text-slate-500">مبلغ اصل وامی که دریافت کرده‌اید (تومان):</label>
+                            <label className="block text-xs text-slate-500 font-bold">مبلغ اصل وامی که دریافت کرده‌اید (تومان):</label>
                             <input 
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلا: ۵۰۰,۰۰۰,۰۰۰"
                                 value={formatWithCommas(loanForm.principalAmount)}
-                                onChange={(e) => setLoanForm({...loanForm, principalAmount: parseRawNumber(e.target.value)})}
-                                className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
+                                onChange={(e) => {
+                                    const raw = parseRawNumber(e.target.value);
+                                    setLoanForm(prev => ({ ...prev, principalAmount: raw }));
+                                    if (Number(raw) > 0) {
+                                        setValidationErrors(errs => { const { principal_amount, ...rest } = errs; return rest; });
+                                    }
+                                }}
+                                className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${
+                                    validationErrors.principal_amount 
+                                        ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                        : 'border-slate-200 dark:border-slate-700'
+                                }`}
                             />
+                            {validationErrors.principal_amount && (
+                                <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                    <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                    <span>{validationErrors.principal_amount}</span>
+                                </p>
+                            )}
                             {loanForm.principalAmount && Number(loanForm.principalAmount) > 0 && (
                                 <div className="space-y-1.5 mt-2">
                                     <div className="text-xs text-indigo-600 font-bold text-left ltr">
@@ -4671,15 +4750,31 @@
                     title: '۳- مبلغ کل بازپرداخت',
                     render: () => (
                         <div className="space-y-3">
-                            <label className="block text-xs text-slate-500">مجموع کل مبلغ بازپرداخت شامل اصل و کارمزد:</label>
+                            <label className="block text-xs text-slate-500 font-bold">مجموع کل مبلغ بازپرداخت شامل اصل و کارمزد:</label>
                             <input 
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلا: ۵۵۰,۰۰۰,۰۰۰"
                                 value={formatWithCommas(loanForm.totalRepayment)}
-                                onChange={(e) => setLoanForm({...loanForm, totalRepayment: parseRawNumber(e.target.value)})}
-                                className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
+                                onChange={(e) => {
+                                    const raw = parseRawNumber(e.target.value);
+                                    setLoanForm(prev => ({ ...prev, totalRepayment: raw }));
+                                    if (Number(raw) > 0) {
+                                        setValidationErrors(errs => { const { total_repayment, ...rest } = errs; return rest; });
+                                    }
+                                }}
+                                className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${
+                                    validationErrors.total_repayment 
+                                        ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                        : 'border-slate-200 dark:border-slate-700'
+                                }`}
                             />
+                            {validationErrors.total_repayment && (
+                                <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                    <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                    <span>{validationErrors.total_repayment}</span>
+                                </p>
+                            )}
                             {loanForm.totalRepayment && Number(loanForm.totalRepayment) > 0 && (
                                 <div className="space-y-1.5 mt-2">
                                     <div className="text-xs text-indigo-600 font-bold text-left ltr">
@@ -4698,15 +4793,31 @@
                     title: '۴- مبلغ هر قسط',
                     render: () => (
                         <div className="space-y-3">
-                            <label className="block text-xs text-slate-500">مبلغ هر قسط ماهانه (تومان):</label>
+                            <label className="block text-xs text-slate-500 font-bold">مبلغ هر قسط ماهانه (تومان):</label>
                             <input 
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلا: ۲۸,۰۰۰,۰۰۰"
                                 value={formatWithCommas(loanForm.installmentAmount)}
-                                onChange={(e) => setLoanForm({...loanForm, installmentAmount: parseRawNumber(e.target.value)})}
-                                className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
+                                onChange={(e) => {
+                                    const raw = parseRawNumber(e.target.value);
+                                    setLoanForm(prev => ({ ...prev, installmentAmount: raw }));
+                                    if (Number(raw) > 0) {
+                                        setValidationErrors(errs => { const { installment_amount, ...rest } = errs; return rest; });
+                                    }
+                                }}
+                                className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${
+                                    validationErrors.installment_amount 
+                                        ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                        : 'border-slate-200 dark:border-slate-700'
+                                }`}
                             />
+                            {validationErrors.installment_amount && (
+                                <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                    <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                    <span>{validationErrors.installment_amount}</span>
+                                </p>
+                            )}
                             {loanForm.installmentAmount && Number(loanForm.installmentAmount) > 0 && (
                                 <div className="p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40 mt-1.5">
                                     {numToPersianWords(loanForm.installmentAmount)}
@@ -4932,7 +5043,11 @@
                         <ContactSelectorCard 
                             contacts={contacts}
                             selectedContactId={demandDebtForm.selectedContactId}
-                            onSelect={(c) => setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }))}
+                            onSelect={(c) => {
+                                setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }));
+                                setValidationErrors(errs => { const { demand_contact, ...rest } = errs; return rest; });
+                            }}
+                            error={validationErrors.demand_contact}
                             wizardType="demand"
                             wizardMode={wizardMode}
                         />
@@ -4949,9 +5064,25 @@
                                 inputMode="numeric"
                                 placeholder="مثلاً: ۵,۰۰۰,۰۰۰"
                                 value={formatWithCommas(demandDebtForm.amount)}
-                                onChange={(e) => setDemandDebtForm({...demandDebtForm, amount: parseRawNumber(e.target.value)})}
-                                className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
+                                onChange={(e) => {
+                                    const raw = parseRawNumber(e.target.value);
+                                    setDemandDebtForm(prev => ({ ...prev, amount: raw }));
+                                    if (Number(raw) > 0) {
+                                        setValidationErrors(errs => { const { demand_amount, ...rest } = errs; return rest; });
+                                    }
+                                }}
+                                className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${
+                                    validationErrors.demand_amount 
+                                        ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                        : 'border-slate-200 dark:border-slate-700'
+                                }`}
                             />
+                            {validationErrors.demand_amount && (
+                                <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                    <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                    <span>{validationErrors.demand_amount}</span>
+                                </p>
+                            )}
                             {demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && (
                                 <div className="space-y-1.5 mt-2">
                                     <div className="text-xs text-emerald-600 font-bold text-left ltr">
@@ -5007,7 +5138,11 @@
                         <ContactSelectorCard 
                             contacts={contacts}
                             selectedContactId={demandDebtForm.selectedContactId}
-                            onSelect={(c) => setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }))}
+                            onSelect={(c) => {
+                                setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }));
+                                setValidationErrors(errs => { const { debt_contact, ...rest } = errs; return rest; });
+                            }}
+                            error={validationErrors.debt_contact}
                             wizardType="debt"
                             wizardMode={wizardMode}
                         />
@@ -5024,9 +5159,25 @@
                                 inputMode="numeric"
                                 placeholder="مثلاً: ۲,۰۰۰,۰۰۰"
                                 value={formatWithCommas(demandDebtForm.amount)}
-                                onChange={(e) => setDemandDebtForm({...demandDebtForm, amount: parseRawNumber(e.target.value)})}
-                                className="w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none"
+                                onChange={(e) => {
+                                    const raw = parseRawNumber(e.target.value);
+                                    setDemandDebtForm(prev => ({ ...prev, amount: raw }));
+                                    if (Number(raw) > 0) {
+                                        setValidationErrors(errs => { const { debt_amount, ...rest } = errs; return rest; });
+                                    }
+                                }}
+                                className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${
+                                    validationErrors.debt_amount 
+                                        ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                        : 'border-slate-200 dark:border-slate-700'
+                                }`}
                             />
+                            {validationErrors.debt_amount && (
+                                <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                    <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                    <span>{validationErrors.debt_amount}</span>
+                                </p>
+                            )}
                             {demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && (
                                 <div className="space-y-1.5 mt-2">
                                     <div className="text-xs text-rose-500 font-bold text-left ltr">
@@ -5090,7 +5241,9 @@
                                 setPickerMonth(nextD.month);
                                 setPickerYear(nextD.year);
                                 setInstallmentForm(prev => ({ ...prev, selectedLoanId: l.id, amount: l.installmentAmount }));
+                                setValidationErrors(errs => { const { inst_select_loan, ...rest } = errs; return rest; });
                             }}
+                            error={validationErrors.inst_select_loan}
                             wizardMode={wizardMode}
                         />
                     )
@@ -5131,11 +5284,25 @@
                                     type="text"
                                     inputMode="numeric"
                                     value={formatWithCommas(installmentForm.amount)}
-                                    onChange={(e) => setInstallmentForm({...installmentForm, amount: parseRawNumber(e.target.value)})}
-                                    className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none ${
-                                        isOver ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-200 dark:border-slate-700'
+                                    onChange={(e) => {
+                                        const raw = parseRawNumber(e.target.value);
+                                        setInstallmentForm(prev => ({ ...prev, amount: raw }));
+                                        if (Number(raw) > 0) {
+                                            setValidationErrors(errs => { const { inst_amount, ...rest } = errs; return rest; });
+                                        }
+                                    }}
+                                    className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${
+                                        validationErrors.inst_amount || isOver
+                                            ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                            : 'border-slate-200 dark:border-slate-700'
                                     }`}
                                 />
+                                {validationErrors.inst_amount && (
+                                    <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                        <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                        <span>{validationErrors.inst_amount}</span>
+                                    </p>
+                                )}
                                 {inputAmt > 0 && (
                                     <div className="space-y-1.5 mt-2">
                                         <div className="text-xs text-indigo-600 font-bold text-left ltr">
@@ -5193,7 +5360,11 @@
                         <ContactSelectorCard 
                             contacts={contacts}
                             selectedContactId={demandDebtForm.selectedContactId}
-                            onSelect={(c) => setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }))}
+                            onSelect={(c) => {
+                                setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }));
+                                setValidationErrors(errs => { const { debt_repay_contact, ...rest } = errs; return rest; });
+                            }}
+                            error={validationErrors.debt_repay_contact}
                             wizardType="debt_repayment"
                             wizardMode={wizardMode}
                         />
@@ -5220,11 +5391,25 @@
                                     inputMode="numeric"
                                     placeholder="مثلاً: ۵۰۰,۰۰۰"
                                     value={formatWithCommas(repaymentForm.amount)}
-                                    onChange={(e) => setRepaymentForm({...repaymentForm, amount: parseRawNumber(e.target.value)})}
-                                    className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none ${
-                                        isOver ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-200 dark:border-slate-700'
+                                    onChange={(e) => {
+                                        const raw = parseRawNumber(e.target.value);
+                                        setRepaymentForm(prev => ({ ...prev, amount: raw }));
+                                        if (Number(raw) > 0) {
+                                            setValidationErrors(errs => { const { debt_repay_amount, ...rest } = errs; return rest; });
+                                        }
+                                    }}
+                                    className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${
+                                        validationErrors.debt_repay_amount || isOver 
+                                            ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                            : 'border-slate-200 dark:border-slate-700'
                                     }`}
                                 />
+                                {validationErrors.debt_repay_amount && (
+                                    <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                        <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                        <span>{validationErrors.debt_repay_amount}</span>
+                                    </p>
+                                )}
                                 {inputAmt > 0 && (
                                     <div className="space-y-1.5 mt-2">
                                         <div className="text-xs text-rose-500 font-bold text-left ltr">
@@ -5296,7 +5481,11 @@
                         <ContactSelectorCard 
                             contacts={contacts}
                             selectedContactId={demandDebtForm.selectedContactId}
-                            onSelect={(c) => setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }))}
+                            onSelect={(c) => {
+                                setDemandDebtForm(prev => ({ ...prev, selectedContactId: c.id }));
+                                setValidationErrors(errs => { const { demand_repay_contact, ...rest } = errs; return rest; });
+                            }}
+                            error={validationErrors.demand_repay_contact}
                             wizardType="demand_repayment"
                             wizardMode={wizardMode}
                         />
@@ -5323,11 +5512,25 @@
                                     inputMode="numeric"
                                     placeholder="مثلاً: ۱,۰۰۰,۰۰۰"
                                     value={formatWithCommas(repaymentForm.amount)}
-                                    onChange={(e) => setRepaymentForm({...repaymentForm, amount: parseRawNumber(e.target.value)})}
-                                    className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none ${
-                                        isOver ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-200 dark:border-slate-700'
+                                    onChange={(e) => {
+                                        const raw = parseRawNumber(e.target.value);
+                                        setRepaymentForm(prev => ({ ...prev, amount: raw }));
+                                        if (Number(raw) > 0) {
+                                            setValidationErrors(errs => { const { demand_repay_amount, ...rest } = errs; return rest; });
+                                        }
+                                    }}
+                                    className={`w-full font-mono text-lg font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${
+                                        validationErrors.demand_repay_amount || isOver 
+                                            ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                            : 'border-slate-200 dark:border-slate-700'
                                     }`}
                                 />
+                                {validationErrors.demand_repay_amount && (
+                                    <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                        <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                        <span>{validationErrors.demand_repay_amount}</span>
+                                    </p>
+                                )}
                                 {inputAmt > 0 && (
                                     <div className="space-y-1.5 mt-2">
                                         <div className="text-xs text-emerald-600 font-bold text-left ltr">
