@@ -44,6 +44,8 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel for JSX Compilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Framer Motion CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -95,7 +97,9 @@
             height: 60vh;
             max-height: 480px;
             position: relative;
-            perspective: 1000px;
+            perspective: 1400px;
+            perspective-origin: 50% 35%;
+            transform-style: preserve-3d;
         }
 
         .stack-card {
@@ -104,92 +108,162 @@
             left: 0;
             right: 0;
             height: 100%;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease, box-shadow 0.6s ease;
             transform-origin: center bottom;
-            will-change: transform, opacity;
+            will-change: transform, opacity, z-index;
         }
 
         /* Position 0: Active top card */
         .stack-card[data-depth="0"] {
-            transform: translateY(0) scale(1);
-            z-index: 30;
+            transform: translate3d(0, 0px, 0px) scale(1);
+            z-index: 100;
             opacity: 1;
-            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.35), 0 0 1px rgba(0, 0, 0, 0.1);
         }
 
         /* Position 1: Second card stacked behind */
         .stack-card[data-depth="1"] {
-            transform: translateY(14px) scale(0.95);
-            z-index: 20;
-            opacity: 0.92;
+            transform: translate3d(0, 10px, -20px) scale(0.965);
+            z-index: 50;
+            opacity: 0.95;
             pointer-events: none;
+            box-shadow: 0 15px 30px -10px rgba(15, 23, 42, 0.25);
         }
 
         /* Position 2: Third card stacked deep behind */
         .stack-card[data-depth="2"] {
-            transform: translateY(28px) scale(0.90);
-            z-index: 10;
-            opacity: 0.75;
+            transform: translate3d(0, 20px, -40px) scale(0.93);
+            z-index: 20;
+            opacity: 0.85;
             pointer-events: none;
+            box-shadow: 0 10px 20px -8px rgba(15, 23, 42, 0.2);
         }
 
         /* Hidden cards further back */
         .stack-card[data-depth="hidden"] {
-            transform: translateY(40px) scale(0.85);
+            transform: translate3d(0, 30px, -60px) scale(0.88);
             z-index: 0;
             opacity: 0;
             pointer-events: none;
         }
 
-        /* Swiping out animation */
-        .stack-card.card-exit-to-back {
-            animation: moveCardToBack 0.45s ease-in-out forwards;
-        }
-
-        .stack-card.card-enter-from-back {
-            animation: moveCardFromBack 0.45s ease-in-out forwards;
-        }
-
-        @keyframes moveCardToBack {
+        /* RULE: Dynamically travels 100% card width + 35px margin to fully clear stack before moving behind */
+        @keyframes flipToBack {
             0% {
-                transform: translateY(0) scale(1) rotate(0deg);
-                opacity: 1;
-                z-index: 35;
+                transform: translate3d(0, 0, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+                z-index: 100;
             }
-            40% {
-                transform: translateY(-70px) scale(0.96) rotate(-3deg);
-                opacity: 0.8;
-                z-index: 35;
+            50% {
+                transform: translate3d(calc(100% + 35px), -10px, 0px) rotateX(2deg) rotateY(-6deg) rotateZ(4deg) scale(0.92);
+                z-index: 100;
+            }
+            50.01% {
+                z-index: 1;
             }
             100% {
-                transform: translateY(30px) scale(0.88) rotate(0deg);
-                opacity: 0.5;
-                z-index: 5;
+                transform: translate3d(0, 20px, -40px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.93);
+                z-index: 1;
             }
         }
 
-        @keyframes moveCardFromBack {
+        /* RULE: Emerges from behind deck, moves calc(100% + 35px) to clear edge, swaps to ON-TOP, and lands on front */
+        @keyframes returnToFront {
             0% {
-                transform: translateY(-70px) scale(0.96) rotate(3deg);
-                opacity: 0.8;
-                z-index: 35;
+                transform: translate3d(0, 20px, -40px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.93);
+                z-index: 1;
+            }
+            50% {
+                transform: translate3d(calc(100% + 35px), -10px, 0px) rotateX(2deg) rotateY(-6deg) rotateZ(4deg) scale(0.95);
+                z-index: 1;
+            }
+            50.01% {
+                z-index: 100;
             }
             100% {
-                transform: translateY(0) scale(1) rotate(0deg);
-                opacity: 1;
-                z-index: 30;
+                transform: translate3d(0, 0, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+                z-index: 100;
             }
         }
 
-        /* iOS Wheel Picker Styles */
-        .ios-wheel-container {
-            height: 200px;
-            overflow-y: scroll;
-            overflow-x: hidden;
+        .card-exit-to-back, .animating-next {
+            animation: flipToBack 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+        }
+
+        .card-enter-from-back, .animating-prev {
+            animation: returnToFront 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+        }
+
+        /* Apple Spring Open / Close keyframes for stack modal */
+        @keyframes appleSpringOpen {
+            0% {
+                opacity: 0;
+                transform: scale(0.82) translateY(30px);
+                filter: blur(4px);
+            }
+            70% {
+                transform: scale(1.04) translateY(-6px);
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes appleSpringClose {
+            0% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0px);
+            }
+            30% {
+                transform: scale(1.03) translateY(-3px);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8) translateY(35px);
+                filter: blur(4px);
+            }
+        }
+
+        /* iOS Wheel Picker Styles & Mask */
+        .wheel-mask {
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                rgba(0, 0, 0, 0.4) 18%,
+                rgba(0, 0, 0, 1) 40%,
+                rgba(0, 0, 0, 1) 60%,
+                rgba(0, 0, 0, 0.4) 82%,
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                rgba(0, 0, 0, 0.4) 18%,
+                rgba(0, 0, 0, 1) 40%,
+                rgba(0, 0, 0, 1) 60%,
+                rgba(0, 0, 0, 0.4) 82%,
+                transparent 100%
+            );
+        }
+
+        .wheel-scroll {
             scroll-snap-type: y mandatory;
-            position: relative;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
+            perspective: 1000px;
+        }
+
+        .wheel-item {
+            scroll-snap-align: center;
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+            user-select: none;
+            -webkit-user-select: none;
+        }
             touch-action: pan-y;
             user-select: none;
             -webkit-user-select: none;
@@ -342,6 +416,12 @@
 
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
+        const Motion = window.Motion || {};
+        const motion = Motion.motion || {
+            div: (props) => <div {...props} />,
+            button: (props) => <button {...props} />
+        };
+        const AnimatePresence = Motion.AnimatePresence || (({ children }) => <React.Fragment>{children}</React.Fragment>);
 
         const avatarColors = [
             'bg-blue-600', 'bg-amber-600', 'bg-emerald-600', 'bg-indigo-600', 'bg-teal-600',
@@ -477,6 +557,26 @@
                 console.error("Error parsing Jalali date:", e);
             }
             return defaultDate;
+        };
+
+        const toPersianDigits = (n) => {
+            if (n === undefined || n === null) return '';
+            const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+            return String(n).replace(/\d/g, x => farsiDigits[x]);
+        };
+
+        const isJalaliLeapYear = (year) => {
+            const y = Number(year) || 1403;
+            const r = y % 33;
+            return [1, 5, 9, 13, 17, 22, 26, 30].includes(r);
+        };
+
+        const getJalaliDaysInMonth = (monthNum, year) => {
+            const m = Number(monthNum);
+            if (m >= 1 && m <= 6) return 31;
+            if (m >= 7 && m <= 11) return 30;
+            if (m === 12) return isJalaliLeapYear(year) ? 30 : 29;
+            return 30;
         };
 
         const formatDateToNumericJalali = (dateStr) => {
@@ -651,6 +751,64 @@
             const info = getLoanNextDueInfo(loan, txList);
             if (info.isCompleted) return getDeviceJalaliDate();
             return parseJalaliDateStr(info.nextDueDateStr);
+        };
+
+        const getInstallmentNextDueDate = (targetLoan, txList) => {
+            if (!targetLoan) return getDeviceJalaliDate();
+
+            const loanTxs = (txList || []).filter(t => t.loanId === targetLoan.id && t.type === 'repayment');
+
+            if (loanTxs.length > 0) {
+                let latestTx = loanTxs[0];
+                loanTxs.forEach(t => {
+                    if (t.dateStr) {
+                        const pLatest = parseJalaliDateStr(latestTx.dateStr || '');
+                        const pCurrent = parseJalaliDateStr(t.dateStr);
+                        const mLatest = jalaliMonths.indexOf(pLatest.month);
+                        const mCurrent = jalaliMonths.indexOf(pCurrent.month);
+                        const vLatest = pLatest.year * 10000 + (mLatest >= 0 ? mLatest + 1 : 1) * 100 + pLatest.day;
+                        const vCurrent = pCurrent.year * 10000 + (mCurrent >= 0 ? mCurrent + 1 : 1) * 100 + pCurrent.day;
+                        if (vCurrent > vLatest) {
+                            latestTx = t;
+                        }
+                    }
+                });
+
+                if (latestTx && latestTx.dateStr) {
+                    const parsed = parseJalaliDateStr(latestTx.dateStr);
+                    let monthIdx = jalaliMonths.indexOf(parsed.month);
+                    if (monthIdx === -1) monthIdx = 0;
+
+                    let nextMonthIdx = monthIdx + 1;
+                    let nextYear = parsed.year;
+                    if (nextMonthIdx >= 12) {
+                        nextMonthIdx = 0;
+                        nextYear += 1;
+                    }
+
+                    let maxDays = 30;
+                    if (nextMonthIdx < 6) maxDays = 31;
+                    else if (nextMonthIdx === 11) maxDays = 29;
+
+                    const nextDay = Math.min(parsed.day, maxDays);
+                    return {
+                        day: nextDay,
+                        month: jalaliMonths[nextMonthIdx],
+                        year: nextYear
+                    };
+                }
+            }
+
+            const info = getLoanNextDueInfo(targetLoan, txList);
+            if (info && info.nextDueDateStr && !info.isCompleted && info.nextDueDateStr !== 'نامشخص') {
+                return parseJalaliDateStr(info.nextDueDateStr);
+            }
+
+            if (targetLoan.startDate) {
+                return parseJalaliDateStr(targetLoan.startDate);
+            }
+
+            return getDeviceJalaliDate();
         };
 
         const drawRoundRect = (ctx, x, y, w, h, r) => {
@@ -1413,258 +1571,299 @@
             );
         }
 
-        function IOSWheelPicker({ items = [], selectedValue, onChange, label }) {
+        function playHapticTick() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                if (!window.__appAudioCtx) {
+                    window.__appAudioCtx = new AudioContext();
+                }
+                if (window.__appAudioCtx.state === 'suspended') {
+                    window.__appAudioCtx.resume();
+                }
+                const osc = window.__appAudioCtx.createOscillator();
+                const gain = window.__appAudioCtx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(420, window.__appAudioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(120, window.__appAudioCtx.currentTime + 0.015);
+
+                gain.gain.setValueAtTime(0.08, window.__appAudioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, window.__appAudioCtx.currentTime + 0.015);
+
+                osc.connect(gain);
+                gain.connect(window.__appAudioCtx.destination);
+
+                osc.start();
+                osc.stop(window.__appAudioCtx.currentTime + 0.015);
+            } catch (e) {}
+        }
+
+        function WheelColumn({ items = [], selectedIndex = 0, onSelectIndex, flexClass = "flex-1", ariaLabel }) {
+            const elementRef = useRef(null);
             const containerRef = useRef(null);
-            const [scrollTop, setScrollTop] = useState(0);
-            const isInteractingRef = useRef(false);
-            const animFrameRef = useRef(null);
+            const lastSelectedIndexRef = useRef(-1);
             const scrollTimeoutRef = useRef(null);
+            const rafIdRef = useRef(null);
 
-            // Physics dragging refs
-            const startYRef = useRef(0);
-            const startScrollTopRef = useRef(0);
-            const lastYRef = useRef(0);
-            const lastTimeRef = useRef(0);
-            const velocityRef = useRef(0);
+            const ITEM_HEIGHT = 44;
+            const VISIBLE_HEIGHT = 210;
+            const SPACER_HEIGHT = (VISIBLE_HEIGHT - ITEM_HEIGHT) / 2;
 
-            const itemHeight = 40;
-
-            // Default selection safety check
             useEffect(() => {
-                if (items && items.length > 0) {
-                    if (selectedValue === undefined || selectedValue === null || items.indexOf(selectedValue) === -1) {
-                        const defaultVal = items[0];
-                        if (onChange) onChange(defaultVal);
+                if (elementRef.current && selectedIndex >= 0) {
+                    const targetScrollTop = selectedIndex * ITEM_HEIGHT;
+                    if (Math.abs(elementRef.current.scrollTop - targetScrollTop) > 1.5) {
+                        elementRef.current.scrollTo({
+                            top: targetScrollTop,
+                            behavior: 'smooth'
+                        });
+                        lastSelectedIndexRef.current = selectedIndex;
                     }
                 }
-            }, [items, selectedValue]);
+            }, [selectedIndex]);
 
-            // Programmatically align scroll position when selectedValue changes externally
-            useEffect(() => {
-                if (!isInteractingRef.current && containerRef.current && items && items.length > 0) {
-                    let idx = items.indexOf(selectedValue);
-                    if (idx === -1) idx = 0;
-                    const targetScroll = idx * itemHeight;
-                    if (Math.abs(containerRef.current.scrollTop - targetScroll) > 1.5) {
-                        containerRef.current.scrollTop = targetScroll;
-                        setScrollTop(targetScroll);
+            const update3DEffects = () => {
+                if (!elementRef.current || !containerRef.current) return;
+                const scrollTop = elementRef.current.scrollTop;
+                const children = containerRef.current.children;
+                if (!children) return;
+
+                let closestIndex = Math.round(scrollTop / ITEM_HEIGHT);
+                closestIndex = Math.max(0, Math.min(closestIndex, items.length - 1));
+
+                if (closestIndex !== lastSelectedIndexRef.current) {
+                    if (lastSelectedIndexRef.current !== -1) {
+                        playHapticTick();
+                    }
+                    lastSelectedIndexRef.current = closestIndex;
+                }
+
+                for (let i = 0; i < children.length; i++) {
+                    const item = children[i];
+                    const itemTop = i * ITEM_HEIGHT;
+                    const distanceFromCenter = itemTop - scrollTop;
+                    const normalizedDist = distanceFromCenter / ITEM_HEIGHT;
+                    const absDist = Math.abs(normalizedDist);
+
+                    if (absDist > 3.5) {
+                        item.style.opacity = '0';
+                        item.style.transform = 'scale(0.7)';
+                    } else {
+                        const opacity = Math.max(0.18, 1 - Math.pow(absDist / 2.8, 1.5));
+                        const scale = Math.max(0.75, 1 - absDist * 0.08);
+                        const rotateX = Math.min(Math.max(normalizedDist * -24, -70), 70);
+
+                        item.style.opacity = opacity.toFixed(2);
+                        item.style.transform = `rotateX(${rotateX}deg) scale(${scale.toFixed(3)})`;
+
+                        if (absDist < 0.5) {
+                            item.className = 'wheel-item h-[44px] flex items-center justify-center font-bold text-base text-indigo-600 dark:text-blue-400 transition-colors duration-75';
+                        } else {
+                            item.className = 'wheel-item h-[44px] flex items-center justify-center font-normal text-base text-slate-400 dark:text-slate-400 transition-colors duration-75';
+                        }
                     }
                 }
-            }, [selectedValue, items]);
+            };
 
-            // Snap to nearest item and notify onChange
-            const snapToNearest = (currentPos) => {
-                if (!containerRef.current || !items || items.length === 0) return;
-                const maxScroll = (items.length - 1) * itemHeight;
-                const clamped = Math.max(0, Math.min(currentPos, maxScroll));
-                const index = Math.round(clamped / itemHeight);
-                const targetScroll = index * itemHeight;
+            const snapAndSelect = () => {
+                if (!elementRef.current) return;
+                const scrollTop = elementRef.current.scrollTop;
+                const targetIndex = Math.max(0, Math.min(Math.round(scrollTop / ITEM_HEIGHT), items.length - 1));
+                const targetScrollTop = targetIndex * ITEM_HEIGHT;
 
-                if (containerRef.current) {
-                    containerRef.current.scrollTo({
-                        top: targetScroll,
+                if (Math.abs(elementRef.current.scrollTop - targetScrollTop) > 1) {
+                    elementRef.current.scrollTo({
+                        top: targetScrollTop,
                         behavior: 'smooth'
                     });
-                    setScrollTop(targetScroll);
                 }
-
-                if (items[index] !== undefined && items[index] !== selectedValue) {
-                    if (onChange) onChange(items[index]);
+                if (onSelectIndex && targetIndex !== selectedIndex) {
+                    onSelectIndex(targetIndex);
                 }
             };
 
-            // Inertia simulation for touch/mouse release
-            const startInertia = (initialVelocity) => {
-                if (!containerRef.current) return;
-                if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-
-                let v = initialVelocity;
-                const friction = 0.93; // Smooth iOS momentum decay
-
-                const step = () => {
-                    if (!containerRef.current) {
-                        isInteractingRef.current = false;
-                        return;
-                    }
-
-                    v *= friction;
-
-                    if (Math.abs(v) < 0.4) {
-                        isInteractingRef.current = false;
-                        snapToNearest(containerRef.current.scrollTop);
-                        return;
-                    }
-
-                    let nextScroll = containerRef.current.scrollTop - v;
-                    const maxScroll = (items.length - 1) * itemHeight;
-
-                    if (nextScroll < 0) {
-                        nextScroll = 0;
-                        v = 0;
-                    } else if (nextScroll > maxScroll) {
-                        nextScroll = maxScroll;
-                        v = 0;
-                    }
-
-                    containerRef.current.scrollTop = nextScroll;
-                    setScrollTop(nextScroll);
-
-                    animFrameRef.current = requestAnimationFrame(step);
-                };
-
-                animFrameRef.current = requestAnimationFrame(step);
+            const handleScroll = () => {
+                if (!rafIdRef.current) {
+                    rafIdRef.current = requestAnimationFrame(() => {
+                        update3DEffects();
+                        rafIdRef.current = null;
+                    });
+                }
+                clearTimeout(scrollTimeoutRef.current);
+                scrollTimeoutRef.current = setTimeout(() => {
+                    snapAndSelect();
+                }, 80);
             };
 
-            // Touch/Mouse event handlers
-            const handleStart = (e) => {
-                if (animFrameRef.current) {
-                    cancelAnimationFrame(animFrameRef.current);
-                    animFrameRef.current = null;
-                }
-                isInteractingRef.current = true;
-                const pageY = e.touches ? e.touches[0].pageY : e.pageY;
-                startYRef.current = pageY;
-                lastYRef.current = pageY;
-                lastTimeRef.current = performance.now();
-                startScrollTopRef.current = containerRef.current ? containerRef.current.scrollTop : 0;
-                velocityRef.current = 0;
-            };
+            return (
+                <div 
+                    ref={elementRef}
+                    onScroll={handleScroll}
+                    className={`${flexClass} h-full overflow-y-scroll no-scrollbar wheel-scroll relative cursor-grab active:cursor-grabbing`}
+                    tabIndex={0}
+                    aria-label={ariaLabel}
+                >
+                    <div style={{ height: `${SPACER_HEIGHT}px` }} className="w-full shrink-0" />
+                    <div ref={containerRef} className="w-full">
+                        {items.map((item, idx) => (
+                            <div 
+                                key={idx}
+                                onClick={() => {
+                                    if (elementRef.current) {
+                                        elementRef.current.scrollTo({ top: idx * ITEM_HEIGHT, behavior: 'smooth' });
+                                    }
+                                    if (onSelectIndex) onSelectIndex(idx);
+                                }}
+                                className="wheel-item h-[44px] flex items-center justify-center font-normal text-base text-slate-400 dark:text-slate-400"
+                            >
+                                {item.display}
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ height: `${SPACER_HEIGHT}px` }} className="w-full shrink-0" />
+                </div>
+            );
+        }
 
-            const handleMove = (e) => {
-                if (!isInteractingRef.current || !containerRef.current) return;
-                const pageY = e.touches ? e.touches[0].pageY : e.pageY;
-                const now = performance.now();
-                const deltaY = pageY - startYRef.current;
-                const stepDeltaY = pageY - lastYRef.current;
-                const dt = now - lastTimeRef.current;
+        function FullJalaliDatePicker({ day = 1, month = 'فروردین', year = 1403, onChange }) {
+            const START_YEAR = 1390;
+            const END_YEAR = 1420;
 
-                if (dt > 0) {
-                    const currentVelocity = (stepDeltaY / dt) * 16;
-                    velocityRef.current = velocityRef.current * 0.3 + currentVelocity * 0.7;
-                }
+            const monthNames = jalaliMonths;
+            const years = useMemo(() => {
+                const arr = [];
+                for (let y = START_YEAR; y <= END_YEAR; y++) arr.push(y);
+                return arr;
+            }, []);
 
-                lastYRef.current = pageY;
-                lastTimeRef.current = now;
+            const selectedMonthIdx = Math.max(0, monthNames.indexOf(month));
+            const daysInMonth = getJalaliDaysInMonth(selectedMonthIdx + 1, year);
 
-                const newScroll = startScrollTopRef.current - deltaY;
-                containerRef.current.scrollTop = newScroll;
-                setScrollTop(newScroll);
-            };
+            const dayItems = useMemo(() => {
+                return Array.from({ length: daysInMonth }, (_, i) => ({
+                    value: i + 1,
+                    display: toPersianDigits(i + 1)
+                }));
+            }, [daysInMonth]);
 
-            const handleEnd = () => {
-                if (!isInteractingRef.current) return;
+            const monthItems = useMemo(() => {
+                return monthNames.map((mName, i) => ({
+                    value: mName,
+                    display: `${mName} - ${toPersianDigits(i + 1)}`
+                }));
+            }, [monthNames]);
 
-                const v = velocityRef.current;
-                if (Math.abs(v) > 1.2) {
-                    startInertia(v);
-                } else if (containerRef.current) {
-                    isInteractingRef.current = false;
-                    snapToNearest(containerRef.current.scrollTop);
-                } else {
-                    isInteractingRef.current = false;
-                }
-            };
+            const yearItems = useMemo(() => {
+                return years.map(y => ({
+                    value: y,
+                    display: toPersianDigits(y)
+                }));
+            }, [years]);
 
-            const handleScroll = (e) => {
-                const currentScroll = e.target.scrollTop;
-                setScrollTop(currentScroll);
+            const selectedDayIdx = Math.max(0, Math.min(day - 1, dayItems.length - 1));
+            const selectedYearIdx = Math.max(0, Math.min(years.indexOf(year), years.length - 1));
 
-                // Calculate active item continuously for responsive feedback
-                const index = Math.round(currentScroll / itemHeight);
-                if (items[index] !== undefined && items[index] !== selectedValue && !isInteractingRef.current) {
-                    if (onChange) onChange(items[index]);
-                }
-
-                // Debounce snap for trackpad / wheel scroll
-                if (!isInteractingRef.current) {
-                    clearTimeout(scrollTimeoutRef.current);
-                    scrollTimeoutRef.current = setTimeout(() => {
-                        const finalIdx = Math.round(currentScroll / itemHeight);
-                        if (items[finalIdx] !== undefined && items[finalIdx] !== selectedValue) {
-                            if (onChange) onChange(items[finalIdx]);
-                        }
-                    }, 80);
+            const handleToday = () => {
+                playHapticTick();
+                const devDate = getDeviceJalaliDate();
+                if (onChange) {
+                    onChange({ day: devDate.day, month: devDate.month, year: devDate.year });
                 }
             };
 
             return (
+                <div className="w-full space-y-3 select-none">
+                    <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-xs">
+                        <div className="flex items-center space-x-2 space-x-reverse">
+                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">تاریخ انتخاب‌شده:</span>
+                            <span className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-blue-400 tracking-tight">
+                                {toPersianDigits(day)} {month} {toPersianDigits(year)}
+                            </span>
+                        </div>
+                        <button 
+                            type="button" 
+                            onClick={handleToday}
+                            className="py-1 px-2.5 bg-indigo-50 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition text-xs font-semibold rounded-xl text-indigo-600 dark:text-slate-200 border border-indigo-200 dark:border-slate-700/50 flex items-center space-x-1 space-x-reverse shrink-0 cursor-pointer"
+                        >
+                            <Icon name="clock" className="w-3.5 h-3.5 text-indigo-500 dark:text-blue-400" />
+                            <span>امروز</span>
+                        </button>
+                    </div>
+
+                    <div className="relative w-full h-[210px] bg-slate-50/70 dark:bg-slate-950/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/50 flex shadow-inner">
+                        <div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 h-[44px] bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-md rounded-xl pointer-events-none border border-slate-300/60 dark:border-slate-700/50 shadow-xs z-10" />
+
+                        <div className="relative w-full h-full wheel-mask flex z-20" dir="ltr">
+                            <WheelColumn 
+                                items={yearItems}
+                                selectedIndex={selectedYearIdx}
+                                onSelectIndex={(idx) => {
+                                    const newYear = years[idx];
+                                    if (newYear !== year && onChange) {
+                                        onChange({ day, month, year: newYear });
+                                    }
+                                }}
+                                flexClass="flex-1"
+                                ariaLabel="انتخاب سال"
+                            />
+
+                            <WheelColumn 
+                                items={monthItems}
+                                selectedIndex={selectedMonthIdx}
+                                onSelectIndex={(idx) => {
+                                    const newMonth = monthNames[idx];
+                                    if (newMonth !== month && onChange) {
+                                        onChange({ day, month: newMonth, year });
+                                    }
+                                }}
+                                flexClass="flex-[1.3]"
+                                ariaLabel="انتخاب ماه"
+                            />
+
+                            <WheelColumn 
+                                items={dayItems}
+                                selectedIndex={selectedDayIdx}
+                                onSelectIndex={(idx) => {
+                                    const newDay = dayItems[idx].value;
+                                    if (newDay !== day && onChange) {
+                                        onChange({ day: newDay, month, year });
+                                    }
+                                }}
+                                flexClass="flex-1"
+                                ariaLabel="انتخاب روز"
+                            />
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function IOSWheelPicker({ items = [], selectedValue, onChange, label }) {
+            const formattedItems = useMemo(() => {
+                return items.map(it => ({
+                    value: it,
+                    display: typeof it === 'number' ? toPersianDigits(it) : String(it)
+                }));
+            }, [items]);
+
+            const selectedIndex = Math.max(0, items.indexOf(selectedValue));
+
+            return (
                 <div className="flex flex-col items-center flex-1 min-w-0 select-none">
                     {label && <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">{label}</span>}
-                    <div className="relative w-full h-[200px] overflow-hidden rounded-2xl bg-slate-50/90 dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 shadow-2xs">
-                        {/* iOS Center Selection Highlight Bar */}
-                        <div className="ios-wheel-highlight"></div>
-
-                        {/* Top and Bottom Cylindrical Lens Fade Gradients */}
-                        <div className="absolute inset-x-0 top-0 h-[80px] bg-gradient-to-b from-slate-100 dark:from-slate-900 via-slate-100/75 dark:via-slate-900/75 to-transparent pointer-events-none z-20" />
-                        <div className="absolute inset-x-0 bottom-0 h-[80px] bg-gradient-to-t from-slate-100 dark:from-slate-900 via-slate-100/75 dark:via-slate-900/75 to-transparent pointer-events-none z-20" />
-
-                        {/* Scroll Container */}
-                        <div 
-                            ref={containerRef}
-                            onScroll={handleScroll}
-                            onTouchStart={handleStart}
-                            onTouchMove={handleMove}
-                            onTouchEnd={handleEnd}
-                            onMouseDown={handleStart}
-                            onMouseMove={handleMove}
-                            onMouseUp={handleEnd}
-                            onMouseLeave={handleEnd}
-                            className="ios-wheel-container w-full h-full overflow-y-auto overflow-x-hidden relative cursor-grab active:cursor-grabbing hide-scrollbar"
-                            style={{
-                                perspective: '350px',
-                                perspectiveOrigin: '50% 50%',
-                                touchAction: 'none',
-                                WebkitOverflowScrolling: 'touch'
-                            }}
-                        >
-                            {/* Top padding spacer: 2 rows (80px) */}
-                            <div className="h-[80px] shrink-0 pointer-events-none"></div>
-
-                            {items.map((item, idx) => {
-                                const offset = (idx * itemHeight - scrollTop) / itemHeight;
-                                const absOffset = Math.abs(offset);
-
-                                // 3D Cylindrical Perspective Math for 5 rows
-                                const rotateX = Math.max(-60, Math.min(60, offset * -25));
-                                const scale = Math.max(0.7, 1 - absOffset * 0.12);
-
-                                let opacity = 0;
-                                if (absOffset <= 0.5) opacity = 1;
-                                else if (absOffset <= 1.5) opacity = 0.55;
-                                else if (absOffset <= 2.5) opacity = 0.22;
-                                else opacity = 0.05;
-
-                                const isSelected = item === selectedValue || Math.round(scrollTop / itemHeight) === idx;
-
-                                return (
-                                    <div 
-                                        key={idx}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            isInteractingRef.current = false;
-                                            snapToNearest(idx * itemHeight);
-                                        }}
-                                        className="ios-wheel-item flex items-center justify-center w-full h-[40px] cursor-pointer select-none"
-                                        style={{
-                                            transform: `rotateX(${rotateX}deg) scale(${scale})`,
-                                            opacity: opacity,
-                                            transformStyle: 'preserve-3d',
-                                            willChange: 'transform, opacity'
-                                        }}
-                                    >
-                                        <span className={`font-mono text-center transition-all duration-150 ${
-                                            isSelected 
-                                                ? 'text-indigo-600 dark:text-indigo-400 text-base font-black scale-105' 
-                                                : 'text-slate-700 dark:text-slate-300 text-sm font-semibold'
-                                        }`}>
-                                            {item}
-                                        </span>
-                                    </div>
-                                );
-                            })}
-
-                            {/* Bottom padding spacer: 2 rows (80px) */}
-                            <div className="h-[80px] shrink-0 pointer-events-none"></div>
+                    <div className="relative w-full h-[180px] bg-slate-50/70 dark:bg-slate-950/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/50 flex">
+                        <div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[44px] bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-md rounded-xl pointer-events-none border border-slate-300/60 dark:border-slate-700/50 z-10" />
+                        <div className="relative w-full h-full wheel-mask flex z-20">
+                            <WheelColumn 
+                                items={formattedItems}
+                                selectedIndex={selectedIndex}
+                                onSelectIndex={(idx) => {
+                                    if (onChange && items[idx] !== undefined) onChange(items[idx]);
+                                }}
+                                flexClass="flex-1"
+                                ariaLabel={label || "wheel"}
+                            />
                         </div>
                     </div>
                 </div>
@@ -2908,12 +3107,9 @@
             const restoreInputRef = useRef(null);
 
             const closePlusMenu = (callback) => {
-                setIsPlusMenuClosing(true);
-                setTimeout(() => {
-                    setShowPlusMenu(false);
-                    setIsPlusMenuClosing(false);
-                    if (callback) callback();
-                }, 350);
+                setShowPlusMenu(false);
+                setIsPlusMenuClosing(false);
+                if (callback) callback();
             };
 
             useEffect(() => {
@@ -3480,11 +3676,11 @@
                         setPickerMonth(parsedDate.month);
                         setPickerYear(parsedDate.year);
                     } else {
-                        // Always default date selection to today's date on open
-                        const devDate = getDeviceJalaliDate();
-                        setPickerDay(devDate.day);
-                        setPickerMonth(devDate.month);
-                        setPickerYear(devDate.year);
+                        // Automatically calculate next installment date (or 1st installment date)
+                        const nextInstDate = getInstallmentNextDueDate(targetLoan, transactions);
+                        setPickerDay(nextInstDate.day);
+                        setPickerMonth(nextInstDate.month);
+                        setPickerYear(nextInstDate.year);
                     }
 
                     setInstallmentForm({
@@ -3530,7 +3726,7 @@
                     setTimeout(() => {
                         setCurrentCardIdx(prev => prev - 1);
                         setAnimatingPrevCard(false);
-                    }, 350);
+                    }, 580);
                 }
             };
 
@@ -3625,7 +3821,7 @@
                     } else {
                         saveWizardData();
                     }
-                }, 400);
+                }, 580);
             };
 
             const saveWizardData = () => {
@@ -4295,36 +4491,18 @@
                 },
                 {
                     id: 'start_date',
-                    title: '۱- زمان دریافت وام (iOS Wheel Picker)',
+                    title: '۱- زمان دریافت وام',
                     render: () => (
-                        <div className="space-y-2">
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400">تاریخ دریافت مبلغ وام را بچرخانید و انتخاب کنید:</p>
-                            
-                            <div className="flex space-x-2 space-x-reverse items-center justify-between py-2">
-                                <IOSWheelPicker 
-                                    label="روز"
-                                    items={Array.from({length: 31}, (_, i) => i + 1)}
-                                    selectedValue={pickerDay}
-                                    onChange={(v) => setPickerDay(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="ماه"
-                                    items={jalaliMonths}
-                                    selectedValue={pickerMonth}
-                                    onChange={(v) => setPickerMonth(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="سال"
-                                    items={[1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409, 1410]}
-                                    selectedValue={pickerYear}
-                                    onChange={(v) => setPickerYear(v)}
-                                />
-                            </div>
-
-                            <div className="bg-indigo-50 dark:bg-indigo-950/50 p-2.5 rounded-xl text-center text-xs font-bold text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                                تاریخ انتخابی: {pickerDay} {pickerMonth} {pickerYear}
-                            </div>
-                        </div>
+                        <FullJalaliDatePicker 
+                            day={pickerDay}
+                            month={pickerMonth}
+                            year={pickerYear}
+                            onChange={({ day, month, year }) => {
+                                setPickerDay(day);
+                                setPickerMonth(month);
+                                setPickerYear(year);
+                            }}
+                        />
                     )
                 },
                 {
@@ -4655,34 +4833,18 @@
                 },
                 {
                     id: 'demand_date',
-                    title: 'کارت سوم: تاریخ طلب (iOS Wheel Picker)',
+                    title: 'کارت سوم: تاریخ طلب',
                     render: () => (
-                        <div className="space-y-2">
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400">تاریخ طلب (به صورت اتوماتیک تاریخ روز دستگاه انتخاب شده است):</p>
-                            <div className="flex space-x-2 space-x-reverse items-center justify-between py-2">
-                                <IOSWheelPicker 
-                                    label="روز"
-                                    items={Array.from({length: 31}, (_, i) => i + 1)}
-                                    selectedValue={pickerDay}
-                                    onChange={(v) => setPickerDay(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="ماه"
-                                    items={jalaliMonths}
-                                    selectedValue={pickerMonth}
-                                    onChange={(v) => setPickerMonth(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="سال"
-                                    items={[1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409, 1410]}
-                                    selectedValue={pickerYear}
-                                    onChange={(v) => setPickerYear(v)}
-                                />
-                            </div>
-                            <div className="bg-emerald-50 dark:bg-emerald-950/50 p-2.5 rounded-xl text-center text-xs font-bold text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                تاریخ ثبت: {pickerDay} {pickerMonth} {pickerYear}
-                            </div>
-                        </div>
+                        <FullJalaliDatePicker 
+                            day={pickerDay}
+                            month={pickerMonth}
+                            year={pickerYear}
+                            onChange={({ day, month, year }) => {
+                                setPickerDay(day);
+                                setPickerMonth(month);
+                                setPickerYear(year);
+                            }}
+                        />
                     )
                 },
                 {
@@ -4746,34 +4908,18 @@
                 },
                 {
                     id: 'debt_date',
-                    title: 'کارت سوم: تاریخ قرض (iOS Wheel Picker)',
+                    title: 'کارت سوم: تاریخ قرض',
                     render: () => (
-                        <div className="space-y-2">
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400">تاریخ ثبت قرض (خودکار تاریخ روز):</p>
-                            <div className="flex space-x-2 space-x-reverse items-center justify-between py-2">
-                                <IOSWheelPicker 
-                                    label="روز"
-                                    items={Array.from({length: 31}, (_, i) => i + 1)}
-                                    selectedValue={pickerDay}
-                                    onChange={(v) => setPickerDay(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="ماه"
-                                    items={jalaliMonths}
-                                    selectedValue={pickerMonth}
-                                    onChange={(v) => setPickerMonth(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="سال"
-                                    items={[1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409, 1410]}
-                                    selectedValue={pickerYear}
-                                    onChange={(v) => setPickerYear(v)}
-                                />
-                            </div>
-                            <div className="bg-rose-50 dark:bg-rose-950/50 p-2.5 rounded-xl text-center text-xs font-bold text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
-                                تاریخ ثبت: {pickerDay} {pickerMonth} {pickerYear}
-                            </div>
-                        </div>
+                        <FullJalaliDatePicker 
+                            day={pickerDay}
+                            month={pickerMonth}
+                            year={pickerYear}
+                            onChange={({ day, month, year }) => {
+                                setPickerDay(day);
+                                setPickerMonth(month);
+                                setPickerYear(year);
+                            }}
+                        />
                     )
                 },
                 {
@@ -4804,41 +4950,31 @@
                             transactions={transactions}
                             contacts={contacts}
                             selectedLoanId={installmentForm.selectedLoanId}
-                            onSelectLoan={(l) => setInstallmentForm(prev => ({ ...prev, selectedLoanId: l.id, amount: l.installmentAmount }))}
+                            onSelectLoan={(l) => {
+                                const nextD = getInstallmentNextDueDate(l, transactions);
+                                setPickerDay(nextD.day);
+                                setPickerMonth(nextD.month);
+                                setPickerYear(nextD.year);
+                                setInstallmentForm(prev => ({ ...prev, selectedLoanId: l.id, amount: l.installmentAmount }));
+                            }}
                             wizardMode={wizardMode}
                         />
                     )
                 },
                 {
                     id: 'inst_date',
-                    title: 'کارت دوم: تاریخ پرداخت (iOS Wheel Picker)',
+                    title: 'کارت دوم: تاریخ پرداخت',
                     render: () => (
-                        <div className="space-y-2">
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400">تاریخ پرداخت قسط (تنظیم‌شده بر روی تاریخ روز دستگاه):</p>
-                            <div className="flex space-x-2 space-x-reverse items-center justify-between py-2">
-                                <IOSWheelPicker 
-                                    label="روز"
-                                    items={Array.from({length: 31}, (_, i) => i + 1)}
-                                    selectedValue={pickerDay}
-                                    onChange={(v) => setPickerDay(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="ماه"
-                                    items={jalaliMonths}
-                                    selectedValue={pickerMonth}
-                                    onChange={(v) => setPickerMonth(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="سال"
-                                    items={[1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409, 1410]}
-                                    selectedValue={pickerYear}
-                                    onChange={(v) => setPickerYear(v)}
-                                />
-                            </div>
-                            <div className="bg-indigo-50 dark:bg-indigo-950/50 p-2.5 rounded-xl text-center text-xs font-bold text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                                تاریخ پرداخت: {pickerDay} {pickerMonth} {pickerYear}
-                            </div>
-                        </div>
+                        <FullJalaliDatePicker 
+                            day={pickerDay}
+                            month={pickerMonth}
+                            year={pickerYear}
+                            onChange={({ day, month, year }) => {
+                                setPickerDay(day);
+                                setPickerMonth(month);
+                                setPickerYear(year);
+                            }}
+                        />
                     )
                 },
                 {
@@ -4986,34 +5122,18 @@
                 },
                 {
                     id: 'debt_repay_date',
-                    title: '۳- تاریخ بازپرداخت (iOS Wheel Picker)',
+                    title: '۳- تاریخ بازپرداخت',
                     render: () => (
-                        <div className="space-y-2">
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400">تاریخ بازپرداخت (به صورت خودکار تاریخ روز انتخاب شده است):</p>
-                            <div className="flex space-x-2 space-x-reverse items-center justify-between py-2">
-                                <IOSWheelPicker 
-                                    label="روز"
-                                    items={Array.from({length: 31}, (_, i) => i + 1)}
-                                    selectedValue={pickerDay}
-                                    onChange={(v) => setPickerDay(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="ماه"
-                                    items={jalaliMonths}
-                                    selectedValue={pickerMonth}
-                                    onChange={(v) => setPickerMonth(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="سال"
-                                    items={[1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409, 1410]}
-                                    selectedValue={pickerYear}
-                                    onChange={(v) => setPickerYear(v)}
-                                />
-                            </div>
-                            <div className="bg-rose-50 dark:bg-rose-950/50 p-2.5 rounded-xl text-center text-xs font-bold text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
-                                تاریخ ثبت: {pickerDay} {pickerMonth} {pickerYear}
-                            </div>
-                        </div>
+                        <FullJalaliDatePicker 
+                            day={pickerDay}
+                            month={pickerMonth}
+                            year={pickerYear}
+                            onChange={({ day, month, year }) => {
+                                setPickerDay(day);
+                                setPickerMonth(month);
+                                setPickerYear(year);
+                            }}
+                        />
                     )
                 },
                 {
@@ -5105,34 +5225,18 @@
                 },
                 {
                     id: 'demand_repay_date',
-                    title: '۳- تاریخ دریافت (iOS Wheel Picker)',
+                    title: '۳- تاریخ دریافت',
                     render: () => (
-                        <div className="space-y-2">
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400">تاریخ دریافت مبلغ (به صورت خودکار تاریخ روز انتخاب شده است):</p>
-                            <div className="flex space-x-2 space-x-reverse items-center justify-between py-2">
-                                <IOSWheelPicker 
-                                    label="روز"
-                                    items={Array.from({length: 31}, (_, i) => i + 1)}
-                                    selectedValue={pickerDay}
-                                    onChange={(v) => setPickerDay(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="ماه"
-                                    items={jalaliMonths}
-                                    selectedValue={pickerMonth}
-                                    onChange={(v) => setPickerMonth(v)}
-                                />
-                                <IOSWheelPicker 
-                                    label="سال"
-                                    items={[1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409, 1410]}
-                                    selectedValue={pickerYear}
-                                    onChange={(v) => setPickerYear(v)}
-                                />
-                            </div>
-                            <div className="bg-emerald-50 dark:bg-emerald-950/50 p-2.5 rounded-xl text-center text-xs font-bold text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                تاریخ ثبت: {pickerDay} {pickerMonth} {pickerYear}
-                            </div>
-                        </div>
+                        <FullJalaliDatePicker 
+                            day={pickerDay}
+                            month={pickerMonth}
+                            year={pickerYear}
+                            onChange={({ day, month, year }) => {
+                                setPickerDay(day);
+                                setPickerMonth(month);
+                                setPickerYear(year);
+                            }}
+                        />
                     )
                 },
                 {
@@ -7083,8 +7187,129 @@
                         )}
                     </PullToRefresh>
 
+                    {/* Backdrop Overlay when FAB Menu is open */}
+                    <AnimatePresence>
+                        {showPlusMenu && (
+                            <motion.div 
+                                key="fab-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                onClick={() => closePlusMenu()}
+                                className="absolute inset-0 bg-black/40 backdrop-blur-xs z-30"
+                            />
+                        )}
+                    </AnimatePresence>
+
+                    {/* FAB Genie Menu Floating Container (Anchored ABOVE the bottom bar FAB button) */}
+                    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
+                        <AnimatePresence>
+                            {showPlusMenu && (
+                                <motion.div
+                                    key="genie-fixed"
+                                    initial={{ opacity: 0, scaleX: 0.1, scaleY: 0.05, y: 100, clipPath: "polygon(40% 100%, 60% 100%, 50% 100%, 50% 100%)" }}
+                                    animate={{ opacity: 1, scaleX: 1, scaleY: 1, y: -16, clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
+                                    exit={{ 
+                                        opacity: 0, 
+                                        scaleX: 0.08, 
+                                        scaleY: 0.05, 
+                                        y: 80, 
+                                        clipPath: "polygon(30% 0%, 70% 0%, 55% 100%, 45% 100%)",
+                                        transition: { duration: 0.4, ease: [0.76, 0, 0.24, 1] } 
+                                    }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                                    style={{ transformOrigin: "bottom center" }}
+                                    className="pointer-events-auto w-[310px] sm:w-[330px] bg-white/95 dark:bg-slate-800/95 backdrop-blur-3xl border border-slate-200/90 dark:border-slate-700/80 shadow-2xl p-5 mb-2 flex flex-col gap-3 rounded-3xl text-slate-800 dark:text-slate-100"
+                                >
+                                    <h3 className="text-center font-extrabold text-slate-900 dark:text-white text-sm mb-0.5">ثبت و مدیریت جدید</h3>
+
+                                    {/* مخاطب جدید */}
+                                    <button 
+                                        onClick={() => closePlusMenu(() => setShowAddContactModal(true))}
+                                        className="w-full bg-slate-50/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all">
+                                        <div className="w-8.5 h-8.5 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                            <Icon name="user-plus" className="w-4 h-4" />
+                                        </div>
+                                        <div className="text-right min-w-0 flex-1">
+                                            <span className="font-bold text-xs text-slate-800 dark:text-slate-100 block">مخاطب جدید</span>
+                                            <span className="text-[10px] text-slate-400 font-normal truncate block">افزودن شخص جدید به دفتر مخاطبین</span>
+                                        </div>
+                                    </button>
+
+                                    {/* طلب / بازپرداخت طلب */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <button 
+                                            onClick={() => closePlusMenu(() => openStackWizard('demand', 'add', { fromFab: true }))}
+                                            className="bg-slate-50/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-400 active:scale-[0.97] transition-all">
+                                            <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                                <Icon name="arrow-up-right" className="w-4 h-4" />
+                                            </div>
+                                            <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت طلب</span>
+                                        </button>
+
+                                        <button 
+                                            onClick={() => closePlusMenu(() => openStackWizard('demand_repayment', 'add', { fromFab: true }))}
+                                            className="bg-slate-50/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-teal-400 active:scale-[0.97] transition-all">
+                                            <div className="w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+                                                <Icon name="check-circle-2" className="w-4 h-4" />
+                                            </div>
+                                            <span className="font-bold text-xs text-slate-800 dark:text-slate-100">بازپرداخت طلب</span>
+                                        </button>
+                                    </div>
+
+                                    {/* بدهی / بازپرداخت بدهی */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <button 
+                                            onClick={() => closePlusMenu(() => openStackWizard('debt', 'add', { fromFab: true }))}
+                                            className="bg-slate-50/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-rose-400 active:scale-[0.97] transition-all">
+                                            <div className="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
+                                                <Icon name="arrow-down-left" className="w-4 h-4" />
+                                            </div>
+                                            <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت بدهی</span>
+                                        </button>
+
+                                        <button 
+                                            onClick={() => closePlusMenu(() => openStackWizard('debt_repayment', 'add', { fromFab: true }))}
+                                            className="bg-slate-50/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-amber-400 active:scale-[0.97] transition-all">
+                                            <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                <Icon name="corner-down-left" className="w-4 h-4" />
+                                            </div>
+                                            <span className="font-bold text-xs text-slate-800 dark:text-slate-100">بازپرداخت بدهی</span>
+                                        </button>
+                                    </div>
+
+                                    {/* وام / پرداخت قسط */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <button 
+                                            onClick={() => closePlusMenu(() => openStackWizard('loan', 'add', { fromFab: true }))}
+                                            className="bg-slate-50/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all">
+                                            <div className="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                                <Icon name="landmark" className="w-4 h-4" />
+                                            </div>
+                                            <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت وام</span>
+                                        </button>
+
+                                        <button 
+                                            onClick={() => closePlusMenu(() => openStackWizard('installment', 'add', { fromFab: true }))}
+                                            className="bg-slate-50/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-purple-400 active:scale-[0.97] transition-all">
+                                            <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                                <Icon name="receipt" className="w-4 h-4" />
+                                            </div>
+                                            <span className="font-bold text-xs text-slate-800 dark:text-slate-100">پرداخت قسط</span>
+                                        </button>
+                                    </div>
+
+                                    <button onClick={() => closePlusMenu()} className="w-full py-1 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                                        انصراف
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
                     {/* Navigation Bar at Bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 z-20">
+                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 z-40">
                         <button 
                             onClick={() => setCurrentTab('dashboard')}
                             className={`flex flex-col items-center justify-center w-12 h-12 transition-all ${currentTab === 'dashboard' ? 'text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400'}`}>
@@ -7100,7 +7325,8 @@
                         </button>
 
                         {/* Plus Button */}
-                        <button 
+                        <motion.button 
+                            whileTap={{ scale: 0.85 }}
                             onClick={() => {
                                 if (showPlusMenu) {
                                     closePlusMenu();
@@ -7108,9 +7334,11 @@
                                     setShowPlusMenu(true);
                                 }
                             }}
-                            className={`w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-lg shadow-indigo-600/30 -mt-5 transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-90 ${showPlusMenu && !isPlusMenuClosing ? 'rotate-[135deg] scale-105 z-[55] ring-4 ring-indigo-500/25' : 'rotate-0 scale-100 z-20'}`}>
-                            <Icon name="plus" className="w-6 h-6 transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]" />
-                        </button>
+                            className={`w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-lg shadow-indigo-600/30 -mt-5 z-[50] ${showPlusMenu ? 'ring-4 ring-indigo-500/25' : ''}`}>
+                            <motion.div animate={{ rotate: showPlusMenu ? 135 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
+                                <Icon name="plus" className="w-6 h-6" />
+                            </motion.div>
+                        </motion.button>
 
                         <button 
                             onClick={() => setCurrentTab('contacts')}
@@ -7127,185 +7355,97 @@
                         </button>
                     </div>
 
-                    {/* Plus Menu Modal */}
-                    {showPlusMenu && (
-                        <div 
-                            onClick={() => closePlusMenu()}
-                            className={`absolute inset-0 bg-black/45 z-50 flex items-end justify-center transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] ${isPlusMenuClosing ? 'animate-ios-fade-out pointer-events-none' : 'animate-ios-fade-in'}`}>
-                            <div 
-                                onClick={e => e.stopPropagation()}
-                                className={`w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-t-[32px] p-5 pb-8 space-y-3 border-t border-slate-100 dark:border-slate-800 shadow-2xl ${isPlusMenuClosing ? 'animate-ios-sheet-out' : 'animate-ios-sheet-in'}`}>
-                                <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-1 opacity-80"></div>
-                                <h3 className="text-center font-extrabold text-slate-900 dark:text-white text-base mb-3 ios-stagger-1">ثبت و مدیریت جدید</h3>
-
-                                {/* مخاطب جدید */}
-                                <button 
-                                    onClick={() => closePlusMenu(() => setShowAddContactModal(true))}
-                                    className="w-full bg-slate-50 dark:bg-slate-800/80 p-3 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-[0.97] transition-transform duration-200 ios-stagger-1">
-                                    <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                                        <Icon name="user-plus" className="w-4 h-4" />
-                                    </div>
-                                    <div className="text-right">
-                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100 block">مخاطب جدید</span>
-                                        <span className="text-[10px] text-slate-400 font-normal">افزودن شخص جدید به دفتر مخاطبین</span>
-                                    </div>
-                                </button>
-
-                                {/* طلب / بازپرداخت طلب */}
-                                <div className="grid grid-cols-2 gap-2 ios-stagger-2">
-                                    <button 
-                                        onClick={() => closePlusMenu(() => openStackWizard('demand', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-emerald-300 active:scale-[0.97] transition-transform duration-200">
-                                        <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                                            <Icon name="arrow-up-right" className="w-4 h-4" />
-                                        </div>
-                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت طلب</span>
-                                    </button>
-
-                                    <button 
-                                        onClick={() => closePlusMenu(() => openStackWizard('demand_repayment', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-emerald-300 active:scale-[0.97] transition-transform duration-200">
-                                        <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
-                                            <Icon name="check-circle-2" className="w-4 h-4" />
-                                        </div>
-                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">بازپرداخت طلب</span>
-                                    </button>
-                                </div>
-
-                                {/* بدهی / بازپرداخت بدهی */}
-                                <div className="grid grid-cols-2 gap-2 ios-stagger-3">
-                                    <button 
-                                        onClick={() => closePlusMenu(() => openStackWizard('debt', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-rose-300 active:scale-[0.97] transition-transform duration-200">
-                                        <div className="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
-                                            <Icon name="arrow-down-left" className="w-4 h-4" />
-                                        </div>
-                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت بدهی</span>
-                                    </button>
-
-                                    <button 
-                                        onClick={() => closePlusMenu(() => openStackWizard('debt_repayment', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-rose-300 active:scale-[0.97] transition-transform duration-200">
-                                        <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                                            <Icon name="corner-down-left" className="w-4 h-4" />
-                                        </div>
-                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">بازپرداخت بدهی</span>
-                                    </button>
-                                </div>
-
-                                {/* وام / پرداخت قسط */}
-                                <div className="grid grid-cols-2 gap-2 ios-stagger-4">
-                                    <button 
-                                        onClick={() => closePlusMenu(() => openStackWizard('loan', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-[0.97] transition-transform duration-200">
-                                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                                            <Icon name="landmark" className="w-4 h-4" />
-                                        </div>
-                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">ثبت وام</span>
-                                    </button>
-
-                                    <button 
-                                        onClick={() => closePlusMenu(() => openStackWizard('installment', 'add', { fromFab: true }))}
-                                        className="bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-2xl flex items-center space-x-2.5 space-x-reverse border border-slate-100 dark:border-slate-700 hover:border-indigo-300 active:scale-[0.97] transition-transform duration-200">
-                                        <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                                            <Icon name="receipt" className="w-4 h-4" />
-                                        </div>
-                                        <span className="font-bold text-xs text-slate-800 dark:text-slate-100">پرداخت قسط</span>
-                                    </button>
-                                </div>
-
-                                <button onClick={() => closePlusMenu()} className="w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors ios-stagger-5">
-                                    انصراف
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
                     {/* Stack Wizard Modal (وام، طلب، قرض، قسط) */}
-                    {showStackWizard && (
-                        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex flex-col justify-start p-4 pt-5 animate-fade-in overflow-hidden">
-                            <div className="flex justify-between items-center mb-3 text-white">
-                                <h3 className="font-extrabold text-sm">
-                                    {wizardType === 'loan' && (wizardMode === 'edit' ? 'ویرایش کارت‌های وام' : 'ثبت کارت‌های پرونده وام')}
-                                    {wizardType === 'demand' && (wizardMode === 'edit' ? 'ویرایش طلب' : 'ثبت کارت‌های طلب')}
-                                    {wizardType === 'debt' && (wizardMode === 'edit' ? 'ویرایش قرض / بدهی' : 'ثبت کارت‌های قرض / بدهی')}
-                                    {wizardType === 'installment' && 'ثبت قسط جدید'}
-                                </h3>
-                                <button onClick={() => setShowStackWizard(false)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                                    <Icon name="x" className="w-5 h-5" />
-                                </button>
-                            </div>
+                    <AnimatePresence>
+                        {showStackWizard && (
+                            <motion.div 
+                                key="stack-wizard-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.25 }}
+                                className="absolute inset-0 bg-slate-900/65 backdrop-blur-md z-50 flex flex-col justify-start items-center p-3 pt-2.5 overflow-hidden"
+                            >
+                                <motion.div
+                                    key="stack-wizard-panel"
+                                    initial={{ opacity: 0, scale: 0.82, y: 30, filter: 'blur(4px)' }}
+                                    animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+                                    exit={{ opacity: 0, scale: 0.8, y: 35, filter: 'blur(4px)' }}
+                                    transition={{ type: "spring", stiffness: 350, damping: 24 }}
+                                    className="w-full flex flex-col items-center"
+                                >
+                                    <div className="card-stack-container w-full">
+                                        {activeCards.map((card, index) => {
+                                            const depth = index - currentCardIdx;
+                                            let depthAttr = 'hidden';
+                                            if (depth === 0) depthAttr = '0';
+                                            else if (depth === 1) depthAttr = '1';
+                                            else if (depth === 2) depthAttr = '2';
 
-                            <div className="card-stack-container w-full">
-                                {activeCards.map((card, index) => {
-                                    const depth = index - currentCardIdx;
-                                    let depthAttr = 'hidden';
-                                    if (depth === 0) depthAttr = '0';
-                                    else if (depth === 1) depthAttr = '1';
-                                    else if (depth === 2) depthAttr = '2';
+                                            if (depth < 0) return null;
 
-                                    if (depth < 0) return null;
+                                            return (
+                                                <div 
+                                                    key={card.id}
+                                                    data-depth={depthAttr}
+                                                    className={`stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${
+                                                        depth === 0 && animatingCard ? 'card-exit-to-back animating-next' : ''
+                                                    } ${
+                                                        depth === 0 && animatingPrevCard ? 'card-enter-from-back animating-prev' : ''
+                                                    }`}>
+                                                    
+                                                    <div className="flex-1 py-2 overflow-y-auto hide-scrollbar">
+                                                        {card.render()}
+                                                    </div>
 
-                                    return (
-                                        <div 
-                                            key={card.id}
-                                            data-depth={depthAttr}
-                                            className={`stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${
-                                                depth === 0 && animatingCard ? 'card-exit-to-back' : ''
-                                            } ${
-                                                depth === 0 && animatingPrevCard ? 'card-enter-from-back' : ''
-                                            }`}>
-                                            
-                                            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-700/60 pb-2">
-                                                <span className="text-xs font-extrabold text-indigo-600 dark:text-indigo-400">
-                                                    {card.title}
-                                                </span>
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => handleNextCard(activeCards)}
-                                                    className="text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-700/60 px-2.5 py-1 rounded-full">
-                                                    رد شدن
-                                                </button>
-                                            </div>
+                                                    <div className="pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse">
+                                                        {currentCardIdx > 0 && (
+                                                            <button 
+                                                                type="button"
+                                                                onClick={handlePrevCard}
+                                                                className="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center space-x-1 space-x-reverse">
+                                                                <Icon name="arrow-right" className="w-3.5 h-3.5" />
+                                                                <span>مرحله قبلی</span>
+                                                            </button>
+                                                        )}
+                                                        <button 
+                                                            type="button"
+                                                            onClick={() => handleNextCard(activeCards)}
+                                                            className={`${currentCardIdx > 0 ? 'w-2/3' : 'w-full'} bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-colors`}>
+                                                            {index === activeCards.length - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
 
-                                            <div className="flex-1 py-2 overflow-y-auto hide-scrollbar">
-                                                {card.render()}
-                                            </div>
+                                    {/* Progress dots */}
+                                    <div className="flex justify-center items-center space-x-1.5 space-x-reverse mt-3">
+                                        {activeCards.map((_, i) => (
+                                            <div 
+                                                key={i} 
+                                                className={`h-1.5 rounded-full transition-all duration-300 ${
+                                                    i === currentCardIdx ? 'w-6 bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]' : 'w-1.5 bg-slate-400/40'
+                                                }`}
+                                            />
+                                        ))}
+                                    </div>
 
-                                            <div className="pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse">
-                                                {currentCardIdx > 0 && (
-                                                    <button 
-                                                        type="button"
-                                                        onClick={handlePrevCard}
-                                                        className="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center space-x-1 space-x-reverse">
-                                                        <Icon name="arrow-right" className="w-3.5 h-3.5" />
-                                                        <span>مرحله قبلی</span>
-                                                    </button>
-                                                )}
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => handleNextCard(activeCards)}
-                                                    className={`${currentCardIdx > 0 ? 'w-2/3' : 'w-full'} bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-colors`}>
-                                                    {index === activeCards.length - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            <div className="flex justify-center items-center space-x-1.5 space-x-reverse mt-3">
-                                {activeCards.map((_, i) => (
-                                    <div 
-                                        key={i} 
-                                        className={`h-1.5 rounded-full transition-all ${
-                                            i === currentCardIdx ? 'w-6 bg-indigo-500' : 'w-1.5 bg-slate-400/40'
-                                        }`}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                                    {/* Bottom Center Close X Button */}
+                                    <div className="flex justify-center items-center mt-5 mb-1">
+                                        <motion.button 
+                                            type="button"
+                                            whileTap={{ scale: 0.88 }}
+                                            onClick={() => setShowStackWizard(false)}
+                                            className="w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 active:scale-90 text-white flex items-center justify-center border border-white/25 shadow-xl backdrop-blur-md transition-all cursor-pointer">
+                                            <Icon name="x" className="w-5 h-5" />
+                                        </motion.button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Export Modal */}
                     {showExportModal && (
