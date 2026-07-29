@@ -168,7 +168,7 @@
             }
         }
 
-        /* RULE: Emerges from behind deck, moves calc(100% + 35px) to clear edge, swaps to ON-TOP, and lands on front */
+        /* RULE: Emerges from behind deck, moves calc(100% + 35px) to clear edge, swaps to ON-TOP with positive translateZ and z-index 200, landing cleanly on front */
         @keyframes returnToFront {
             0% {
                 transform: translate3d(0, 20px, -40px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.93);
@@ -179,20 +179,23 @@
                 z-index: 1;
             }
             50.01% {
-                z-index: 100;
+                transform: translate3d(calc(100% + 35px), -10px, 40px) rotateX(2deg) rotateY(0deg) rotateZ(4deg) scale(0.95);
+                z-index: 200;
             }
             100% {
                 transform: translate3d(0, 0, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
-                z-index: 100;
+                z-index: 200;
             }
         }
 
         .card-exit-to-back, .animating-next {
             animation: flipToBack 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+            z-index: 100 !important;
         }
 
         .card-enter-from-back, .animating-prev {
             animation: returnToFront 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+            z-index: 200 !important;
         }
 
         /* Apple Spring Open / Close keyframes for stack modal */
@@ -1195,101 +1198,173 @@
             const containerRef = useRef(null);
             const [pullY, setPullY] = useState(0);
             const [isRefreshing, setIsRefreshing] = useState(false);
-            const touchStartRef = useRef({ x: 0, y: 0 });
-            const isPullingRef = useRef(false);
+            const [isExiting, setIsExiting] = useState(false);
+            
+            const startYRef = useRef(0);
+            const startXRef = useRef(0);
+            const isDraggingRef = useRef(false);
 
-            const PULL_THRESHOLD = 52;
+            const PULL_THRESHOLD = 75;
+            const MAX_PULL = 120;
+            const RESISTANCE = 0.45;
 
-            const handleTouchStart = (e) => {
-                const container = containerRef.current;
-                if (!container || isRefreshing) return;
-
-                if (container.scrollTop <= 0) {
-                    const touch = e.touches ? e.touches[0] : e;
-                    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-                    isPullingRef.current = true;
-                } else {
-                    isPullingRef.current = false;
-                }
-            };
-
-            const handleTouchMove = (e) => {
-                if (!isPullingRef.current || isRefreshing) return;
+            useEffect(() => {
                 const container = containerRef.current;
                 if (!container) return;
 
-                const touch = e.touches ? e.touches[0] : e;
-                const deltaY = touch.clientY - touchStartRef.current.y;
-                const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
-
-                if (deltaY > 0 && deltaY > deltaX && container.scrollTop <= 0) {
-                    const damped = Math.min(80, Math.pow(deltaY, 0.82) * 0.72);
-                    setPullY(damped);
-
-                    if (e.cancelable && deltaY > 10) {
-                        e.preventDefault();
+                const handleStart = (clientX, clientY) => {
+                    if (isRefreshing || isExiting) return;
+                    const isAtTop = container.scrollTop <= 0 && window.scrollY <= 0;
+                    if (isAtTop) {
+                        startYRef.current = clientY;
+                        startXRef.current = clientX;
+                        isDraggingRef.current = true;
+                    } else {
+                        isDraggingRef.current = false;
                     }
-                } else if (deltaY <= 0) {
-                    setPullY(0);
-                    isPullingRef.current = false;
-                }
-            };
+                };
 
-            const handleTouchEnd = async () => {
-                if (!isPullingRef.current && !isRefreshing) return;
-                isPullingRef.current = false;
+                const handleMove = (clientX, clientY, e) => {
+                    if (!isDraggingRef.current || isRefreshing || isExiting) return;
+                    const deltaY = clientY - startYRef.current;
+                    const deltaX = Math.abs(clientX - startXRef.current);
+                    const isAtTop = container.scrollTop <= 0;
 
-                if (pullY >= PULL_THRESHOLD) {
-                    setIsRefreshing(true);
-                    setPullY(48);
-                    try {
-                        if (onRefresh) {
-                            await Promise.resolve(onRefresh());
+                    if (deltaY > 0 && deltaY > deltaX && isAtTop) {
+                        const rawPull = deltaY * RESISTANCE;
+                        const clampedPull = Math.min(MAX_PULL, rawPull);
+                        setPullY(clampedPull);
+
+                        if (e && e.cancelable && deltaY > 8) {
+                            e.preventDefault();
                         }
-                        await new Promise(r => setTimeout(r, 450));
-                    } catch (err) {
-                        console.error(err);
-                    } finally {
-                        setIsRefreshing(false);
+                    } else if (deltaY <= 0) {
+                        setPullY(0);
+                        isDraggingRef.current = false;
+                    }
+                };
+
+                const handleEnd = async () => {
+                    if (!isDraggingRef.current && !isRefreshing) return;
+                    isDraggingRef.current = false;
+
+                    if (pullY >= PULL_THRESHOLD) {
+                        setIsRefreshing(true);
+                        setPullY(PULL_THRESHOLD); // Lock content at 75px
+
+                        try {
+                            if (onRefresh) {
+                                await Promise.resolve(onRefresh());
+                            }
+                            await new Promise(r => setTimeout(r, 600));
+                        } catch (err) {
+                            console.error(err);
+                        } finally {
+                            // Stage 1: Spinner fades out & scales down
+                            setIsExiting(true);
+                            await new Promise(r => setTimeout(r, 200));
+
+                            // Stage 2: Content smoothly returns to translateY(0)
+                            setPullY(0);
+                            setIsRefreshing(false);
+                            await new Promise(r => setTimeout(r, 320));
+                            setIsExiting(false);
+                        }
+                    } else {
                         setPullY(0);
                     }
-                } else {
-                    setPullY(0);
-                }
-            };
+                };
 
-            const progress = Math.min(1, pullY / PULL_THRESHOLD);
-            const rotation = progress * 320;
-            const scale = isRefreshing ? 1 : Math.min(1, Math.max(0, (progress - 0.1) / 0.9));
+                const onPointerDown = (e) => {
+                    if (e.button !== undefined && e.button !== 0) return;
+                    handleStart(e.clientX, e.clientY);
+                };
+
+                const onPointerMove = (e) => {
+                    handleMove(e.clientX, e.clientY, e);
+                };
+
+                const onPointerUp = () => {
+                    handleEnd();
+                };
+
+                const onTouchStart = (e) => {
+                    if (e.touches && e.touches[0]) {
+                        handleStart(e.touches[0].clientX, e.touches[0].clientY);
+                    }
+                };
+
+                const onTouchMove = (e) => {
+                    if (e.touches && e.touches[0]) {
+                        handleMove(e.touches[0].clientX, e.touches[0].clientY, e);
+                    }
+                };
+
+                const onTouchEnd = () => {
+                    handleEnd();
+                };
+
+                container.addEventListener('pointerdown', onPointerDown);
+                window.addEventListener('pointermove', onPointerMove, { passive: false });
+                window.addEventListener('pointerup', onPointerUp);
+                window.addEventListener('pointercancel', onPointerUp);
+
+                container.addEventListener('touchstart', onTouchStart, { passive: true });
+                container.addEventListener('touchmove', onTouchMove, { passive: false });
+                container.addEventListener('touchend', onTouchEnd);
+                container.addEventListener('touchcancel', onTouchEnd);
+
+                return () => {
+                    container.removeEventListener('pointerdown', onPointerDown);
+                    window.removeEventListener('pointermove', onPointerMove);
+                    window.removeEventListener('pointerup', onPointerUp);
+                    window.removeEventListener('pointercancel', onPointerUp);
+
+                    container.removeEventListener('touchstart', onTouchStart);
+                    container.removeEventListener('touchmove', onTouchMove);
+                    container.removeEventListener('touchend', onTouchEnd);
+                    container.removeEventListener('touchcancel', onTouchEnd);
+                };
+            }, [pullY, isRefreshing, isExiting, onRefresh]);
+
+            const progress = Math.min(1, Math.max(0, pullY / PULL_THRESHOLD));
+            const opacity = isExiting ? 0 : (isRefreshing ? 1 : Math.min(1, pullY / 25));
+            const scale = isExiting ? 0.4 : (isRefreshing ? 1 : 0.5 + 0.5 * progress);
+            const rotation = progress * 360;
 
             return (
                 <div 
                     ref={containerRef}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                    onTouchCancel={handleTouchEnd}
-                    className={`relative overflow-y-auto hide-scrollbar overscroll-y-contain ${className}`}
-                    style={{ WebkitOverflowScrolling: 'touch' }}
+                    className={`relative overflow-y-auto hide-scrollbar ${className}`}
+                    style={{ 
+                        WebkitOverflowScrolling: 'touch',
+                        overscrollBehaviorY: 'contain'
+                    }}
                 >
-                    {/* Floating Google Material Refresh Card Indicator */}
-                    {(pullY > 0 || isRefreshing) && (
+                    {/* Centered Refresh Spinner in the top elastic gap */}
+                    {(pullY > 0 || isRefreshing || isExiting) && (
                         <div 
-                            className="absolute left-1/2 -translate-x-1/2 z-40 pointer-events-none"
+                            className="absolute left-1/2 -translate-x-1/2 z-40 pointer-events-none flex items-center justify-center"
                             style={{
-                                top: '8px',
-                                transform: `translate3d(-50%, ${pullY}px, 0) scale(${scale})`,
-                                opacity: isRefreshing ? 1 : Math.min(1, pullY / 15),
-                                transition: isPullingRef.current ? 'none' : 'transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease'
+                                top: `${Math.max(12, (pullY / 2) - 20)}px`,
+                                transform: `translate3d(-50%, 0, 0) scale(${scale})`,
+                                opacity: opacity,
+                                transition: isDraggingRef.current 
+                                    ? 'none' 
+                                    : 'transform 320ms cubic-bezier(0.32, 0.72, 0, 1), opacity 200ms ease',
+                                willChange: 'transform, opacity'
                             }}
                         >
-                            <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-lg border border-slate-200/80 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                            <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                                 {isRefreshing ? (
                                     <div className="w-5 h-5 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin shrink-0" />
                                 ) : (
                                     <div 
-                                        className="transition-transform duration-75 flex items-center justify-center"
-                                        style={{ transform: `rotate(${rotation}deg)` }}
+                                        className="flex items-center justify-center"
+                                        style={{ 
+                                            transform: `rotate(${rotation}deg)`,
+                                            transition: isDraggingRef.current ? 'none' : 'transform 200ms ease-out'
+                                        }}
                                     >
                                         <Icon name="refresh-cw" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                     </div>
@@ -1298,12 +1373,15 @@
                         </div>
                     )}
 
-                    {/* Content Container */}
+                    {/* Content Container (App Wrapper Elastic Gap Translation) */}
                     <div 
                         className="w-full min-h-full"
                         style={{
-                            transform: pullY > 0 ? `translate3d(0, ${pullY * 0.35}px, 0)` : 'none',
-                            transition: isPullingRef.current ? 'none' : 'transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1)'
+                            transform: pullY > 0 ? `translate3d(0, ${pullY}px, 0)` : 'translate3d(0, 0, 0)',
+                            transition: isDraggingRef.current 
+                                ? 'none' 
+                                : 'transform 320ms cubic-bezier(0.32, 0.72, 0, 1)',
+                            willChange: 'transform'
                         }}
                     >
                         {children}
@@ -1317,15 +1395,13 @@
             const backdropRef = useRef(null);
 
             const gestureRef = useRef({
-                isCandidate: false,
-                isActive: false,
+                isSwiping: false,
                 startX: 0,
-                startY: 0,
                 currentX: 0,
-                currentY: 0,
                 lastX: 0,
                 lastTime: 0,
                 velocity: 0,
+                pointerId: null,
                 containerWidth: 360,
                 rafId: null
             });
@@ -1336,215 +1412,121 @@
                 const container = containerRef.current;
                 if (!container) return;
 
-                const EDGE_THRESHOLD = 32; // Active zone from physical left edge (0px to 32px)
+                const EDGE_THRESHOLD = 32; // maximum distance from left edge in px
 
                 const updateDOM = (tx, width, animate = false, transitionStyle = '') => {
                     if (!containerRef.current) return;
-                    const currentWidth = width || gestureRef.current.containerWidth || 360;
+                    const currentWidth = width || gestureRef.current.containerWidth || window.innerWidth || 360;
                     const ratio = Math.max(0, Math.min(1, tx / currentWidth));
 
                     if (animate) {
-                        containerRef.current.style.transition = transitionStyle || 'transform 260ms cubic-bezier(0.32, 0.72, 0, 1)';
+                        containerRef.current.style.transition = transitionStyle || 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)';
                     } else {
                         containerRef.current.style.transition = 'none';
                     }
 
-                    containerRef.current.style.transform = tx > 0 ? `translate3d(${tx}px, 0, 0)` : '';
-                    containerRef.current.style.boxShadow = tx > 0 ? `-16px 0 36px rgba(0, 0, 0, ${0.15 + ratio * 0.2})` : '';
+                    containerRef.current.style.transform = tx > 0 ? `translateX(${tx}px)` : '';
+                    containerRef.current.style.boxShadow = tx > 0 ? `-12px 0 30px rgba(0, 0, 0, ${0.15 + ratio * 0.2})` : '';
 
                     if (backdropRef.current) {
                         if (animate) {
-                            backdropRef.current.style.transition = 'opacity 260ms ease-out';
+                            backdropRef.current.style.transition = 'opacity 0.32s linear';
                         } else {
                             backdropRef.current.style.transition = 'none';
                         }
-                        backdropRef.current.style.opacity = (ratio * 0.45).toFixed(3);
+                        backdropRef.current.style.opacity = (ratio * 0.4).toFixed(3);
                         backdropRef.current.style.display = tx > 0 ? 'block' : 'none';
                     }
                 };
 
-                const onTouchStart = (e) => {
-                    if (e.touches.length !== 1) return;
-                    const touch = e.touches[0];
-                    const rect = container.getBoundingClientRect();
-                    const relX = touch.clientX - rect.left;
-
-                    if (relX >= 0 && relX <= EDGE_THRESHOLD) {
-                        gestureRef.current = {
-                            isCandidate: true,
-                            isActive: false,
-                            startX: touch.clientX,
-                            startY: touch.clientY,
-                            currentX: touch.clientX,
-                            currentY: touch.clientY,
-                            lastX: touch.clientX,
-                            lastTime: performance.now(),
-                            velocity: 0,
-                            containerWidth: rect.width || window.innerWidth || 360,
-                            rafId: null
-                        };
-                    } else {
-                        gestureRef.current.isCandidate = false;
-                        gestureRef.current.isActive = false;
-                    }
-                };
-
-                const onTouchMove = (e) => {
-                    const g = gestureRef.current;
-                    if (!g.isCandidate || e.touches.length !== 1) return;
-
-                    const touch = e.touches[0];
-                    const dx = touch.clientX - g.startX;
-                    const dy = Math.abs(touch.clientY - g.startY);
-
-                    const now = performance.now();
-                    const dt = now - g.lastTime;
-                    if (dt > 0) {
-                        g.velocity = (touch.clientX - g.lastX) / dt;
-                    }
-                    g.lastX = touch.clientX;
-                    g.lastTime = now;
-
-                    if (!g.isActive) {
-                        if (dy > 12 || dx < -5 || (dy > dx && dx > 4)) {
-                            g.isCandidate = false;
-                            return;
-                        }
-
-                        if (dx >= 8 && dx > dy * 1.2) {
-                            g.isActive = true;
-                        }
-                    }
-
-                    if (g.isActive) {
-                        if (e.cancelable) {
-                            e.preventDefault();
-                        }
-
-                        const tx = Math.max(0, dx - 8);
-                        g.currentX = tx;
-
-                        if (g.rafId) cancelAnimationFrame(g.rafId);
-                        g.rafId = requestAnimationFrame(() => {
-                            updateDOM(tx, g.containerWidth, false);
-                        });
-                    }
-                };
-
-                const onTouchEnd = (e) => {
-                    const g = gestureRef.current;
-                    if (!g.isCandidate) return;
-
-                    if (g.rafId) cancelAnimationFrame(g.rafId);
-
-                    if (g.isActive) {
-                        const tx = g.currentX;
-                        const width = g.containerWidth;
-                        const threshold = width * 0.35;
-                        const isFlick = g.velocity > 0.35 && tx > 25;
-                        const shouldPop = tx >= threshold || isFlick;
-
-                        if (shouldPop) {
-                            updateDOM(width, width, true, 'transform 240ms cubic-bezier(0.32, 0.72, 0, 1)');
-                            setTimeout(() => {
-                                updateDOM(0, width, false);
-                                if (onBack) onBack();
-                            }, 240);
-                        } else {
-                            updateDOM(0, width, true, 'transform 220ms cubic-bezier(0.2, 0.9, 0.3, 1)');
-                            setTimeout(() => {
-                                updateDOM(0, width, false);
-                            }, 220);
-                        }
-                    }
-
-                    g.isCandidate = false;
-                    g.isActive = false;
-                };
-
                 const onPointerDown = (e) => {
-                    if (e.pointerType === 'touch') return;
+                    // Only primary button or single touch
+                    if (e.button !== undefined && e.button !== 0) return;
+                    
                     const rect = container.getBoundingClientRect();
                     const relX = e.clientX - rect.left;
 
                     if (relX >= 0 && relX <= EDGE_THRESHOLD) {
-                        gestureRef.current = {
-                            isCandidate: true,
-                            isActive: false,
-                            startX: e.clientX,
-                            startY: e.clientY,
-                            currentX: e.clientX,
-                            currentY: e.clientY,
-                            lastX: e.clientX,
-                            lastTime: performance.now(),
-                            velocity: 0,
-                            containerWidth: rect.width || window.innerWidth || 360,
-                            rafId: null
-                        };
+                        const g = gestureRef.current;
+                        g.isSwiping = true;
+                        g.startX = e.clientX;
+                        g.currentX = e.clientX;
+                        g.lastX = e.clientX;
+                        g.lastTime = performance.now();
+                        g.velocity = 0;
+                        g.pointerId = e.pointerId;
+                        g.containerWidth = rect.width || window.innerWidth || 360;
+
+                        if (e.target && e.target.setPointerCapture) {
+                            try {
+                                e.target.setPointerCapture(e.pointerId);
+                            } catch (err) {}
+                        }
+
+                        updateDOM(0, g.containerWidth, false);
                     }
                 };
 
                 const onPointerMove = (e) => {
-                    if (e.pointerType === 'touch') return;
                     const g = gestureRef.current;
-                    if (!g.isCandidate) return;
+                    if (!g.isSwiping) return;
 
-                    const dx = e.clientX - g.startX;
-                    const dy = Math.abs(e.clientY - g.startY);
+                    g.currentX = e.clientX;
+                    let deltaX = g.currentX - g.startX;
+                    if (deltaX < 0) deltaX = 0;
 
                     const now = performance.now();
                     const dt = now - g.lastTime;
-                    if (dt > 0) g.velocity = (e.clientX - g.lastX) / dt;
+                    if (dt > 0) {
+                        g.velocity = (e.clientX - g.lastX) / dt;
+                    }
                     g.lastX = e.clientX;
                     g.lastTime = now;
 
-                    if (!g.isActive) {
-                        if (dy > 12 || dx < -5 || (dy > dx && dx > 4)) {
-                            g.isCandidate = false;
-                            return;
-                        }
-                        if (dx >= 8 && dx > dy * 1.2) {
-                            g.isActive = true;
-                        }
-                    }
-
-                    if (g.isActive) {
-                        if (e.cancelable) e.preventDefault();
-                        const tx = Math.max(0, dx - 8);
-                        g.currentX = tx;
-
-                        if (g.rafId) cancelAnimationFrame(g.rafId);
-                        g.rafId = requestAnimationFrame(() => {
-                            updateDOM(tx, g.containerWidth, false);
-                        });
-                    }
+                    if (g.rafId) cancelAnimationFrame(g.rafId);
+                    g.rafId = requestAnimationFrame(() => {
+                        updateDOM(deltaX, g.containerWidth, false);
+                    });
                 };
 
-                const onPointerUp = (e) => {
-                    if (e.pointerType === 'touch') return;
-                    onTouchEnd(e);
-                };
+                const handlePointerEnd = (e) => {
+                    const g = gestureRef.current;
+                    if (!g.isSwiping) return;
 
-                container.addEventListener('touchstart', onTouchStart, { passive: true });
-                container.addEventListener('touchmove', onTouchMove, { passive: false });
-                container.addEventListener('touchend', onTouchEnd, { passive: true });
-                container.addEventListener('touchcancel', onTouchEnd, { passive: true });
+                    if (g.rafId) cancelAnimationFrame(g.rafId);
+
+                    g.isSwiping = false;
+                    const deltaX = Math.max(0, g.currentX - g.startX);
+                    const width = g.containerWidth;
+                    const threshold = width * 0.35;
+                    const isFlick = g.velocity > 0.35 && deltaX > 25;
+
+                    if (deltaX > threshold || isFlick) {
+                        // Complete iOS back swipe animation to right
+                        updateDOM(width, width, true, 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)');
+                        setTimeout(() => {
+                            updateDOM(0, width, false);
+                            if (onBack) onBack();
+                        }, 320);
+                    } else {
+                        // Revert back to original position
+                        updateDOM(0, width, true, 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)');
+                        setTimeout(() => {
+                            updateDOM(0, width, false);
+                        }, 320);
+                    }
+                };
 
                 container.addEventListener('pointerdown', onPointerDown);
-                window.addEventListener('pointermove', onPointerMove, { passive: false });
-                window.addEventListener('pointerup', onPointerUp);
-                window.addEventListener('pointercancel', onPointerUp);
+                window.addEventListener('pointermove', onPointerMove);
+                window.addEventListener('pointerup', handlePointerEnd);
+                window.addEventListener('pointercancel', handlePointerEnd);
 
                 return () => {
-                    container.removeEventListener('touchstart', onTouchStart);
-                    container.removeEventListener('touchmove', onTouchMove);
-                    container.removeEventListener('touchend', onTouchEnd);
-                    container.removeEventListener('touchcancel', onTouchEnd);
-
                     container.removeEventListener('pointerdown', onPointerDown);
                     window.removeEventListener('pointermove', onPointerMove);
-                    window.removeEventListener('pointerup', onPointerUp);
-                    window.removeEventListener('pointercancel', onPointerUp);
+                    window.removeEventListener('pointerup', handlePointerEnd);
+                    window.removeEventListener('pointercancel', handlePointerEnd);
 
                     if (gestureRef.current.rafId) {
                         cancelAnimationFrame(gestureRef.current.rafId);
@@ -1555,7 +1537,7 @@
             return (
                 <div 
                     ref={containerRef}
-                    className={`relative w-full min-h-full ${className}`}
+                    className={`relative w-full min-h-full touch-pan-y ${className}`}
                     style={{
                         willChange: 'transform'
                     }}
@@ -1998,6 +1980,102 @@
                                 <Icon name="trash-2" className="w-3.5 h-3.5" />
                             </button>
                         </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function StackCardItem({ 
+            card, 
+            index, 
+            currentCardIdx, 
+            animatingCard, 
+            animatingPrevCard, 
+            handlePrevCard, 
+            handleNextCard, 
+            totalCards, 
+            showStackWizard 
+        }) {
+            const cardRef = useRef(null);
+            const depth = index - currentCardIdx;
+            const isPrevReturningCard = animatingPrevCard && index === currentCardIdx - 1;
+
+            // Auto focus inputs inside active card (force focus & trigger soft keyboard)
+            useEffect(() => {
+                if (depth === 0 && showStackWizard && !animatingCard && !animatingPrevCard && cardRef.current) {
+                    const focusInput = () => {
+                        if (!cardRef.current) return;
+                        const numInput = cardRef.current.querySelector('input[inputmode="numeric"]') ||
+                                         cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
+                        if (numInput) {
+                            if (document.activeElement && document.activeElement !== numInput) {
+                                document.activeElement.blur();
+                            }
+                            numInput.focus({ preventScroll: true });
+                            try {
+                                if (numInput.value !== undefined && numInput.value !== null) {
+                                    const len = String(numInput.value).length;
+                                    if (typeof numInput.setSelectionRange === 'function') {
+                                        numInput.setSelectionRange(len, len);
+                                    }
+                                }
+                            } catch (e) {}
+                        }
+                    };
+
+                    focusInput();
+                    const timer1 = setTimeout(focusInput, 60);
+                    const timer2 = setTimeout(focusInput, 180);
+                    return () => {
+                        clearTimeout(timer1);
+                        clearTimeout(timer2);
+                    };
+                }
+            }, [depth, currentCardIdx, showStackWizard, animatingCard, animatingPrevCard]);
+
+            if (depth < 0 && !isPrevReturningCard) return null;
+
+            let depthAttr = 'hidden';
+            if (isPrevReturningCard || depth === 0) depthAttr = '0';
+            else if (depth === 1) depthAttr = '1';
+            else if (depth === 2) depthAttr = '2';
+
+            const isExitNext = depth === 0 && animatingCard;
+            const isEnterPrev = isPrevReturningCard;
+
+            return (
+                <div 
+                    ref={cardRef}
+                    key={card.id}
+                    data-depth={depthAttr}
+                    className={`stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${
+                        isExitNext ? 'card-exit-to-back animating-next' : ''
+                    } ${
+                        isEnterPrev ? 'card-enter-from-back animating-prev' : ''
+                    }`}
+                >
+                    <div className="flex-1 py-2 overflow-y-auto hide-scrollbar">
+                        {card.render()}
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse">
+                        {currentCardIdx > 0 && (
+                            <button 
+                                type="button"
+                                onClick={handlePrevCard}
+                                className="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center space-x-1 space-x-reverse cursor-pointer"
+                            >
+                                <Icon name="arrow-right" className="w-3.5 h-3.5" />
+                                <span>مرحله قبلی</span>
+                            </button>
+                        )}
+                        <button 
+                            type="button"
+                            onClick={handleNextCard}
+                            className={`${currentCardIdx > 0 ? 'w-2/3' : 'w-full'} bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-colors cursor-pointer`}
+                        >
+                            {index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'}
+                        </button>
                     </div>
                 </div>
             );
@@ -3733,12 +3811,68 @@
             const handleNextCard = (cardsList) => {
                 if (animatingCard || animatingPrevCard) return;
 
-                // Validation for contact selection on demand/debt/loan wizards
-                if ((wizardType === 'demand' || wizardType === 'debt' || wizardType === 'loan') && currentCardIdx === 0) {
-                    const selContactId = wizardType === 'loan' ? loanForm.selectedContactId : demandDebtForm.selectedContactId;
-                    if (!selContactId) {
+                // Validation for loan wizard
+                if (wizardType === 'loan') {
+                    if (currentCardIdx === 0) {
+                        if (!loanForm.title.trim()) {
+                            showToast('لطفاً عنوان وام را وارد کنید');
+                            return;
+                        }
+                        if (!loanForm.selectedContactId) {
+                            showToast('لطفاً یک مخاطب انتخاب کنید');
+                            return;
+                        }
+                    }
+                    if (currentCardIdx === 2) { // principal_amount
+                        const amt = Number(loanForm.principalAmount) || 0;
+                        if (amt <= 0) {
+                            showToast('لطفاً مبلغ اصل وام را وارد نمایید');
+                            return;
+                        }
+                    }
+                    if (currentCardIdx === 3) { // total_repayment
+                        const amt = Number(loanForm.totalRepayment) || 0;
+                        if (amt <= 0) {
+                            showToast('لطفاً مبلغ کل بازپرداخت را وارد نمایید');
+                            return;
+                        }
+                    }
+                    if (currentCardIdx === 4) { // installment_amount
+                        const amt = Number(loanForm.installmentAmount) || 0;
+                        if (amt <= 0) {
+                            showToast('لطفاً مبلغ هر قسط را وارد نمایید');
+                            return;
+                        }
+                    }
+                }
+
+                // Validation for demand wizard
+                if (wizardType === 'demand') {
+                    if (currentCardIdx === 0 && !demandDebtForm.selectedContactId) {
                         showToast('لطفاً یک مخاطب انتخاب کنید');
                         return;
+                    }
+                    if (currentCardIdx === 1) { // demand_amount
+                        const amt = Number(demandDebtForm.amount) || 0;
+                        if (amt <= 0) {
+                            showToast('لطفاً مبلغ طلب را وارد نمایید');
+                            return;
+                        }
+                    }
+                }
+
+                // Validation for debt wizard
+                if (wizardType === 'debt') {
+                    if (currentCardIdx === 0 && !demandDebtForm.selectedContactId) {
+                        showToast('لطفاً یک مخاطب انتخاب کنید');
+                        return;
+                    }
+                    if (currentCardIdx === 1) { // debt_amount
+                        const amt = Number(demandDebtForm.amount) || 0;
+                        if (amt <= 0) {
+                            showToast('لطفاً مبلغ قرض را وارد نمایید');
+                            return;
+                        }
                     }
                 }
 
@@ -3751,7 +3885,7 @@
                     if (currentCardIdx === 2) { // inst_amount
                         const inputAmt = Number(installmentForm.amount) || 0;
                         if (inputAmt <= 0) {
-                            showToast('لطفاً مبلغ معتبر وارد نمایید');
+                            showToast('لطفاً مبلغ پرداخت قسط را وارد نمایید');
                             return;
                         }
                         const targetLoan = loans.find(l => l.id === Number(installmentForm.selectedLoanId));
@@ -3776,7 +3910,7 @@
                     if (currentCardIdx === 1) { // debt_repay_amount
                         const inputAmt = Number(repaymentForm.amount) || 0;
                         if (inputAmt <= 0) {
-                            showToast('لطفاً مبلغ معتبر وارد نمایید');
+                            showToast('لطفاً مبلغ بازپرداخت بدهی را وارد نمایید');
                             return;
                         }
                         const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
@@ -3799,7 +3933,7 @@
                     if (currentCardIdx === 1) { // demand_repay_amount
                         const inputAmt = Number(repaymentForm.amount) || 0;
                         if (inputAmt <= 0) {
-                            showToast('لطفاً مبلغ معتبر وارد نمایید');
+                            showToast('لطفاً مبلغ دریافتی را وارد نمایید');
                             return;
                         }
                         const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
@@ -7375,49 +7509,20 @@
                                     className="w-full flex flex-col items-center"
                                 >
                                     <div className="card-stack-container w-full">
-                                        {activeCards.map((card, index) => {
-                                            const depth = index - currentCardIdx;
-                                            let depthAttr = 'hidden';
-                                            if (depth === 0) depthAttr = '0';
-                                            else if (depth === 1) depthAttr = '1';
-                                            else if (depth === 2) depthAttr = '2';
-
-                                            if (depth < 0) return null;
-
-                                            return (
-                                                <div 
-                                                    key={card.id}
-                                                    data-depth={depthAttr}
-                                                    className={`stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${
-                                                        depth === 0 && animatingCard ? 'card-exit-to-back animating-next' : ''
-                                                    } ${
-                                                        depth === 0 && animatingPrevCard ? 'card-enter-from-back animating-prev' : ''
-                                                    }`}>
-                                                    
-                                                    <div className="flex-1 py-2 overflow-y-auto hide-scrollbar">
-                                                        {card.render()}
-                                                    </div>
-
-                                                    <div className="pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse">
-                                                        {currentCardIdx > 0 && (
-                                                            <button 
-                                                                type="button"
-                                                                onClick={handlePrevCard}
-                                                                className="w-1/3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center space-x-1 space-x-reverse">
-                                                                <Icon name="arrow-right" className="w-3.5 h-3.5" />
-                                                                <span>مرحله قبلی</span>
-                                                            </button>
-                                                        )}
-                                                        <button 
-                                                            type="button"
-                                                            onClick={() => handleNextCard(activeCards)}
-                                                            className={`${currentCardIdx > 0 ? 'w-2/3' : 'w-full'} bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-colors`}>
-                                                            {index === activeCards.length - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
+                                        {activeCards.map((card, index) => (
+                                            <StackCardItem 
+                                                key={card.id}
+                                                card={card}
+                                                index={index}
+                                                currentCardIdx={currentCardIdx}
+                                                animatingCard={animatingCard}
+                                                animatingPrevCard={animatingPrevCard}
+                                                handlePrevCard={handlePrevCard}
+                                                handleNextCard={() => handleNextCard(activeCards)}
+                                                totalCards={activeCards.length}
+                                                showStackWizard={showStackWizard}
+                                            />
+                                        ))}
                                     </div>
 
                                     {/* Progress dots */}
