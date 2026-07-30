@@ -1,15 +1,47 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.1.16",
-  "buildNumber": 144,
-  "releaseDate": "2026-07-28",
+  "installedVersion": "1.2.1",
+  "buildNumber": 147,
+  "releaseDate": "2026-07-29",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.1.16",
+  "latestVersion": "1.2.1",
   "isUpdateAvailable": false,
   "history": [
-        {
+    {
+      "version": "1.2.1",
+      "buildNumber": 147,
+      "releaseDate": "2026-07-29",
+      "releaseChannel": "Stable",
+      "commitHash": "v121rel",
+      "commitMessage": "feat: FAB icon alignment & red toggle, remove pull refresh toast, fix contact profile trash button, left-align multi-line cards, standard debt/demand titles, modal AnimatePresence",
+      "changes": [
+        "حذف پیام توست اضافه پس از انجام کشیدن برای بروزرسانی (Pull to Refresh) جهت نمایش شفاف انیمیشن چرخشی",
+        "تنظیم مرکزیت دقیق آیکون + روی دکمه شناور FAB هنگام چرخش و تغییر رنگ آن به قرمز هنگام فعال‌سازی",
+        "فعال‌سازی دکمه سطل زباله بالای صفحه پروفایل مخاطب جهت حذف مخاطب و پرونده‌های وابسته با مودال تایید",
+        "چپ‌چین‌سازی دقیق مبالغ و اطلاعات تراکنش‌ها و دوره‌های بایگانی در صورت دو خطی شدن متون",
+        "استانداردسازی فرمت عناوین تب بدهی (قرض جدید/ نام مخاطب و بازپرداخت بدهی/ نام مخاطب)",
+        "استانداردسازی فرمت عناوین تب طلب (طلب جدید/ نام مخاطب و بازپرداخت طلب/ نام مخاطب) به همراه رنگ قرمز اختصاصی برای بازپرداخت طلب",
+        "اضافه شدن انیمیشن کامل باز شدن و بسته شدن (AnimatePresence) برای مودال‌های افزودن مخاطب، ویرایش مخاطب، حذف و خروجی‌ها"
+      ]
+    },
+    {
+      "version": "1.2.0",
+      "buildNumber": 146,
+      "releaseDate": "2026-07-29",
+      "releaseChannel": "Stable",
+      "commitHash": "c120rel",
+      "commitMessage": "feat: smart loan installment calculation, color-coded financial balance, compact stack card layout, and validation haptics",
+      "changes": [
+        "سیستم خودکار محاسبه تعداد اقساط وام بر اساس فرمول اصل/مبلغ کل و مبلغ هر قسط",
+        "کدگذاری رنگی هوشمند تراز مالی (آبی: باقیمانده مثبت/اضافه، قرمز: کسری، سبز: تراز دقیق)",
+        "اولویت‌دهی به تعداد قسط تعیین‌شده توسط کاربر (تایپ یا دکمه‌های +- ) با امکان بازنشانی توسط دکمه مربع سبز ریفرش",
+        "فشرده‌سازی لایوت کارت تعداد اقساط و انطباق کامل کنترل‌ها در کنار عنوان جهت صرفه‌جویی در ارتفاع",
+        "سیستم انیمیشن انقباض و انباشت کارتهای استک (Stack Cards Stacked Animation) با لرزش هپتیک خطا و فوکوس خودکار"
+      ]
+    },
+    {
       "version": "1.1.17",
       "buildNumber": 145,
       "releaseDate": "2026-07-28",

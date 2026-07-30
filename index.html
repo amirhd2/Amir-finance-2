@@ -1196,14 +1196,14 @@
 
             useEffect(() => {
                 if (containerRef.current && window.lucide && name) {
-                    containerRef.current.innerHTML = `<i data-lucide="${name}" class="${className || ''}"></i>`;
+                    containerRef.current.innerHTML = `<i data-lucide="${name}" class="block w-full h-full flex items-center justify-center shrink-0 ${className || ''}"></i>`;
                     window.lucide.createIcons({
                         root: containerRef.current
                     });
                 }
             }, [name, className]);
 
-            return <span ref={containerRef} className="inline-flex items-center justify-center shrink-0" style={style} {...props} />;
+            return <span ref={containerRef} className="inline-flex items-center justify-center shrink-0 leading-none p-0" style={style} {...props} />;
         }
 
         
@@ -1859,56 +1859,72 @@
             if (!isOpen) return null;
 
             return (
-                <div 
-                    onClick={(e) => {
-                        if (e.target === e.currentTarget && allowBackdropClose) {
-                            onCancel();
-                        }
-                    }}
-                    className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in transition-opacity duration-300"
-                >
-                    <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl w-full max-w-xs sm:max-w-sm rounded-[28px] p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700/80 animate-scale-up transform transition-all duration-300">
-                        <div className={`w-14 h-14 rounded-full ${iconBgColor} mx-auto flex items-center justify-center shadow-sm active:scale-95 transition-transform duration-200`}>
-                            <Icon name={iconName} className="w-7 h-7" />
-                        </div>
-                        
-                        <div className="space-y-1.5">
-                            <h4 className="text-base font-extrabold text-slate-900 dark:text-white">{title}</h4>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                                {message}
-                            </p>
-
-                            {details && details.length > 0 && (
-                                <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-100 dark:border-slate-700/60 text-right space-y-1.5 text-xs">
-                                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block mb-1">موارد در حال حذف:</span>
-                                    {details.map((item, idx) => (
-                                        <div key={idx} className="flex items-center space-x-2 space-x-reverse text-slate-700 dark:text-slate-300 font-bold">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-                                            <span>{item}</span>
-                                        </div>
-                                    ))}
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div 
+                            key="global-confirm-backdrop"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={(e) => {
+                                if (e.target === e.currentTarget && allowBackdropClose) {
+                                    onCancel();
+                                }
+                            }}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4"
+                        >
+                            <motion.div 
+                                key="global-confirm-modal"
+                                initial={{ opacity: 0, scale: 0.85, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.85, y: 20 }}
+                                transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl w-full max-w-xs sm:max-w-sm rounded-[28px] p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700/80"
+                            >
+                                <div className={`w-14 h-14 rounded-full ${iconBgColor} mx-auto flex items-center justify-center shadow-sm active:scale-95 transition-transform duration-200`}>
+                                    <Icon name={iconName} className="w-7 h-7" />
                                 </div>
-                            )}
-                        </div>
+                                
+                                <div className="space-y-1.5">
+                                    <h4 className="text-base font-extrabold text-slate-900 dark:text-white">{title}</h4>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                                        {message}
+                                    </p>
 
-                        <div className="flex space-x-2.5 space-x-reverse pt-2">
-                            <button 
-                                onClick={onConfirm}
-                                className={`flex-1 font-extrabold py-3 rounded-2xl text-xs shadow-md active:scale-[0.95] transition-all duration-150 ${
-                                    isDestructive 
-                                        ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-500/20' 
-                                        : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'
-                                }`}>
-                                {confirmLabel}
-                            </button>
-                            <button 
-                                onClick={onCancel}
-                                className="flex-1 bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-2xl text-xs active:scale-[0.95] transition-all duration-150">
-                                {cancelLabel}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                                    {details && details.length > 0 && (
+                                        <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-100 dark:border-slate-700/60 text-right space-y-1.5 text-xs">
+                                            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block mb-1">موارد در حال حذف:</span>
+                                            {details.map((item, idx) => (
+                                                <div key={idx} className="flex items-center space-x-2 space-x-reverse text-slate-700 dark:text-slate-300 font-bold">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                                                    <span>{item}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex space-x-2.5 space-x-reverse pt-2">
+                                    <button 
+                                        onClick={onConfirm}
+                                        className={`flex-1 font-extrabold py-3 rounded-2xl text-xs shadow-md active:scale-[0.95] transition-all duration-150 ${
+                                            isDestructive 
+                                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-500/20' 
+                                                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'
+                                        }`}>
+                                        {confirmLabel}
+                                    </button>
+                                    <button 
+                                        onClick={onCancel}
+                                        className="flex-1 bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-2xl text-xs active:scale-[0.95] transition-all duration-150">
+                                        {cancelLabel}
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             );
         }
 
@@ -1932,6 +1948,33 @@
 
             const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
 
+            const displayTitle = (() => {
+                const rawName = tx.contactName || (tx.contact ? `${tx.contact.firstName} ${tx.contact.lastName}` : '');
+                if (tx.type === 'debt') {
+                    if (rawName) return `قرض جدید/ ${rawName}`;
+                    if (tx.title && tx.title.includes('/')) return tx.title;
+                    if (tx.title && tx.title.startsWith('ثبت قرض')) return tx.title.replace(/ثبت قرض \/ بدهی (به )?/, 'قرض جدید/ ');
+                }
+                if (tx.type === 'debt_repayment') {
+                    if (rawName) return `بازپرداخت بدهی/ ${rawName}`;
+                    if (tx.title && tx.title.includes('/')) return tx.title;
+                    if (tx.title && tx.title.startsWith('بازپرداخت بدهی')) return tx.title.replace(/بازپرداخت بدهی (به )?/, 'بازپرداخت بدهی/ ');
+                }
+                if (tx.type === 'demand') {
+                    if (rawName) return `طلب جدید/ ${rawName}`;
+                    if (tx.title && tx.title.includes('/')) return tx.title;
+                    if (tx.title && tx.title.startsWith('ثبت طلب')) return tx.title.replace(/ثبت طلب (از )?/, 'طلب جدید/ ');
+                }
+                if (tx.type === 'demand_repayment') {
+                    if (rawName) return `بازپرداخت طلب/ ${rawName}`;
+                    if (tx.title && tx.title.includes('/')) return tx.title;
+                    if (tx.title && (tx.title.startsWith('دریافت / تسویه طلب') || tx.title.startsWith('بازپرداخت طلب'))) return tx.title.replace(/دریافت \/ تسویه طلب (از )?/, 'بازپرداخت طلب/ ');
+                }
+                return tx.title || 'تراکنش';
+            })();
+
+            const isRedAmount = tx.type === 'debt' || tx.type === 'demand_repayment' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment');
+
             return (
                 <div className="relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs group">
                     <div 
@@ -1948,24 +1991,24 @@
                             if (swiped) setSwiped(false);
                             else if (onEdit) onEdit(tx);
                         }}
-                        className={`bg-white dark:bg-slate-800 p-3 flex items-center justify-between cursor-pointer transition-transform duration-200 z-10 relative ${swiped ? '-translate-x-20' : 'translate-x-0'}`}>
-                        <div className="flex items-center space-x-2.5 space-x-reverse">
-                            <div className={`w-8 h-8 rounded-xl ${ tx.type === 'debt' ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : isRepay ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : colorType === 'rose' ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : colorType === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-bold text-xs shrink-0`}>
-                                {totalCount ? (totalCount - index) : <Icon name={isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-4 h-4" />}
+                        className={`bg-white dark:bg-slate-800 p-3 flex items-center justify-between cursor-pointer transition-transform duration-200 z-10 relative gap-3 ${swiped ? '-translate-x-20' : 'translate-x-0'}`}>
+                        <div className="flex items-center space-x-2.5 space-x-reverse min-w-0 flex-1">
+                            <div className={`w-8 h-8 rounded-xl ${ (tx.type === 'debt' || tx.type === 'demand_repayment') ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : isRepay ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : colorType === 'rose' ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : colorType === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-bold text-xs shrink-0`}>
+                                {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-4 h-4" />}
                             </div>
-                            <div>
-                                <div className="text-xs font-bold text-slate-800 dark:text-slate-200">{tx.title || 'تراکنش'}</div>
-                                <div className="text-[10px] text-slate-400">{tx.dateStr} {tx.notes ? `• ${tx.notes}` : ''}</div>
+                            <div className="min-w-0 flex-1 text-right">
+                                <div className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">{displayTitle}</div>
+                                <div className="text-[10px] text-slate-400 leading-normal mt-0.5">{tx.dateStr} {tx.notes ? `• ${tx.notes}` : ''}</div>
                             </div>
                         </div>
 
-                        <div className="flex items-center space-x-2 space-x-reverse">
-                            <span className={`text-xs font-bold ${(tx.type === 'debt' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment')) ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                        <div className="flex items-center space-x-2 space-x-reverse text-left shrink-0">
+                            <span className={`text-xs font-bold text-left whitespace-nowrap ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                 {Math.abs(tx.amount).toLocaleString()} تومان
                             </span>
                             <button 
                                 onClick={(e) => { e.stopPropagation(); onDelete(tx); }}
-                                className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-950/50 text-slate-400 hover:text-red-600 flex items-center justify-center transition-colors"
+                                className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-950/50 text-slate-400 hover:text-red-600 flex items-center justify-center transition-colors shrink-0"
                                 title="حذف این تراکنش">
                                 <Icon name="trash-2" className="w-3.5 h-3.5" />
                             </button>
@@ -2445,15 +2488,48 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.1.16",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '144', 10),
-                releaseDate: "2026-07-28",
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.2.1",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '147', 10),
+                releaseDate: "2026-07-29",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.1.16",
-                latestBuild: 144,
+                latestVersion: "1.2.1",
+                latestBuild: 147,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.2.1",
+                        buildNumber: 147,
+                        releaseDate: "2026-07-29",
+                        releaseChannel: "Stable",
+                        commitHash: "v121rel",
+                        commitMessage: "feat: FAB icon alignment & red toggle, remove pull refresh toast, fix contact profile trash button, left-align multi-line cards, standard debt/demand titles, modal AnimatePresence",
+                        changes: [
+                            "حذف پیام توست اضافه پس از انجام کشیدن برای بروزرسانی (Pull to Refresh) جهت نمایش شفاف انیمیشن چرخشی",
+                            "تنظیم مرکزیت دقیق آیکون + روی دکمه شناور FAB هنگام چرخش و تغییر رنگ آن به قرمز هنگام فعال‌سازی",
+                            "فعال‌سازی دکمه سطل زباله بالای صفحه پروفایل مخاطب جهت حذف مخاطب و پرونده‌های وابسته با مودال تایید",
+                            "چپ‌چین‌سازی دقیق مبالغ و اطلاعات تراکنش‌ها و دوره‌های بایگانی در صورت دو خطی شدن متون",
+                            "استانداردسازی فرمت عناوین تب بدهی (قرض جدید/ نام مخاطب و بازپرداخت بدهی/ نام مخاطب)",
+                            "استانداردسازی فرمت عناوین تب طلب (طلب جدید/ نام مخاطب و بازپرداخت طلب/ نام مخاطب) به همراه رنگ قرمز اختصاصی برای بازپرداخت طلب",
+                            "اضافه شدن انیمیشن کامل باز شدن و بسته شدن (AnimatePresence) برای مودال‌های افزودن مخاطب، ویرایش مخاطب، حذف و خروجی‌ها"
+                        ]
+                    },
+                    {
+                        version: "1.2.0",
+                        buildNumber: 146,
+                        releaseDate: "2026-07-29",
+                        releaseDate: "2026-07-29",
+                        releaseChannel: "Stable",
+                        commitHash: "c120rel",
+                        commitMessage: "feat: smart loan installment calculation, color-coded financial balance, compact stack card layout, and validation haptics",
+                        changes: [
+                            "سیستم خودکار محاسبه تعداد اقساط وام بر اساس فرمول اصل/مبلغ کل و مبلغ هر قسط",
+                            "کدگذاری رنگی هوشمند تراز مالی (آبی: باقیمانده مثبت/اضافه، قرمز: کسری، سبز: تراز دقیق)",
+                            "اولویت‌دهی به تعداد قسط تعیین‌شده توسط کاربر (تایپ یا دکمه‌های +- ) با امکان بازنشانی توسط دکمه مربع سبز ریفرش",
+                            "فشرده‌سازی لایوت کارت تعداد اقساط و انطباق کامل کنترل‌ها در کنار عنوان جهت صرفه‌جویی در ارتفاع",
+                            "سیستم انیمیشن انقباض و انباشت کارتهای استک (Stack Cards Stacked Animation) با لرزش هپتیک خطا و فوکوس خودکار"
+                        ]
+                    },
                     {
                         version: "1.1.16",
                         buildNumber: 144,
@@ -3004,8 +3080,6 @@
                         const updatedLoan = currentLoans.find(l => l.id === selectedLoan.id);
                         if (updatedLoan) setSelectedLoan(updatedLoan);
                     }
-
-                    showToast('اطلاعات با موفقیت بروزرسانی شد');
                 } catch (e) {
                     console.error('Refresh error:', e);
                 }
@@ -4008,7 +4082,8 @@
                     const principal = Number(loanForm.principalAmount) || 0;
                     const totalRepay = Number(loanForm.totalRepayment) || principal;
                     const instAmt = Number(loanForm.installmentAmount) || Math.round(totalRepay / 12);
-                    const calcTotalInst = instAmt > 0 ? Math.ceil(totalRepay / instAmt) : 12;
+                    const userCustomInst = (loanForm.customInstallmentCount !== undefined && loanForm.customInstallmentCount !== '') ? Number(loanForm.customInstallmentCount) : 0;
+                    const calcTotalInst = userCustomInst > 0 ? userCustomInst : (instAmt > 0 ? Math.ceil(totalRepay / instAmt) : 12);
                     const startDateFormatted = `${pickerYear}/${String(jalaliMonths.indexOf(pickerMonth)+1).padStart(2, '0')}/${String(pickerDay).padStart(2, '0')}`;
                     
                     if (wizardMode === 'edit' && loanForm.id) {
@@ -4828,45 +4903,39 @@
                                 const instAmt = Number(loanForm.installmentAmount);
                                 if (baseAmount > 0 && instAmt > 0) {
                                     const defaultNumInst = Math.ceil(baseAmount / instAmt);
-                                    const displayVal = loanForm.customInstallmentCount !== undefined ? loanForm.customInstallmentCount : defaultNumInst;
-                                    const currentNumInst = displayVal !== '' ? Number(displayVal) : defaultNumInst;
+                                    const hasCustom = loanForm.customInstallmentCount !== undefined && loanForm.customInstallmentCount !== '';
+                                    const displayVal = hasCustom ? loanForm.customInstallmentCount : String(defaultNumInst);
+                                    const currentNumInst = (hasCustom && !isNaN(Number(loanForm.customInstallmentCount)) && Number(loanForm.customInstallmentCount) > 0)
+                                        ? Number(loanForm.customInstallmentCount)
+                                        : defaultNumInst;
                                     const totalCalc = currentNumInst * instAmt;
                                     const diff = totalCalc - baseAmount;
 
                                     return (
                                         <div className="space-y-2 mt-2">
-                                            <div className="p-3 bg-indigo-50 dark:bg-indigo-950/60 rounded-2xl border border-indigo-200 dark:border-indigo-800/60 space-y-2">
-                                                <div className="flex items-center justify-between text-xs font-bold text-indigo-700 dark:text-indigo-300">
-                                                    <span>تعداد کل اقساط:</span>
-                                                    <button 
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setLoanForm(prev => ({ ...prev, customInstallmentCount: String(defaultNumInst) }));
-                                                            showToast('تعداد اقساط مجدداً محاسبه شد');
-                                                        }}
-                                                        title="محاسبه مجدد تعداد اقساط"
-                                                        className="flex items-center space-x-1 space-x-reverse text-[11px] font-bold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-slate-900 px-2.5 py-1 rounded-xl border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-50 active:scale-95 transition-all">
-                                                        <Icon name="rotate-cw" className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                                                        <span>محاسبه مجدد</span>
-                                                    </button>
-                                                </div>
+                                            {/* Compact Header Row for Installment Count */}
+                                            <div className="p-2.5 bg-indigo-50/70 dark:bg-indigo-950/50 rounded-2xl border border-indigo-200/80 dark:border-indigo-800/50 flex items-center justify-between gap-2">
+                                                <span className="text-xs font-bold text-indigo-900 dark:text-indigo-200 shrink-0">تعداد کل اقساط:</span>
 
-                                                <div className="flex items-center justify-center space-x-3 space-x-reverse pt-1">
+                                                <div className="flex items-center space-x-1.5 space-x-reverse">
+                                                    {/* Minus Button */}
                                                     <button 
                                                         type="button"
                                                         onClick={() => {
-                                                            const cur = displayVal !== '' ? Number(displayVal) : defaultNumInst;
+                                                            const cur = Number(displayVal) || defaultNumInst;
                                                             const newVal = Math.max(1, cur - 1);
                                                             setLoanForm(prev => ({ ...prev, customInstallmentCount: String(newVal) }));
                                                         }}
-                                                        className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-xl flex items-center justify-center shadow-2xs hover:bg-indigo-100 active:scale-95 transition-all cursor-pointer">
+                                                        className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-lg flex items-center justify-center shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-800 active:scale-95 transition-all cursor-pointer shrink-0">
                                                         -
                                                     </button>
 
-                                                    <div className="flex items-center space-x-2 space-x-reverse">
+                                                    {/* Count Input Box with Faint 'قسط' Text */}
+                                                    <div className="relative w-16 h-9 flex items-center">
                                                         <input 
                                                             type="text" 
                                                             inputMode="numeric"
+                                                            placeholder="قسط"
                                                             value={displayVal} 
                                                             onChange={(e) => {
                                                                 const raw = e.target.value.replace(/\D/g, '');
@@ -4874,44 +4943,66 @@
                                                             }}
                                                             onBlur={() => {
                                                                 if (loanForm.customInstallmentCount === '') {
-                                                                    setLoanForm(prev => ({ ...prev, customInstallmentCount: String(defaultNumInst) }));
+                                                                    setLoanForm(prev => ({ ...prev, customInstallmentCount: undefined }));
                                                                 }
                                                             }}
-                                                            className="w-20 text-center font-mono bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-600 rounded-xl py-1.5 px-1 text-base font-black text-indigo-700 dark:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                            className="w-full h-full text-center font-mono bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-600 rounded-xl px-1 text-sm font-black text-indigo-700 dark:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-300 dark:placeholder:text-slate-600 placeholder:font-normal"
                                                         />
-                                                        <span className="text-xs font-bold text-slate-600 dark:text-slate-300">قسط</span>
                                                     </div>
 
+                                                    {/* Plus Button */}
                                                     <button 
                                                         type="button"
                                                         onClick={() => {
-                                                            const cur = displayVal !== '' ? Number(displayVal) : defaultNumInst;
+                                                            const cur = Number(displayVal) || defaultNumInst;
                                                             const newVal = cur + 1;
                                                             setLoanForm(prev => ({ ...prev, customInstallmentCount: String(newVal) }));
                                                         }}
-                                                        className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-xl flex items-center justify-center shadow-2xs hover:bg-indigo-100 active:scale-95 transition-all cursor-pointer">
+                                                        className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-lg flex items-center justify-center shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-800 active:scale-95 transition-all cursor-pointer shrink-0">
                                                         +
+                                                    </button>
+
+                                                    {/* Square Green Refresh Button (Directly Left of + in RTL) */}
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setLoanForm(prev => ({ ...prev, customInstallmentCount: undefined }));
+                                                            showToast('تعداد اقساط مجدداً طبق فرمول محاسبه شد');
+                                                        }}
+                                                        title="محاسبه مجدد تعداد اقساط طبق فرمول"
+                                                        className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs hover:bg-emerald-100 dark:hover:bg-emerald-900/50 active:scale-95 transition-all cursor-pointer shrink-0">
+                                                        <Icon name="rotate-cw" className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                                     </button>
                                                 </div>
                                             </div>
 
+                                            {/* Financial Balance Remainder Card with Color Coding */}
                                             {diff === 0 ? (
-                                                <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between">
+                                                <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between shadow-2xs">
                                                     <div className="flex items-center space-x-1.5 space-x-reverse">
-                                                        <Icon name="check-circle-2" className="w-4 h-4 text-emerald-600" />
-                                                        <span>وضعیت تراز مالی:</span>
+                                                        <Icon name="check-circle-2" className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                                        <span>تراز مالی اقساط:</span>
                                                     </div>
-                                                    <span className="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">تراز ok</span>
+                                                    <span className="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">تراز دقیق (بدون باقیمانده)</span>
+                                                </div>
+                                            ) : diff > 0 ? (
+                                                <div className="p-2.5 bg-blue-50 dark:bg-blue-950/60 rounded-xl text-xs font-bold text-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800 flex items-center justify-between shadow-2xs">
+                                                    <div className="flex items-center space-x-1.5 space-x-reverse">
+                                                        <Icon name="info" className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                                                        <span>تراز مالی باقیمانده (اضافه):</span>
+                                                    </div>
+                                                    <span className="font-mono text-xs dir-ltr font-black text-blue-700 dark:text-blue-300">
+                                                        +{diff.toLocaleString()} تومان
+                                                    </span>
                                                 </div>
                                             ) : (
-                                                <div className={`p-2.5 rounded-xl text-xs font-bold border flex items-center justify-between ${
-                                                    diff > 0 
-                                                        ? 'bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800' 
-                                                        : 'bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800'
-                                                }`}>
-                                                    <span>تراز مالی محاسبه‌شده:</span>
-                                                    <span className="font-mono text-xs dir-ltr font-black">
-                                                        {diff > 0 ? `+${diff.toLocaleString()}` : diff.toLocaleString()} تومان
+                                                <div className="p-2.5 bg-rose-50 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800 flex items-center justify-between shadow-2xs">
+                                                    <div className="flex items-center space-x-1.5 space-x-reverse">
+                                                        <Icon name="alert-triangle" className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+                                                        <span>تراز مالی باقیمانده (کسری):</span>
+                                                    </div>
+                                                    <span className="font-mono text-xs dir-ltr font-black text-rose-600 dark:text-rose-400">
+                                                        {diff.toLocaleString()} تومان
                                                     </span>
                                                 </div>
                                             )}
@@ -6148,11 +6239,9 @@
                                             <Icon name="pencil" className="w-4 h-4" />
                                         </button>
                                         <button 
-                                            onClick={() => {
-                                                setEditContactForm({ id: selectedContact.id });
-                                                setShowDeleteConfirmModal(true);
-                                            }}
-                                            className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400">
+                                            onClick={handleDeleteContact}
+                                            className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400"
+                                            title="حذف مخاطب">
                                             <Icon name="trash-2" className="w-4 h-4" />
                                         </button>
                                         <button 
@@ -7792,245 +7881,370 @@
                         </div>
                     )}
 
+                    {/* Modal: Export Loan Details */}
+                    <AnimatePresence>
+                        {showExportModal && (
+                            <motion.div 
+                                key="export-modal-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-end justify-center"
+                            >
+                                <motion.div 
+                                    key="export-modal-panel"
+                                    initial={{ opacity: 0, y: 100 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 100 }}
+                                    transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                                    className="w-full bg-white dark:bg-slate-900 rounded-t-[32px] p-5 pb-8 space-y-4 border-t border-slate-100 dark:border-slate-800 shadow-2xl"
+                                >
+                                    <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"></div>
+                                    <div className="text-center">
+                                        <h3 className="font-extrabold text-slate-900 dark:text-white text-base">دریافت خروجی گزارش وام</h3>
+                                        <p className="text-xs text-slate-400 mt-1">فرمت مورد نظر خود جهت ذخیره‌سازی را انتخاب کنید</p>
+                                    </div>
+                                    <div className="space-y-2.5">
+                                        <button 
+                                            onClick={() => exportLoanToCSV(selectedLoan, transactions)}
+                                            className="w-full bg-slate-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 p-3.5 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-700 transition-all">
+                                            <div className="flex items-center space-x-3 space-x-reverse">
+                                                <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-300 font-bold text-xs flex items-center justify-center">
+                                                    CSV
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="font-bold text-xs text-slate-800 dark:text-slate-100">دانلود فایل اکسل / CSV</div>
+                                                    <div className="text-[10px] text-slate-400">مناسب جهت بررسی و باز کردن در اکسل</div>
+                                                </div>
+                                            </div>
+                                            <Icon name="download" className="w-4 h-4 text-slate-400" />
+                                        </button>
+
+                                        <button 
+                                            onClick={() => exportLoanToImage(selectedLoan, transactions)}
+                                            className="w-full bg-slate-50 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 p-3.5 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-700 transition-all">
+                                            <div className="flex items-center space-x-3 space-x-reverse">
+                                                <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 font-bold text-xs flex items-center justify-center">
+                                                    PNG
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="font-bold text-xs text-slate-800 dark:text-slate-100">دانلود تصویر گرافیکی (PNG)</div>
+                                                    <div className="text-[10px] text-slate-400">شامل کارت اطلاعات وام و جدول کلیه پرداختی‌ها</div>
+                                                </div>
+                                            </div>
+                                            <Icon name="download" className="w-4 h-4 text-slate-400" />
+                                        </button>
+                                    </div>
+                                    <button onClick={() => setShowExportModal(false)} className="w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">انصراف</button>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
                     {/* Modal: Export Completed Periods */}
-                    {showCompletedExportModal.show && (
-                        <div className="absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-end justify-center animate-fade-in">
-                            <div className="w-full bg-white dark:bg-slate-900 rounded-t-[32px] p-5 pb-8 space-y-4 border-t border-slate-100 dark:border-slate-800 shadow-2xl max-h-[80vh] overflow-y-auto">
-                                <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"></div>
-                                <div className="text-center">
-                                    <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
-                                        خروجی دوره‌های تسویه‌شده {showCompletedExportModal.type === 'debt' ? 'بدهی' : 'طلب'}
-                                    </h3>
-                                    <p className="text-xs text-slate-400 mt-1">
-                                        مخاطب: {showCompletedExportModal.contact ? `${showCompletedExportModal.contact.firstName} ${showCompletedExportModal.contact.lastName}` : '-'}
-                                    </p>
-                                </div>
+                    <AnimatePresence>
+                        {showCompletedExportModal.show && (
+                            <motion.div 
+                                key="completed-export-modal-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-end justify-center"
+                            >
+                                <motion.div 
+                                    key="completed-export-modal-panel"
+                                    initial={{ opacity: 0, y: 100 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 100 }}
+                                    transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                                    className="w-full bg-white dark:bg-slate-900 rounded-t-[32px] p-5 pb-8 space-y-4 border-t border-slate-100 dark:border-slate-800 shadow-2xl max-h-[80vh] overflow-y-auto"
+                                >
+                                    <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"></div>
+                                    <div className="text-center">
+                                        <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
+                                            خروجی دوره‌های تسویه‌شده {showCompletedExportModal.type === 'debt' ? 'بدهی' : 'طلب'}
+                                        </h3>
+                                        <p className="text-xs text-slate-400 mt-1">
+                                            مخاطب: {showCompletedExportModal.contact ? `${showCompletedExportModal.contact.firstName} ${showCompletedExportModal.contact.lastName}` : '-'}
+                                        </p>
+                                    </div>
 
-                                {(() => {
-                                    const contact = showCompletedExportModal.contact;
-                                    const type = showCompletedExportModal.type;
-                                    if (!contact) return null;
+                                    {(() => {
+                                        const contact = showCompletedExportModal.contact;
+                                        const type = showCompletedExportModal.type;
+                                        if (!contact) return null;
 
-                                    let periods = completedPeriods.filter(p => p.contactId === contact.id && p.type === type);
+                                        let periods = completedPeriods.filter(p => p.contactId === contact.id && p.type === type);
 
-                                    if (periods.length === 0) {
-                                        const contactTxs = transactions.filter(t => t.contactId === contact.id && (t.type === type || t.type === `${type}_repayment`));
-                                        if (contactTxs.length > 0) {
-                                            let sum = 0;
-                                            let initialSum = 0;
-                                            contactTxs.forEach(t => {
-                                                if (t.type === type) { sum += Math.abs(t.amount); initialSum += Math.abs(t.amount); }
-                                                if (t.type === `${type}_repayment`) { sum -= Math.abs(t.amount); }
-                                            });
-                                            if (sum <= 0 && initialSum > 0) {
-                                                periods = [{
-                                                    id: 'p_auto_' + Date.now(),
-                                                    contactId: contact.id,
-                                                    contactName: `${contact.firstName} ${contact.lastName}`,
-                                                    type: type,
-                                                    title: `دوره تسویه‌شده ${type === 'debt' ? 'بدهی' : 'طلب'}`,
-                                                    totalAmount: initialSum,
-                                                    startDate: contactTxs[contactTxs.length - 1]?.dateStr || 'نامشخص',
-                                                    endDate: contactTxs[0]?.dateStr || 'امروز',
-                                                    transactions: contactTxs
-                                                }];
+                                        if (periods.length === 0) {
+                                            const contactTxs = transactions.filter(t => t.contactId === contact.id && (t.type === type || t.type === `${type}_repayment`));
+                                            if (contactTxs.length > 0) {
+                                                let sum = 0;
+                                                let initialSum = 0;
+                                                contactTxs.forEach(t => {
+                                                    if (t.type === type) { sum += Math.abs(t.amount); initialSum += Math.abs(t.amount); }
+                                                    if (t.type === `${type}_repayment`) { sum -= Math.abs(t.amount); }
+                                                });
+                                                if (sum <= 0 && initialSum > 0) {
+                                                    periods = [{
+                                                        id: 'p_auto_' + Date.now(),
+                                                        contactId: contact.id,
+                                                        contactName: `${contact.firstName} ${contact.lastName}`,
+                                                        type: type,
+                                                        title: `دوره تسویه‌شده ${type === 'debt' ? 'بدهی' : 'طلب'}`,
+                                                        totalAmount: initialSum,
+                                                        startDate: contactTxs[contactTxs.length - 1]?.dateStr || 'نامشخص',
+                                                        endDate: contactTxs[0]?.dateStr || 'امروز',
+                                                        transactions: contactTxs
+                                                    }];
+                                                }
                                             }
                                         }
-                                    }
 
-                                    if (periods.length === 0) {
+                                        if (periods.length === 0) {
+                                            return (
+                                                <div className="bg-slate-50 dark:bg-slate-800/60 p-6 rounded-2xl text-center text-xs text-slate-400">
+                                                    هنوز هیچ دوره تسویه‌شده‌ای برای این مخاطب ثبت نشده است.
+                                                </div>
+                                            );
+                                        }
+
                                         return (
-                                            <div className="bg-slate-50 dark:bg-slate-800/60 p-6 rounded-2xl text-center text-xs text-slate-400">
-                                                هنوز هیچ دوره تسویه‌شده‌ای برای این مخاطب ثبت نشده است.
+                                            <div className="space-y-3">
+                                                {periods.map(period => (
+                                                    <div key={period.id} className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/80 space-y-2">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-xs font-bold text-slate-900 dark:text-white">{period.title}</span>
+                                                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/80 px-2 py-0.5 rounded-full">
+                                                                تسویه‌شده
+                                                            </span>
+                                                        </div>
+                                                        <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-0.5">
+                                                            <div>مبلغ کل دوره: <strong className="text-slate-800 dark:text-slate-200">{Number(period.totalAmount).toLocaleString()} تومان</strong></div>
+                                                            <div>بازه زمانی: {period.startDate} تا {period.endDate}</div>
+                                                            <div>تعداد پرداختی‌ها: {period.transactions ? period.transactions.length : 0} مورد</div>
+                                                        </div>
+                                                        <button 
+                                                            onClick={() => {
+                                                                exportPeriodAsPNG(period);
+                                                                showToast('خروجی PNG دوره تسویه ساخته و دانلود شد');
+                                                            }}
+                                                            className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 space-x-reverse shadow-md transition-colors">
+                                                            <Icon name="download" className="w-3.5 h-3.5" />
+                                                            <span>دانلود خروجی PNG</span>
+                                                        </button>
+                                                    </div>
+                                                ))}
                                             </div>
                                         );
-                                    }
+                                    })()}
 
-                                    return (
-                                        <div className="space-y-3">
-                                            {periods.map(period => (
-                                                <div key={period.id} className="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/80 space-y-2">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-xs font-bold text-slate-900 dark:text-white">{period.title}</span>
-                                                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/80 px-2 py-0.5 rounded-full">
-                                                            تسویه‌شده
-                                                        </span>
-                                                    </div>
-                                                    <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-0.5">
-                                                        <div>مبلغ کل دوره: <strong className="text-slate-800 dark:text-slate-200">{Number(period.totalAmount).toLocaleString()} تومان</strong></div>
-                                                        <div>بازه زمانی: {period.startDate} تا {period.endDate}</div>
-                                                        <div>تعداد پرداختی‌ها: {period.transactions ? period.transactions.length : 0} مورد</div>
-                                                    </div>
-                                                    <button 
-                                                        onClick={() => {
-                                                            exportPeriodAsPNG(period);
-                                                            showToast('خروجی PNG دوره تسویه ساخته و دانلود شد');
-                                                        }}
-                                                        className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 space-x-reverse shadow-md transition-colors">
-                                                        <Icon name="download" className="w-3.5 h-3.5" />
-                                                        <span>دانلود خروجی PNG</span>
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    );
-                                })()}
-
-                                <button onClick={() => setShowCompletedExportModal({ show: false, contact: null, type: 'debt' })} className="w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">انصراف</button>
-                            </div>
-                        </div>
-                    )}
+                                    <button onClick={() => setShowCompletedExportModal({ show: false, contact: null, type: 'debt' })} className="w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">انصراف</button>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Modal: Confirm Delete Transaction */}
-                    {deleteTxModal.show && (
-                        <div className="absolute inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in">
-                            <div className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700">
-                                <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center">
-                                    <Icon name="trash-2" className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">حذف تراکنش</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">آیا از حذف اطمینان دارید؟</p>
-                                    {deleteTxModal.tx && (
-                                        <div className="mt-2 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-xl text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                                            {deleteTxModal.tx.title} ({Math.abs(deleteTxModal.tx.amount).toLocaleString()} تومان)
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex space-x-2 space-x-reverse pt-1">
-                                    <button 
-                                        onClick={handleConfirmDeleteTx}
-                                        className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-colors">
-                                        بله
-                                    </button>
-                                    <button 
-                                        onClick={() => setDeleteTxModal({ show: false, tx: null, type: null })}
-                                        className="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs hover:bg-slate-200 transition-colors">
-                                        خیر
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <AnimatePresence>
+                        {deleteTxModal.show && (
+                            <motion.div 
+                                key="delete-tx-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+                            >
+                                <motion.div 
+                                    key="delete-tx-panel"
+                                    initial={{ opacity: 0, scale: 0.85, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.85, y: 20 }}
+                                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                    className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700"
+                                >
+                                    <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center">
+                                        <Icon name="trash-2" className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">حذف تراکنش</h4>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">آیا از حذف اطمینان دارید؟</p>
+                                        {deleteTxModal.tx && (
+                                            <div className="mt-2 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-xl text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                                                {deleteTxModal.tx.title} ({Math.abs(deleteTxModal.tx.amount).toLocaleString()} تومان)
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex space-x-2 space-x-reverse pt-1">
+                                        <button 
+                                            onClick={handleConfirmDeleteTx}
+                                            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-colors">
+                                            بله
+                                        </button>
+                                        <button 
+                                            onClick={() => setDeleteTxModal({ show: false, tx: null, type: null })}
+                                            className="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs hover:bg-slate-200 transition-colors">
+                                            خیر
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Modal: Add New Contact */}
-                    {showAddContactModal && (
-                        <div className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto animate-fade-in">
-                            <div className="bg-white dark:bg-slate-800 w-full rounded-3xl p-5 space-y-3 mt-0 shadow-2xl">
-                                <h3 className="text-sm font-bold text-slate-900 dark:text-white">افزودن مخاطب جدید</h3>
-                                <input 
-                                    type="text" 
-                                    placeholder="نام" 
-                                    value={newContactForm.firstName} 
-                                    onChange={(e) => setNewContactForm({...newContactForm, firstName: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="نام خانوادگی" 
-                                    value={newContactForm.lastName} 
-                                    onChange={(e) => setNewContactForm({...newContactForm, lastName: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="شماره تماس" 
-                                    value={newContactForm.phone} 
-                                    onChange={(e) => setNewContactForm({...newContactForm, phone: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="نام بانک / حساب (مثلاً بانک ملی)" 
-                                    value={newContactForm.bankName} 
-                                    onChange={(e) => setNewContactForm({...newContactForm, bankName: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="شماره کارت (اختیاری)" 
-                                    value={newContactForm.bankCard} 
-                                    onChange={(e) => setNewContactForm({...newContactForm, bankCard: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="شماره شبا (اختیاری)" 
-                                    value={newContactForm.iban} 
-                                    onChange={(e) => setNewContactForm({...newContactForm, iban: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <div className="flex space-x-2 space-x-reverse pt-2">
-                                    <button onClick={handleCreateContact} className="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">ذخیره</button>
-                                    <button onClick={() => setShowAddContactModal(false)} className="flex-1 bg-slate-100 dark:bg-slate-700 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">انصراف</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <AnimatePresence>
+                        {showAddContactModal && (
+                            <motion.div 
+                                key="add-contact-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto"
+                            >
+                                <motion.div 
+                                    key="add-contact-panel"
+                                    initial={{ opacity: 0, scale: 0.88, y: 25 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.85, y: 25 }}
+                                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                    className="bg-white dark:bg-slate-800 w-full rounded-3xl p-5 space-y-3 mt-0 shadow-2xl"
+                                >
+                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">افزودن مخاطب جدید</h3>
+                                    <input 
+                                        type="text" 
+                                        placeholder="نام" 
+                                        value={newContactForm.firstName} 
+                                        onChange={(e) => setNewContactForm({...newContactForm, firstName: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="نام خانوادگی" 
+                                        value={newContactForm.lastName} 
+                                        onChange={(e) => setNewContactForm({...newContactForm, lastName: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="شماره تماس" 
+                                        value={newContactForm.phone} 
+                                        onChange={(e) => setNewContactForm({...newContactForm, phone: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="نام بانک / حساب (مثلاً بانک ملی)" 
+                                        value={newContactForm.bankName} 
+                                        onChange={(e) => setNewContactForm({...newContactForm, bankName: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="شماره کارت (اختیاری)" 
+                                        value={newContactForm.bankCard} 
+                                        onChange={(e) => setNewContactForm({...newContactForm, bankCard: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="شماره شبا (اختیاری)" 
+                                        value={newContactForm.iban} 
+                                        onChange={(e) => setNewContactForm({...newContactForm, iban: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <div className="flex space-x-2 space-x-reverse pt-2">
+                                        <button onClick={handleCreateContact} className="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">ذخیره</button>
+                                        <button onClick={() => setShowAddContactModal(false)} className="flex-1 bg-slate-100 dark:bg-slate-700 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">انصراف</button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Modal: Edit Contact */}
-                    {showEditContactModal && (
-                        <div className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto animate-fade-in">
-                            <div className="bg-white dark:bg-slate-800 w-full rounded-3xl p-5 space-y-3 mt-0 shadow-2xl">
-                                <div className="flex justify-between items-center pb-1">
-                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">ویرایش اطلاعات مخاطب</h3>
-                                    <button 
-                                        type="button"
-                                        onClick={handleDeleteContact}
-                                        className="bg-red-500 hover:bg-red-600 active:scale-95 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm flex items-center space-x-1 space-x-reverse transition-all">
-                                        <Icon name="trash-2" className="w-3.5 h-3.5" />
-                                        <span>حذف مخاطب</span>
-                                    </button>
-                                </div>
-                                <input 
-                                    type="text" 
-                                    placeholder="نام" 
-                                    value={editContactForm.firstName} 
-                                    onChange={(e) => setEditContactForm({...editContactForm, firstName: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="نام خانوادگی" 
-                                    value={editContactForm.lastName} 
-                                    onChange={(e) => setEditContactForm({...editContactForm, lastName: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="شماره تماس" 
-                                    value={editContactForm.phone} 
-                                    onChange={(e) => setEditContactForm({...editContactForm, phone: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="نام بانک / حساب (مثلاً بانک ملی)" 
-                                    value={editContactForm.bankName} 
-                                    onChange={(e) => setEditContactForm({...editContactForm, bankName: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="شماره کارت" 
-                                    value={editContactForm.bankCard} 
-                                    onChange={(e) => setEditContactForm({...editContactForm, bankCard: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="شماره شبا" 
-                                    value={editContactForm.iban} 
-                                    onChange={(e) => setEditContactForm({...editContactForm, iban: e.target.value})}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
-                                />
-                                <div className="flex space-x-2 space-x-reverse pt-2">
-                                    <button onClick={handleUpdateContact} className="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">به‌روزرسانی</button>
-                                    <button onClick={() => setShowEditContactModal(false)} className="flex-1 bg-slate-100 dark:bg-slate-700 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">انصراف</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <AnimatePresence>
+                        {showEditContactModal && (
+                            <motion.div 
+                                key="edit-contact-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto"
+                            >
+                                <motion.div 
+                                    key="edit-contact-panel"
+                                    initial={{ opacity: 0, scale: 0.88, y: 25 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.85, y: 25 }}
+                                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                    className="bg-white dark:bg-slate-800 w-full rounded-3xl p-5 space-y-3 mt-0 shadow-2xl"
+                                >
+                                    <div className="flex justify-between items-center pb-1">
+                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">ویرایش اطلاعات مخاطب</h3>
+                                        <button 
+                                            type="button"
+                                            onClick={handleDeleteContact}
+                                            className="bg-red-500 hover:bg-red-600 active:scale-95 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm flex items-center space-x-1 space-x-reverse transition-all">
+                                            <Icon name="trash-2" className="w-3.5 h-3.5" />
+                                            <span>حذف مخاطب</span>
+                                        </button>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        placeholder="نام" 
+                                        value={editContactForm.firstName} 
+                                        onChange={(e) => setEditContactForm({...editContactForm, firstName: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="نام خانوادگی" 
+                                        value={editContactForm.lastName} 
+                                        onChange={(e) => setEditContactForm({...editContactForm, lastName: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="شماره تماس" 
+                                        value={editContactForm.phone} 
+                                        onChange={(e) => setEditContactForm({...editContactForm, phone: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="نام بانک / حساب (مثلاً بانک ملی)" 
+                                        value={editContactForm.bankName} 
+                                        onChange={(e) => setEditContactForm({...editContactForm, bankName: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="شماره کارت" 
+                                        value={editContactForm.bankCard} 
+                                        onChange={(e) => setEditContactForm({...editContactForm, bankCard: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <input 
+                                        type="text" 
+                                        placeholder="شماره شبا" 
+                                        value={editContactForm.iban} 
+                                        onChange={(e) => setEditContactForm({...editContactForm, iban: e.target.value})}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                    />
+                                    <div className="flex space-x-2 space-x-reverse pt-2">
+                                        <button onClick={handleUpdateContact} className="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">به‌روزرسانی</button>
+                                        <button onClick={() => setShowEditContactModal(false)} className="flex-1 bg-slate-100 dark:bg-slate-700 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">انصراف</button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Global Confirmation Dialog */}
                     <GlobalConfirmDialog 
