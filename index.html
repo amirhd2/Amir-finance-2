@@ -246,6 +246,26 @@
         }
 
         /* کلیدهای انیمیشن iOS Spring/Bounce ضمیمه‌شده */
+        @keyframes stackFallSubmit {
+            0% {
+                transform: translate3d(0, 0, 0) scale(1) rotateX(0deg);
+                opacity: 1;
+            }
+            25% {
+                transform: translate3d(0, -14px, 0) scale(1.02) rotateX(-2deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate3d(0, 240px, 0) scale(0.78) rotateX(-15deg);
+                opacity: 0;
+            }
+        }
+
+        .card-stack-fall-submit {
+            animation: stackFallSubmit 0.48s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards !important;
+            pointer-events: none !important;
+        }
+
         @keyframes iosPopIn {
             0% {
                 opacity: 0;
@@ -305,6 +325,46 @@
 
         .animate-backdrop-out {
             animation: backdropFadeOut 0.3s ease-in forwards;
+        }
+
+        /* iOS Edge Swipe Back Viewport and Page Styles */
+        .app-viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000000;
+        }
+
+        .page-view {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+            overflow-y: auto;
+            box-shadow: -15px 0 30px rgba(0, 0, 0, 0.25);
+            touch-action: pan-y;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .smooth-transition {
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+        }
+
+        .backdrop-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: #000000;
+            opacity: 0;
+            pointer-events: none;
+            will-change: opacity;
+            z-index: 15;
+        }
+
+        .smooth-overlay {
+            transition: opacity 0.3s linear !important;
         }
 
         /* iOS Wheel Picker Styles & Mask */
@@ -1202,6 +1262,7 @@
                 principalAmount: 500000000,
                 totalRepayment: 500000000,
                 installmentAmount: 28000000,
+                receiveDate: '1404/01/15',
                 startDate: '1404/02/12',
                 dueDate: '1406/08/15',
                 totalInstallments: 18,
@@ -1224,6 +1285,7 @@
                 principalAmount: 300000000,
                 totalRepayment: 360000000,
                 installmentAmount: 15000000,
+                receiveDate: '1403/09/15',
                 startDate: '1403/10/01',
                 dueDate: '1405/10/01',
                 totalInstallments: 24,
@@ -1252,7 +1314,7 @@
             { id: 3, title: 'قسط وام مسکن', category: 'مسکن', daysLeft: 18, dateStr: 'پنج‌شنبه ۱۰ شهریور ۱۴۰۴', icon: 'home', color: 'bg-emerald-50 text-emerald-500 dark:bg-emerald-950/40' }
         ];
 
-        // variants انیمیشن ضمیمه‌شده iOS Spring / Bounce برای پاپ‌آپ‌ها
+        // variants انیمیشن iOS برای پاپ‌آپ‌ها با انیمیشن خروج دقیقا مطابق منوی FAB
         const iosModalVariants = {
             initial: { opacity: 0, scale: 0.75 },
             animate: { 
@@ -1269,16 +1331,12 @@
                 }
             },
             exit: { 
-                opacity: [1, 1, 0], 
-                scale: [1, 1.06, 0.7],
-                transition: { 
-                    duration: 0.35, 
-                    times: [0, 0.3, 1],
-                    ease: [
-                        [0.6, -0.28, 0.735, 0.045],
-                        [0.6, -0.28, 0.735, 0.045]
-                    ]
-                }
+                opacity: 0, 
+                scaleX: 0.08, 
+                scaleY: 0.05, 
+                y: 80, 
+                clipPath: "polygon(30% 0%, 70% 0%, 55% 100%, 45% 100%)",
+                transition: { duration: 0.4, ease: [0.76, 0, 0.24, 1] } 
             }
         };
 
@@ -1500,165 +1558,183 @@
             );
         }
 
-        function SwipeBackWrapper({ onBack, enabled = true, children, className = "" }) {
-            const containerRef = useRef(null);
-            const backdropRef = useRef(null);
+        function SwipeBackWrapper({ onBack, underlyingContent, children, className = "" }) {
+            const page1Ref = useRef(null);
+            const page2Ref = useRef(null);
+            const overlayRef = useRef(null);
+            const isClosingRef = useRef(false);
 
             const gestureRef = useRef({
-                isSwiping: false,
+                isDragging: false,
                 startX: 0,
-                currentX: 0,
-                lastX: 0,
-                lastTime: 0,
-                velocity: 0,
-                pointerId: null,
-                containerWidth: 360,
-                rafId: null
+                currentX: 0
             });
 
+            const openPage = () => {
+                const page1 = page1Ref.current;
+                const page2 = page2Ref.current;
+                const overlay = overlayRef.current;
+
+                if (page1 && page2 && overlay) {
+                    page1.classList.add('smooth-transition');
+                    page2.classList.add('smooth-transition');
+                    overlay.classList.add('smooth-overlay');
+
+                    page2.style.transform = 'translateX(0%)';
+                    page1.style.transform = 'translateX(-25%)';
+                    overlay.style.opacity = '0.4';
+                }
+            };
+
+            const closePage = () => {
+                if (isClosingRef.current) return;
+                isClosingRef.current = true;
+
+                const page1 = page1Ref.current;
+                const page2 = page2Ref.current;
+                const overlay = overlayRef.current;
+
+                if (page1 && page2 && overlay) {
+                    page1.classList.add('smooth-transition');
+                    page2.classList.add('smooth-transition');
+                    overlay.classList.add('smooth-overlay');
+
+                    page2.style.transform = 'translateX(100%)';
+                    page1.style.transform = 'translateX(0%)';
+                    overlay.style.opacity = '0';
+                }
+
+                setTimeout(() => {
+                    if (onBack) onBack();
+                }, 300);
+            };
+
             useEffect(() => {
-                if (!enabled || !onBack) return;
+                const page1 = page1Ref.current;
+                const page2 = page2Ref.current;
+                const overlay = overlayRef.current;
 
-                const container = containerRef.current;
-                if (!container) return;
+                if (page1 && page2 && overlay) {
+                    page1.classList.remove('smooth-transition');
+                    page2.classList.remove('smooth-transition');
+                    overlay.classList.remove('smooth-overlay');
 
-                const EDGE_THRESHOLD = 32; // maximum distance from left edge in px
+                    page2.style.transform = 'translateX(100%)';
+                    page1.style.transform = 'translateX(0%)';
+                    overlay.style.opacity = '0';
 
-                const updateDOM = (tx, width, animate = false, transitionStyle = '') => {
-                    if (!containerRef.current) return;
-                    const currentWidth = width || gestureRef.current.containerWidth || window.innerWidth || 360;
-                    const ratio = Math.max(0, Math.min(1, tx / currentWidth));
+                    void page2.offsetWidth;
 
-                    if (animate) {
-                        containerRef.current.style.transition = transitionStyle || 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)';
-                    } else {
-                        containerRef.current.style.transition = 'none';
-                    }
+                    openPage();
+                }
+            }, []);
 
-                    containerRef.current.style.transform = tx > 0 ? `translateX(${tx}px)` : '';
-                    containerRef.current.style.boxShadow = tx > 0 ? `-12px 0 30px rgba(0, 0, 0, ${0.15 + ratio * 0.2})` : '';
+            useEffect(() => {
+                const EDGE_THRESHOLD = 35; // exactly 35px from left edge
 
-                    if (backdropRef.current) {
-                        if (animate) {
-                            backdropRef.current.style.transition = 'opacity 0.32s linear';
-                        } else {
-                            backdropRef.current.style.transition = 'none';
-                        }
-                        backdropRef.current.style.opacity = (ratio * 0.4).toFixed(3);
-                        backdropRef.current.style.display = tx > 0 ? 'block' : 'none';
-                    }
-                };
-
-                const onPointerDown = (e) => {
-                    // Only primary button or single touch
+                const handlePointerDown = (e) => {
+                    if (isClosingRef.current) return;
                     if (e.button !== undefined && e.button !== 0) return;
-                    
-                    const rect = container.getBoundingClientRect();
-                    const relX = e.clientX - rect.left;
 
-                    if (relX >= 0 && relX <= EDGE_THRESHOLD) {
-                        const g = gestureRef.current;
-                        g.isSwiping = true;
-                        g.startX = e.clientX;
-                        g.currentX = e.clientX;
-                        g.lastX = e.clientX;
-                        g.lastTime = performance.now();
-                        g.velocity = 0;
-                        g.pointerId = e.pointerId;
-                        g.containerWidth = rect.width || window.innerWidth || 360;
+                    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                    const rect = page2Ref.current ? page2Ref.current.getBoundingClientRect() : null;
+                    const relX = rect ? clientX - rect.left : clientX;
 
-                        if (e.target && e.target.setPointerCapture) {
-                            try {
-                                e.target.setPointerCapture(e.pointerId);
-                            } catch (err) {}
+                    if (relX <= EDGE_THRESHOLD) {
+                        gestureRef.current.isDragging = true;
+                        gestureRef.current.startX = clientX;
+                        gestureRef.current.currentX = clientX;
+
+                        const page1 = page1Ref.current;
+                        const page2 = page2Ref.current;
+                        const overlay = overlayRef.current;
+
+                        if (page1 && page2 && overlay) {
+                            page1.classList.remove('smooth-transition');
+                            page2.classList.remove('smooth-transition');
+                            overlay.classList.remove('smooth-overlay');
                         }
-
-                        updateDOM(0, g.containerWidth, false);
                     }
                 };
 
-                const onPointerMove = (e) => {
-                    const g = gestureRef.current;
-                    if (!g.isSwiping) return;
+                const handlePointerMove = (e) => {
+                    if (!gestureRef.current.isDragging || isClosingRef.current) return;
 
-                    g.currentX = e.clientX;
-                    let deltaX = g.currentX - g.startX;
+                    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                    gestureRef.current.currentX = clientX;
+
+                    let deltaX = gestureRef.current.currentX - gestureRef.current.startX;
                     if (deltaX < 0) deltaX = 0;
 
-                    const now = performance.now();
-                    const dt = now - g.lastTime;
-                    if (dt > 0) {
-                        g.velocity = (e.clientX - g.lastX) / dt;
-                    }
-                    g.lastX = e.clientX;
-                    g.lastTime = now;
+                    const screenWidth = page2Ref.current ? page2Ref.current.offsetWidth : (window.innerWidth || 360);
+                    const progress = Math.min(deltaX / screenWidth, 1);
 
-                    if (g.rafId) cancelAnimationFrame(g.rafId);
-                    g.rafId = requestAnimationFrame(() => {
-                        updateDOM(deltaX, g.containerWidth, false);
-                    });
+                    const page1 = page1Ref.current;
+                    const page2 = page2Ref.current;
+                    const overlay = overlayRef.current;
+
+                    if (page1 && page2 && overlay) {
+                        page2.style.transform = `translateX(${deltaX}px)`;
+                        const page1Offset = -25 + (progress * 25);
+                        page1.style.transform = `translateX(${page1Offset}%)`;
+                        overlay.style.opacity = `${0.4 * (1 - progress)}`;
+                    }
                 };
 
-                const handlePointerEnd = (e) => {
-                    const g = gestureRef.current;
-                    if (!g.isSwiping) return;
+                const handlePointerUp = () => {
+                    if (!gestureRef.current.isDragging || isClosingRef.current) return;
+                    gestureRef.current.isDragging = false;
 
-                    if (g.rafId) cancelAnimationFrame(g.rafId);
+                    const screenWidth = page2Ref.current ? page2Ref.current.offsetWidth : (window.innerWidth || 360);
+                    const deltaX = gestureRef.current.currentX - gestureRef.current.startX;
 
-                    g.isSwiping = false;
-                    const deltaX = Math.max(0, g.currentX - g.startX);
-                    const width = g.containerWidth;
-                    const threshold = width * 0.35;
-                    const isFlick = g.velocity > 0.35 && deltaX > 25;
-
-                    if (deltaX > threshold || isFlick) {
-                        // Complete iOS back swipe animation to right
-                        updateDOM(width, width, true, 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)');
-                        setTimeout(() => {
-                            updateDOM(0, width, false);
-                            if (onBack) onBack();
-                        }, 320);
+                    if (deltaX > screenWidth * 0.3) {
+                        closePage();
                     } else {
-                        // Revert back to original position
-                        updateDOM(0, width, true, 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)');
-                        setTimeout(() => {
-                            updateDOM(0, width, false);
-                        }, 320);
+                        openPage();
                     }
                 };
 
-                container.addEventListener('pointerdown', onPointerDown);
-                window.addEventListener('pointermove', onPointerMove);
-                window.addEventListener('pointerup', handlePointerEnd);
-                window.addEventListener('pointercancel', handlePointerEnd);
+                window.addEventListener('pointerdown', handlePointerDown);
+                window.addEventListener('pointermove', handlePointerMove);
+                window.addEventListener('pointerup', handlePointerUp);
+                window.addEventListener('pointercancel', handlePointerUp);
 
                 return () => {
-                    container.removeEventListener('pointerdown', onPointerDown);
-                    window.removeEventListener('pointermove', onPointerMove);
-                    window.removeEventListener('pointerup', handlePointerEnd);
-                    window.removeEventListener('pointercancel', handlePointerEnd);
-
-                    if (gestureRef.current.rafId) {
-                        cancelAnimationFrame(gestureRef.current.rafId);
-                    }
+                    window.removeEventListener('pointerdown', handlePointerDown);
+                    window.removeEventListener('pointermove', handlePointerMove);
+                    window.removeEventListener('pointerup', handlePointerUp);
+                    window.removeEventListener('pointercancel', handlePointerUp);
                 };
-            }, [enabled, onBack]);
+            }, []);
+
+            const handleHeaderBack = () => {
+                closePage();
+            };
 
             return (
-                <div 
-                    ref={containerRef}
-                    className={`relative w-full min-h-full touch-pan-y ${className}`}
-                    style={{
-                        willChange: 'transform'
-                    }}
-                >
+                <div className={`app-viewport fixed inset-0 w-full h-full overflow-hidden bg-black z-30 ${className}`}>
+                    {/* Page 1 (Underlying Page) */}
                     <div 
-                        ref={backdropRef}
-                        className="fixed inset-0 bg-slate-950 pointer-events-none z-[-1]"
-                        style={{ opacity: 0, display: 'none' }}
+                        ref={page1Ref}
+                        className="page-view z-10 bg-slate-50 dark:bg-slate-900 p-4 pb-24 overflow-y-auto"
+                    >
+                        {underlyingContent}
+                    </div>
+
+                    {/* Backdrop Overlay */}
+                    <div 
+                        ref={overlayRef}
+                        className="backdrop-overlay"
                     />
 
-                    {children}
+                    {/* Page 2 (Active Subpage) */}
+                    <div 
+                        ref={page2Ref}
+                        className="page-view z-20 bg-slate-50 dark:bg-slate-900 p-4 pb-24 overflow-y-auto"
+                    >
+                        {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
+                    </div>
                 </div>
             );
         }
@@ -1975,6 +2051,7 @@
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
+                                style={{ transformOrigin: "bottom center" }}
                                 className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl w-full max-w-xs sm:max-w-sm rounded-[28px] p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700/80"
                             >
                                 <div className={`w-14 h-14 rounded-full ${iconBgColor} mx-auto flex items-center justify-center shadow-sm active:scale-95 transition-transform duration-200`}>
@@ -3087,6 +3164,7 @@
             const [currentCardIdx, setCurrentCardIdx] = useState(0);
             const [animatingCard, setAnimatingCard] = useState(false);
             const [animatingPrevCard, setAnimatingPrevCard] = useState(false);
+            const [isFinalSubmitting, setIsFinalSubmitting] = useState(false);
             const [validationErrors, setValidationErrors] = useState({});
             const [shakeCardId, setShakeCardId] = useState(null);
 
@@ -3984,6 +4062,7 @@
                     });
                 }
 
+                setIsFinalSubmitting(false);
                 setShowPlusMenu(false);
                 setShowStackWizard(true);
             };
@@ -4161,15 +4240,19 @@
                 }
 
                 setValidationErrors({});
-                setAnimatingCard(true);
-                setTimeout(() => {
-                    setAnimatingCard(false);
-                    if (currentCardIdx < cardsList.length - 1) {
+                if (currentCardIdx < cardsList.length - 1) {
+                    setAnimatingCard(true);
+                    setTimeout(() => {
+                        setAnimatingCard(false);
                         setCurrentCardIdx(prev => prev + 1);
-                    } else {
+                    }, 580);
+                } else {
+                    setIsFinalSubmitting(true);
+                    setTimeout(() => {
                         saveWizardData();
-                    }
-                }, 580);
+                        setIsFinalSubmitting(false);
+                    }, 450);
+                }
             };
 
             const saveWizardData = () => {
@@ -5792,23 +5875,25 @@
                 return loanWizardCards;
             };
 
-            const activeCards = getCurrentWizardCards();
+            const getUnderlyingTabForSubpage = (subpageTab) => {
+                if (subpageTab === 'contact-detail') return 'contacts';
+                if (subpageTab === 'loan-detail') {
+                    if (loanReturnTab === 'contact-detail' && selectedContact) return 'contact-detail';
+                    if (loanReturnTab === 'dashboard') return 'dashboard';
+                    return 'accounts';
+                }
+                if (subpageTab === 'archived-period-detail') {
+                    if ((loanReturnTab || 'contact-detail') === 'contact-detail' && selectedContact) return 'contact-detail';
+                    return 'accounts';
+                }
+                if (subpageTab === 'all-transactions') return 'dashboard';
+                return 'accounts';
+            };
 
-            return (
-                <div className={`w-full h-full flex flex-col justify-between ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
-
-                    {/* Notification Toast */}
-                    {toastMessage && (
-                        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white dark:bg-slate-100 dark:text-slate-900 text-xs py-2 px-4 rounded-full shadow-lg border border-slate-700/50 transition-all duration-300">
-                            {toastMessage}
-                        </div>
-                    )}
-
-                    {/* App Content Body */}
-                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24">
-                        
-                        {/* Dashboard Tab */}
-                        {currentTab === 'dashboard' && (
+            const renderTab = (tabName, onBack) => {
+                switch (tabName) {
+                    case 'dashboard':
+                        return (
                             <div className="space-y-5 animate-fade-in">
                                 <div className="flex justify-between items-center py-2">
                                     <button onClick={() => showToast('اعلان جدیدی وجود ندارد')} className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 relative text-slate-600 dark:text-slate-300">
@@ -5958,10 +6043,9 @@
                                     </div>
                                 </div>
                             </div>
-                        )}
-
-                        {/* Accounts Tab */}
-                        {currentTab === 'accounts' && (
+                        );
+                    case 'accounts':
+                        return (
                             <div className="space-y-4 animate-fade-in">
                                 <div className="flex justify-between items-center py-2">
                                     <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2 space-x-reverse">
@@ -6170,10 +6254,9 @@
                                     )}
                                 </div>
                             </div>
-                        )}
-
-                        {/* Contacts Tab */}
-                        {currentTab === 'contacts' && (
+                        );
+                    case 'contacts':
+                        return (
                             <div className="space-y-4 animate-fade-in">
                                 <div className="space-y-3 sticky top-0 z-10 glass-header py-2">
                                     <div className="flex justify-between items-center">
@@ -6308,17 +6391,16 @@
                                     })}
                                 </div>
                             </div>
-                        )}
-
-                        {/* Contact Detail Tab */}
-                        {currentTab === 'contact-detail' && selectedContact && (
-                            <SwipeBackWrapper onBack={() => setCurrentTab('contacts')}>
+                        );
+                    case 'contact-detail':
+                        if (!selectedContact) return null;
+                        return (
                             <div className="space-y-4 animate-fade-in">
-                                {/* Header Bar */}
-                                <div className="flex justify-between items-center py-2">
-                                    <button onClick={() => setCurrentTab('contacts')} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700">
-                                        <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
-                                    </button>
+                                        {/* Header Bar */}
+                                        <div className="flex justify-between items-center py-2">
+                                            <button onClick={onBack || (() => setCurrentTab('contacts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700">
+                                                <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                                            </button>
                                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">پروفایل مخاطب</h3>
                                     <div className="flex items-center space-x-1.5 space-x-reverse">
                                         <button 
@@ -6831,15 +6913,13 @@
                                 </div>
                                 <div className="h-12 shrink-0 pointer-events-none" />
                             </div>
-                            </SwipeBackWrapper>
-                        )}
-
-                        {/* Loan Detail Tab */}
-                        {currentTab === 'loan-detail' && selectedLoan && (
-                            <SwipeBackWrapper onBack={() => setCurrentTab(loanReturnTab || 'accounts')}>
+                        );
+                    case 'loan-detail':
+                        if (!selectedLoan) return null;
+                        return (
                             <div className="space-y-4 animate-fade-in">
-                                <div className="flex justify-between items-center py-2">
-                                    <button onClick={() => setCurrentTab(loanReturnTab || 'accounts')} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700">
+                                        <div className="flex justify-between items-center py-2">
+                                            <button onClick={onBack || (() => setCurrentTab(loanReturnTab || 'accounts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700">
                                         <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                     </button>
                                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">{selectedLoan.title}</h3>
@@ -6899,7 +6979,11 @@
                                                 <span className="font-extrabold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-lg dir-ltr">{paidInst}/{totalInst}</span>
                                             </div>
                                             <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">تاریخ شروع دریافت</span>
+                                                <span className="text-slate-400">تاریخ دریافت وام</span>
+                                                <span className="font-bold text-slate-700 dark:text-slate-300">{selectedLoan.receiveDate || selectedLoan.startDate}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
+                                                <span className="text-slate-400">تاریخ شروع اقساط</span>
                                                 <span className="font-bold text-slate-700 dark:text-slate-300">{selectedLoan.startDate}</span>
                                             </div>
                                             <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
@@ -7013,18 +7097,16 @@
                                     <span>خروجی پرونده وام</span>
                                 </button>
                             </div>
-                            </SwipeBackWrapper>
-                        )}
-
-                        {/* Archived Settlement Period Detail Tab */}
-                        {currentTab === 'archived-period-detail' && selectedPeriod && (
-                            <SwipeBackWrapper onBack={() => setCurrentTab(loanReturnTab || 'contact-detail')}>
+                        );
+                    case 'archived-period-detail':
+                        if (!selectedPeriod) return null;
+                        return (
                             <div className="space-y-4 animate-fade-in">
-                                {/* Header */}
-                                <div className="flex justify-between items-center py-2">
-                                    <button 
-                                        onClick={() => setCurrentTab(loanReturnTab || 'contact-detail')} 
-                                        className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
+                                        {/* Header */}
+                                        <div className="flex justify-between items-center py-2">
+                                            <button 
+                                                onClick={onBack || (() => setCurrentTab(loanReturnTab || 'contact-detail'))} 
+                                                className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
                                         <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                     </button>
                                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
@@ -7174,17 +7256,14 @@
                                     <span>دانلود خروجی تصویر پرونده (PNG)</span>
                                 </button>
                             </div>
-                            </SwipeBackWrapper>
-                        )}
-
-                        {/* View All Transactions Tab */}
-                        {currentTab === 'all-transactions' && (
-                            <SwipeBackWrapper onBack={() => setCurrentTab('dashboard')}>
+                        );
+                    case 'all-transactions':
+                        return (
                             <div className="space-y-4 animate-fade-in pb-12">
-                                <div className="flex justify-between items-center py-2">
-                                    <button 
-                                        onClick={() => setCurrentTab('dashboard')} 
-                                        className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
+                                        <div className="flex justify-between items-center py-2">
+                                            <button 
+                                                onClick={onBack || (() => setCurrentTab('dashboard'))} 
+                                                className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
                                         <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                     </button>
                                     <div className="text-center">
@@ -7260,11 +7339,9 @@
                                     })()}
                                 </div>
                             </div>
-                            </SwipeBackWrapper>
-                        )}
-
-                        {/* Settings Tab */}
-                        {currentTab === 'settings' && (
+                        );
+                    case 'settings':
+                        return (
                             <div className="space-y-3.5 animate-fade-in pb-12">
                                 {/* Header / Application Version Card (Single Source of Truth) */}
                                 <div 
@@ -7711,6 +7788,65 @@
                                     </div>
                                 </div>
                             </div>
+                        );
+                    default:
+                        return null;
+                }
+            };
+
+            const activeCards = getCurrentWizardCards();
+
+            return (
+                <div className={`w-full h-full flex flex-col justify-between ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
+
+                    {/* Notification Toast */}
+                    {toastMessage && (
+                        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white dark:bg-slate-100 dark:text-slate-900 text-xs py-2 px-4 rounded-full shadow-lg border border-slate-700/50 transition-all duration-300">
+                            {toastMessage}
+                        </div>
+                    )}
+
+                    {/* App Content Body */}
+                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24">
+                        {currentTab === 'dashboard' && renderTab('dashboard')}
+                        {currentTab === 'accounts' && renderTab('accounts')}
+                        {currentTab === 'contacts' && renderTab('contacts')}
+                        {currentTab === 'settings' && renderTab('settings')}
+
+                        {currentTab === 'contact-detail' && selectedContact && (
+                            <SwipeBackWrapper 
+                                onBack={() => setCurrentTab('contacts')}
+                                underlyingContent={renderTab(getUnderlyingTabForSubpage('contact-detail'))}
+                            >
+                                {({ onBack }) => renderTab('contact-detail', onBack)}
+                            </SwipeBackWrapper>
+                        )}
+
+                        {currentTab === 'loan-detail' && selectedLoan && (
+                            <SwipeBackWrapper 
+                                onBack={() => setCurrentTab(loanReturnTab || 'accounts')}
+                                underlyingContent={renderTab(getUnderlyingTabForSubpage('loan-detail'))}
+                            >
+                                {({ onBack }) => renderTab('loan-detail', onBack)}
+                            </SwipeBackWrapper>
+                        )}
+
+                        {currentTab === 'archived-period-detail' && selectedPeriod && (
+                            <SwipeBackWrapper 
+                                onBack={() => setCurrentTab(loanReturnTab || 'contact-detail')}
+                                underlyingContent={renderTab(getUnderlyingTabForSubpage('archived-period-detail'))}
+                            >
+                                {({ onBack }) => renderTab('archived-period-detail', onBack)}
+                            </SwipeBackWrapper>
+                        )}
+
+                        {currentTab === 'all-transactions' && (
+                            <SwipeBackWrapper 
+                                onBack={() => setCurrentTab('dashboard')}
+                                underlyingContent={renderTab(getUnderlyingTabForSubpage('all-transactions'))}
+                            >
+                                {({ onBack }) => renderTab('all-transactions', onBack)}
+                            </SwipeBackWrapper>
                         )}
                     </PullToRefresh>
 
@@ -7906,9 +8042,10 @@
                                     initial="initial"
                                     animate="animate"
                                     exit="exit"
+                                    style={{ transformOrigin: "bottom center" }}
                                     className="w-full flex flex-col items-center"
                                 >
-                                    <div className="card-stack-container w-full">
+                                    <div className={`card-stack-container w-full ${isFinalSubmitting ? 'card-stack-fall-submit' : ''}`}>
                                         {activeCards.map((card, index) => (
                                             <StackCardItem 
                                                 key={card.id}
@@ -7969,6 +8106,7 @@
                                     initial="initial"
                                     animate="animate"
                                     exit="exit"
+                                    style={{ transformOrigin: "bottom center" }}
                                     className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl"
                                 >
                                     <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"></div>
@@ -8030,6 +8168,7 @@
                                     initial="initial"
                                     animate="animate"
                                     exit="exit"
+                                    style={{ transformOrigin: "bottom center" }}
                                     className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto"
                                 >
                                     <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"></div>
@@ -8135,6 +8274,7 @@
                                     initial="initial"
                                     animate="animate"
                                     exit="exit"
+                                    style={{ transformOrigin: "bottom center" }}
                                     className="bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700"
                                 >
                                     <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center">
@@ -8183,6 +8323,7 @@
                                     initial="initial"
                                     animate="animate"
                                     exit="exit"
+                                    style={{ transformOrigin: "bottom center" }}
                                     className="bg-white dark:bg-slate-800 w-full rounded-3xl p-5 space-y-3 mt-0 shadow-2xl"
                                 >
                                     <h3 className="text-sm font-bold text-slate-900 dark:text-white">افزودن مخاطب جدید</h3>
@@ -8254,6 +8395,7 @@
                                     initial="initial"
                                     animate="animate"
                                     exit="exit"
+                                    style={{ transformOrigin: "bottom center" }}
                                     className="bg-white dark:bg-slate-800 w-full rounded-3xl p-5 space-y-3 mt-0 shadow-2xl"
                                 >
                                     <div className="flex justify-between items-center pb-1">
