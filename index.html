@@ -1569,7 +1569,7 @@
             );
         }
 
-        function SwipeBackWrapper({ onBack, underlyingContent, children, className = "" }) {
+        function SwipeBackWrapper({ onBack, onRefresh, underlyingContent, children, className = "" }) {
             const page1Ref = useRef(null);
             const page2Ref = useRef(null);
             const overlayRef = useRef(null);
@@ -1591,9 +1591,11 @@
                 const overlay = overlayRef.current;
 
                 if (page1 && page2 && overlay) {
+                    void page2.offsetWidth;
                     page1.classList.add('smooth-transition');
                     page2.classList.add('smooth-transition');
                     overlay.classList.add('smooth-overlay');
+                    void page2.offsetWidth;
 
                     page2.style.transform = 'translateX(0%)';
                     page1.style.transform = 'translateX(-25%)';
@@ -1610,18 +1612,29 @@
                 const overlay = overlayRef.current;
 
                 if (page1 && page2 && overlay) {
+                    void page2.offsetWidth;
                     page1.classList.add('smooth-transition');
                     page2.classList.add('smooth-transition');
                     overlay.classList.add('smooth-overlay');
+                    void page2.offsetWidth;
 
                     page2.style.transform = 'translateX(100%)';
                     page1.style.transform = 'translateX(0%)';
                     overlay.style.opacity = '0';
-                }
 
-                setTimeout(() => {
+                    let triggered = false;
+                    const finishBack = () => {
+                        if (triggered) return;
+                        triggered = true;
+                        if (page2) page2.removeEventListener('transitionend', finishBack);
+                        if (onBack) onBack();
+                    };
+
+                    page2.addEventListener('transitionend', finishBack);
+                    setTimeout(finishBack, 310);
+                } else {
                     if (onBack) onBack();
-                }, 300);
+                }
             };
 
             useEffect(() => {
@@ -1799,11 +1812,17 @@
                     {/* Page 2 (Active Subpage) */}
                     <div 
                         ref={page2Ref}
-                        className="page-view z-20 bg-slate-50 dark:bg-slate-900 overflow-y-auto w-full h-full"
+                        className="page-view z-20 bg-slate-50 dark:bg-slate-900 w-full h-full overflow-hidden"
                     >
-                        <div className="px-4 pt-4 pb-24 min-h-full">
-                            {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
-                        </div>
+                        {onRefresh ? (
+                            <PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-4 pb-24">
+                                {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
+                            </PullToRefresh>
+                        ) : (
+                            <div className="w-full h-full overflow-y-auto px-4 pt-4 pb-24">
+                                {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
+                            </div>
+                        )}
                     </div>
                 </div>
             );
@@ -2176,13 +2195,18 @@
             onCardClick,
             className = ""
         }) {
-            const [offset, setOffset] = useState(0);
             const [isDragging, setIsDragging] = useState(false);
             const [swipedOpen, setSwipedOpen] = useState(false);
             const [isDeleting, setIsDeleting] = useState(false);
-            const [isFullSwipeActive, setIsFullSwipeActive] = useState(false);
 
             const containerRef = useRef(null);
+            const cardRef = useRef(null);
+            const btnRef = useRef(null);
+
+            const offsetRef = useRef(0);
+            const rafIdRef = useRef(null);
+            const isDraggingRef = useRef(false);
+
             const gestureRef = useRef({
                 startX: 0,
                 startY: 0,
@@ -2191,11 +2215,50 @@
                 isHorizontalDrag: false
             });
 
+            const updateVisuals = (currentOffset, dragging) => {
+                const cardEl = cardRef.current;
+                const btnEl = btnRef.current;
+                if (!cardEl || !btnEl) return;
+
+                const gap = 12;
+                const rawBtnWidth = Math.max(0, currentOffset - gap);
+
+                // Appearance (Fade in & Scale)
+                const appearanceProgress = Math.min(1, Math.max(0, (currentOffset - 4) / 40));
+                const btnOpacity = appearanceProgress;
+                const btnScale = 0.5 + 0.5 * appearanceProgress;
+
+                // Smooth continuous morphing: Circle (52px wide, 26px radius) -> Rounded Rect (72px wide, 16px radius)
+                const btnWidthPx = Math.max(52, rawBtnWidth);
+                const morphProgress = Math.min(1, Math.max(0, (btnWidthPx - 52) / 20));
+                const borderRadiusPx = 26 - (26 - 16) * morphProgress;
+
+                const transitionStr = dragging 
+                    ? 'none' 
+                    : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s linear';
+
+                cardEl.style.transition = dragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+                cardEl.style.transform = `translate3d(${-currentOffset}px, 0, 0)`;
+
+                btnEl.style.transition = transitionStr;
+                btnEl.style.width = `${btnWidthPx}px`;
+                btnEl.style.height = '52px';
+                btnEl.style.borderRadius = `${borderRadiusPx}px`;
+                btnEl.style.opacity = `${btnOpacity}`;
+                btnEl.style.transform = `translate3d(0, -50%, 0) scale(${btnScale})`;
+                btnEl.style.visibility = currentOffset > 2 ? 'visible' : 'hidden';
+            };
+
+            const snapTo = (targetOffset, dragging = false) => {
+                offsetRef.current = targetOffset;
+                updateVisuals(targetOffset, dragging);
+            };
+
             useEffect(() => {
                 if (!swipedOpen) return;
                 const handleGlobalClick = (e) => {
                     if (containerRef.current && !containerRef.current.contains(e.target)) {
-                        setOffset(0);
+                        snapTo(0, false);
                         setSwipedOpen(false);
                     }
                 };
@@ -2225,7 +2288,7 @@
                 gestureRef.current = {
                     startX: x,
                     startY: y,
-                    startOffset: offset,
+                    startOffset: offsetRef.current,
                     isSlopPassed: false,
                     isHorizontalDrag: false
                 };
@@ -2246,6 +2309,7 @@
                         g.isSlopPassed = true;
                         if (absX > absY * 0.8) {
                             g.isHorizontalDrag = true;
+                            isDraggingRef.current = true;
                             setIsDragging(true);
                         } else {
                             g.startX = 0; // abort horizontal drag, let page scroll vertically
@@ -2263,8 +2327,14 @@
                     if (newOffset < 0) newOffset = 0;
                     if (newOffset > containerWidth) newOffset = containerWidth;
 
-                    setOffset(newOffset);
-                    setIsFullSwipeActive(newOffset / containerWidth >= 0.7);
+                    offsetRef.current = newOffset;
+
+                    if (!rafIdRef.current) {
+                        rafIdRef.current = requestAnimationFrame(() => {
+                            rafIdRef.current = null;
+                            updateVisuals(offsetRef.current, true);
+                        });
+                    }
                 }
             };
 
@@ -2274,9 +2344,8 @@
                         setIsDeleting(true);
                     });
                 }
-                setOffset(0);
+                snapTo(0, false);
                 setSwipedOpen(false);
-                setIsFullSwipeActive(false);
             };
 
             const handleEnd = (e) => {
@@ -2287,53 +2356,36 @@
                 g.startX = 0;
                 g.isSlopPassed = false;
                 g.isHorizontalDrag = false;
+                isDraggingRef.current = false;
                 setIsDragging(false);
+
+                if (rafIdRef.current) {
+                    cancelAnimationFrame(rafIdRef.current);
+                    rafIdRef.current = null;
+                }
 
                 if (isDrag) {
                     const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
-                    const ratio = offset / containerWidth;
+                    const ratio = offsetRef.current / containerWidth;
 
                     if (ratio >= 0.7) {
-                        // Full swipe > 70%: covers full width & triggers confirm modal
                         triggerDeleteModal();
-                    } else if (offset > 50) {
-                        // Partial swipe: latch open at ~84px
-                        setOffset(84);
+                    } else if (offsetRef.current > 50) {
+                        snapTo(84, false);
                         setSwipedOpen(true);
                     } else {
-                        // Small swipe: snap shut
-                        setOffset(0);
+                        snapTo(0, false);
                         setSwipedOpen(false);
                     }
                 } else {
-                    // Tap / Click without swipe
                     if (swipedOpen) {
-                        setOffset(0);
+                        snapTo(0, false);
                         setSwipedOpen(false);
                     } else if (onCardClick) {
                         onCardClick(e);
                     }
                 }
             };
-
-            const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
-            const isFullSwipe = isFullSwipeActive || (offset / containerWidth >= 0.7);
-
-            // 12px GAP requirement between left edge of red delete button and right edge of swiping card
-            const gap = 12;
-            const rawBtnWidth = isFullSwipe ? containerWidth : Math.max(0, offset - gap);
-
-            // Appearance (Fade in & Scale)
-            const appearanceProgress = Math.min(1, Math.max(0, (offset - 4) / 40));
-            const btnOpacity = appearanceProgress;
-            const btnScale = 0.5 + 0.5 * appearanceProgress;
-
-            // Morphing: Circle (52px) -> Rounded Rect (border-radius 16px)
-            const isCirclePhase = rawBtnWidth <= 56;
-            const btnWidthPx = Math.max(52, rawBtnWidth);
-            const borderRadiusPx = isCirclePhase 
-                ? Math.min(26, btnWidthPx / 2) 
-                : Math.max(16, 26 - ((rawBtnWidth - 56) / 50) * 10);
 
             return (
                 <div 
@@ -2344,36 +2396,33 @@
                             : 'max-h-[500px] opacity-100 my-1'
                     } ${className}`}
                 >
-                    {/* Morphing Red Delete Button (Right-aligned in RTL layout) */}
+                    {/* Morphing Red Delete Button */}
                     <div 
+                        ref={btnRef}
                         className="absolute right-0 top-1/2 z-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white cursor-pointer shadow-md select-none transition-colors"
                         style={{
-                            width: `${btnWidthPx}px`,
-                            height: isFullSwipe ? '100%' : '52px',
-                            borderRadius: `${borderRadiusPx}px`,
-                            opacity: btnOpacity,
-                            transform: `translate3d(0, -50%, 0) scale(${btnScale})`,
+                            width: '52px',
+                            height: '52px',
+                            borderRadius: '26px',
+                            opacity: 0,
+                            transform: 'translate3d(0, -50%, 0) scale(0.5)',
                             transformOrigin: 'right center',
-                            transition: isDragging ? 'none' : 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                            display: offset > 4 ? 'flex' : 'none'
+                            visibility: 'hidden',
+                            willChange: 'transform, width, border-radius'
                         }}
                         onClick={(e) => {
                             e.stopPropagation();
                             triggerDeleteModal();
                         }}
                     >
-                        <div className="flex items-center justify-center space-x-1.5 space-x-reverse px-2">
+                        <div className="flex items-center justify-center w-full h-full">
                             <Icon name="trash-2" className="w-5 h-5 text-white shrink-0" />
-                            {rawBtnWidth > 80 && (
-                                <span className="text-xs font-bold text-white whitespace-nowrap animate-fade-in">
-                                    حذف
-                                </span>
-                            )}
                         </div>
                     </div>
 
-                    {/* Swiping Card (Translates Left by `offset` px in RTL) */}
+                    {/* Swiping Card */}
                     <div
+                        ref={cardRef}
                         onTouchStart={handleStart}
                         onTouchMove={handleMove}
                         onTouchEnd={handleEnd}
@@ -2383,8 +2432,8 @@
                         onMouseUp={handleEnd}
                         onMouseLeave={handleEnd}
                         style={{
-                            transform: `translate3d(${-offset}px, 0, 0)`,
-                            transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
+                            transform: 'translate3d(0, 0, 0)',
+                            willChange: 'transform'
                         }}
                         className={`relative z-10 transition-shadow duration-200 ${
                             (isDragging || swipedOpen) ? 'rounded-2xl shadow-xl' : ''
@@ -2402,9 +2451,9 @@
             const displayTitle = (() => {
                 const rawName = tx.contactName || (tx.contact ? `${tx.contact.firstName} ${tx.contact.lastName}` : '');
                 if (tx.type === 'debt') {
-                    if (rawName) return `قرض جدید/ ${rawName}`;
+                    if (rawName) return `ثبت بدهی/ ${rawName}`;
                     if (tx.title && tx.title.includes('/')) return tx.title;
-                    if (tx.title && tx.title.startsWith('ثبت قرض')) return tx.title.replace(/ثبت قرض \/ بدهی (به )?/, 'قرض جدید/ ');
+                    if (tx.title && (tx.title.startsWith('ثبت قرض') || tx.title.startsWith('ثبت بدهی') || tx.title.startsWith('قرض جدید'))) return tx.title.replace(/(ثبت قرض \/ بدهی|قرض جدید|ثبت بدهی) (به )?/, 'ثبت بدهی/ ');
                 }
                 if (tx.type === 'debt_repayment') {
                     if (rawName) return `بازپرداخت بدهی/ ${rawName}`;
@@ -2419,7 +2468,7 @@
                 if (tx.type === 'demand_repayment') {
                     if (rawName) return `بازپرداخت طلب/ ${rawName}`;
                     if (tx.title && tx.title.includes('/')) return tx.title;
-                    if (tx.title && (tx.title.startsWith('دریافت / تسویه طلب') || tx.title.startsWith('بازپرداخت طلب'))) return tx.title.replace(/دریافت \/ تسویه طلب (از )?/, 'بازپرداخت طلب/ ');
+                    if (tx.title && (tx.title.startsWith('دریافت / تسویه طلب') || tx.title.startsWith('بازپرداخت طلب'))) return tx.title.replace(/(دریافت \/ تسویه طلب|بازپرداخت طلب) (از )?/, 'بازپرداخت طلب/ ');
                 }
                 return tx.title || 'تراکنش';
             })();
@@ -2861,6 +2910,34 @@
             );
         }
 
+        // Brand Avatar Component with Multi-Fallback Strategy
+        const BrandAvatar = ({ className = "w-10 h-10", logoUrl }) => {
+            const [srcIndex, setSrcIndex] = useState(0);
+            const sources = useMemo(() => {
+                const list = [];
+                if (logoUrl) list.push(logoUrl);
+                list.push('/apple-touch-icon.png', 'apple-touch-icon.png', '/favicon-96x96.png', 'favicon-96x96.png');
+                return [...new Set(list)];
+            }, [logoUrl]);
+
+            if (srcIndex >= sources.length) {
+                return (
+                    <div className={`rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white font-black flex items-center justify-center shadow-sm border border-indigo-400/30 shrink-0 ${className}`}>
+                        <span className="text-xs tracking-tight">AF</span>
+                    </div>
+                );
+            }
+
+            return (
+                <img
+                    src={sources[srcIndex]}
+                    onError={() => setSrcIndex(prev => prev + 1)}
+                    alt="Amir Finance"
+                    className={`rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-transform shrink-0 ${className}`}
+                />
+            );
+        };
+
         function App() {
             const [currentTab, setCurrentTab] = useState('dashboard');
             const [selectedContact, setSelectedContact] = useState(null);
@@ -2891,48 +2968,77 @@
             
             const [toastMessage, setToastMessage] = useState('');
             const [showPlusMenu, setShowPlusMenu] = useState(false);
-            
-            // Brand Avatar Component with Multi-Fallback Strategy
-            const BrandAvatar = ({ className = "w-10 h-10", logoUrl }) => {
-                const [srcIndex, setSrcIndex] = useState(0);
-                const sources = useMemo(() => {
-                    const list = [];
-                    if (logoUrl) list.push(logoUrl);
-                    list.push('/apple-touch-icon.png', 'apple-touch-icon.png', '/favicon-96x96.png', 'favicon-96x96.png');
-                    return [...new Set(list)];
-                }, [logoUrl]);
-
-                if (srcIndex >= sources.length) {
-                    return (
-                        <div className={`rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white font-black flex items-center justify-center shadow-sm border border-indigo-400/30 shrink-0 ${className}`}>
-                            <span className="text-xs tracking-tight">AF</span>
-                        </div>
-                    );
-                }
-
-                return (
-                    <img
-                        src={sources[srcIndex]}
-                        onError={() => setSrcIndex(prev => prev + 1)}
-                        alt="Amir Finance"
-                        className={`rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-transform shrink-0 ${className}`}
-                    />
-                );
-            };
 
             // Application Version Management State
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.2.1",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '147', 10),
-                releaseDate: "2026-07-29",
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.3.4",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '152', 10),
+                releaseDate: "2026-07-31",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.2.1",
-                latestBuild: 147,
+                latestVersion: "1.3.4",
+                latestBuild: 152,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.3.4",
+                        buildNumber: 152,
+                        releaseDate: "2026-07-31",
+                        releaseChannel: "Stable",
+                        commitHash: "v134rel",
+                        commitMessage: "feat & fix: continuous swipe-to-delete expansion, centered trash icon, add swipe-to-refresh to all-transactions and subpages, release v1.3.4 (build 152)",
+                        changes: [
+                            "بهینه‌سازی انیمیشن Swipe to Delete و کشیده‌شدن و گسترش مداوم دکمه قرمز حذف به سمت چپ همزمان با ادامه کشیدن کارت",
+                            "تمرکز و تراز دقیق آیکون سطل زباله در مرکز دکمه حذف و حذف متون اضافی جهت افزایش زیبایی بصری",
+                            "افزودن و فعال‌سازی قابلیت کشیدن به پایین برای بروزرسانی (Swipe to Refresh) در صفحه «همه تراکنش‌ها» و سایر صفحات تفصیلی",
+                            "بهینه‌سازی سیستم بررسی و بروزرسانی PWA در نسخه نصب‌شده و انتشار نسخه رسمی 1.3.4 (بیلد 152)"
+                        ]
+                    },
+                    {
+                        version: "1.3.3",
+                        buildNumber: 151,
+                        releaseDate: "2026-07-31",
+                        releaseChannel: "Stable",
+                        commitHash: "v133rel",
+                        commitMessage: "perf & fix: smooth swipe-to-delete frame rate & morphing animation, fix swipe-to-back 1-frame release flicker",
+                        changes: [
+                            "بهینه‌سازی کامل انیمیشن Swipe to Delete و اجرای ۶۰ فریم بر ثانیه بدون افت فریم هنگام کشیدن کالاها",
+                            "روان‌سازی کامل انیمیشن مورف تغییر شکل دایره به مستطیل در دکمه حذف کشویی بدون پرش‌های ناگهانی",
+                            "رفع کامل پرش ۱ فریمی (1-Frame Jump/Flicker) انیمیشن Swipe to Back در لحظه رهاسازی و پایان اسلاید صفحه",
+                            "تغییر و یکپارچه‌سازی عناوین «دریافت / تسویه طلب» به «بازپرداخت طلب» در عنوان تراکنش‌ها، هشدارها و فرم‌ها"
+                        ]
+                    },
+                    {
+                        version: "1.3.2",
+                        buildNumber: 150,
+                        releaseDate: "2026-07-31",
+                        releaseChannel: "Stable",
+                        commitHash: "v132rel",
+                        commitMessage: "fix: update debt/demand button and title labels, contact active loan filter logic, and un-archiving on tx delete",
+                        changes: [
+                            "تغییر عبارت «ثبت قرض / بدهی» به «ثبت بدهی» و فرمت «ثبت بدهی/ نام مخاطب» در عنوان تراکنش‌ها و دکمه‌های پروفایل",
+                            "تغییر عبارت «دریافت / تسویه طلب» به «بازپرداخت طلب» و فرمت «بازپرداخت طلب/ نام مخاطب» در عنوان تراکنش‌ها و فرم‌ها",
+                            "عدم نمایش مخاطبینی که تنها دارای وام تسویه‌شده هستند در صورت اعمال فیلتر «دارای وام» در صفحه مخاطبین",
+                            "خروج خودکار پرونده‌های وام، طلب و بدهی تسویه‌شده از حالت بایگانی در صورت حذف تراکنش از آنها و بازگشت به حالت در جریان تا ثبت تراکنش تسویه‌کننده مجدد"
+                        ]
+                    },
+                    {
+                        version: "1.3.1",
+                        buildNumber: 149,
+                        releaseDate: "2026-07-31",
+                        releaseChannel: "Stable",
+                        commitHash: "v131rel",
+                        commitMessage: "fix: loan first installment date display, top bar icon flicker, contact debt/demand labels, and fixed position badge grid",
+                        changes: [
+                            "اصلاح تاریخ نمایش داده شده در بخش «تاریخ شروع اقساط» کارت وام به تاریخ دقیق اولین قسط",
+                            "رفع کامل چشمک زدن (Flicker) آیکون بالای سمت چپ داشبورد و آیکون بالای سمت راست تنظیمات هنگام کلیک",
+                            "تغییر عناوین نشان‌های مخاطبین از «طلبکار» به «طلب» و از «بدهکار» به «بدهی»",
+                            "نمایش آیکون بایگانی به تنهایی در صورت وجود حساب تسویه‌شده بدون مانده جدید، و نمایش همزمان آیکون و نوشته در صورت وجود مانده active",
+                            "ایجاد جایگاه‌های ثابت، مستقل و تفکیک‌شده برای سه نشان «طلب»، «بدهی» و «وام» و آیکون‌های بایگانی آنها جهت جلوگیری از جا‌به‌جایی عمودی و افقی سایر عناصر"
+                        ]
+                    },
                     {
                         version: "1.2.1",
                         buildNumber: 147,
@@ -3302,39 +3408,58 @@
                 }
             }, []);
 
-            // Check version logic against server with cache-busting
+            // Check version logic against server with cache-busting & SW inspection
             const checkAppVersion = async (isManual = false) => {
                 if (isManual) setIsCheckingUpdate(true);
 
+                let swFoundUpdate = false;
                 // Trigger Service Worker background check if supported
                 if ('serviceWorker' in navigator && swRegistration) {
-                    swRegistration.update().catch(e => console.log('SW update check:', e.message));
+                    try {
+                        await swRegistration.update();
+                        if (swRegistration.waiting || swRegistration.installing) {
+                            swFoundUpdate = true;
+                            setHasSWUpdate(true);
+                        }
+                    } catch (e) {
+                        console.log('SW update check:', e.message);
+                    }
                 }
 
                 try {
-                    const res = await fetch('/version.json?t=' + Date.now(), { cache: 'no-store' });
+                    const res = await fetch('/version.json?t=' + Date.now(), { 
+                        cache: 'no-store',
+                        headers: { 
+                            'Cache-Control': 'no-cache, no-store, must-revalidate',
+                            'Pragma': 'no-cache' 
+                        } 
+                    });
                     if (!res.ok) throw new Error('version.json fetch failed');
                     const serverData = await res.json();
 
                     const serverBuild = parseInt(serverData.buildNumber || '0', 10);
-                    const serverVersion = serverData.installedVersion || '1.0.0';
+                    const serverVersion = serverData.installedVersion || '1.3.4';
+
+                    const EMBEDDED_BUILD = 152;
+                    const EMBEDDED_VERSION = "1.3.4";
 
                     let localBuildStr = localStorage.getItem('amir_installed_build');
                     let localVersion = localStorage.getItem('amir_installed_version');
 
-                    if (!localBuildStr) {
-                        localStorage.setItem('amir_installed_build', serverBuild.toString());
-                        localStorage.setItem('amir_installed_version', serverVersion);
-                        localBuildStr = serverBuild.toString();
-                        localVersion = serverVersion;
+                    // If local build is missing or older than current code, set it to current embedded build
+                    if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD) {
+                        localStorage.setItem('amir_installed_build', EMBEDDED_BUILD.toString());
+                        localStorage.setItem('amir_installed_version', EMBEDDED_VERSION);
+                        localBuildStr = EMBEDDED_BUILD.toString();
+                        localVersion = EMBEDDED_VERSION;
                     }
 
                     const localBuild = parseInt(localBuildStr, 10);
-                    const isUpdateAvailable = (serverBuild > localBuild) || hasSWUpdate;
+                    const isUpdateAvailable = (serverBuild > localBuild) || hasSWUpdate || swFoundUpdate;
 
                     setVersionData({
                         ...serverData,
-                        installedVersion: localVersion || serverVersion,
+                        installedVersion: localVersion || EMBEDDED_VERSION,
                         buildNumber: localBuild,
                         latestVersion: serverVersion,
                         latestBuild: serverBuild,
@@ -3346,14 +3471,14 @@
                         if (isUpdateAvailable) {
                             showToast('یک نسخه جدیدتر (بیلد ' + serverBuild + ') موجود است');
                         } else {
-                            showToast('شما از آخرین نسخه استفاده می‌کنید');
+                            showToast('شما از آخرین نسخه استفاده می‌کنید (بیلد ' + localBuild + ')');
                         }
                     }
                 } catch (err) {
                     console.log('Error checking version:', err);
                     if (isManual) {
                         setIsCheckingUpdate(false);
-                        if (hasSWUpdate) {
+                        if (hasSWUpdate || swFoundUpdate) {
                             showToast('یک نسخه جدیدتر آماده بروزرسانی است');
                         } else {
                             showToast('شما از آخرین نسخه استفاده می‌کنید');
@@ -3977,26 +4102,18 @@
                     }
                     showToast('قسط با موفقیت حذف گردید');
                 } else if (txType === 'debt') {
-                    const updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
-                    setTransactions(updatedTxs);
+                    let updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
+                    const periodId = txToDelete.periodId;
 
-                    if (txToDelete.periodId) {
-                        setCompletedPeriods(prev => prev.map(p => {
-                            if (p.id === txToDelete.periodId) {
-                                const updatedPeriodTxs = (p.transactions || []).filter(t => t.id !== txToDelete.id);
-                                const updatedTotalAmt = updatedPeriodTxs.reduce((sum, t) => (t.type === 'debt' ? sum + Math.abs(t.amount) : sum), 0);
-                                return { ...p, transactions: updatedPeriodTxs, totalAmount: updatedTotalAmt };
-                            }
-                            return p;
-                        }));
-                        if (selectedPeriod && selectedPeriod.id === txToDelete.periodId) {
-                            setSelectedPeriod(prev => {
-                                const updatedPeriodTxs = (prev.transactions || []).filter(t => t.id !== txToDelete.id);
-                                const updatedTotalAmt = updatedPeriodTxs.reduce((sum, t) => (t.type === 'debt' ? sum + Math.abs(t.amount) : sum), 0);
-                                return { ...prev, transactions: updatedPeriodTxs, totalAmount: updatedTotalAmt };
-                            });
+                    if (periodId) {
+                        setCompletedPeriods(prev => prev.filter(p => p.id !== periodId));
+                        updatedTxs = updatedTxs.map(t => t.periodId === periodId ? { ...t, periodId: undefined } : t);
+                        if (selectedPeriod && selectedPeriod.id === periodId) {
+                            setSelectedPeriod(null);
+                            setCurrentTab(loanReturnTab || 'contact-detail');
                         }
                     }
+                    setTransactions(updatedTxs);
 
                     if (txToDelete.contactId) {
                         const contactDebts = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
@@ -4018,28 +4135,20 @@
                             setSelectedContact(prev => ({ ...prev, totalDebt: netDebt }));
                         }
                     }
-                    showToast('تراکنش بدهی با موفقیت حذف گردید');
+                    showToast(periodId ? 'تراکنش حذف شد و بدهی از حالت بایگانی خارج گردید' : 'تراکنش بدهی با موفقیت حذف گردید');
                 } else if (txType === 'demand') {
-                    const updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
-                    setTransactions(updatedTxs);
+                    let updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
+                    const periodId = txToDelete.periodId;
 
-                    if (txToDelete.periodId) {
-                        setCompletedPeriods(prev => prev.map(p => {
-                            if (p.id === txToDelete.periodId) {
-                                const updatedPeriodTxs = (p.transactions || []).filter(t => t.id !== txToDelete.id);
-                                const updatedTotalAmt = updatedPeriodTxs.reduce((sum, t) => (t.type === 'demand' ? sum + Math.abs(t.amount) : sum), 0);
-                                return { ...p, transactions: updatedPeriodTxs, totalAmount: updatedTotalAmt };
-                            }
-                            return p;
-                        }));
-                        if (selectedPeriod && selectedPeriod.id === txToDelete.periodId) {
-                            setSelectedPeriod(prev => {
-                                const updatedPeriodTxs = (prev.transactions || []).filter(t => t.id !== txToDelete.id);
-                                const updatedTotalAmt = updatedPeriodTxs.reduce((sum, t) => (t.type === 'demand' ? sum + Math.abs(t.amount) : sum), 0);
-                                return { ...prev, transactions: updatedPeriodTxs, totalAmount: updatedTotalAmt };
-                            });
+                    if (periodId) {
+                        setCompletedPeriods(prev => prev.filter(p => p.id !== periodId));
+                        updatedTxs = updatedTxs.map(t => t.periodId === periodId ? { ...t, periodId: undefined } : t);
+                        if (selectedPeriod && selectedPeriod.id === periodId) {
+                            setSelectedPeriod(null);
+                            setCurrentTab(loanReturnTab || 'contact-detail');
                         }
                     }
+                    setTransactions(updatedTxs);
 
                     if (txToDelete.contactId) {
                         const contactDemands = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
@@ -4061,7 +4170,7 @@
                             setSelectedContact(prev => ({ ...prev, totalDemand: netDemand }));
                         }
                     }
-                    showToast('تراکنش طلب با موفقیت حذف گردید');
+                    showToast(periodId ? 'تراکنش حذف شد و طلب از حالت بایگانی خارج گردید' : 'تراکنش طلب با موفقیت حذف گردید');
                 }
             };
 
@@ -4923,7 +5032,7 @@
                             return t;
                         });
                         setTransactions(updatedTxs);
-                        showToast('دریافت / تسویه طلب با موفقیت به‌روزرسانی شد');
+                        showToast('بازپرداخت طلب با موفقیت به‌روزرسانی شد');
                     } else if (targetContact) {
                         const newDemand = Math.max(0, (targetContact.totalDemand || 0) - amt);
                         const updatedContacts = contacts.map(c => {
@@ -4941,7 +5050,7 @@
                             id: Date.now(),
                             contactId: targetContact.id,
                             type: 'demand_repayment',
-                            title: `دریافت / تسویه طلب از ${targetContact.firstName} ${targetContact.lastName}`,
+                            title: `بازپرداخت طلب از ${targetContact.firstName} ${targetContact.lastName}`,
                             dateStr: dateStr,
                             amount: -amt,
                             notes: repaymentForm.notes,
@@ -4972,11 +5081,11 @@
                                 showToast('این طلب تسویه گردید و در پرونده دوره‌های پایان‌یافته ثبت شد');
                             } else {
                                 setTransactions(updatedAllTxs);
-                                showToast('دریافت / تسویه طلب با موفقیت ثبت شد');
+                                showToast('بازپرداخت طلب با موفقیت ثبت شد');
                             }
                         } else {
                             setTransactions(updatedAllTxs);
-                            showToast('دریافت / تسویه طلب با موفقیت ثبت شد');
+                            showToast('بازپرداخت طلب با موفقیت ثبت شد');
                         }
                     }
                 }
@@ -5161,7 +5270,12 @@
                 if (!nameMatch) return false;
                 if (contactFilter === 'demand') return c.totalDemand > 0;
                 if (contactFilter === 'debt') return c.totalDebt > 0;
-                if (contactFilter === 'loan') return loans.some(l => l.contactId === c.id);
+                if (contactFilter === 'loan') {
+                    const contactLoans = loans.filter(l => l.contactId === c.id);
+                    return contactLoans.some(l => 
+                        !getLoanNextDueInfo(l, transactions).isCompleted && (l.remainingAmount === undefined || l.remainingAmount > 0)
+                    );
+                }
                 if (contactFilter === 'favorite') return c.isFavorite;
                 return true;
             });
@@ -6037,7 +6151,7 @@
                 },
                 {
                     id: 'demand_repay_amount',
-                    title: '۲- مبلغ دریافت / تسویه طلب',
+                    title: '۲- مبلغ بازپرداخت طلب',
                     render: () => {
                         const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
                         const editingTx = repaymentForm.id ? transactions.find(t => t.id === repaymentForm.id) : null;
@@ -6595,7 +6709,9 @@
                                 <div className="space-y-2.5">
                                     {filteredContacts.map((contact) => {
                                         const contactLoans = loans.filter(l => l.contactId === contact.id);
-                                        const hasAnyLoan = contactLoans.length > 0;
+                                        const hasActiveLoan = contactLoans.some(l => 
+                                            !getLoanNextDueInfo(l, transactions).isCompleted && (l.remainingAmount === undefined || l.remainingAmount > 0)
+                                        );
                                         const hasSettledLoan = contactLoans.some(l => 
                                             getLoanNextDueInfo(l, transactions).isCompleted || (l.remainingAmount !== undefined && l.remainingAmount <= 0)
                                         );
@@ -6637,39 +6753,54 @@
                                                         </div>
                                                     </div>
                                                     
-                                                    <div className="flex items-center space-x-2 space-x-reverse shrink-0">
-                                                        {hasAnyLoan && (
-                                                            <div className="flex flex-col items-center justify-center">
-                                                                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-400 px-2 py-0.5 rounded-md whitespace-nowrap">
-                                                                    وام
-                                                                </span>
+                                                    <div className="flex items-center space-x-1.5 space-x-reverse shrink-0">
+                                                        {/* Slot 1: Loan (وام) */}
+                                                        <div className="w-9 flex flex-col items-center justify-center shrink-0">
+                                                            <div className="h-5 flex items-center justify-center">
+                                                                {hasActiveLoan && (
+                                                                    <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-400 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                                                                        وام
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="h-4 flex items-center justify-center mt-0.5">
                                                                 {hasSettledLoan && (
-                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                                                                 )}
                                                             </div>
-                                                        )}
+                                                        </div>
 
-                                                        {(hasActiveDemand || hasSettledDemand) && (
-                                                            <div className="flex flex-col items-center justify-center">
-                                                                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-2 py-0.5 rounded-md whitespace-nowrap">
-                                                                    طلبکار
-                                                                </span>
+                                                        {/* Slot 2: Demand (طلب) */}
+                                                        <div className="w-9 flex flex-col items-center justify-center shrink-0">
+                                                            <div className="h-5 flex items-center justify-center">
+                                                                {hasActiveDemand && (
+                                                                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                                                                        طلب
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="h-4 flex items-center justify-center mt-0.5">
                                                                 {hasSettledDemand && (
-                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                                                                 )}
                                                             </div>
-                                                        )}
+                                                        </div>
 
-                                                        {(hasActiveDebt || hasSettledDebt) && (
-                                                            <div className="flex flex-col items-center justify-center">
-                                                                <span className="text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/60 dark:text-rose-400 px-2 py-0.5 rounded-md whitespace-nowrap">
-                                                                    بدهکار
-                                                                </span>
-                                                                {hasSettledDebt && (
-                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400 mt-0.5" />
+                                                        {/* Slot 3: Debt (بدهی) */}
+                                                        <div className="w-9 flex flex-col items-center justify-center shrink-0">
+                                                            <div className="h-5 flex items-center justify-center">
+                                                                {hasActiveDebt && (
+                                                                    <span className="text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/60 dark:text-rose-400 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                                                                        بدهی
+                                                                    </span>
                                                                 )}
                                                             </div>
-                                                        )}
+                                                            <div className="h-4 flex items-center justify-center mt-0.5">
+                                                                {hasSettledDebt && (
+                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
+                                                                )}
+                                                            </div>
+                                                        </div>
 
                                                         <Icon name="chevron-left" className="w-4 h-4 text-slate-300" />
                                                     </div>
@@ -6802,7 +6933,7 @@
                                                 onClick={() => openStackWizard('debt', 'add')}
                                                 className="py-2.5 px-3 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
                                                 <Icon name="arrow-down-left" className="w-4 h-4" />
-                                                <span>قرض جدید</span>
+                                                <span>ثبت بدهی</span>
                                             </button>
                                             <button 
                                                 onClick={() => openStackWizard('debt_repayment', 'add')}
@@ -7273,7 +7404,7 @@
                                             </div>
                                             <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
                                                 <span className="text-slate-400">تاریخ شروع اقساط</span>
-                                                <span className="font-bold text-slate-700 dark:text-slate-300">{selectedLoan.startDate}</span>
+                                                <span className="font-bold text-slate-700 dark:text-slate-300">{getLoanNextDueInfo(selectedLoan, []).nextDueDateStr || selectedLoan.startDate}</span>
                                             </div>
                                             <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
                                                 <span className="text-slate-400">موعد قسط در هر ماه</span>
@@ -8101,6 +8232,7 @@
                             {currentTab === 'contact-detail' && selectedContact && (
                                 <SwipeBackWrapper 
                                     onBack={() => setCurrentTab('contacts')}
+                                    onRefresh={() => handleRefreshData('contact-detail')}
                                     underlyingContent={renderTab(getUnderlyingTabForSubpage('contact-detail'))}
                                 >
                                     {({ onBack }) => renderTab('contact-detail', onBack)}
@@ -8110,6 +8242,7 @@
                             {currentTab === 'loan-detail' && selectedLoan && (
                                 <SwipeBackWrapper 
                                     onBack={() => setCurrentTab(loanReturnTab || 'accounts')}
+                                    onRefresh={() => handleRefreshData('loan-detail')}
                                     underlyingContent={renderTab(getUnderlyingTabForSubpage('loan-detail'))}
                                 >
                                     {({ onBack }) => renderTab('loan-detail', onBack)}
@@ -8119,6 +8252,7 @@
                             {currentTab === 'archived-period-detail' && selectedPeriod && (
                                 <SwipeBackWrapper 
                                     onBack={() => setCurrentTab(loanReturnTab || 'contact-detail')}
+                                    onRefresh={() => handleRefreshData('archived-period-detail')}
                                     underlyingContent={renderTab(getUnderlyingTabForSubpage('archived-period-detail'))}
                                 >
                                     {({ onBack }) => renderTab('archived-period-detail', onBack)}
@@ -8128,6 +8262,7 @@
                             {currentTab === 'all-transactions' && (
                                 <SwipeBackWrapper 
                                     onBack={() => setCurrentTab('dashboard')}
+                                    onRefresh={() => handleRefreshData('all-transactions')}
                                     underlyingContent={renderTab(getUnderlyingTabForSubpage('all-transactions'))}
                                 >
                                     {({ onBack }) => renderTab('all-transactions', onBack)}

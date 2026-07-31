@@ -1,14 +1,71 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.3.0",
-  "buildNumber": 148,
+  "installedVersion": "1.3.4",
+  "buildNumber": 152,
   "releaseDate": "2026-07-31",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.3.0",
+  "latestVersion": "1.3.4",
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.3.4",
+      "buildNumber": 152,
+      "releaseDate": "2026-07-31",
+      "releaseChannel": "Stable",
+      "commitHash": "v134rel",
+      "commitMessage": "feat & fix: continuous swipe-to-delete expansion, centered trash icon, add swipe-to-refresh to all-transactions and subpages, release v1.3.4 (build 152)",
+      "changes": [
+        "بهینه‌سازی انیمیشن Swipe to Delete و کشیده‌شدن و گسترش مداوم دکمه قرمز حذف به سمت چپ همزمان با ادامه کشیدن کارت",
+        "تمرکز و تراز دقیق آیکون سطل زباله در مرکز دکمه حذف و حذف متون اضافی جهت افزایش زیبایی بصری",
+        "افزودن و فعال‌سازی قابلیت کشیدن به پایین برای بروزرسانی (Swipe to Refresh) در صفحه «همه تراکنش‌ها» و سایر صفحات تفصیلی",
+        "بهینه‌سازی سیستم بررسی و بروزرسانی PWA در نسخه نصب‌شده و انتشار نسخه رسمی 1.3.4 (بیلد 152)"
+      ]
+    },
+    {
+      "version": "1.3.3",
+      "buildNumber": 151,
+      "releaseDate": "2026-07-31",
+      "releaseChannel": "Stable",
+      "commitHash": "v133rel",
+      "commitMessage": "perf & fix: smooth swipe-to-delete frame rate & morphing animation, fix swipe-to-back 1-frame release flicker",
+      "changes": [
+        "بهینه‌سازی کامل انیمیشن Swipe to Delete و اجرای ۶۰ فریم بر ثانیه بدون افت فریم هنگام کشیدن کالاها",
+        "روان‌سازی کامل انیمیشن مورف تغییر شکل دایره به مستطیل در دکمه حذف کشویی بدون پرش‌های ناگهانی",
+        "رفع کامل پرش ۱ فریمی (1-Frame Jump/Flicker) انیمیشن Swipe to Back در لحظه رهاسازی و پایان اسلاید صفحه",
+        "تغییر و یکپارچه‌سازی عناوین «دریافت / تسویه طلب» به «بازپرداخت طلب» در عنوان تراکنش‌ها، هشدارها و فرم‌ها"
+      ]
+    },
+    {
+      "version": "1.3.2",
+      "buildNumber": 150,
+      "releaseDate": "2026-07-31",
+      "releaseChannel": "Stable",
+      "commitHash": "v132rel",
+      "commitMessage": "fix: update debt/demand button and title labels, contact active loan filter logic, and un-archiving on tx delete",
+      "changes": [
+        "تغییر عبارت «ثبت قرض / بدهی» به «ثبت بدهی» و فرمت «ثبت بدهی/ نام مخاطب» در عنوان تراکنش‌ها و دکمه‌های پروفایل",
+        "تغییر عبارت «دریافت / تسویه طلب» به «بازپرداخت طلب» و فرمت «بازپرداخت طلب/ نام مخاطب» در عنوان تراکنش‌ها و فرم‌ها",
+        "عدم نمایش مخاطبینی که تنها دارای وام تسویه‌شده هستند در صورت اعمال فیلتر «دارای وام» در صفحه مخاطبین",
+        "خروج خودکار پرونده‌های وام، طلب و بدهی تسویه‌شده از حالت بایگانی در صورت حذف تراکنش از آنها و بازگشت به حالت در جریان تا ثبت تراکنش تسویه‌کننده مجدد"
+      ]
+    },
+    {
+      "version": "1.3.1",
+      "buildNumber": 149,
+      "releaseDate": "2026-07-31",
+      "releaseChannel": "Stable",
+      "commitHash": "v131rel",
+      "commitMessage": "fix: loan first installment date display, top bar icon flicker, contact debt/demand labels, and fixed position badge grid",
+      "changes": [
+        "اصلاح تاریخ نمایش داده شده در بخش «تاریخ شروع اقساط» کارت وام به تاریخ دقیق اولین قسط",
+        "رفع کامل چشمک زدن (Flicker) آیکون بالای سمت چپ داشبورد و آیکون بالای سمت راست تنظیمات هنگام کلیک",
+        "تغییر عناوین نشان‌های مخاطبین از «طلبکار» به «طلب» و از «بدهکار» به «بدهی»",
+        "نمایش آیکون بایگانی به تنهایی در صورت وجود حساب تسویه‌شده بدون مانده جدید، و نمایش همزمان آیکون و نوشته در صورت وجود مانده active",
+        "ایجاد جایگاه‌های ثابت، مستقل و تفکیک‌شده برای سه نشان «طلب»، «بدهی» و «وام» و آیکون‌های بایگانی آنها جهت جلوگیری از جا‌به‌جایی عمودی و افقی سایر عناصر"
+      ]
+    },
     {
       "version": "1.3.0",
       "buildNumber": 148,
