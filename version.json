@@ -1,14 +1,30 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.2.1",
-  "buildNumber": 147,
-  "releaseDate": "2026-07-29",
+  "installedVersion": "1.3.0",
+  "buildNumber": 148,
+  "releaseDate": "2026-07-31",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.2.1",
+  "latestVersion": "1.3.0",
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.3.0",
+      "buildNumber": 148,
+      "releaseDate": "2026-07-31",
+      "releaseChannel": "Stable",
+      "commitHash": "v130rel",
+      "commitMessage": "feat: advanced standard swipe-to-delete with morphing red button, 12px gap, gesture tracking and iOS confirm modal",
+      "changes": [
+        "پیاده‌سازی کامل و بی‌نقص سیستم کشیدن برای حذف (Swipe to Delete) بر اساس استانداردهای RTL و انیمیشن مورفینگ",
+        "ایجاد فاصله مجزا (Gap ۱۲ پیکسل) بین لبه سمت چپ دکمه حذف قرمز و لبه سمت راست کارت جهت جلوگیری از چسبندگی باکس‌ها",
+        "انیمیشن مورفینگ دکمه حذف قرمز از دایره ۵۲ پیکسلی به مستطیل با انحنای ۱۶ پیکسل و ظهور محو شونده (Fade In & Scale)",
+        "تعقیب دقیق انگشت کاربر حین سوایپ تعاملی (Interactive Back-Swipe) با رعایت آستانه ۴ پیکسل برای کلیک ساده",
+        "پشتیبانی از سوایپ کامل (آستانه ۷۰٪) جهت پوشش کل عرض کارت و نمایش مودال تایید حذف استاندارد iOS",
+        "اعمال سیستم Swipe to Delete روی تمامی مخاطبین، وام‌ها، اقساط، طلب‌ها و بدهی‌ها در کلیه بخش‌های برنامه"
+      ]
+    },
     {
       "version": "1.2.1",
       "buildNumber": 147,

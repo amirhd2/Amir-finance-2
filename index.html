@@ -2170,24 +2170,233 @@
             );
         }
 
-        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo' }) {
-            const [swiped, setSwiped] = useState(false);
-            const touchStartX = useRef(0);
+        function SwipeToDeleteItem({
+            children,
+            onDelete,
+            onCardClick,
+            className = ""
+        }) {
+            const [offset, setOffset] = useState(0);
+            const [isDragging, setIsDragging] = useState(false);
+            const [swipedOpen, setSwipedOpen] = useState(false);
+            const [isDeleting, setIsDeleting] = useState(false);
+            const [isFullSwipeActive, setIsFullSwipeActive] = useState(false);
 
-            const handleTouchStart = (e) => {
-                touchStartX.current = e.touches[0].clientX;
+            const containerRef = useRef(null);
+            const gestureRef = useRef({
+                startX: 0,
+                startY: 0,
+                startOffset: 0,
+                isSlopPassed: false,
+                isHorizontalDrag: false
+            });
+
+            useEffect(() => {
+                if (!swipedOpen) return;
+                const handleGlobalClick = (e) => {
+                    if (containerRef.current && !containerRef.current.contains(e.target)) {
+                        setOffset(0);
+                        setSwipedOpen(false);
+                    }
+                };
+                window.addEventListener('touchstart', handleGlobalClick, { passive: true });
+                window.addEventListener('mousedown', handleGlobalClick);
+                return () => {
+                    window.removeEventListener('touchstart', handleGlobalClick);
+                    window.removeEventListener('mousedown', handleGlobalClick);
+                };
+            }, [swipedOpen]);
+
+            const getCoords = (e) => {
+                if (e.touches && e.touches.length > 0) {
+                    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+                if (e.changedTouches && e.changedTouches.length > 0) {
+                    return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+                }
+                return { x: e.clientX || 0, y: e.clientY || 0 };
             };
 
-            const handleTouchEnd = (e) => {
-                const touchEndX = e.changedTouches[0].clientX;
-                const diff = touchEndX - touchStartX.current;
-                if (diff < -25) {
-                    setSwiped(true);
-                } else if (diff > 25) {
-                    setSwiped(false);
+            const handleStart = (e) => {
+                if (isDeleting) return;
+                if (e.button !== undefined && e.button !== 0) return;
+
+                const { x, y } = getCoords(e);
+                gestureRef.current = {
+                    startX: x,
+                    startY: y,
+                    startOffset: offset,
+                    isSlopPassed: false,
+                    isHorizontalDrag: false
+                };
+            };
+
+            const handleMove = (e) => {
+                const g = gestureRef.current;
+                if (isDeleting || !g.startX) return;
+
+                const { x, y } = getCoords(e);
+                const deltaX = g.startX - x; // Positive when dragging left in RTL
+                const deltaY = y - g.startY;
+
+                if (!g.isSlopPassed) {
+                    const absX = Math.abs(deltaX);
+                    const absY = Math.abs(deltaY);
+                    if (absX > 4 || absY > 4) { // Slop Threshold = 4px
+                        g.isSlopPassed = true;
+                        if (absX > absY * 0.8) {
+                            g.isHorizontalDrag = true;
+                            setIsDragging(true);
+                        } else {
+                            g.startX = 0; // abort horizontal drag, let page scroll vertically
+                            return;
+                        }
+                    }
+                }
+
+                if (g.isHorizontalDrag) {
+                    if (e.cancelable) e.preventDefault();
+
+                    let newOffset = g.startOffset + deltaX;
+                    const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
+
+                    if (newOffset < 0) newOffset = 0;
+                    if (newOffset > containerWidth) newOffset = containerWidth;
+
+                    setOffset(newOffset);
+                    setIsFullSwipeActive(newOffset / containerWidth >= 0.7);
                 }
             };
 
+            const triggerDeleteModal = () => {
+                if (onDelete) {
+                    onDelete(() => {
+                        setIsDeleting(true);
+                    });
+                }
+                setOffset(0);
+                setSwipedOpen(false);
+                setIsFullSwipeActive(false);
+            };
+
+            const handleEnd = (e) => {
+                const g = gestureRef.current;
+                if (!g.startX) return;
+
+                const isDrag = g.isHorizontalDrag;
+                g.startX = 0;
+                g.isSlopPassed = false;
+                g.isHorizontalDrag = false;
+                setIsDragging(false);
+
+                if (isDrag) {
+                    const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
+                    const ratio = offset / containerWidth;
+
+                    if (ratio >= 0.7) {
+                        // Full swipe > 70%: covers full width & triggers confirm modal
+                        triggerDeleteModal();
+                    } else if (offset > 50) {
+                        // Partial swipe: latch open at ~84px
+                        setOffset(84);
+                        setSwipedOpen(true);
+                    } else {
+                        // Small swipe: snap shut
+                        setOffset(0);
+                        setSwipedOpen(false);
+                    }
+                } else {
+                    // Tap / Click without swipe
+                    if (swipedOpen) {
+                        setOffset(0);
+                        setSwipedOpen(false);
+                    } else if (onCardClick) {
+                        onCardClick(e);
+                    }
+                }
+            };
+
+            const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
+            const isFullSwipe = isFullSwipeActive || (offset / containerWidth >= 0.7);
+
+            // 12px GAP requirement between left edge of red delete button and right edge of swiping card
+            const gap = 12;
+            const rawBtnWidth = isFullSwipe ? containerWidth : Math.max(0, offset - gap);
+
+            // Appearance (Fade in & Scale)
+            const appearanceProgress = Math.min(1, Math.max(0, (offset - 4) / 40));
+            const btnOpacity = appearanceProgress;
+            const btnScale = 0.5 + 0.5 * appearanceProgress;
+
+            // Morphing: Circle (52px) -> Rounded Rect (border-radius 16px)
+            const isCirclePhase = rawBtnWidth <= 56;
+            const btnWidthPx = Math.max(52, rawBtnWidth);
+            const borderRadiusPx = isCirclePhase 
+                ? Math.min(26, btnWidthPx / 2) 
+                : Math.max(16, 26 - ((rawBtnWidth - 56) / 50) * 10);
+
+            return (
+                <div 
+                    ref={containerRef}
+                    className={`relative overflow-hidden transition-all duration-300 ${
+                        isDeleting 
+                            ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' 
+                            : 'max-h-[500px] opacity-100 my-1'
+                    } ${className}`}
+                >
+                    {/* Morphing Red Delete Button (Right-aligned in RTL layout) */}
+                    <div 
+                        className="absolute right-0 top-1/2 z-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white cursor-pointer shadow-md select-none transition-colors"
+                        style={{
+                            width: `${btnWidthPx}px`,
+                            height: isFullSwipe ? '100%' : '52px',
+                            borderRadius: `${borderRadiusPx}px`,
+                            opacity: btnOpacity,
+                            transform: `translate3d(0, -50%, 0) scale(${btnScale})`,
+                            transformOrigin: 'right center',
+                            transition: isDragging ? 'none' : 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                            display: offset > 4 ? 'flex' : 'none'
+                        }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            triggerDeleteModal();
+                        }}
+                    >
+                        <div className="flex items-center justify-center space-x-1.5 space-x-reverse px-2">
+                            <Icon name="trash-2" className="w-5 h-5 text-white shrink-0" />
+                            {rawBtnWidth > 80 && (
+                                <span className="text-xs font-bold text-white whitespace-nowrap animate-fade-in">
+                                    حذف
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Swiping Card (Translates Left by `offset` px in RTL) */}
+                    <div
+                        onTouchStart={handleStart}
+                        onTouchMove={handleMove}
+                        onTouchEnd={handleEnd}
+                        onTouchCancel={handleEnd}
+                        onMouseDown={handleStart}
+                        onMouseMove={handleMove}
+                        onMouseUp={handleEnd}
+                        onMouseLeave={handleEnd}
+                        style={{
+                            transform: `translate3d(${-offset}px, 0, 0)`,
+                            transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
+                        }}
+                        className={`relative z-10 transition-shadow duration-200 ${
+                            (isDragging || swipedOpen) ? 'rounded-2xl shadow-xl' : ''
+                        }`}
+                    >
+                        {children}
+                    </div>
+                </div>
+            );
+        }
+
+        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo' }) {
             const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
 
             const displayTitle = (() => {
@@ -2218,22 +2427,11 @@
             const isRedAmount = tx.type === 'debt' || tx.type === 'demand_repayment' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment');
 
             return (
-                <div className="relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs group">
-                    <div 
-                        onClick={(e) => { e.stopPropagation(); onDelete(tx); }}
-                        className="absolute inset-y-0 left-0 w-20 bg-red-600 hover:bg-red-700 text-white flex flex-col items-center justify-center font-bold text-xs z-0 cursor-pointer transition-colors space-y-0.5">
-                        <Icon name="trash-2" className="w-4 h-4" />
-                        <span className="text-[10px]">حذف</span>
-                    </div>
-
-                    <div 
-                        onTouchStart={handleTouchStart}
-                        onTouchEnd={handleTouchEnd}
-                        onClick={() => {
-                            if (swiped) setSwiped(false);
-                            else if (onEdit) onEdit(tx);
-                        }}
-                        className={`bg-white dark:bg-slate-800 p-3 flex items-center justify-between cursor-pointer transition-transform duration-200 z-10 relative gap-3 ${swiped ? '-translate-x-20' : 'translate-x-0'}`}>
+                <SwipeToDeleteItem
+                    onDelete={(confirmCb) => onDelete && onDelete(tx, confirmCb)}
+                    onCardClick={() => onEdit && onEdit(tx)}
+                >
+                    <div className="bg-white dark:bg-slate-800 p-3.5 flex items-center justify-between cursor-pointer rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs gap-3">
                         <div className="flex items-center space-x-2.5 space-x-reverse min-w-0 flex-1">
                             <div className={`w-8 h-8 rounded-xl ${ (tx.type === 'debt' || tx.type === 'demand_repayment') ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : isRepay ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : colorType === 'rose' ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : colorType === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-bold text-xs shrink-0`}>
                                 {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-4 h-4" />}
@@ -2250,15 +2448,9 @@
                                     {Math.abs(tx.amount).toLocaleString()} تومان
                                 </span>
                             </div>
-                            <button 
-                                onClick={(e) => { e.stopPropagation(); onDelete(tx); }}
-                                className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-950/50 text-slate-400 hover:text-red-600 flex items-center justify-center transition-colors shrink-0"
-                                title="حذف این تراکنش">
-                                <Icon name="trash-2" className="w-3.5 h-3.5" />
-                            </button>
                         </div>
                     </div>
-                </div>
+                </SwipeToDeleteItem>
             );
         }
 
@@ -3725,7 +3917,7 @@
                 showToast(`${label} کپی شد`);
             };
 
-            const requestDeleteTx = (txItem, type) => {
+            const requestDeleteTx = (txItem, type, confirmCb = null) => {
                 if (!txItem) return;
                 const amtFormatted = Math.abs(txItem.amount || 0).toLocaleString('fa-IR');
                 const titleStr = txItem.title || (type === 'loan_installment' ? 'پرداخت قسط' : (type === 'debt' ? 'تراکنش بدهی' : 'تراکنش طلب'));
@@ -3743,6 +3935,7 @@
                     cancelLabel: 'انصراف',
                     isDestructive: true,
                     onConfirm: () => {
+                        if (typeof confirmCb === 'function') confirmCb();
                         performDeleteTx(txItem, type);
                         setConfirmConfig(null);
                     },
@@ -4843,11 +5036,19 @@
                 showToast('اطلاعات مخاطب به‌روزرسانی شد');
             };
 
-            const handleDeleteContact = () => {
-                const targetContactId = (selectedContact ? selectedContact.id : null) || editContactForm.id;
-                if (!targetContactId) return;
-                const targetContact = contacts.find(c => c.id === targetContactId);
-                const contactName = targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'این مخاطب';
+            const handleDeleteContact = (contactParam = null, confirmCb = null) => {
+                let targetContact = null;
+                if (contactParam && typeof contactParam === 'object' && contactParam.id) {
+                    targetContact = contactParam;
+                } else {
+                    const targetContactId = (selectedContact ? selectedContact.id : null) || editContactForm.id;
+                    if (targetContactId) {
+                        targetContact = contacts.find(c => c.id === targetContactId);
+                    }
+                }
+                if (!targetContact) return;
+                const targetContactId = targetContact.id;
+                const contactName = targetContact ? `${targetContact.firstName || ''} ${targetContact.lastName || ''}`.trim() : 'این مخاطب';
                 const contactLoans = loans.filter(l => l.contactId === targetContactId);
                 const contactTxs = transactions.filter(t => t.contactId === targetContactId);
 
@@ -4864,6 +5065,7 @@
                     cancelLabel: 'انصراف',
                     isDestructive: true,
                     onConfirm: () => {
+                        if (typeof confirmCb === 'function') confirmCb();
                         setContacts(prev => prev.filter(c => c.id !== targetContactId));
                         setLoans(prev => prev.filter(l => l.contactId !== targetContactId));
                         setTransactions(prev => prev.filter(t => t.contactId !== targetContactId));
@@ -4879,8 +5081,8 @@
                 });
             };
 
-            const handleDeleteLoanClick = (loan) => {
-                if (!loan) return;
+            const handleDeleteLoanClick = (loan, confirmCb = null) => {
+                if (!loan || typeof loan !== 'object') return;
                 const loanTxs = transactions.filter(t => t.loanId === loan.id);
                 const paymentTxs = loanTxs.filter(t => t.type === 'repayment');
                 const totalInstallmentsCount = loan.totalInstallments || loanTxs.length || 0;
@@ -4899,6 +5101,7 @@
                     cancelLabel: 'انصراف',
                     isDestructive: true,
                     onConfirm: () => {
+                        if (typeof confirmCb === 'function') confirmCb();
                         const loanIdToDelete = loan.id;
                         setLoans(prev => prev.filter(l => l.id !== loanIdToDelete));
                         setTransactions(prev => prev.filter(t => t.loanId !== loanIdToDelete));
@@ -6185,48 +6388,52 @@
                                                 const isCompleted = nextDueInfo.isCompleted || (loan.remainingAmount !== undefined && loan.remainingAmount <= 0);
 
                                                 return (
-                                                    <div 
+                                                    <SwipeToDeleteItem
                                                         key={loan.id}
-                                                        onClick={() => openLoanDetail(loan)}
-                                                        className={`p-3.5 rounded-2xl border cursor-pointer flex justify-between items-center shadow-sm transition-all ${
-                                                            isCompleted 
-                                                                ? 'bg-slate-50/80 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-700/40 opacity-70 hover:opacity-100 hover:border-emerald-300' 
-                                                                : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:border-indigo-300'
-                                                        }`}>
-                                                        <div className="flex items-center space-x-3 space-x-reverse">
-                                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                                                        onDelete={(confirmCb) => handleDeleteLoanClick(loan, confirmCb)}
+                                                        onCardClick={() => openLoanDetail(loan)}
+                                                    >
+                                                        <div 
+                                                            className={`p-3.5 rounded-2xl border cursor-pointer flex justify-between items-center shadow-sm transition-all ${
                                                                 isCompleted 
-                                                                    ? 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400' 
-                                                                    : 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400'
+                                                                    ? 'bg-slate-50/80 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-700/40 opacity-70 hover:opacity-100 hover:border-emerald-300' 
+                                                                    : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:border-indigo-300'
                                                             }`}>
-                                                                <Icon name={isCompleted ? "check-circle-2" : "landmark"} className="w-5 h-5" />
+                                                            <div className="flex items-center space-x-3 space-x-reverse">
+                                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                                                                    isCompleted 
+                                                                        ? 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400' 
+                                                                        : 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400'
+                                                                }`}>
+                                                                    <Icon name={isCompleted ? "check-circle-2" : "landmark"} className="w-5 h-5" />
+                                                                </div>
+                                                                <div>
+                                                                    <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1.5 space-x-reverse">
+                                                                        <span>{loan.title}</span>
+                                                                        {isCompleted && (
+                                                                            <Icon name="check-circle-2" className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="text-[10px] text-slate-400 mt-0.5">{loan.contactName} • {nextDueInfo.paidInst}/{nextDueInfo.totalInst} قسط</div>
+                                                                </div>
                                                             </div>
-                                                            <div>
-                                                                <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1.5 space-x-reverse">
-                                                                    <span>{loan.title}</span>
-                                                                    {isCompleted && (
-                                                                        <Icon name="check-circle-2" className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                                                            <div className="text-left">
+                                                                <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{loan.principalAmount.toLocaleString()} تومان</div>
+                                                                <div className="mt-0.5">
+                                                                    {isCompleted ? (
+                                                                        <span className="inline-flex items-center space-x-1 space-x-reverse text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/40 px-2 py-0.5 rounded-lg">
+                                                                            <Icon name="check-circle-2" className="w-3 h-3 text-emerald-500" />
+                                                                            <span>تسویه‌شده</span>
+                                                                        </span>
+                                                                    ) : (
+                                                                        <div className="text-[10px] text-slate-500 font-bold">
+                                                                            سررسید: {nextDueInfo.nextDueDateStr}
+                                                                        </div>
                                                                     )}
                                                                 </div>
-                                                                <div className="text-[10px] text-slate-400 mt-0.5">{loan.contactName} • {nextDueInfo.paidInst}/{nextDueInfo.totalInst} قسط</div>
                                                             </div>
                                                         </div>
-                                                        <div className="text-left">
-                                                            <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{loan.principalAmount.toLocaleString()} تومان</div>
-                                                            <div className="mt-0.5">
-                                                                {isCompleted ? (
-                                                                    <span className="inline-flex items-center space-x-1 space-x-reverse text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/40 px-2 py-0.5 rounded-lg">
-                                                                        <Icon name="check-circle-2" className="w-3 h-3 text-emerald-500" />
-                                                                        <span>تسویه‌شده</span>
-                                                                    </span>
-                                                                ) : (
-                                                                    <div className="text-[10px] text-slate-500 font-bold">
-                                                                        سررسید: {nextDueInfo.nextDueDateStr}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    </SwipeToDeleteItem>
                                                 );
                                             })}
                                         </div>
@@ -6239,31 +6446,35 @@
                                             {filteredAccountsDemands.map(contact => {
                                                 const settledCount = getSettledPeriodCount(contact.id, 'demand');
                                                 return (
-                                                    <div 
+                                                    <SwipeToDeleteItem
                                                         key={contact.id}
-                                                        onClick={() => { setSelectedContact(contact); setProfileFilter('demands'); setCurrentTab('contact-detail'); }}
-                                                        className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-emerald-400 transition-all">
-                                                        <div className="flex items-center space-x-3 space-x-reverse min-w-0">
-                                                            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0">
-                                                                <Icon name="arrow-up-right" className="w-5 h-5" />
+                                                        onDelete={(confirmCb) => handleDeleteContact(contact, confirmCb)}
+                                                        onCardClick={() => { setSelectedContact(contact); setProfileFilter('demands'); setCurrentTab('contact-detail'); }}
+                                                    >
+                                                        <div 
+                                                            className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-emerald-400 transition-all">
+                                                            <div className="flex items-center space-x-3 space-x-reverse min-w-0">
+                                                                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0">
+                                                                    <Icon name="arrow-up-right" className="w-5 h-5" />
+                                                                </div>
+                                                                <div className="min-w-0">
+                                                                    <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{contact.firstName} {contact.lastName}</div>
+                                                                    <div className="text-[10px] text-slate-400">طلب شخصی</div>
+                                                                </div>
                                                             </div>
-                                                            <div className="min-w-0">
-                                                                <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{contact.firstName} {contact.lastName}</div>
-                                                                <div className="text-[10px] text-slate-400">طلب شخصی</div>
+
+                                                            {settledCount > 0 ? (
+                                                                <div className="flex flex-col items-center justify-center px-2 shrink-0" title={`${settledCount} رکورد تسویه‌شده`}>
+                                                                    <Icon name="archive" className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 leading-none mt-0.5">{settledCount}</span>
+                                                                </div>
+                                                            ) : <div />}
+
+                                                            <div className="text-left shrink-0">
+                                                                <div className="text-xs font-bold text-emerald-600">+{contact.totalDemand.toLocaleString()} تومان</div>
                                                             </div>
                                                         </div>
-
-                                                        {settledCount > 0 ? (
-                                                            <div className="flex flex-col items-center justify-center px-2 shrink-0" title={`${settledCount} رکورد تسویه‌شده`}>
-                                                                <Icon name="archive" className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 leading-none mt-0.5">{settledCount}</span>
-                                                            </div>
-                                                        ) : <div />}
-
-                                                        <div className="text-left shrink-0">
-                                                            <div className="text-xs font-bold text-emerald-600">+{contact.totalDemand.toLocaleString()} تومان</div>
-                                                        </div>
-                                                    </div>
+                                                    </SwipeToDeleteItem>
                                                 );
                                             })}
                                         </div>
@@ -6276,31 +6487,35 @@
                                             {filteredAccountsDebts.map(contact => {
                                                 const settledCount = getSettledPeriodCount(contact.id, 'debt');
                                                 return (
-                                                    <div 
+                                                    <SwipeToDeleteItem
                                                         key={contact.id}
-                                                        onClick={() => { setSelectedContact(contact); setProfileFilter('debts'); setCurrentTab('contact-detail'); }}
-                                                        className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-rose-400 transition-all">
-                                                        <div className="flex items-center space-x-3 space-x-reverse min-w-0">
-                                                            <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center shrink-0">
-                                                                <Icon name="arrow-down-left" className="w-5 h-5" />
+                                                        onDelete={(confirmCb) => handleDeleteContact(contact, confirmCb)}
+                                                        onCardClick={() => { setSelectedContact(contact); setProfileFilter('debts'); setCurrentTab('contact-detail'); }}
+                                                    >
+                                                        <div 
+                                                            className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700 cursor-pointer flex justify-between items-center shadow-sm hover:border-rose-400 transition-all">
+                                                            <div className="flex items-center space-x-3 space-x-reverse min-w-0">
+                                                                <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center shrink-0">
+                                                                    <Icon name="arrow-down-left" className="w-5 h-5" />
+                                                                </div>
+                                                                <div className="min-w-0">
+                                                                    <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{contact.firstName} {contact.lastName}</div>
+                                                                    <div className="text-[10px] text-slate-400">بدهی شخصی</div>
+                                                                </div>
                                                             </div>
-                                                            <div className="min-w-0">
-                                                                <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{contact.firstName} {contact.lastName}</div>
-                                                                <div className="text-[10px] text-slate-400">بدهی شخصی</div>
+
+                                                            {settledCount > 0 ? (
+                                                                <div className="flex flex-col items-center justify-center px-2 shrink-0" title={`${settledCount} رکورد تسویه‌شده`}>
+                                                                    <Icon name="archive" className="w-4 h-4 text-rose-500 dark:text-rose-400" />
+                                                                    <span className="text-[10px] font-bold text-rose-500 dark:text-rose-400 leading-none mt-0.5">{settledCount}</span>
+                                                                </div>
+                                                            ) : <div />}
+
+                                                            <div className="text-left shrink-0">
+                                                                <div className="text-xs font-bold text-rose-500">-{contact.totalDebt.toLocaleString()} تومان</div>
                                                             </div>
                                                         </div>
-
-                                                        {settledCount > 0 ? (
-                                                            <div className="flex flex-col items-center justify-center px-2 shrink-0" title={`${settledCount} رکورد تسویه‌شده`}>
-                                                                <Icon name="archive" className="w-4 h-4 text-rose-500 dark:text-rose-400" />
-                                                                <span className="text-[10px] font-bold text-rose-500 dark:text-rose-400 leading-none mt-0.5">{settledCount}</span>
-                                                            </div>
-                                                        ) : <div />}
-
-                                                        <div className="text-left shrink-0">
-                                                            <div className="text-xs font-bold text-rose-500">-{contact.totalDebt.toLocaleString()} تومان</div>
-                                                        </div>
-                                                    </div>
+                                                    </SwipeToDeleteItem>
                                                 );
                                             })}
                                         </div>
@@ -6392,9 +6607,10 @@
                                         const hasActiveDebt = contact.totalDebt > 0;
 
                                         return (
-                                            <div 
-                                                key={contact.id} 
-                                                onClick={() => {
+                                            <SwipeToDeleteItem
+                                                key={contact.id}
+                                                onDelete={(confirmCb) => handleDeleteContact(contact, confirmCb)}
+                                                onCardClick={() => {
                                                     setSelectedContact(contact);
                                                     if (contactFilter === 'demand') {
                                                         setProfileFilter('demands');
@@ -6407,7 +6623,9 @@
                                                     }
                                                     setCurrentTab('contact-detail');
                                                 }}
-                                                className="bg-white dark:bg-slate-800 rounded-2xl p-3.5 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer hover:border-indigo-300 transition-all">
+                                            >
+                                                <div 
+                                                    className="bg-white dark:bg-slate-800 rounded-2xl p-3.5 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer hover:border-indigo-300 transition-all">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center space-x-3 space-x-reverse min-w-0">
                                                         <div className={`w-10 h-10 rounded-full ${getAvatarColor(contact.id, contact.firstName + contact.lastName)} text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0`}>
@@ -6456,7 +6674,8 @@
                                                         <Icon name="chevron-left" className="w-4 h-4 text-slate-300" />
                                                     </div>
                                                 </div>
-                                            </div>
+                                                </div>
+                                            </SwipeToDeleteItem>
                                         );
                                     })}
                                 </div>
