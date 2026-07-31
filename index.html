@@ -43,6 +43,17 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel for JSX Compilation -->
+    <script>
+        (function() {
+            var origError = console.error;
+            console.error = function() {
+                if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('[BABEL] Note:')) {
+                    return;
+                }
+                origError.apply(console, arguments);
+            };
+        })();
+    </script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- Framer Motion CDN -->
     <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
@@ -1565,9 +1576,13 @@
             const isClosingRef = useRef(false);
 
             const gestureRef = useRef({
+                isEdgeCandidate: false,
                 isDragging: false,
                 startX: 0,
-                currentX: 0
+                startY: 0,
+                currentX: 0,
+                currentY: 0,
+                startTime: 0
             });
 
             const openPage = () => {
@@ -1630,81 +1645,132 @@
             }, []);
 
             useEffect(() => {
-                const EDGE_THRESHOLD = 35; // exactly 35px from left edge
+                const EDGE_THRESHOLD = 45; // Generous 45px edge drag zone
 
-                const handlePointerDown = (e) => {
+                const getCoords = (e) => {
+                    if (e.touches && e.touches.length > 0) {
+                        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    }
+                    if (e.changedTouches && e.changedTouches.length > 0) {
+                        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+                    }
+                    return { x: e.clientX || 0, y: e.clientY || 0 };
+                };
+
+                const handleStart = (e) => {
                     if (isClosingRef.current) return;
                     if (e.button !== undefined && e.button !== 0) return;
 
-                    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                    const { x, y } = getCoords(e);
                     const rect = page2Ref.current ? page2Ref.current.getBoundingClientRect() : null;
-                    const relX = rect ? clientX - rect.left : clientX;
+                    const relX = rect ? x - rect.left : x;
 
                     if (relX <= EDGE_THRESHOLD) {
-                        gestureRef.current.isDragging = true;
-                        gestureRef.current.startX = clientX;
-                        gestureRef.current.currentX = clientX;
+                        gestureRef.current.isEdgeCandidate = true;
+                        gestureRef.current.isDragging = false;
+                        gestureRef.current.startX = x;
+                        gestureRef.current.startY = y;
+                        gestureRef.current.currentX = x;
+                        gestureRef.current.currentY = y;
+                        gestureRef.current.startTime = Date.now();
+                    }
+                };
+
+                const handleMove = (e) => {
+                    const g = gestureRef.current;
+                    if (isClosingRef.current) return;
+                    if (!g.isEdgeCandidate && !g.isDragging) return;
+
+                    const { x, y } = getCoords(e);
+                    g.currentX = x;
+                    g.currentY = y;
+
+                    const deltaX = g.currentX - g.startX;
+                    const deltaY = g.currentY - g.startY;
+
+                    // Lock gesture into active horizontal drag if swiping right
+                    if (!g.isDragging && g.isEdgeCandidate) {
+                        if (deltaX > 4 && Math.abs(deltaX) > Math.abs(deltaY) * 0.3) {
+                            g.isDragging = true;
+                            g.isEdgeCandidate = false;
+
+                            const page1 = page1Ref.current;
+                            const page2 = page2Ref.current;
+                            const overlay = overlayRef.current;
+
+                            if (page1 && page2 && overlay) {
+                                page1.classList.remove('smooth-transition');
+                                page2.classList.remove('smooth-transition');
+                                overlay.classList.remove('smooth-overlay');
+                            }
+                        } else if (Math.abs(deltaY) > 25 && deltaX < 4) {
+                            g.isEdgeCandidate = false;
+                        }
+                    }
+
+                    if (g.isDragging) {
+                        if (e.cancelable) {
+                            e.preventDefault();
+                        }
+
+                        const dragDelta = Math.max(0, deltaX);
+                        const screenWidth = page2Ref.current ? page2Ref.current.offsetWidth : (window.innerWidth || 360);
+                        const progress = Math.min(dragDelta / screenWidth, 1);
 
                         const page1 = page1Ref.current;
                         const page2 = page2Ref.current;
                         const overlay = overlayRef.current;
 
                         if (page1 && page2 && overlay) {
-                            page1.classList.remove('smooth-transition');
-                            page2.classList.remove('smooth-transition');
-                            overlay.classList.remove('smooth-overlay');
+                            page2.style.transform = `translateX(${dragDelta}px)`;
+                            const page1Offset = -25 + (progress * 25);
+                            page1.style.transform = `translateX(${page1Offset}%)`;
+                            overlay.style.opacity = `${0.4 * (1 - progress)}`;
                         }
                     }
                 };
 
-                const handlePointerMove = (e) => {
-                    if (!gestureRef.current.isDragging || isClosingRef.current) return;
-
-                    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-                    gestureRef.current.currentX = clientX;
-
-                    let deltaX = gestureRef.current.currentX - gestureRef.current.startX;
-                    if (deltaX < 0) deltaX = 0;
-
-                    const screenWidth = page2Ref.current ? page2Ref.current.offsetWidth : (window.innerWidth || 360);
-                    const progress = Math.min(deltaX / screenWidth, 1);
-
-                    const page1 = page1Ref.current;
-                    const page2 = page2Ref.current;
-                    const overlay = overlayRef.current;
-
-                    if (page1 && page2 && overlay) {
-                        page2.style.transform = `translateX(${deltaX}px)`;
-                        const page1Offset = -25 + (progress * 25);
-                        page1.style.transform = `translateX(${page1Offset}%)`;
-                        overlay.style.opacity = `${0.4 * (1 - progress)}`;
+                const handleEnd = () => {
+                    const g = gestureRef.current;
+                    if (!g.isDragging || isClosingRef.current) {
+                        g.isEdgeCandidate = false;
+                        g.isDragging = false;
+                        return;
                     }
-                };
 
-                const handlePointerUp = () => {
-                    if (!gestureRef.current.isDragging || isClosingRef.current) return;
-                    gestureRef.current.isDragging = false;
+                    g.isDragging = false;
+                    g.isEdgeCandidate = false;
 
                     const screenWidth = page2Ref.current ? page2Ref.current.offsetWidth : (window.innerWidth || 360);
-                    const deltaX = gestureRef.current.currentX - gestureRef.current.startX;
+                    const deltaX = g.currentX - g.startX;
+                    const elapsed = Math.max(1, Date.now() - g.startTime);
+                    const velocityX = deltaX / elapsed;
 
-                    if (deltaX > screenWidth * 0.3) {
+                    if (deltaX > screenWidth * 0.25 || (deltaX > 40 && velocityX > 0.25)) {
                         closePage();
                     } else {
                         openPage();
                     }
                 };
 
-                window.addEventListener('pointerdown', handlePointerDown);
-                window.addEventListener('pointermove', handlePointerMove);
-                window.addEventListener('pointerup', handlePointerUp);
-                window.addEventListener('pointercancel', handlePointerUp);
+                window.addEventListener('touchstart', handleStart, { passive: true });
+                window.addEventListener('touchmove', handleMove, { passive: false });
+                window.addEventListener('touchend', handleEnd, { passive: true });
+                window.addEventListener('touchcancel', handleEnd, { passive: true });
+
+                window.addEventListener('pointerdown', handleStart);
+                window.addEventListener('pointermove', handleMove);
+                window.addEventListener('pointerup', handleEnd);
 
                 return () => {
-                    window.removeEventListener('pointerdown', handlePointerDown);
-                    window.removeEventListener('pointermove', handlePointerMove);
-                    window.removeEventListener('pointerup', handlePointerUp);
-                    window.removeEventListener('pointercancel', handlePointerUp);
+                    window.removeEventListener('touchstart', handleStart);
+                    window.removeEventListener('touchmove', handleMove);
+                    window.removeEventListener('touchend', handleEnd);
+                    window.removeEventListener('touchcancel', handleEnd);
+
+                    window.removeEventListener('pointerdown', handleStart);
+                    window.removeEventListener('pointermove', handleMove);
+                    window.removeEventListener('pointerup', handleEnd);
                 };
             }, []);
 
@@ -1717,9 +1783,11 @@
                     {/* Page 1 (Underlying Page) */}
                     <div 
                         ref={page1Ref}
-                        className="page-view z-10 bg-slate-50 dark:bg-slate-900 p-4 pb-24 overflow-y-auto"
+                        className="page-view z-10 bg-slate-50 dark:bg-slate-900 overflow-y-auto w-full h-full"
                     >
-                        {underlyingContent}
+                        <div className="px-4 pt-4 pb-24 min-h-full">
+                            {underlyingContent}
+                        </div>
                     </div>
 
                     {/* Backdrop Overlay */}
@@ -1731,9 +1799,11 @@
                     {/* Page 2 (Active Subpage) */}
                     <div 
                         ref={page2Ref}
-                        className="page-view z-20 bg-slate-50 dark:bg-slate-900 p-4 pb-24 overflow-y-auto"
+                        className="page-view z-20 bg-slate-50 dark:bg-slate-900 overflow-y-auto w-full h-full"
                     >
-                        {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
+                        <div className="px-4 pt-4 pb-24 min-h-full">
+                            {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
+                        </div>
                     </div>
                 </div>
             );
@@ -7807,48 +7877,52 @@
                     )}
 
                     {/* App Content Body */}
-                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24">
-                        {currentTab === 'dashboard' && renderTab('dashboard')}
-                        {currentTab === 'accounts' && renderTab('accounts')}
-                        {currentTab === 'contacts' && renderTab('contacts')}
-                        {currentTab === 'settings' && renderTab('settings')}
+                    {['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? (
+                        <div className="flex-1 relative w-full h-full">
+                            {currentTab === 'contact-detail' && selectedContact && (
+                                <SwipeBackWrapper 
+                                    onBack={() => setCurrentTab('contacts')}
+                                    underlyingContent={renderTab(getUnderlyingTabForSubpage('contact-detail'))}
+                                >
+                                    {({ onBack }) => renderTab('contact-detail', onBack)}
+                                </SwipeBackWrapper>
+                            )}
 
-                        {currentTab === 'contact-detail' && selectedContact && (
-                            <SwipeBackWrapper 
-                                onBack={() => setCurrentTab('contacts')}
-                                underlyingContent={renderTab(getUnderlyingTabForSubpage('contact-detail'))}
-                            >
-                                {({ onBack }) => renderTab('contact-detail', onBack)}
-                            </SwipeBackWrapper>
-                        )}
+                            {currentTab === 'loan-detail' && selectedLoan && (
+                                <SwipeBackWrapper 
+                                    onBack={() => setCurrentTab(loanReturnTab || 'accounts')}
+                                    underlyingContent={renderTab(getUnderlyingTabForSubpage('loan-detail'))}
+                                >
+                                    {({ onBack }) => renderTab('loan-detail', onBack)}
+                                </SwipeBackWrapper>
+                            )}
 
-                        {currentTab === 'loan-detail' && selectedLoan && (
-                            <SwipeBackWrapper 
-                                onBack={() => setCurrentTab(loanReturnTab || 'accounts')}
-                                underlyingContent={renderTab(getUnderlyingTabForSubpage('loan-detail'))}
-                            >
-                                {({ onBack }) => renderTab('loan-detail', onBack)}
-                            </SwipeBackWrapper>
-                        )}
+                            {currentTab === 'archived-period-detail' && selectedPeriod && (
+                                <SwipeBackWrapper 
+                                    onBack={() => setCurrentTab(loanReturnTab || 'contact-detail')}
+                                    underlyingContent={renderTab(getUnderlyingTabForSubpage('archived-period-detail'))}
+                                >
+                                    {({ onBack }) => renderTab('archived-period-detail', onBack)}
+                                </SwipeBackWrapper>
+                            )}
 
-                        {currentTab === 'archived-period-detail' && selectedPeriod && (
-                            <SwipeBackWrapper 
-                                onBack={() => setCurrentTab(loanReturnTab || 'contact-detail')}
-                                underlyingContent={renderTab(getUnderlyingTabForSubpage('archived-period-detail'))}
-                            >
-                                {({ onBack }) => renderTab('archived-period-detail', onBack)}
-                            </SwipeBackWrapper>
-                        )}
-
-                        {currentTab === 'all-transactions' && (
-                            <SwipeBackWrapper 
-                                onBack={() => setCurrentTab('dashboard')}
-                                underlyingContent={renderTab(getUnderlyingTabForSubpage('all-transactions'))}
-                            >
-                                {({ onBack }) => renderTab('all-transactions', onBack)}
-                            </SwipeBackWrapper>
-                        )}
-                    </PullToRefresh>
+                            {currentTab === 'all-transactions' && (
+                                <SwipeBackWrapper 
+                                    onBack={() => setCurrentTab('dashboard')}
+                                    underlyingContent={renderTab(getUnderlyingTabForSubpage('all-transactions'))}
+                                >
+                                    {({ onBack }) => renderTab('all-transactions', onBack)}
+                                </SwipeBackWrapper>
+                            )}
+                        </div>
+                    ) : (
+                        <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24">
+                            {currentTab === 'dashboard' && renderTab('dashboard')}
+                            {currentTab === 'accounts' && renderTab('accounts')}
+                            {currentTab === 'contacts' && renderTab('contacts')}
+                            {currentTab === 'settings' && renderTab('settings')}
+                        </PullToRefresh>
+                    )}
 
                     {/* Backdrop Overlay when FAB Menu is open */}
                     <AnimatePresence>
