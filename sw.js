@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amir-finance-v1.3.4-b152';
+const CACHE_NAME = 'amir-finance-v1.3.6-b154';
 
 const ASSETS_TO_CACHE = [
   '/',

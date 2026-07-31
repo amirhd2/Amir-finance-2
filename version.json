@@ -1,14 +1,41 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.3.4",
-  "buildNumber": 152,
+  "installedVersion": "1.3.6",
+  "buildNumber": 154,
   "releaseDate": "2026-07-31",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.3.4",
+  "latestVersion": "1.3.6",
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.3.6",
+      "buildNumber": 154,
+      "releaseDate": "2026-07-31",
+      "releaseChannel": "Stable",
+      "commitHash": "v136rel",
+      "commitMessage": "perf & anim: enhance iOS Pop Out closing animation with visible shrink scale to 0.45, gradual opacity fadeout and quick 1.05 bounce peak, release v1.3.6 (build 154)",
+      "changes": [
+        "بهینه‌سازی انیمیشن بستن پاپ‌آپ‌ها و مدال‌ها به سبک iOS: ایجاد بانس بسیار سریع 1.05 در ابتدا و کوچک‌شدن ملموس و کاملاً مشهود به scale(0.45)",
+        "تنظیم دقیق منحنی فیدآوت opacity جهت جلوگیری از غیب‌شدن ناگهانی و نمایش واضح روند کوچک‌شدن مدال پیش از محو شدن کاملاً روان",
+        "انتشار نسخه جدید 1.3.6 (بیلد 154)"
+      ]
+    },
+    {
+      "version": "1.3.5",
+      "buildNumber": 153,
+      "releaseDate": "2026-07-31",
+      "releaseChannel": "Stable",
+      "commitHash": "v135rel",
+      "commitMessage": "feat: custom iOS-style Pop Out modal closing animation with 30% bounce, 0.35s cubic-bezier duration & 0.3s backdrop fade-out, release v1.3.5 (build 153)",
+      "changes": [
+        "طراحی و اعمال انیمیشن خروج پاپ‌آپ/مدال به سبک iOS (Pop Out) با ویژگی بانس خفیف scale(1.06) در فریم ۳۰٪ و جمع‌شدن سریع به scale(0.7) و fade-out در فریم ۱۰۰٪",
+        "تنظیم دقیق مدت زمان 0.35 ثانیه و تابع زمان‌بندی cubic-bezier(0.6, -0.28, 0.735, 0.045) به همراه Fade Out پس‌زمینه در 0.3 ثانیه",
+        "اعمال انیمیشن بستن جدید برای پنجره کارت استک (Card Stack Wizard)، پنجره‌های افزودن و ویرایش مخاطب، پنجره‌های خروجی وام/قسط/بدهی و دیالوگ‌های تایید حذف",
+        "انتشار نسخه رسمی 1.3.5 (بیلد 153)"
+      ]
+    },
     {
       "version": "1.3.4",
       "buildNumber": 152,
