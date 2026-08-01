@@ -105,8 +105,8 @@
 
         /* Card Stack Animation Styles */
         .card-stack-container {
-            height: 60vh;
-            max-height: 480px;
+            height: 52vh;
+            max-height: 420px;
             position: relative;
             perspective: 1400px;
             perspective-origin: 50% 35%;
@@ -2618,25 +2618,32 @@
                     onDelete={(confirmCb) => onDelete && onDelete(tx, confirmCb)}
                     onCardClick={() => onEdit && onEdit(tx)}
                 >
-                    <div className="bg-white dark:bg-slate-800 p-3.5 flex items-center justify-between cursor-pointer rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs gap-3">
-                        <div className="flex items-center space-x-2.5 space-x-reverse min-w-0 flex-1">
-                            <div className={`w-8 h-8 rounded-xl ${ (tx.type === 'debt' || tx.type === 'demand_repayment') ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : isRepay ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : colorType === 'rose' ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : colorType === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-bold text-xs shrink-0`}>
+                    <div className="bg-white dark:bg-slate-800 p-4 flex items-center justify-between cursor-pointer rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs hover:shadow-sm transition-all gap-3 min-h-[72px] h-auto">
+                        <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
+                            <div className={`w-9 h-9 rounded-xl ${ (tx.type === 'debt' || tx.type === 'demand_repayment') ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : isRepay ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300' : colorType === 'rose' ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : colorType === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-extrabold text-xs shrink-0 shadow-xs`}>
                                 {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-4 h-4" />}
                             </div>
                             <div className="min-w-0 flex-1 text-right">
-                                <div className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">{displayTitle}</div>
-                                <div className="text-xs font-bold text-amber-500 dark:text-amber-400 leading-normal mt-0.5">
-                                    {formatDateToNumericJalali(tx.dateStr)} {tx.notes ? <span className="text-slate-400 text-[10px] font-normal mr-1.5">• {tx.notes}</span> : ''}
-                                </div>
+                                <div className="text-xs font-extrabold text-slate-800 dark:text-slate-100 leading-snug break-words whitespace-normal">{displayTitle}</div>
+                                {tx.notes && tx.notes.trim() ? (
+                                    <div className="text-[11px] text-slate-400 font-medium leading-tight mt-1 break-words whitespace-normal">
+                                        {tx.notes}
+                                    </div>
+                                ) : (
+                                    <div className="text-[11px] text-slate-400/80 font-medium leading-tight mt-1 break-words whitespace-normal">
+                                        {tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'تراکنش ثبت شده'}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        <div className="flex items-center space-x-2 space-x-reverse text-left shrink-0">
-                            <div className="flex flex-col items-start text-left shrink-0 max-w-[130px] sm:max-w-none">
-                                <span className={`text-xs font-bold text-left block w-full leading-tight whitespace-normal break-words ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                                    {Math.abs(tx.amount).toLocaleString()} تومان
-                                </span>
-                            </div>
+                        <div className="flex flex-col items-end text-left shrink-0 space-y-0.5">
+                            <span className={`text-xs sm:text-sm font-black font-mono tracking-tight ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                {Math.abs(tx.amount).toLocaleString()} تومان
+                            </span>
+                            <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 tracking-wider" dir="ltr">
+                                {formatDateToNumericJalali(tx.dateStr)}
+                            </span>
                         </div>
                     </div>
                 </SwipeToDeleteItem>
@@ -2718,7 +2725,7 @@
                         isEnterPrev ? 'card-enter-from-back animating-prev' : ''
                     }`}
                 >
-                    <div className="flex-1 py-2 overflow-y-auto hide-scrollbar">
+                    <div className="flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y">
                         {card.render()}
                     </div>
 
@@ -2916,8 +2923,20 @@
                 const contactName = contact ? `${contact.firstName} ${contact.lastName}` : (selectedLoanObj.contactName || 'بانک/سازمان');
                 const nextDueDate = getInstallmentNextDueDate(selectedLoanObj, transactions);
                 const jalaliMonthsList = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
-                const mName = (nextDueDate && nextDueDate.month >= 1 && nextDueDate.month <= 12) ? jalaliMonthsList[nextDueDate.month - 1] : '';
-                const nextDueDateFormatted = nextDueDate ? `${nextDueDate.year}/${String(nextDueDate.month).padStart(2, '0')}/${String(nextDueDate.day).padStart(2, '0')}` : '-';
+                let monthNum = 1;
+                if (nextDueDate) {
+                    if (typeof nextDueDate.month === 'number') {
+                        monthNum = nextDueDate.month;
+                    } else if (typeof nextDueDate.month === 'string') {
+                        const idx = jalaliMonthsList.indexOf(nextDueDate.month.trim());
+                        if (idx !== -1) {
+                            monthNum = idx + 1;
+                        } else if (!isNaN(parseInt(nextDueDate.month, 10))) {
+                            monthNum = parseInt(nextDueDate.month, 10);
+                        }
+                    }
+                }
+                const nextDueDateFormatted = nextDueDate ? `${nextDueDate.year}/${String(monthNum).padStart(2, '0')}/${String(nextDueDate.day).padStart(2, '0')}` : '-';
                 const instAmountFormatted = Number(selectedLoanObj.installmentAmount || 0).toLocaleString();
 
                 return (
@@ -3135,15 +3154,30 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.3.8",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '156', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.4.0",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '157', 10),
                 releaseDate: "2026-08-01",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.3.8",
-                latestBuild: 156,
+                latestVersion: "1.4.0",
+                latestBuild: 157,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.4.0",
+                        buildNumber: 157,
+                        releaseDate: "2026-08-01",
+                        releaseChannel: "Stable",
+                        commitHash: "v140rel",
+                        commitMessage: "feat & fix: multi-line dynamic card heights, numeric Jalali date in installment cards, shortened stack card height with scroll, and PWA WebApp update fix & release v1.4.0 (build 157)",
+                        changes: [
+                            "امکان رشد عمودی و انعطاف‌پذیری ارتفاع کارت‌های تراکنش (وام، طلب و بدهی) هنگام وجود عناوین یا توضیحات طولانی",
+                            "اصلاح و نمایش تاریخ پرداخت این قسط به صورت عددی خالص جلالی به ترتیب سال/ماه/روز (مثلاً 1405/05/12) در کارت اول پرداخت قسط",
+                            "کوتاه‌تر کردن ارتفاع کارت استک (Stack Card Wizard) به میزان ۱.۵ سانتی‌متر و فعال‌سازی اسکرول روان داخلی در صورت نیاز به فضای بیشتر",
+                            "رفع کامل مشکل دکمه بررسی و اعمال بروزرسانی در حالت وب‌اپ نصب‌شده (PWA Standalone) با اصلاح منطق Fetch سرویس ورکر و نمایش شماره بیلد واقعی",
+                            "انتشار رسمی نسخه 1.4.0 (بیلد 157)"
+                        ]
+                    },
                     {
                         version: "1.3.8",
                         buildNumber: 156,
@@ -3664,10 +3698,10 @@
                     const serverData = await res.json();
 
                     const serverBuild = parseInt(serverData.buildNumber || '0', 10);
-                    const serverVersion = serverData.installedVersion || '1.3.7';
+                    const serverVersion = serverData.installedVersion || '1.4.0';
 
-                    const EMBEDDED_BUILD = 155;
-                    const EMBEDDED_VERSION = "1.3.7";
+                    const EMBEDDED_BUILD = 157;
+                    const EMBEDDED_VERSION = "1.4.0";
 
                     let localBuildStr = localStorage.getItem('amir_installed_build');
                     let localVersion = localStorage.getItem('amir_installed_version');
@@ -3695,7 +3729,7 @@
                     if (isManual) {
                         setIsCheckingUpdate(false);
                         if (isUpdateAvailable) {
-                            showToast('یک نسخه جدیدتر (بیلد ' + serverBuild + ') موجود است');
+                            showToast('نسخه جدیدتر ' + serverVersion + ' (بیلد ' + serverBuild + ') آماده دانلود و نصب است');
                         } else {
                             showToast('شما از آخرین نسخه استفاده می‌کنید (بیلد ' + localBuild + ')');
                         }
@@ -3707,7 +3741,7 @@
                         if (hasSWUpdate || swFoundUpdate) {
                             showToast('یک نسخه جدیدتر آماده بروزرسانی است');
                         } else {
-                            showToast('شما از آخرین نسخه استفاده می‌کنید');
+                            showToast('امکان دریافت آنلاین نسخه جدید وجود ندارد. اتصال اینترنت خود را بررسی نمایید.');
                         }
                     }
                 }
@@ -7636,192 +7670,334 @@
                         );
                     case 'loan-detail':
                         if (!selectedLoan) return null;
+                        const isClosed = selectedLoan.remainingAmount <= 0 || getLoanNextDueInfo(selectedLoan, transactions).isCompleted;
+                        const totalInst = selectedLoan.totalInstallments || (selectedLoan.installmentAmount > 0 ? Math.ceil(selectedLoan.totalRepayment / selectedLoan.installmentAmount) : 12);
+                        const repaymentTxs = transactions.filter(t => t.loanId === selectedLoan.id && t.type === 'repayment');
+                        const paidInst = repaymentTxs.length;
+                        const installmentAmount = Number(selectedLoan.installmentAmount || (totalInst > 0 ? Math.round(selectedLoan.totalRepayment / totalInst) : 0));
+                        const nextDueInfo = getLoanNextDueInfo(selectedLoan, transactions);
+                        const progressPct = totalInst > 0 ? Math.min(100, Math.round((paidInst / totalInst) * 100)) : 0;
+
                         return (
-                            <div className="space-y-4 animate-fade-in">
-                                        <div className="flex justify-between items-center py-2">
-                                            <button onClick={onBack || (() => setCurrentTab(loanReturnTab || 'accounts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700">
+                            <div className="space-y-4 animate-fade-in pb-8">
+                                {/* Top Header Bar */}
+                                <div className="flex justify-between items-center py-2">
+                                    <button onClick={onBack || (() => setCurrentTab(loanReturnTab || 'accounts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
                                         <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                     </button>
-                                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">{selectedLoan.title}</h3>
-                                    <div className="flex items-center space-x-1.5 space-x-reverse">
+                                    <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate px-2">{selectedLoan.title}</h3>
+                                    <div className="flex items-center space-x-1.5 space-x-reverse shrink-0">
                                         <button onClick={() => openStackWizard('loan', 'edit', selectedLoan)} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
                                             <Icon name="pencil" className="w-4 h-4 text-slate-700 dark:text-slate-200" />
                                         </button>
-                                        <button onClick={() => handleDeleteLoanClick(selectedLoan)} className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400">
+                                        <button onClick={() => handleDeleteLoanClick(selectedLoan)} className="w-9 h-9 rounded-full bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center shadow-sm border border-rose-200 dark:border-rose-800/60 active:scale-95 transition-transform text-rose-600 dark:text-rose-400">
                                             <Icon name="trash-2" className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
-                                    <div className="flex items-center space-x-3 space-x-reverse">
-                                        <div className={`w-11 h-11 rounded-full ${getAvatarColor(selectedLoan.id, selectedLoan.contactName)} text-white text-base font-bold flex items-center justify-center shadow-sm`}>
-                                            <Icon name="user" className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white">{selectedLoan.contactName}</h4>
-                                            <div className="text-[10px] text-slate-400 mt-0.5">{selectedLoan.phone}</div>
-                                        </div>
-                                    </div>
-                                    {(() => {
-                                        const isClosed = selectedLoan.remainingAmount <= 0 || getLoanNextDueInfo(selectedLoan, transactions).isCompleted;
-                                        return (
-                                            <span className={`text-xs font-bold px-3 py-1 rounded-xl ${isClosed ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40' : 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400'}`}>
-                                                {isClosed ? 'بسته شده (تسویه‌شده)' : 'پرونده فعال'}
+                                {/* 1. Premium Official Banking Loan Certificate Hero Card */}
+                                <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border border-indigo-500/20 space-y-4">
+                                    {/* Classical Bank Building SVG Watermark (6-8% opacity white decoration) */}
+                                    <svg className="absolute -top-3 -left-3 w-56 h-56 pointer-events-none text-white opacity-[0.07] z-0" viewBox="0 0 100 100" fill="currentColor">
+                                        <polygon points="50,10 5,32 95,32" />
+                                        <rect x="8" y="32" width="84" height="6" rx="1" />
+                                        <rect x="12" y="38" width="76" height="4" />
+                                        <rect x="16" y="44" width="8" height="40" rx="1" />
+                                        <rect x="32" y="44" width="8" height="40" rx="1" />
+                                        <rect x="48" y="44" width="8" height="40" rx="1" />
+                                        <rect x="64" y="44" width="8" height="40" rx="1" />
+                                        <rect x="80" y="44" width="8" height="40" rx="1" />
+                                        <rect x="10" y="84" width="80" height="4" />
+                                        <rect x="6" y="88" width="88" height="5" />
+                                        <rect x="2" y="93" width="96" height="6" />
+                                    </svg>
+
+                                    {/* Card Content Header */}
+                                    <div className="relative z-10 space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-3 space-x-reverse min-w-0">
+                                                <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0">
+                                                    <Icon name="landmark" className="w-5 h-5 text-indigo-200" />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <h3 className="text-sm font-extrabold text-white truncate">{selectedLoan.title}</h3>
+                                                    <div className="text-[11px] text-indigo-200/80 font-medium flex items-center space-x-1 space-x-reverse mt-0.5">
+                                                        <Icon name="user" className="w-3 h-3 text-indigo-300" />
+                                                        <span className="truncate">{selectedLoan.contactName || 'حساب وام'}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <span className={`text-[11px] font-bold px-3 py-1 rounded-full border backdrop-blur-md flex items-center space-x-1.5 space-x-reverse shrink-0 ${
+                                                isClosed 
+                                                    ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-300' 
+                                                    : 'bg-emerald-500/20 border-emerald-400/40 text-emerald-300'
+                                            }`}>
+                                                <span className={`w-2 h-2 rounded-full ${isClosed ? 'bg-emerald-400' : 'bg-emerald-400 animate-pulse'}`} />
+                                                <span>{isClosed ? 'تسویه‌شده' : 'پرونده فعال'}</span>
                                             </span>
-                                        );
-                                    })()}
+                                        </div>
+
+                                        {/* Remaining Balance Main Display */}
+                                        <div className="pt-1">
+                                            <div className="text-xs text-indigo-200/90 font-medium mb-1">مانده وام</div>
+                                            <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-white flex items-baseline space-x-2 space-x-reverse">
+                                                <span>{selectedLoan.remainingAmount.toLocaleString()}</span>
+                                                <span className="text-xs font-normal text-indigo-200">تومان</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Progress Bar */}
+                                        <div className="space-y-1.5 pt-1">
+                                            <div className="flex justify-between items-center text-xs">
+                                                <span className="text-indigo-200 font-medium text-[11px]">پیشرفت پرداخت اقساط</span>
+                                                <span className="text-emerald-400 font-extrabold text-xs">{paidInst} از {totalInst} قسط پرداخت شده</span>
+                                            </div>
+                                            <div className="w-full h-2.5 bg-white/15 rounded-full overflow-hidden p-0.5">
+                                                <div 
+                                                    className="h-full bg-gradient-to-r from-emerald-400 to-teal-300 rounded-full transition-all duration-500 shadow-sm"
+                                                    style={{ width: `${progressPct}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {(() => {
-                                    const totalInst = selectedLoan.totalInstallments || (selectedLoan.installmentAmount > 0 ? Math.ceil(selectedLoan.totalRepayment / selectedLoan.installmentAmount) : 12);
-                                    const repaymentTxs = transactions.filter(t => t.loanId === selectedLoan.id && t.type === 'repayment');
-                                    const paidInst = repaymentTxs.length;
-                                    const remainingInst = Math.max(0, totalInst - paidInst);
-                                    const calculatedNextDueNum = Math.min(totalInst, paidInst + 1);
+                                {/* 2. Clean Loan Details White Card Grid */}
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-4">
+                                    {/* Top 3 Key Highlights Grid */}
+                                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                                        {/* Original Principal */}
+                                        <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-right">
+                                            <div className="w-7 h-7 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2">
+                                                <Icon name="coins" className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="text-[10px] text-slate-400 font-medium">مبلغ اصل وام</div>
+                                            <div className="text-xs sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 font-mono truncate">
+                                                {selectedLoan.principalAmount.toLocaleString()}
+                                            </div>
+                                            <div className="text-[9px] text-slate-400">تومان</div>
+                                        </div>
 
-                                    return (
-                                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-2.5 text-xs">
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">مبلغ اصل وام</span>
-                                                <span className="font-extrabold text-emerald-600 text-sm">{selectedLoan.principalAmount.toLocaleString()} تومان</span>
+                                        {/* Installment Amount */}
+                                        <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-right">
+                                            <div className="w-7 h-7 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-2">
+                                                <Icon name="wallet" className="w-3.5 h-3.5" />
                                             </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">مبلغ هر قسط</span>
-                                                <span className="font-extrabold text-indigo-600 dark:text-indigo-400">
-                                                    {Number(selectedLoan.installmentAmount || (totalInst > 0 ? Math.round(selectedLoan.totalRepayment / totalInst) : 0)).toLocaleString()} تومان
-                                                </span>
+                                            <div className="text-[10px] text-slate-400 font-medium">مبلغ هر قسط</div>
+                                            <div className="text-xs sm:text-sm font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5 font-mono truncate">
+                                                {installmentAmount.toLocaleString()}
                                             </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">مبلغ بازپرداخت کل</span>
-                                                <span className="font-bold text-slate-800 dark:text-slate-200">{selectedLoan.totalRepayment.toLocaleString()} تومان</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">تعداد کل اقساط</span>
-                                                <span className="font-bold text-slate-800 dark:text-slate-200">{totalInst} قسط</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">تعداد اقساط پرداخت شده</span>
-                                                <span className="font-extrabold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-lg dir-ltr">{paidInst}/{totalInst}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">تاریخ دریافت وام</span>
-                                                <span className="font-bold text-slate-700 dark:text-slate-300">{selectedLoan.receiveDate || selectedLoan.startDate}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">تاریخ شروع اقساط</span>
-                                                <span className="font-bold text-slate-700 dark:text-slate-300">{getLoanNextDueInfo(selectedLoan, []).nextDueDateStr || selectedLoan.startDate}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">موعد قسط در هر ماه</span>
-                                                <span className="font-bold text-indigo-600">روز {selectedLoan.dueDayOfMonth}ام ماه</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">پرداختی تا امروز</span>
-                                                <span className="font-bold text-emerald-600">{selectedLoan.paidAmount.toLocaleString()} تومان</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1">
-                                                <span className="text-slate-400">باقی‌مانده</span>
-                                                <span className="font-bold text-red-500">{selectedLoan.remainingAmount.toLocaleString()} تومان</span>
-                                            </div>
+                                            <div className="text-[9px] text-slate-400">تومان</div>
+                                        </div>
 
-                                            <div className="w-full mt-2.5 p-3 bg-slate-50 dark:bg-slate-900/80 border border-slate-100 dark:border-slate-700/80 rounded-2xl text-xs">
-                                                <div className="text-[11px] font-bold text-slate-400 mb-1 flex items-center space-x-1 space-x-reverse">
-                                                    <Icon name="file-text" className="w-3.5 h-3.5 text-indigo-500" />
-                                                    <span>توضیحات ثبت شده:</span>
-                                                </div>
-                                                <div className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed break-words">
-                                                    {selectedLoan.notes && selectedLoan.notes.trim() ? selectedLoan.notes : 'توضیحاتی برای این وام ثبت نشده است.'}
-                                                </div>
+                                        {/* Next Due Date */}
+                                        <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-right">
+                                            <div className="w-7 h-7 rounded-xl bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-2">
+                                                <Icon name="calendar" className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="text-[10px] text-slate-400 font-medium">قسط بعدی</div>
+                                            <div className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200 mt-0.5 font-mono truncate" dir="ltr">
+                                                {nextDueInfo.isCompleted ? 'تکمیل' : nextDueInfo.nextDueDateStr}
+                                            </div>
+                                            <div className="text-[9px] text-purple-600 dark:text-purple-400 font-bold truncate">
+                                                {nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? `${Math.abs(nextDueInfo.daysLeft)} روز تأخیر` : nextDueInfo.daysLeft === 0 ? 'امروز' : `${nextDueInfo.daysLeft} روز دیگر`}
                                             </div>
                                         </div>
-                                    );
-                                })()}
-
-                                {(() => {
-                                    const nextDueInfo = getLoanNextDueInfo(selectedLoan, transactions);
-
-                                    return (
-                                        <div className="space-y-1.5">
-                                            <div className="flex justify-between items-center">
-                                                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">نزدیک‌ترین سررسید</h4>
-                                                <Icon name="bell" className="w-4 h-4 text-amber-500" />
-                                            </div>
-                                            <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                                                <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                    <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 flex items-center justify-center">
-                                                        <Icon name="calendar" className="w-4 h-4" />
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                                                            {nextDueInfo.isCompleted ? 'کلیه اقساط پرداخت شده‌اند' : `قسط شماره ${nextDueInfo.nextDueNum}`}
-                                                        </div>
-                                                        <div className="text-[10px] text-slate-400">{nextDueInfo.nextDueDateStr}</div>
-                                                    </div>
-                                                </div>
-                                                <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${nextDueInfo.isCompleted ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950' : nextDueInfo.daysLeft <= 0 ? 'text-red-600 bg-red-50 dark:bg-red-950' : 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950'}`}>
-                                                    {nextDueInfo.isCompleted ? 'تکمیل شد' : nextDueInfo.daysLeft < 0 ? `${Math.abs(nextDueInfo.daysLeft)} روز تأخیر` : nextDueInfo.daysLeft === 0 ? 'امروز' : `${nextDueInfo.daysLeft} روز مانده`}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
-
-                                {/* Registered Installments List */}
-                                <div className="space-y-2 pt-1">
-                                    <div className="flex justify-between items-center">
-                                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">اقساط ثبت و پرداخت‌شده</h4>
-                                        {(() => {
-                                            const isClosed = selectedLoan.remainingAmount <= 0 || getLoanNextDueInfo(selectedLoan, transactions).isCompleted;
-                                            if (isClosed) {
-                                                return (
-                                                    <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center space-x-1 space-x-reverse bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/40">
-                                                        <Icon name="check-circle-2" className="w-3.5 h-3.5" />
-                                                        <span>وام تسویه‌شده و بسته است</span>
-                                                    </span>
-                                                );
-                                            }
-                                            return (
-                                                <button 
-                                                    onClick={() => openStackWizard('installment', 'add', selectedLoan)} 
-                                                    className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold flex items-center space-x-1 space-x-reverse hover:underline">
-                                                    <Icon name="plus-circle" className="w-3.5 h-3.5" />
-                                                    <span>ثبت قسط جدید</span>
-                                                </button>
-                                            );
-                                        })()}
                                     </div>
 
-                                    {(() => {
-                                        const loanInstallmentTxs = transactions.filter(t => t.loanId === selectedLoan.id && t.type === 'repayment');
-                                        if (loanInstallmentTxs.length === 0) {
-                                            return (
-                                                <div className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
-                                                    هنوز قسطی برای این وام ثبت نشده است
-                                                </div>
-                                            );
-                                        }
-                                        return (
-                                            <div className="space-y-2">
-                                                {loanInstallmentTxs.map((tx, idx) => (
-                                                    <SwipeableTxCard 
-                                                        key={tx.id}
-                                                        tx={tx}
-                                                        index={idx}
-                                                        totalCount={loanInstallmentTxs.length}
-                                                        colorType="indigo"
-                                                        onEdit={(txItem) => openStackWizard('installment', 'edit', txItem)}
-                                                        onDelete={(txItem) => requestDeleteTx(txItem, 'loan_installment')}
-                                                    />
-                                                ))}
+                                    {/* Clean 2-Column Information Grid */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-700/60 text-xs">
+                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
+                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
+                                                <Icon name="trending-up" className="w-3.5 h-3.5 text-slate-400" />
+                                                <span>مبلغ بازپرداخت کل</span>
+                                            </span>
+                                            <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">{selectedLoan.totalRepayment.toLocaleString()} تومان</span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
+                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
+                                                <Icon name="check-circle-2" className="w-3.5 h-3.5 text-emerald-500" />
+                                                <span>پرداختی تا امروز</span>
+                                            </span>
+                                            <span className="font-extrabold text-emerald-600 font-mono">{selectedLoan.paidAmount.toLocaleString()} تومان</span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
+                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
+                                                <Icon name="list-ordered" className="w-3.5 h-3.5 text-slate-400" />
+                                                <span>تعداد کل اقساط</span>
+                                            </span>
+                                            <span className="font-bold text-slate-800 dark:text-slate-200">{totalInst} قسط</span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
+                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
+                                                <Icon name="pie-chart" className="w-3.5 h-3.5 text-rose-500" />
+                                                <span>باقی‌مانده</span>
+                                            </span>
+                                            <span className="font-extrabold text-rose-500 font-mono">{selectedLoan.remainingAmount.toLocaleString()} تومان</span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
+                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
+                                                <Icon name="calendar-days" className="w-3.5 h-3.5 text-slate-400" />
+                                                <span>تاریخ دریافت وام</span>
+                                            </span>
+                                            <span className="font-bold text-slate-700 dark:text-slate-300 font-mono" dir="ltr">{formatDateToNumericJalali(selectedLoan.receiveDate || selectedLoan.startDate)}</span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
+                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
+                                                <Icon name="play-circle" className="w-3.5 h-3.5 text-slate-400" />
+                                                <span>تاریخ شروع اقساط</span>
+                                            </span>
+                                            <span className="font-bold text-slate-700 dark:text-slate-300 font-mono" dir="ltr">{formatDateToNumericJalali(getLoanNextDueInfo(selectedLoan, []).nextDueDateStr || selectedLoan.startDate)}</span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
+                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
+                                                <Icon name="clock" className="w-3.5 h-3.5 text-slate-400" />
+                                                <span>موعد قسط در هر ماه</span>
+                                            </span>
+                                            <span className="font-bold text-indigo-600 dark:text-indigo-400">روز {selectedLoan.dueDayOfMonth}ام ماه</span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
+                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
+                                                <Icon name="check-square" className="w-3.5 h-3.5 text-slate-400" />
+                                                <span>تعداد اقساط پرداخت شده</span>
+                                            </span>
+                                            <span className="font-bold text-slate-800 dark:text-slate-200">{paidInst} قسط</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Description Card Block at Bottom */}
+                                    <div className="bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/40 rounded-2xl p-3.5 flex items-start space-x-3 space-x-reverse">
+                                        <div className="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 flex items-center justify-center shrink-0 mt-0.5">
+                                            <Icon name="file-text" className="w-4 h-4" />
+                                        </div>
+                                        <div className="min-w-0 flex-1 text-xs">
+                                            <div className="font-extrabold text-indigo-900 dark:text-indigo-200 mb-0.5">توضیحات وام</div>
+                                            <div className="text-slate-600 dark:text-slate-300 leading-relaxed break-words">
+                                                {selectedLoan.notes && selectedLoan.notes.trim() ? selectedLoan.notes : 'توضیحاتی برای این وام ثبت نشده است.'}
                                             </div>
-                                        );
-                                    })()}
+                                        </div>
+                                    </div>
                                 </div>
 
+                                {/* 3. Reminder Section (Distinct Warm Notification Card) */}
+                                <div className="bg-gradient-to-r from-amber-50 via-amber-50/80 to-orange-50 dark:from-amber-950/40 dark:via-amber-950/30 dark:to-orange-950/20 border border-amber-200/80 dark:border-amber-800/50 rounded-3xl p-4 shadow-sm relative overflow-hidden flex items-center justify-between gap-3">
+                                    <div className="flex items-center space-x-3.5 space-x-reverse min-w-0">
+                                        <div className="relative shrink-0">
+                                            <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-300 flex items-center justify-center shadow-inner">
+                                                <Icon name="bell" className="w-6 h-6 text-amber-500 animate-pulse" />
+                                            </div>
+                                            {!nextDueInfo.isCompleted && (
+                                                <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-800 shadow-sm">
+                                                    {nextDueInfo.daysLeft < 0 ? `!${Math.abs(nextDueInfo.daysLeft)}` : nextDueInfo.daysLeft}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="text-xs font-extrabold text-amber-900 dark:text-amber-200">
+                                                {nextDueInfo.isCompleted ? 'کلیه اقساط پرداخت شده‌اند' : 'نزدیک‌ترین یادآوری'}
+                                            </div>
+                                            <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 truncate">
+                                                {nextDueInfo.isCompleted ? 'پرونده وام تسویه‌شده است' : `قسط شماره ${nextDueInfo.nextDueNum}`}
+                                            </div>
+                                            <div className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 font-mono" dir="ltr">
+                                                {nextDueInfo.nextDueDateStr}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-left shrink-0">
+                                        <div className={`text-xs font-black px-3 py-1.5 rounded-xl border ${
+                                            nextDueInfo.isCompleted 
+                                                ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' 
+                                                : nextDueInfo.daysLeft < 0 
+                                                ? 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-800' 
+                                                : 'bg-amber-100 dark:bg-amber-900/70 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700/80'
+                                        }`}>
+                                            {nextDueInfo.isCompleted 
+                                                ? 'تسویه شد' 
+                                                : nextDueInfo.daysLeft < 0 
+                                                ? `${Math.abs(nextDueInfo.daysLeft)} روز تأخیر` 
+                                                : nextDueInfo.daysLeft === 0 
+                                                ? 'امروز' 
+                                                : `${nextDueInfo.daysLeft} روز`
+                                            }
+                                        </div>
+                                        {!nextDueInfo.isCompleted && (
+                                            <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 mt-1 flex items-center space-x-1 space-x-reverse justify-end">
+                                                <Icon name="clock" className="w-3 h-3" />
+                                                <span>مانده تا سررسید</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* 4. Primary Call To Action Button: Register Installment Payment */}
+                                <button 
+                                    onClick={() => openStackWizard('installment', 'add', selectedLoan)}
+                                    disabled={isClosed}
+                                    className={`w-full py-4 px-6 rounded-2xl font-black text-base flex items-center justify-center space-x-2.5 space-x-reverse transition-all shadow-lg active:scale-[0.98] ${
+                                        isClosed 
+                                            ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed shadow-none' 
+                                            : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-700 text-white shadow-indigo-500/30 dark:shadow-indigo-950/50 cursor-pointer'
+                                    }`}
+                                >
+                                    <Icon name="wallet" className="w-5 h-5 text-white" />
+                                    <span>ثبت پرداخت قسط</span>
+                                </button>
+
+                                {/* 5. Taller Registered Installments List Cards */}
+                                <div className="space-y-3 pt-2">
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-xs font-extrabold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5 space-x-reverse">
+                                            <Icon name="list" className="w-4 h-4 text-indigo-500" />
+                                            <span>تراکنش‌ها / اقساط پرداخت‌شده</span>
+                                        </h4>
+                                        {isClosed ? (
+                                            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center space-x-1 space-x-reverse bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/40">
+                                                <Icon name="check-circle-2" className="w-3.5 h-3.5" />
+                                                <span>وام تسویه‌شده و بسته است</span>
+                                            </span>
+                                        ) : (
+                                            <span className="text-[11px] text-slate-400 font-bold">
+                                                {repaymentTxs.length} قسط ثبت‌شده
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {repaymentTxs.length === 0 ? (
+                                        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 shadow-xs">
+                                            هنوز قسطی برای این وام ثبت نشده است
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2.5">
+                                            {repaymentTxs.map((tx, idx) => (
+                                                <SwipeableTxCard 
+                                                    key={tx.id}
+                                                    tx={tx}
+                                                    index={idx}
+                                                    totalCount={repaymentTxs.length}
+                                                    colorType="indigo"
+                                                    onEdit={(txItem) => openStackWizard('installment', 'edit', txItem)}
+                                                    onDelete={(txItem) => requestDeleteTx(txItem, 'loan_installment')}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* 6. Loan Export Button */}
                                 <button 
                                     onClick={() => openUniversalExportModal('loan', selectedLoan)}
-                                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-3 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 space-x-reverse shadow-sm active:scale-95 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-3 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 space-x-reverse shadow-xs active:scale-95 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-200">
                                     <Icon name="file-output" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                     <span>خروجی پرونده وام</span>
                                 </button>

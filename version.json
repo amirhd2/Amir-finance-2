@@ -1,14 +1,29 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.3.8",
-  "buildNumber": 156,
+  "installedVersion": "1.4.0",
+  "buildNumber": 157,
   "releaseDate": "2026-08-01",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.3.8",
+  "latestVersion": "1.4.0",
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.4.0",
+      "buildNumber": 157,
+      "releaseDate": "2026-08-01",
+      "releaseChannel": "Stable",
+      "commitHash": "v140rel",
+      "commitMessage": "feat & fix: multi-line dynamic card heights, numeric Jalali date in installment cards, shortened stack card height with scroll, and PWA WebApp update fix & release v1.4.0 (build 157)",
+      "changes": [
+        "امکان رشد عمودی و انعطاف‌پذیری ارتفاع کارت‌های تراکنش (وام، طلب و بدهی) هنگام وجود عناوین یا توضیحات طولانی",
+        "اصلاح و نمایش تاریخ پرداخت این قسط به صورت عددی خالص جلالی به ترتیب سال/ماه/روز (مثلاً 1405/05/12) در کارت اول پرداخت قسط",
+        "کوتاه‌تر کردن ارتفاع کارت استک (Stack Card Wizard) به میزان ۱.۵ سانتی‌متر و فعال‌سازی اسکرول روان داخلی در صورت نیاز به فضای بیشتر",
+        "رفع کامل مشکل دکمه بررسی و اعمال بروزرسانی در حالت وب‌اپ نصب‌شده (PWA Standalone) با اصلاح منطق Fetch سرویس ورکر و نمایش شماره بیلد واقعی",
+        "انتشار رسمی نسخه 1.4.0 (بیلد 157)"
+      ]
+    },
     {
       "version": "1.3.8",
       "buildNumber": 156,
