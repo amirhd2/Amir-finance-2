@@ -1,14 +1,51 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.3.6",
-  "buildNumber": 154,
-  "releaseDate": "2026-07-31",
+  "installedVersion": "1.3.8",
+  "buildNumber": 156,
+  "releaseDate": "2026-08-01",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.3.6",
+  "latestVersion": "1.3.8",
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.3.8",
+      "buildNumber": 156,
+      "releaseDate": "2026-08-01",
+      "releaseChannel": "Stable",
+      "commitHash": "v138rel",
+      "commitMessage": "fix & perf: fix swipe back micro-jitter, eliminate double slide jump on returning from subpages to contact profile, release v1.3.8 (build 156)",
+      "changes": [
+        "رفع کامل پرش و لرزش لحظه پایانی انیمیشن حرکت سوایپ بازگشت (Swipe Back)",
+        "رفع حرکت اضافه و پرش افقی (از راست به چپ) هنگام بازگشت از جزئیات وام، بدهی یا طلب تسویه‌شده به پروفایل مخاطب",
+        "نمایش برجسته و کامل تاریخ دقیق پرداخت قسط با فرمت YYYY/MM/DD در کارت اطلاعات پرداخت قسط",
+        "افزودن انیمیشن باز و بسته شدن (ورود و خروج) روان آکاردیون «یادآوری‌های مهم» صفحه اصلی مطابق با AGENTS.md",
+        "تغییر فیلتر «علاقه‌مندی‌ها» در صفحه مخاطبین به آیکون ستاره (خاموش/زرد روشن در حالت فعال)",
+        "افزودن فیلتر جدید «تسویه‌شده» به صفحه مخاطبین برای نمایش مخاطبین دارای پرونده وام، طلب یا بدهی تسویه‌شده",
+        "حذف چسبندگی (sticky) بخش بالای صفحه مخاطبین جهت ناپدید شدن روان هنگام اسکرول به بالا",
+        "انتشار رسمی نسخه 1.3.8 (بیلد 156)"
+      ]
+    },
+    {
+      "version": "1.3.7",
+      "buildNumber": 155,
+      "releaseDate": "2026-08-01",
+      "releaseChannel": "Stable",
+      "commitHash": "v137rel",
+      "commitMessage": "fix & feat: full date display in installment card, smooth enter/exit accordion animation, star icon favorites filter, settled contacts filter, scrollable top header & release v1.3.7 (build 155)",
+      "changes": [
+        "نمایش برجسته و کامل تاریخ دقیق پرداخت قسط با فرمت YYYY/MM/DD در کارت اطلاعات پرداخت قسط",
+        "افزودن انیمیشن باز و بسته شدن (ورود و خروج) روان آکاردیون «یادآوری‌های مهم» صفحه اصلی مطابق با قانون جدید انیمیشن‌های پروژه در AGENTS.md",
+        "تغییر فیلتر «علاقه‌مندی‌ها» در صفحه مخاطبین به آیکون ستاره (خاموش/زرد روشن در حالت فعال)",
+        "افزودن فیلتر جدید «تسویه‌شده» به صفحه مخاطبین برای نمایش مخاطبین دارای پرونده وام، طلب یا بدهی تسویه‌شده",
+        "حذف چسبندگی (sticky) بخش بالای صفحه مخاطبین (جستجو، فیلترها و عنوان) جهت ناپدید شدن روان هنگام اسکرول به بالا",
+        "رفع مشکل عدم دانلود تصویر گرافیکی (PNG) خروجی پرونده وام",
+        "اصلاح منطق اعتبارسنجی مانده کل وام هنگام ویرایش تراکنش و پرداخت قسط",
+        "برجسته‌سازی و دو برابر کردن سایز باکس شماره قسط («قسط شماره X از Y») در کارت آبی رنگ اول پرداخت قسط",
+        "انتشار رسمی نسخه 1.3.7 (بیلد 155)"
+      ]
+    },
     {
       "version": "1.3.6",
       "buildNumber": 154,
