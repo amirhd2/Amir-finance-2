@@ -6791,9 +6791,10 @@
                                 <div className="flex bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl space-x-1 space-x-reverse text-xs font-bold border border-slate-200/50 dark:border-slate-700/50">
                                     {[
                                         { id: 'all', label: 'همه موارد', activeClass: 'bg-indigo-600 text-white shadow-sm' },
-                                        { id: 'loans', label: 'وام‌ها', activeClass: 'bg-blue-600 text-white shadow-sm' },
-                                        { id: 'demands', label: 'طلب‌ها', activeClass: 'bg-emerald-600 text-white shadow-sm' },
-                                        { id: 'debts', label: 'بدهی‌ها', activeClass: 'bg-rose-600 text-white shadow-sm' }
+                                        { id: 'demands', label: 'طلب', activeClass: 'bg-emerald-600 text-white shadow-sm' },
+                                        { id: 'debts', label: 'بدهی', activeClass: 'bg-rose-600 text-white shadow-sm' },
+                                        { id: 'loans', label: 'وام', activeClass: 'bg-blue-600 text-white shadow-sm' },
+                                        { id: 'archived', label: 'بایگانی', activeClass: 'bg-amber-600 text-white shadow-sm' }
                                     ].map(tab => (
                                         <button 
                                             key={tab.id}
@@ -6806,7 +6807,7 @@
 
                                 <div className="space-y-4">
                                     {/* LOANS SECTION */}
-                                    {(accountsSubTab === 'all' || accountsSubTab === 'loans') && filteredAccountsLoans.length > 0 && (
+                                    {(accountsSubTab === 'all' || accountsSubTab === 'loans' || accountsSubTab === 'archived') && filteredAccountsLoans.length > 0 && (
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-center text-xs font-bold text-slate-500 mb-1">
                                                 <span>پرونده‌های وام ({filteredAccountsLoans.length})</span>
@@ -6826,6 +6827,7 @@
                                             {filteredAccountsLoans.map(loan => {
                                                 const nextDueInfo = getLoanNextDueInfo(loan, transactions);
                                                 const isCompleted = nextDueInfo.isCompleted || (loan.remainingAmount !== undefined && loan.remainingAmount <= 0);
+                                                if (accountsSubTab === 'archived' && !isCompleted) return null;
 
                                                 return (
                                                     <SwipeToDeleteItem
@@ -7682,303 +7684,338 @@
                             <div className="space-y-4 animate-fade-in pb-8">
                                 {/* Top Header Bar */}
                                 <div className="flex justify-between items-center py-2">
-                                    <button onClick={onBack || (() => setCurrentTab(loanReturnTab || 'accounts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
-                                        <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                                    <button onClick={onBack || (() => setCurrentTab(loanReturnTab || 'accounts'))} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 active:scale-95 transition-transform">
+                                        <svg className="h-6 w-6 text-gray-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M10 19l-7-7m0 0l7-7m-7 7h18" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                        </svg>
                                     </button>
-                                    <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate px-2">{selectedLoan.title}</h3>
-                                    <div className="flex items-center space-x-1.5 space-x-reverse shrink-0">
-                                        <button onClick={() => openStackWizard('loan', 'edit', selectedLoan)} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
-                                            <Icon name="pencil" className="w-4 h-4 text-slate-700 dark:text-slate-200" />
+                                    <h1 className="text-lg font-bold text-gray-800 dark:text-slate-100 truncate px-2">{selectedLoan.title}</h1>
+                                    <div className="flex gap-2 shrink-0">
+                                        <button onClick={() => openStackWizard('loan', 'edit', selectedLoan)} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-slate-300 active:scale-95 transition-transform" aria-label="Edit">
+                                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
                                         </button>
-                                        <button onClick={() => handleDeleteLoanClick(selectedLoan)} className="w-9 h-9 rounded-full bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center shadow-sm border border-rose-200 dark:border-rose-800/60 active:scale-95 transition-transform text-rose-600 dark:text-rose-400">
-                                            <Icon name="trash-2" className="w-4 h-4" />
+                                        <button onClick={() => handleDeleteLoanClick(selectedLoan)} className="p-2 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/60 text-rose-500 active:scale-95 transition-transform" aria-label="Delete">
+                                            <Icon name="trash-2" className="w-6 h-6" />
                                         </button>
                                     </div>
                                 </div>
 
-                                {/* 1. Premium Official Banking Loan Certificate Hero Card */}
-                                <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 text-white rounded-3xl p-5 shadow-xl relative overflow-hidden border border-indigo-500/20 space-y-4">
-                                    {/* Classical Bank Building SVG Watermark (6-8% opacity white decoration) */}
-                                    <svg className="absolute -top-3 -left-3 w-56 h-56 pointer-events-none text-white opacity-[0.07] z-0" viewBox="0 0 100 100" fill="currentColor">
-                                        <polygon points="50,10 5,32 95,32" />
-                                        <rect x="8" y="32" width="84" height="6" rx="1" />
-                                        <rect x="12" y="38" width="76" height="4" />
-                                        <rect x="16" y="44" width="8" height="40" rx="1" />
-                                        <rect x="32" y="44" width="8" height="40" rx="1" />
-                                        <rect x="48" y="44" width="8" height="40" rx="1" />
-                                        <rect x="64" y="44" width="8" height="40" rx="1" />
-                                        <rect x="80" y="44" width="8" height="40" rx="1" />
-                                        <rect x="10" y="84" width="80" height="4" />
-                                        <rect x="6" y="88" width="88" height="5" />
-                                        <rect x="2" y="93" width="96" height="6" />
-                                    </svg>
-
-                                    {/* Card Content Header */}
-                                    <div className="relative z-10 space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center space-x-3 space-x-reverse min-w-0">
-                                                <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0">
-                                                    <Icon name="landmark" className="w-5 h-5 text-indigo-200" />
+                                {/* BEGIN: Loan Summary Card */}
+                                <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 rounded-3xl p-5 text-white relative overflow-hidden card-shadow border border-indigo-500/20 space-y-4" data-purpose="loan-summary-header">
+                                    {/* Decorative Glowing Light & Background Watermark SVG */}
+                                    <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
+                                    <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-blue-500/20 rounded-full blur-2xl pointer-events-none" />
+                                    <div className="absolute -left-6 -bottom-6 opacity-15 pointer-events-none text-white">
+                                        <svg fill="currentColor" height="180" viewBox="0 0 24 24" width="180" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 2L2 7v2h20V7L12 2zm0 18H4v-9h1v9h2v-9h2v9h2v-9h2v9h2v-9h2v9h1v-9h1v9h-2zm-10-9h20v2H2v-2z"></path>
+                                        </svg>
+                                    </div>
+                                    
+                                    <div className="relative z-10 space-y-3">
+                                        {/* Top Header Row: Icon, Title & Status Badge */}
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="flex items-start gap-3 min-w-0 flex-1">
+                                                <div className="bg-white/15 backdrop-blur-md p-2.5 rounded-2xl border border-white/20 shrink-0 mt-0.5">
+                                                    <svg className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4m-5 10h.01M15 7h.01M15 14h.01M15 18h.01M9 18h.01" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                                    </svg>
                                                 </div>
-                                                <div className="min-w-0">
-                                                    <h3 className="text-sm font-extrabold text-white truncate">{selectedLoan.title}</h3>
-                                                    <div className="text-[11px] text-indigo-200/80 font-medium flex items-center space-x-1 space-x-reverse mt-0.5">
-                                                        <Icon name="user" className="w-3 h-3 text-indigo-300" />
-                                                        <span className="truncate">{selectedLoan.contactName || 'حساب وام'}</span>
+                                                <div className="min-w-0 flex-1">
+                                                    <h2 className="text-base sm:text-lg font-bold text-white break-words leading-snug">{selectedLoan.title}</h2>
+                                                    <div className="flex items-center gap-1.5 text-xs opacity-90 mt-1">
+                                                        <span className={`w-2 h-2 rounded-full ${isClosed ? 'bg-emerald-400' : 'bg-emerald-400 animate-pulse'}`}></span>
+                                                        <span className="text-indigo-200 font-medium">{isClosed ? 'پرونده تسویه‌شده' : 'پرونده فعال'}</span>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <span className={`text-[11px] font-bold px-3 py-1 rounded-full border backdrop-blur-md flex items-center space-x-1.5 space-x-reverse shrink-0 ${
-                                                isClosed 
-                                                    ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-300' 
-                                                    : 'bg-emerald-500/20 border-emerald-400/40 text-emerald-300'
-                                            }`}>
-                                                <span className={`w-2 h-2 rounded-full ${isClosed ? 'bg-emerald-400' : 'bg-emerald-400 animate-pulse'}`} />
-                                                <span>{isClosed ? 'تسویه‌شده' : 'پرونده فعال'}</span>
-                                            </span>
                                         </div>
 
-                                        {/* Remaining Balance Main Display */}
-                                        <div className="pt-1">
-                                            <div className="text-xs text-indigo-200/90 font-medium mb-1">مانده وام</div>
-                                            <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-white flex items-baseline space-x-2 space-x-reverse">
-                                                <span>{selectedLoan.remainingAmount.toLocaleString()}</span>
-                                                <span className="text-xs font-normal text-indigo-200">تومان</span>
+                                        {/* Remaining Loan Amount Compact Section */}
+                                        <div className="bg-white/10 backdrop-blur-md rounded-2xl px-3.5 py-2 border border-white/10 flex items-center justify-between">
+                                            <span className="text-xs text-indigo-200 font-medium">مانده وام</span>
+                                            <div className="flex items-baseline gap-1.5 font-mono">
+                                                <span className="text-xl sm:text-2xl font-black text-white">{selectedLoan.remainingAmount.toLocaleString()}</span>
+                                                <span className="text-xs text-indigo-200 font-normal">تومان</span>
                                             </div>
                                         </div>
-
-                                        {/* Progress Bar */}
-                                        <div className="space-y-1.5 pt-1">
-                                            <div className="flex justify-between items-center text-xs">
-                                                <span className="text-indigo-200 font-medium text-[11px]">پیشرفت پرداخت اقساط</span>
-                                                <span className="text-emerald-400 font-extrabold text-xs">{paidInst} از {totalInst} قسط پرداخت شده</span>
-                                            </div>
-                                            <div className="w-full h-2.5 bg-white/15 rounded-full overflow-hidden p-0.5">
-                                                <div 
-                                                    className="h-full bg-gradient-to-r from-emerald-400 to-teal-300 rounded-full transition-all duration-500 shadow-sm"
-                                                    style={{ width: `${progressPct}%` }}
-                                                />
-                                            </div>
+                                    </div>
+                                    {/* Progress Section */}
+                                    <div className="pt-2 relative z-10 space-y-1.5">
+                                        <div className="flex justify-between items-center text-xs opacity-90">
+                                            <span className="text-indigo-200">پیشرفت پرداخت اقساط</span>
+                                            <span className="text-emerald-300 font-bold">{paidInst} از {totalInst} قسط پرداخت شده</span>
+                                        </div>
+                                        <div className="w-full bg-white/15 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10">
+                                            <div className="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500 shadow-xs" style={{ width: `${progressPct}%` }}></div>
                                         </div>
                                     </div>
                                 </div>
+                                {/* END: Loan Summary Card */}
 
-                                {/* 2. Clean Loan Details White Card Grid */}
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-4">
-                                    {/* Top 3 Key Highlights Grid */}
-                                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                                        {/* Original Principal */}
-                                        <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-right">
-                                            <div className="w-7 h-7 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2">
-                                                <Icon name="coins" className="w-3.5 h-3.5" />
-                                            </div>
-                                            <div className="text-[10px] text-slate-400 font-medium">مبلغ اصل وام</div>
-                                            <div className="text-xs sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 font-mono truncate">
-                                                {selectedLoan.principalAmount.toLocaleString()}
-                                            </div>
-                                            <div className="text-[9px] text-slate-400">تومان</div>
+                                {/* BEGIN: Quick Info Connected Single Box */}
+                                <div className="bg-white dark:bg-slate-800 rounded-2xl card-shadow border border-slate-100 dark:border-slate-700/60 p-2 sm:p-3 grid grid-cols-3 divide-x divide-x-reverse divide-slate-100 dark:divide-slate-700/60 text-center" data-purpose="loan-quick-stats">
+                                    {/* Box 1: Principal */}
+                                    <div className="px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0">
+                                        <div className="bg-green-50 dark:bg-green-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0">
+                                            <svg className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
                                         </div>
-
-                                        {/* Installment Amount */}
-                                        <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-right">
-                                            <div className="w-7 h-7 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-2">
-                                                <Icon name="wallet" className="w-3.5 h-3.5" />
-                                            </div>
-                                            <div className="text-[10px] text-slate-400 font-medium">مبلغ هر قسط</div>
-                                            <div className="text-xs sm:text-sm font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5 font-mono truncate">
-                                                {installmentAmount.toLocaleString()}
-                                            </div>
-                                            <div className="text-[9px] text-slate-400">تومان</div>
+                                        <div className="text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center">مبلغ اصل وام</div>
+                                        <div className="text-xs sm:text-sm font-bold text-green-600 dark:text-green-400 font-mono mt-0.5 break-words max-w-full text-center leading-tight">
+                                            {selectedLoan.principalAmount.toLocaleString()}
                                         </div>
-
-                                        {/* Next Due Date */}
-                                        <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-right">
-                                            <div className="w-7 h-7 rounded-xl bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-2">
-                                                <Icon name="calendar" className="w-3.5 h-3.5" />
-                                            </div>
-                                            <div className="text-[10px] text-slate-400 font-medium">قسط بعدی</div>
-                                            <div className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200 mt-0.5 font-mono truncate" dir="ltr">
-                                                {nextDueInfo.isCompleted ? 'تکمیل' : nextDueInfo.nextDueDateStr}
-                                            </div>
-                                            <div className="text-[9px] text-purple-600 dark:text-purple-400 font-bold truncate">
-                                                {nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? `${Math.abs(nextDueInfo.daysLeft)} روز تأخیر` : nextDueInfo.daysLeft === 0 ? 'امروز' : `${nextDueInfo.daysLeft} روز دیگر`}
-                                            </div>
-                                        </div>
+                                        <div className="text-[9px] text-gray-400 font-medium text-center mt-0.5">تومان</div>
                                     </div>
 
-                                    {/* Clean 2-Column Information Grid */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-700/60 text-xs">
-                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
-                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
-                                                <Icon name="trending-up" className="w-3.5 h-3.5 text-slate-400" />
-                                                <span>مبلغ بازپرداخت کل</span>
-                                            </span>
-                                            <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">{selectedLoan.totalRepayment.toLocaleString()} تومان</span>
+                                    {/* Box 2: Installment Amount */}
+                                    <div className="px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0">
+                                        <div className="bg-blue-50 dark:bg-blue-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0">
+                                            <svg className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
                                         </div>
-
-                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
-                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
-                                                <Icon name="check-circle-2" className="w-3.5 h-3.5 text-emerald-500" />
-                                                <span>پرداختی تا امروز</span>
-                                            </span>
-                                            <span className="font-extrabold text-emerald-600 font-mono">{selectedLoan.paidAmount.toLocaleString()} تومان</span>
+                                        <div className="text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center">مبلغ هر قسط</div>
+                                        <div className="text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono mt-0.5 break-words max-w-full text-center leading-tight">
+                                            {installmentAmount.toLocaleString()}
                                         </div>
-
-                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
-                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
-                                                <Icon name="list-ordered" className="w-3.5 h-3.5 text-slate-400" />
-                                                <span>تعداد کل اقساط</span>
-                                            </span>
-                                            <span className="font-bold text-slate-800 dark:text-slate-200">{totalInst} قسط</span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
-                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
-                                                <Icon name="pie-chart" className="w-3.5 h-3.5 text-rose-500" />
-                                                <span>باقی‌مانده</span>
-                                            </span>
-                                            <span className="font-extrabold text-rose-500 font-mono">{selectedLoan.remainingAmount.toLocaleString()} تومان</span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
-                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
-                                                <Icon name="calendar-days" className="w-3.5 h-3.5 text-slate-400" />
-                                                <span>تاریخ دریافت وام</span>
-                                            </span>
-                                            <span className="font-bold text-slate-700 dark:text-slate-300 font-mono" dir="ltr">{formatDateToNumericJalali(selectedLoan.receiveDate || selectedLoan.startDate)}</span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
-                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
-                                                <Icon name="play-circle" className="w-3.5 h-3.5 text-slate-400" />
-                                                <span>تاریخ شروع اقساط</span>
-                                            </span>
-                                            <span className="font-bold text-slate-700 dark:text-slate-300 font-mono" dir="ltr">{formatDateToNumericJalali(getLoanNextDueInfo(selectedLoan, []).nextDueDateStr || selectedLoan.startDate)}</span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
-                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
-                                                <Icon name="clock" className="w-3.5 h-3.5 text-slate-400" />
-                                                <span>موعد قسط در هر ماه</span>
-                                            </span>
-                                            <span className="font-bold text-indigo-600 dark:text-indigo-400">روز {selectedLoan.dueDayOfMonth}ام ماه</span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40">
-                                            <span className="text-slate-400 flex items-center space-x-1.5 space-x-reverse">
-                                                <Icon name="check-square" className="w-3.5 h-3.5 text-slate-400" />
-                                                <span>تعداد اقساط پرداخت شده</span>
-                                            </span>
-                                            <span className="font-bold text-slate-800 dark:text-slate-200">{paidInst} قسط</span>
-                                        </div>
+                                        <div className="text-[9px] text-gray-400 font-medium text-center mt-0.5">تومان</div>
                                     </div>
 
-                                    {/* Description Card Block at Bottom */}
-                                    <div className="bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/40 rounded-2xl p-3.5 flex items-start space-x-3 space-x-reverse">
-                                        <div className="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 flex items-center justify-center shrink-0 mt-0.5">
-                                            <Icon name="file-text" className="w-4 h-4" />
+                                    {/* Box 3: Next Due Date */}
+                                    <div className="px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0">
+                                        <div className="bg-indigo-50 dark:bg-indigo-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0">
+                                            <svg className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
                                         </div>
-                                        <div className="min-w-0 flex-1 text-xs">
-                                            <div className="font-extrabold text-indigo-900 dark:text-indigo-200 mb-0.5">توضیحات وام</div>
-                                            <div className="text-slate-600 dark:text-slate-300 leading-relaxed break-words">
-                                                {selectedLoan.notes && selectedLoan.notes.trim() ? selectedLoan.notes : 'توضیحاتی برای این وام ثبت نشده است.'}
-                                            </div>
+                                        <div className="text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center">قسط بعدی</div>
+                                        <div className="text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono mt-0.5 break-words max-w-full text-center leading-tight">
+                                            {nextDueInfo.isCompleted ? 'تکمیل' : formatDateToNumericJalali(nextDueInfo.nextDueDateStr)}
+                                        </div>
+                                        <div className="text-[9px] text-indigo-600 dark:text-indigo-400 font-medium mt-0.5 text-center leading-tight break-words">
+                                            {nextDueInfo.isCompleted 
+                                                ? 'تسویه‌شده' 
+                                                : nextDueInfo.daysLeft < 0 
+                                                ? `${Math.abs(nextDueInfo.daysLeft)} روز تاخیر در پرداخت` 
+                                                : nextDueInfo.daysLeft === 0 
+                                                ? 'امروز سررسید قسط' 
+                                                : `${nextDueInfo.daysLeft} روز مانده تا سررسید`}
                                         </div>
                                     </div>
                                 </div>
+                                {/* END: Quick Info Connected Single Box */}
 
-                                {/* 3. Reminder Section (Distinct Warm Notification Card) */}
-                                <div className="bg-gradient-to-r from-amber-50 via-amber-50/80 to-orange-50 dark:from-amber-950/40 dark:via-amber-950/30 dark:to-orange-950/20 border border-amber-200/80 dark:border-amber-800/50 rounded-3xl p-4 shadow-sm relative overflow-hidden flex items-center justify-between gap-3">
-                                    <div className="flex items-center space-x-3.5 space-x-reverse min-w-0">
+                                {/* BEGIN: Detailed Info Grid with 8 Separated Bordered Sub-Boxes */}
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 card-shadow border border-slate-100 dark:border-slate-700/60 space-y-3" data-purpose="loan-details-grid">
+                                    <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                                        {/* Item 1: Total Repayment Amount */}
+                                        <div className="bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0">
+                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[10px] text-gray-500 dark:text-slate-400 block font-medium">مبلغ بازپرداخت کل</span>
+                                                <span className="text-xs font-bold text-gray-800 dark:text-slate-200 font-mono leading-tight block mt-0.5">{selectedLoan.totalRepayment.toLocaleString()} تومان</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Item 2: Paid To Date */}
+                                        <div className="bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[10px] text-gray-500 dark:text-slate-400 block font-medium">پرداختی تا امروز</span>
+                                                <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono leading-tight block mt-0.5">{selectedLoan.paidAmount.toLocaleString()} تومان</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Item 3: Total Installments Count */}
+                                        <div className="bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0">
+                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M4 6h16M4 12h16M4 18h7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[10px] text-gray-500 dark:text-slate-400 block font-medium">تعداد کل اقساط</span>
+                                                <span className="text-xs font-bold text-gray-800 dark:text-slate-200 leading-tight block mt-0.5">{totalInst} قسط</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Item 4: Remaining Balance */}
+                                        <div className="bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
+                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[10px] text-gray-500 dark:text-slate-400 block font-medium">باقی‌مانده</span>
+                                                <span className="text-xs font-extrabold text-rose-500 dark:text-rose-400 font-mono leading-tight block mt-0.5">{selectedLoan.remainingAmount.toLocaleString()} تومان</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Item 5: Loan Date Received */}
+                                        <div className="bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0">
+                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0 text-right">
+                                                <span className="text-[10px] text-gray-500 dark:text-slate-400 block font-medium">تاریخ دریافت وام</span>
+                                                <span className="text-xs font-bold text-gray-800 dark:text-slate-200 font-mono leading-tight block mt-0.5 text-right">{formatDateToNumericJalali(selectedLoan.receiveDate || selectedLoan.startDate)}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Item 6: Installments Start Date */}
+                                        <div className="bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0 text-right">
+                                                <span className="text-[10px] text-gray-500 dark:text-slate-400 block font-medium">تاریخ شروع اقساط</span>
+                                                <span className="text-xs font-bold text-gray-800 dark:text-slate-200 font-mono leading-tight block mt-0.5 text-right">{formatDateToNumericJalali(getLoanNextDueInfo(selectedLoan, []).nextDueDateStr || selectedLoan.startDate)}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Item 7: Due Day Of Month */}
+                                        <div className="bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[10px] text-gray-500 dark:text-slate-400 block font-medium">موعد قسط در هر ماه</span>
+                                                <span className="text-xs font-bold text-blue-600 dark:text-blue-400 leading-tight block mt-0.5">روز {selectedLoan.dueDayOfMonth} ماه</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Item 8: Paid Installments Count */}
+                                        <div className="bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                                            <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[10px] text-gray-500 dark:text-slate-400 block font-medium">اقساط پرداخت شده</span>
+                                                <span className="text-xs font-bold text-gray-800 dark:text-slate-200 leading-tight block mt-0.5">{paidInst} قسط</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Description Box */}
+                                    <div className="p-3 bg-blue-50/70 dark:bg-indigo-950/40 rounded-2xl flex items-center gap-3 border border-blue-100/80 dark:border-indigo-900/40">
+                                        <div className="bg-white dark:bg-indigo-900/60 p-2 rounded-xl text-blue-600 dark:text-blue-300 shrink-0">
+                                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <span className="text-xs font-bold text-blue-700 dark:text-blue-300 block">توضیحات وام</span>
+                                            <p className="text-[10px] text-gray-600 dark:text-slate-300 leading-relaxed break-words">{selectedLoan.notes && selectedLoan.notes.trim() ? selectedLoan.notes : 'توضیحاتی برای این وام ثبت نشده است.'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* END: Detailed Info Grid */}
+
+                                {/* BEGIN: Reminder Card */}
+                                <div className="bg-amber-50/50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-800/40 rounded-3xl p-4 flex items-center justify-between card-shadow" data-purpose="reminder-banner">
+                                    <div className="flex items-center gap-4 min-w-0">
                                         <div className="relative shrink-0">
-                                            <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-300 flex items-center justify-center shadow-inner">
-                                                <Icon name="bell" className="w-6 h-6 text-amber-500 animate-pulse" />
+                                            <div className="bg-amber-100 dark:bg-amber-900/60 p-3 rounded-2xl">
+                                                <svg className="h-10 w-10 text-amber-500 fill-amber-500/20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 4.36 6 6.92 6 10v5l-2 2v1h16v-1l-2-2z"></path>
+                                                </svg>
                                             </div>
                                             {!nextDueInfo.isCompleted && (
-                                                <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-800 shadow-sm">
-                                                    {nextDueInfo.daysLeft < 0 ? `!${Math.abs(nextDueInfo.daysLeft)}` : nextDueInfo.daysLeft}
+                                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-800">
+                                                    {nextDueInfo.daysLeft < 0 ? Math.abs(nextDueInfo.daysLeft) : nextDueInfo.daysLeft}
                                                 </span>
                                             )}
                                         </div>
                                         <div className="min-w-0">
-                                            <div className="text-xs font-extrabold text-amber-900 dark:text-amber-200">
-                                                {nextDueInfo.isCompleted ? 'کلیه اقساط پرداخت شده‌اند' : 'نزدیک‌ترین یادآوری'}
-                                            </div>
-                                            <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 truncate">
-                                                {nextDueInfo.isCompleted ? 'پرونده وام تسویه‌شده است' : `قسط شماره ${nextDueInfo.nextDueNum}`}
-                                            </div>
-                                            <div className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 font-mono" dir="ltr">
-                                                {nextDueInfo.nextDueDateStr}
-                                            </div>
+                                            <h3 className="text-sm font-bold text-amber-800 dark:text-amber-200">نزدیک‌ترین یادآوری</h3>
+                                            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1 leading-snug">
+                                                {nextDueInfo.isCompleted ? 'کلیه اقساط پرداخت شده‌اند' : `قسط شماره ${nextDueInfo.nextDueNum}`}
+                                                {!nextDueInfo.isCompleted && <br />}
+                                                {!nextDueInfo.isCompleted && formatDateToNumericJalali(nextDueInfo.nextDueDateStr)}
+                                            </p>
                                         </div>
                                     </div>
-
-                                    <div className="text-left shrink-0">
-                                        <div className={`text-xs font-black px-3 py-1.5 rounded-xl border ${
-                                            nextDueInfo.isCompleted 
-                                                ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' 
-                                                : nextDueInfo.daysLeft < 0 
-                                                ? 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-800' 
-                                                : 'bg-amber-100 dark:bg-amber-900/70 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700/80'
-                                        }`}>
+                                    <div className="text-center shrink-0">
+                                        <div className={`text-xl sm:text-2xl font-black ${nextDueInfo.isCompleted ? 'text-emerald-600 dark:text-emerald-400' : nextDueInfo.daysLeft < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400'}`}>
                                             {nextDueInfo.isCompleted 
-                                                ? 'تسویه شد' 
-                                                : nextDueInfo.daysLeft < 0 
-                                                ? `${Math.abs(nextDueInfo.daysLeft)} روز تأخیر` 
-                                                : nextDueInfo.daysLeft === 0 
-                                                ? 'امروز' 
-                                                : `${nextDueInfo.daysLeft} روز`
-                                            }
+                                                ? 'تکمیل' 
+                                                : `${Math.abs(nextDueInfo.daysLeft)} روز`}
                                         </div>
-                                        {!nextDueInfo.isCompleted && (
-                                            <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 mt-1 flex items-center space-x-1 space-x-reverse justify-end">
-                                                <Icon name="clock" className="w-3 h-3" />
-                                                <span>مانده تا سررسید</span>
-                                            </div>
-                                        )}
+                                        <div className={`text-[10px] sm:text-xs font-bold mt-0.5 ${nextDueInfo.isCompleted ? 'text-emerald-700 dark:text-emerald-300' : nextDueInfo.daysLeft < 0 ? 'text-rose-700 dark:text-rose-300' : 'text-amber-700 dark:text-amber-300'}`}>
+                                            {nextDueInfo.isCompleted 
+                                                ? 'تسویه‌شده' 
+                                                : nextDueInfo.daysLeft < 0 
+                                                ? 'تاخیر در پرداخت' 
+                                                : 'مانده تا سررسید'}
+                                        </div>
+                                        <div className="mt-2 bg-white/60 dark:bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px] text-amber-800 dark:text-amber-200 flex items-center gap-1 justify-center">
+                                            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
+                                            <span>یادآوری فعال است</span>
+                                        </div>
                                     </div>
                                 </div>
+                                {/* END: Reminder Card */}
 
-                                {/* 4. Primary Call To Action Button: Register Installment Payment */}
+                                {/* BEGIN: Action Button */}
                                 <button 
                                     onClick={() => openStackWizard('installment', 'add', selectedLoan)}
                                     disabled={isClosed}
-                                    className={`w-full py-4 px-6 rounded-2xl font-black text-base flex items-center justify-center space-x-2.5 space-x-reverse transition-all shadow-lg active:scale-[0.98] ${
+                                    className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg transition-all active:scale-95 ${
                                         isClosed 
                                             ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed shadow-none' 
-                                            : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-700 text-white shadow-indigo-500/30 dark:shadow-indigo-950/50 cursor-pointer'
+                                            : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-blue-200 dark:shadow-blue-950/50 cursor-pointer'
                                     }`}
+                                    data-purpose="submit-payment-button"
                                 >
-                                    <Icon name="wallet" className="w-5 h-5 text-white" />
+                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                    </svg>
                                     <span>ثبت پرداخت قسط</span>
                                 </button>
+                                {/* END: Action Button */}
 
-                                {/* 5. Taller Registered Installments List Cards */}
-                                <div className="space-y-3 pt-2">
-                                    <div className="flex justify-between items-center">
-                                        <h4 className="text-xs font-extrabold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5 space-x-reverse">
-                                            <Icon name="list" className="w-4 h-4 text-indigo-500" />
-                                            <span>تراکنش‌ها / اقساط پرداخت‌شده</span>
-                                        </h4>
-                                        {isClosed ? (
-                                            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center space-x-1 space-x-reverse bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/40">
-                                                <Icon name="check-circle-2" className="w-3.5 h-3.5" />
-                                                <span>وام تسویه‌شده و بسته است</span>
-                                            </span>
-                                        ) : (
-                                            <span className="text-[11px] text-slate-400 font-bold">
-                                                {repaymentTxs.length} قسط ثبت‌شده
-                                            </span>
-                                        )}
+                                {/* BEGIN: Transactions Section */}
+                                <section className="space-y-4" data-purpose="transaction-history">
+                                    <div className="flex items-center justify-between px-1">
+                                        <div className="flex items-center gap-2">
+                                            <svg className="h-5 w-5 text-gray-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
+                                            <h3 className="font-bold text-gray-800 dark:text-gray-100">تراکنش‌ها</h3>
+                                        </div>
+                                        <span className="text-blue-600 dark:text-blue-400 text-xs font-semibold">
+                                            {repaymentTxs.length} قسط ثبت‌شده
+                                        </span>
                                     </div>
 
                                     {repaymentTxs.length === 0 ? (
-                                        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 shadow-xs">
+                                        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 card-shadow">
                                             هنوز قسطی برای این وام ثبت نشده است
                                         </div>
                                     ) : (
-                                        <div className="space-y-2.5">
+                                        <div className="space-y-3">
                                             {repaymentTxs.map((tx, idx) => (
                                                 <SwipeableTxCard 
                                                     key={tx.id}
@@ -7992,14 +8029,16 @@
                                             ))}
                                         </div>
                                     )}
-                                </div>
+                                </section>
+                                {/* END: Transactions Section */}
 
-                                {/* 6. Loan Export Button */}
+                                {/* Export Button */}
                                 <button 
                                     onClick={() => openUniversalExportModal('loan', selectedLoan)}
-                                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-3 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 space-x-reverse shadow-xs active:scale-95 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-200">
+                                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 space-x-reverse card-shadow active:scale-95 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-200"
+                                >
                                     <Icon name="file-output" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                                    <span>خروجی پرونده وام</span>
+                                    <span>خروجی گرفتن از گزارش وام</span>
                                 </button>
                             </div>
                         );
