@@ -10,5 +10,8 @@
   },
   "dependencies": {
     "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@babel/standalone": "^7.29.8"
   }
 }

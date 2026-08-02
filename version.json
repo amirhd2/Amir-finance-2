@@ -1,15 +1,30 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.6.1",
-  "buildNumber": 162,
+  "installedVersion": "1.7.0",
+  "buildNumber": 163,
   "releaseDate": "2026-08-02",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.6.1",
-  "latestBuild": 162,
+  "latestVersion": "1.7.0",
+  "latestBuild": 163,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.7.0",
+      "buildNumber": 163,
+      "releaseDate": "2026-08-02",
+      "releaseChannel": "Stable",
+      "commitHash": "v170rel",
+      "commitMessage": "feat: full responsive web & desktop support across all views, release v1.7.0 (build 163)",
+      "changes": [
+        "پشتیبانی کامل و هوشمند از چیدمان واکنش‌گرا (Responsive) در تمام صفحات و بخش‌های برنامه ویژه تبلت‌ها و دسکتاپ (Grid layout multi-column)",
+        "ارتقای کانتینر اصلی برنامه جهت نمایش عریض و روان در صفحه‌نمایش‌های بزرگ بدون تغییر در حالت موبایل",
+        "بهینه‌سازی شبکه کارت‌های مخاطبین، پرونده‌های وام، طلب‌ها و بدهی‌ها برای نمایش چند ستونه در نمایشگرهای عریض",
+        "تنظیم و بهینه‌سازی دقیق ارتفاع کارت مخاطبین جهت جانمایی ایده‌آل آواتار و نام مخاطب",
+        "انتشار رسمی نسخه 1.7.0 و ارتقا به بیلد 163"
+      ]
+    },
     {
       "version": "1.6.1",
       "buildNumber": 162,

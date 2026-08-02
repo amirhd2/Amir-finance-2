@@ -562,8 +562,8 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex justify-center items-center p-0 sm:p-4">
 
-    <!-- Main Mobile Frame Container -->
-    <div id="root" class="w-full sm:max-w-[430px] h-[100vh] sm:h-[880px] bg-slate-50 dark:bg-slate-950 sm:rounded-[40px] shadow-2xl relative overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800"></div>
+    <!-- Main Mobile & Responsive App Container Frame -->
+    <div id="root" class="w-full sm:max-w-2xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl h-[100vh] sm:h-[94vh] bg-slate-50 dark:bg-slate-950 sm:rounded-3xl shadow-2xl relative overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800 my-auto"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
@@ -3251,15 +3251,30 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.6.1",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '162', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.7.0",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '163', 10),
                 releaseDate: "2026-08-02",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.6.1",
-                latestBuild: 162,
+                latestVersion: "1.7.0",
+                latestBuild: 163,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.7.0",
+                        buildNumber: 163,
+                        releaseDate: "2026-08-02",
+                        releaseChannel: "Stable",
+                        commitHash: "v170rel",
+                        commitMessage: "feat: full responsive web & desktop support across all views, release v1.7.0 (build 163)",
+                        changes: [
+                            "پشتیبانی کامل و هوشمند از چیدمان واکنش‌گرا (Responsive) در تمام صفحات و بخش‌های برنامه ویژه تبلت‌ها و دسکتاپ (Grid layout multi-column)",
+                            "ارتقای کانتینر اصلی برنامه جهت نمایش عریض و روان در صفحه‌نمایش‌های بزرگ بدون تغییر در حالت موبایل",
+                            "بهینه‌سازی شبکه کارت‌های مخاطبین، پرونده‌های وام، طلب‌ها و بدهی‌ها برای نمایش چند ستونه در نمایشگرهای عریض",
+                            "تنظیم و بهینه‌سازی دقیق ارتفاع کارت مخاطبین جهت جانمایی ایده‌آل آواتار و نام مخاطب",
+                            "انتشار رسمی نسخه 1.7.0 و ارتقا به بیلد 163"
+                        ]
+                    },
                     {
                         version: "1.6.1",
                         buildNumber: 162,
@@ -3839,8 +3854,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 162;
-                const EMBEDDED_VERSION = "1.6.1";
+                const EMBEDDED_BUILD = 163;
+                const EMBEDDED_VERSION = "1.7.0";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -3866,8 +3881,8 @@
                     if (!res.ok) throw new Error('version.json fetch failed');
                     const serverData = await res.json();
 
-                    const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || '162', 10);
-                    const serverVersion = serverData.installedVersion || serverData.latestVersion || '1.6.1';
+                    const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || '163', 10);
+                    const serverVersion = serverData.installedVersion || serverData.latestVersion || '1.7.0';
 
                     const isUpdateAvailable = (serverBuild > localBuild) || hasSWUpdate || swFoundUpdate;
 
@@ -6898,7 +6913,7 @@
                                         </button>
                                     </div>
 
-                                     <div className="space-y-2.5">
+                                    <div className="space-y-2.5">
                                         {transactions.slice(0, 4).map((tx) => (
                                             <div key={tx.id} className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40 last:border-0">
                                                 <div className="flex items-center space-x-2.5 space-x-reverse">
@@ -6988,6 +7003,7 @@
                                                     <span>نمایش تسویه‌شده‌ها</span>
                                                 </button>
                                             </div>
+                                            <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
                                             {filteredAccountsLoans.map(loan => {
                                                 const nextDueInfo = getLoanNextDueInfo(loan, transactions);
                                                 const isCompleted = nextDueInfo.isCompleted || (loan.remainingAmount !== undefined && loan.remainingAmount <= 0);
@@ -7042,6 +7058,7 @@
                                                     </SwipeToDeleteItem>
                                                 );
                                             })}
+                                            </div>
                                         </div>
                                     )}
 
@@ -7049,6 +7066,7 @@
                                     {(accountsSubTab === 'all' || accountsSubTab === 'demands') && filteredAccountsDemands.length > 0 && (
                                         <div className="space-y-2">
                                             <div className="text-xs font-bold text-slate-500">طلب‌ها</div>
+                                            <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
                                             {filteredAccountsDemands.map(contact => {
                                                 const settledCount = getSettledPeriodCount(contact.id, 'demand');
                                                 return (
@@ -7083,6 +7101,7 @@
                                                     </SwipeToDeleteItem>
                                                 );
                                             })}
+                                            </div>
                                         </div>
                                     )}
 
@@ -7090,6 +7109,7 @@
                                     {(accountsSubTab === 'all' || accountsSubTab === 'debts') && filteredAccountsDebts.length > 0 && (
                                         <div className="space-y-2">
                                             <div className="text-xs font-bold text-slate-500">بدهی‌ها</div>
+                                            <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
                                             {filteredAccountsDebts.map(contact => {
                                                 const settledCount = getSettledPeriodCount(contact.id, 'debt');
                                                 return (
@@ -7124,6 +7144,7 @@
                                                     </SwipeToDeleteItem>
                                                 );
                                             })}
+                                            </div>
                                         </div>
                                     )}
 
@@ -7213,7 +7234,7 @@
                                 </div>
 
                                 {/* Contacts List Cards */}
-                                <div className="space-y-4">
+                                <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
                                     {filteredContacts.map((contact) => {
                                         const contactLoans = loans.filter(l => l.contactId === contact.id);
                                         const hasActiveLoan = contactLoans.some(l => 
@@ -8653,7 +8674,7 @@
                                 </div>
 
                                  {/* Settings Sections */}
-                                 <div className="space-y-3.5">
+                                 <div className="space-y-3.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start">
                                      {/* 1. Appearance (Bento Style in Accordion) */}
                                      <div 
                                          onClick={() => toggleSettingsSection('appearance')}
