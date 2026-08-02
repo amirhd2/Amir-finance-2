@@ -1,14 +1,57 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.5.0",
-  "buildNumber": 158,
+  "installedVersion": "1.6.1",
+  "buildNumber": 162,
   "releaseDate": "2026-08-02",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.5.0",
+  "latestVersion": "1.6.1",
+  "latestBuild": 162,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.6.1",
+      "buildNumber": 162,
+      "releaseDate": "2026-08-02",
+      "releaseChannel": "Stable",
+      "commitHash": "v161rel",
+      "commitMessage": "fix & perf: ultra-smooth iOS push/pop page transitions, fix back button direction in settled loans/debts/demands, fix version update check in iOS installed PWA standalone mode, release v1.6.1 (build 162)",
+      "changes": [
+        "ارتقا و روان‌سازی کامل انیمیشن‌های ورود و بازگشت صفحات (Push & Pop Transitions) با استاندارد iOS و فریم‌ریت بالا (Hardware-Accelerated Translate3D)",
+        "اصلاح جهت انیمیشن بازگشت (از چپ به راست) هنگام کلیک روی دکمه بازگشت بالای صفحات وام، طلب و بدهی تسویه‌شده",
+        "رفع مشکل دکمه بررسی بروزرسانی در نسخه وب‌اپ آیفون (PWA Standalone) با به‌روزرسانی هوشمند شماره بیلد محلی و فال‌بک خودکار (بیلد 162)",
+        "بهینه‌سازی و تنظیم دقیق ارتفاع کارت‌های مخاطبین جهت جاگیری ایده‌آل آیکون آواتار و نام مخاطب",
+        "همگام‌سازی کامل شماره بیلد 162 و نسخه 1.6.1 در کلیه فایل‌های برنامه"
+      ]
+    },
+    {
+      "version": "1.6.0",
+      "buildNumber": 161,
+      "releaseDate": "2026-08-02",
+      "releaseChannel": "Stable",
+      "commitHash": "v160rel",
+      "commitMessage": "feat: revamp settings appearance (bento mode style) and backup section UI matching attached spec, release v1.6.0 (build 161)",
+      "changes": [
+        "بازطراحی کامل بخش «ظاهر» (Appearance) در تنظیمات به سبک شبکه Bento Grid کاملاً مطابق با الگوی درخواستی",
+        "بازطراحی کامل بخش «پشتیبان‌گیری» (Backup & Restore) در تنظیمات با کارت ردیفی و طراحی دقیق منطبق بر ساختار جدید",
+        "ثبت بیلد جدید شماره 161 و انتشار رسمی نسخه 1.6.0"
+      ]
+    },
+    {
+      "version": "1.5.1",
+      "buildNumber": 160,
+      "releaseDate": "2026-08-02",
+      "releaseChannel": "Stable",
+      "commitHash": "v151rel2",
+      "commitMessage": "fix & release: eliminate swipe back multi-frame repeat glitch, remove slide animation for bottom navigation, fix return animation direction for completed loan/demand/debt pages, release v1.5.1 (build 160)",
+      "changes": [
+        "رفع کامل انیمیشن تکراری و تداخل چند فریمی در لحظه پایانی حرکت سوایپ بک (Swipe Back)",
+        "حذف انیمیشن اسلاید افقی هنگام جابجایی بین زبانه‌های اصلی نوار پایین (خانه، حساب‌ها، مخاطبین، تنظیمات)",
+        "اصلاح انیمیشن بازگشت از چپ به راست هنگام کلیک روی دکمه بازگشت بالای صفحه در جزئیات وام‌های انجام شده، طلب‌های انجام شده و بدهی‌های انجام شده",
+        "ثبت بیلد جدید شماره 160 و انتشار نهایی نسخه 1.5.1"
+      ]
+    },
     {
       "version": "1.5.0",
       "buildNumber": 158,
@@ -21,472 +64,6 @@
         "نمایش رنگی دکمه‌های نشان وضعیت (طلب، بدهی، وام) در باکس مخاطبین فقط در صورت وجود رکورد فعال و بی‌رنگ شدن در غیر این صورت",
         "نمایش آیکون تیک برای رکوردهای تسویه‌شده در زیر دکمه هر نشان در باکس مخاطب",
         "انتشار رسمی نسخه 1.5.0 (بیلد 158)"
-      ]
-    },
-    {
-      "version": "1.4.0",
-      "buildNumber": 157,
-      "releaseDate": "2026-08-01",
-      "releaseChannel": "Stable",
-      "commitHash": "v140rel",
-      "commitMessage": "feat & fix: multi-line dynamic card heights, numeric Jalali date in installment cards, shortened stack card height with scroll, and PWA WebApp update fix & release v1.4.0 (build 157)",
-      "changes": [
-        "امکان رشد عمودی و انعطاف‌پذیری ارتفاع کارت‌های تراکنش (وام، طلب و بدهی) هنگام وجود عناوین یا توضیحات طولانی",
-        "اصلاح و نمایش تاریخ پرداخت این قسط به صورت عددی خالص جلالی به ترتیب سال/ماه/روز (مثلاً 1405/05/12) در کارت اول پرداخت قسط",
-        "کوتاه‌تر کردن ارتفاع کارت استک (Stack Card Wizard) به میزان ۱.۵ سانتی‌متر و فعال‌سازی اسکرول روان داخلی در صورت نیاز به فضای بیشتر",
-        "رفع کامل مشکل دکمه بررسی و اعمال بروزرسانی در حالت وب‌اپ نصب‌شده (PWA Standalone) با اصلاح منطق Fetch سرویس ورکر و نمایش شماره بیلد واقعی",
-        "انتشار رسمی نسخه 1.4.0 (بیلد 157)"
-      ]
-    },
-    {
-      "version": "1.3.8",
-      "buildNumber": 156,
-      "releaseDate": "2026-08-01",
-      "releaseChannel": "Stable",
-      "commitHash": "v138rel",
-      "commitMessage": "fix & perf: fix swipe back micro-jitter, eliminate double slide jump on returning from subpages to contact profile, release v1.3.8 (build 156)",
-      "changes": [
-        "رفع کامل پرش و لرزش لحظه پایانی انیمیشن حرکت سوایپ بازگشت (Swipe Back)",
-        "رفع حرکت اضافه و پرش افقی (از راست به چپ) هنگام بازگشت از جزئیات وام، بدهی یا طلب تسویه‌شده به پروفایل مخاطب",
-        "نمایش برجسته و کامل تاریخ دقیق پرداخت قسط با فرمت YYYY/MM/DD در کارت اطلاعات پرداخت قسط",
-        "افزودن انیمیشن باز و بسته شدن (ورود و خروج) روان آکاردیون «یادآوری‌های مهم» صفحه اصلی مطابق با AGENTS.md",
-        "تغییر فیلتر «علاقه‌مندی‌ها» در صفحه مخاطبین به آیکون ستاره (خاموش/زرد روشن در حالت فعال)",
-        "افزودن فیلتر جدید «تسویه‌شده» به صفحه مخاطبین برای نمایش مخاطبین دارای پرونده وام، طلب یا بدهی تسویه‌شده",
-        "حذف چسبندگی (sticky) بخش بالای صفحه مخاطبین جهت ناپدید شدن روان هنگام اسکرول به بالا",
-        "انتشار رسمی نسخه 1.3.8 (بیلد 156)"
-      ]
-    },
-    {
-      "version": "1.3.7",
-      "buildNumber": 155,
-      "releaseDate": "2026-08-01",
-      "releaseChannel": "Stable",
-      "commitHash": "v137rel",
-      "commitMessage": "fix & feat: full date display in installment card, smooth enter/exit accordion animation, star icon favorites filter, settled contacts filter, scrollable top header & release v1.3.7 (build 155)",
-      "changes": [
-        "نمایش برجسته و کامل تاریخ دقیق پرداخت قسط با فرمت YYYY/MM/DD در کارت اطلاعات پرداخت قسط",
-        "افزودن انیمیشن باز و بسته شدن (ورود و خروج) روان آکاردیون «یادآوری‌های مهم» صفحه اصلی مطابق با قانون جدید انیمیشن‌های پروژه در AGENTS.md",
-        "تغییر فیلتر «علاقه‌مندی‌ها» در صفحه مخاطبین به آیکون ستاره (خاموش/زرد روشن در حالت فعال)",
-        "افزودن فیلتر جدید «تسویه‌شده» به صفحه مخاطبین برای نمایش مخاطبین دارای پرونده وام، طلب یا بدهی تسویه‌شده",
-        "حذف چسبندگی (sticky) بخش بالای صفحه مخاطبین (جستجو، فیلترها و عنوان) جهت ناپدید شدن روان هنگام اسکرول به بالا",
-        "رفع مشکل عدم دانلود تصویر گرافیکی (PNG) خروجی پرونده وام",
-        "اصلاح منطق اعتبارسنجی مانده کل وام هنگام ویرایش تراکنش و پرداخت قسط",
-        "برجسته‌سازی و دو برابر کردن سایز باکس شماره قسط («قسط شماره X از Y») در کارت آبی رنگ اول پرداخت قسط",
-        "انتشار رسمی نسخه 1.3.7 (بیلد 155)"
-      ]
-    },
-    {
-      "version": "1.3.6",
-      "buildNumber": 154,
-      "releaseDate": "2026-07-31",
-      "releaseChannel": "Stable",
-      "commitHash": "v136rel",
-      "commitMessage": "perf & anim: enhance iOS Pop Out closing animation with visible shrink scale to 0.45, gradual opacity fadeout and quick 1.05 bounce peak, release v1.3.6 (build 154)",
-      "changes": [
-        "بهینه‌سازی انیمیشن بستن پاپ‌آپ‌ها و مدال‌ها به سبک iOS: ایجاد بانس بسیار سریع 1.05 در ابتدا و کوچک‌شدن ملموس و کاملاً مشهود به scale(0.45)",
-        "تنظیم دقیق منحنی فیدآوت opacity جهت جلوگیری از غیب‌شدن ناگهانی و نمایش واضح روند کوچک‌شدن مدال پیش از محو شدن کاملاً روان",
-        "انتشار نسخه جدید 1.3.6 (بیلد 154)"
-      ]
-    },
-    {
-      "version": "1.3.5",
-      "buildNumber": 153,
-      "releaseDate": "2026-07-31",
-      "releaseChannel": "Stable",
-      "commitHash": "v135rel",
-      "commitMessage": "feat: custom iOS-style Pop Out modal closing animation with 30% bounce, 0.35s cubic-bezier duration & 0.3s backdrop fade-out, release v1.3.5 (build 153)",
-      "changes": [
-        "طراحی و اعمال انیمیشن خروج پاپ‌آپ/مدال به سبک iOS (Pop Out) با ویژگی بانس خفیف scale(1.06) در فریم ۳۰٪ و جمع‌شدن سریع به scale(0.7) و fade-out در فریم ۱۰۰٪",
-        "تنظیم دقیق مدت زمان 0.35 ثانیه و تابع زمان‌بندی cubic-bezier(0.6, -0.28, 0.735, 0.045) به همراه Fade Out پس‌زمینه در 0.3 ثانیه",
-        "اعمال انیمیشن بستن جدید برای پنجره کارت استک (Card Stack Wizard)، پنجره‌های افزودن و ویرایش مخاطب، پنجره‌های خروجی وام/قسط/بدهی و دیالوگ‌های تایید حذف",
-        "انتشار نسخه رسمی 1.3.5 (بیلد 153)"
-      ]
-    },
-    {
-      "version": "1.3.4",
-      "buildNumber": 152,
-      "releaseDate": "2026-07-31",
-      "releaseChannel": "Stable",
-      "commitHash": "v134rel",
-      "commitMessage": "feat & fix: continuous swipe-to-delete expansion, centered trash icon, add swipe-to-refresh to all-transactions and subpages, release v1.3.4 (build 152)",
-      "changes": [
-        "بهینه‌سازی انیمیشن Swipe to Delete و کشیده‌شدن و گسترش مداوم دکمه قرمز حذف به سمت چپ همزمان با ادامه کشیدن کارت",
-        "تمرکز و تراز دقیق آیکون سطل زباله در مرکز دکمه حذف و حذف متون اضافی جهت افزایش زیبایی بصری",
-        "افزودن و فعال‌سازی قابلیت کشیدن به پایین برای بروزرسانی (Swipe to Refresh) در صفحه «همه تراکنش‌ها» و سایر صفحات تفصیلی",
-        "بهینه‌سازی سیستم بررسی و بروزرسانی PWA در نسخه نصب‌شده و انتشار نسخه رسمی 1.3.4 (بیلد 152)"
-      ]
-    },
-    {
-      "version": "1.3.3",
-      "buildNumber": 151,
-      "releaseDate": "2026-07-31",
-      "releaseChannel": "Stable",
-      "commitHash": "v133rel",
-      "commitMessage": "perf & fix: smooth swipe-to-delete frame rate & morphing animation, fix swipe-to-back 1-frame release flicker",
-      "changes": [
-        "بهینه‌سازی کامل انیمیشن Swipe to Delete و اجرای ۶۰ فریم بر ثانیه بدون افت فریم هنگام کشیدن کالاها",
-        "روان‌سازی کامل انیمیشن مورف تغییر شکل دایره به مستطیل در دکمه حذف کشویی بدون پرش‌های ناگهانی",
-        "رفع کامل پرش ۱ فریمی (1-Frame Jump/Flicker) انیمیشن Swipe to Back در لحظه رهاسازی و پایان اسلاید صفحه",
-        "تغییر و یکپارچه‌سازی عناوین «دریافت / تسویه طلب» به «بازپرداخت طلب» در عنوان تراکنش‌ها، هشدارها و فرم‌ها"
-      ]
-    },
-    {
-      "version": "1.3.2",
-      "buildNumber": 150,
-      "releaseDate": "2026-07-31",
-      "releaseChannel": "Stable",
-      "commitHash": "v132rel",
-      "commitMessage": "fix: update debt/demand button and title labels, contact active loan filter logic, and un-archiving on tx delete",
-      "changes": [
-        "تغییر عبارت «ثبت قرض / بدهی» به «ثبت بدهی» و فرمت «ثبت بدهی/ نام مخاطب» در عنوان تراکنش‌ها و دکمه‌های پروفایل",
-        "تغییر عبارت «دریافت / تسویه طلب» به «بازپرداخت طلب» و فرمت «بازپرداخت طلب/ نام مخاطب» در عنوان تراکنش‌ها و فرم‌ها",
-        "عدم نمایش مخاطبینی که تنها دارای وام تسویه‌شده هستند در صورت اعمال فیلتر «دارای وام» در صفحه مخاطبین",
-        "خروج خودکار پرونده‌های وام، طلب و بدهی تسویه‌شده از حالت بایگانی در صورت حذف تراکنش از آنها و بازگشت به حالت در جریان تا ثبت تراکنش تسویه‌کننده مجدد"
-      ]
-    },
-    {
-      "version": "1.3.1",
-      "buildNumber": 149,
-      "releaseDate": "2026-07-31",
-      "releaseChannel": "Stable",
-      "commitHash": "v131rel",
-      "commitMessage": "fix: loan first installment date display, top bar icon flicker, contact debt/demand labels, and fixed position badge grid",
-      "changes": [
-        "اصلاح تاریخ نمایش داده شده در بخش «تاریخ شروع اقساط» کارت وام به تاریخ دقیق اولین قسط",
-        "رفع کامل چشمک زدن (Flicker) آیکون بالای سمت چپ داشبورد و آیکون بالای سمت راست تنظیمات هنگام کلیک",
-        "تغییر عناوین نشان‌های مخاطبین از «طلبکار» به «طلب» و از «بدهکار» به «بدهی»",
-        "نمایش آیکون بایگانی به تنهایی در صورت وجود حساب تسویه‌شده بدون مانده جدید، و نمایش همزمان آیکون و نوشته در صورت وجود مانده active",
-        "ایجاد جایگاه‌های ثابت، مستقل و تفکیک‌شده برای سه نشان «طلب»، «بدهی» و «وام» و آیکون‌های بایگانی آنها جهت جلوگیری از جا‌به‌جایی عمودی و افقی سایر عناصر"
-      ]
-    },
-    {
-      "version": "1.3.0",
-      "buildNumber": 148,
-      "releaseDate": "2026-07-31",
-      "releaseChannel": "Stable",
-      "commitHash": "v130rel",
-      "commitMessage": "feat: advanced standard swipe-to-delete with morphing red button, 12px gap, gesture tracking and iOS confirm modal",
-      "changes": [
-        "پیاده‌سازی کامل و بی‌نقص سیستم کشیدن برای حذف (Swipe to Delete) بر اساس استانداردهای RTL و انیمیشن مورفینگ",
-        "ایجاد فاصله مجزا (Gap ۱۲ پیکسل) بین لبه سمت چپ دکمه حذف قرمز و لبه سمت راست کارت جهت جلوگیری از چسبندگی باکس‌ها",
-        "انیمیشن مورفینگ دکمه حذف قرمز از دایره ۵۲ پیکسلی به مستطیل با انحنای ۱۶ پیکسل و ظهور محو شونده (Fade In & Scale)",
-        "تعقیب دقیق انگشت کاربر حین سوایپ تعاملی (Interactive Back-Swipe) با رعایت آستانه ۴ پیکسل برای کلیک ساده",
-        "پشتیبانی از سوایپ کامل (آستانه ۷۰٪) جهت پوشش کل عرض کارت و نمایش مودال تایید حذف استاندارد iOS",
-        "اعمال سیستم Swipe to Delete روی تمامی مخاطبین، وام‌ها، اقساط، طلب‌ها و بدهی‌ها در کلیه بخش‌های برنامه"
-      ]
-    },
-    {
-      "version": "1.2.1",
-      "buildNumber": 147,
-      "releaseDate": "2026-07-29",
-      "releaseChannel": "Stable",
-      "commitHash": "v121rel",
-      "commitMessage": "feat: FAB icon alignment & red toggle, remove pull refresh toast, fix contact profile trash button, left-align multi-line cards, standard debt/demand titles, modal AnimatePresence",
-      "changes": [
-        "حذف پیام توست اضافه پس از انجام کشیدن برای بروزرسانی (Pull to Refresh) جهت نمایش شفاف انیمیشن چرخشی",
-        "تنظیم مرکزیت دقیق آیکون + روی دکمه شناور FAB هنگام چرخش و تغییر رنگ آن به قرمز هنگام فعال‌سازی",
-        "فعال‌سازی دکمه سطل زباله بالای صفحه پروفایل مخاطب جهت حذف مخاطب و پرونده‌های وابسته با مودال تایید",
-        "چپ‌چین‌سازی دقیق مبالغ و اطلاعات تراکنش‌ها و دوره‌های بایگانی در صورت دو خطی شدن متون",
-        "استانداردسازی فرمت عناوین تب بدهی (قرض جدید/ نام مخاطب و بازپرداخت بدهی/ نام مخاطب)",
-        "استانداردسازی فرمت عناوین تب طلب (طلب جدید/ نام مخاطب و بازپرداخت طلب/ نام مخاطب) به همراه رنگ قرمز اختصاصی برای بازپرداخت طلب",
-        "اضافه شدن انیمیشن کامل باز شدن و بسته شدن (AnimatePresence) برای مودال‌های افزودن مخاطب، ویرایش مخاطب، حذف و خروجی‌ها"
-      ]
-    },
-    {
-      "version": "1.2.0",
-      "buildNumber": 146,
-      "releaseDate": "2026-07-29",
-      "releaseChannel": "Stable",
-      "commitHash": "c120rel",
-      "commitMessage": "feat: smart loan installment calculation, color-coded financial balance, compact stack card layout, and validation haptics",
-      "changes": [
-        "سیستم خودکار محاسبه تعداد اقساط وام بر اساس فرمول اصل/مبلغ کل و مبلغ هر قسط",
-        "کدگذاری رنگی هوشمند تراز مالی (آبی: باقیمانده مثبت/اضافه، قرمز: کسری، سبز: تراز دقیق)",
-        "اولویت‌دهی به تعداد قسط تعیین‌شده توسط کاربر (تایپ یا دکمه‌های +- ) با امکان بازنشانی توسط دکمه مربع سبز ریفرش",
-        "فشرده‌سازی لایوت کارت تعداد اقساط و انطباق کامل کنترل‌ها در کنار عنوان جهت صرفه‌جویی در ارتفاع",
-        "سیستم انیمیشن انقباض و انباشت کارتهای استک (Stack Cards Stacked Animation) با لرزش هپتیک خطا و فوکوس خودکار"
-      ]
-    },
-    {
-      "version": "1.1.17",
-      "buildNumber": 145,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "b144pwa",
-      "commitMessage": "fixing new swipe layout",
-      "changes": [
-        "  برطرف کردن نسبی مشکل سوایپ برای بازگشت به صفحه قبل "
-      ]
-    },
-    {
-      "version": "1.1.16",
-      "buildNumber": 144,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "b144pwa",
-      "commitMessage": "fix: resolve logo rendering fallbacks, standalone manifest headers, and immediate PWA update mechanism",
-      "changes": [
-        "حل کامل مشکل عدم نمایش آیکون برنامه در دسکتاپ و آیفون با سیستم هوشمند Multi-Fallback",
-        "تنظیم هدرهای استاندارد application/manifest+json و Service-Worker-Allowed در سرور",
-        "بهینه‌سازی ثبت و بروزرسانی خودکار سرویس ورکر PWA جهت بارگذاری فوری آیکون‌ها و اسپلش اسکرین"
-      ]
-    },
-    {
-      "version": "1.1.15",
-      "buildNumber": 143,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "a91f82c",
-      "commitMessage": "feat: full PWA auto-update pipeline, official brand assets, and detailed changelog history",
-      "changes": [
-        "تنظیم و یکپارچه‌سازی کامل آیکون‌های رسمی، فاوآیکون‌ها و اسپلش اسکرین PWA",
-        "پشتیبانی کامل از آیکون‌های Maskable و Any در Web App Manifest",
-        "افزودن اسپلش اسکرین‌های اختصاصی پرتره و لنداسکیپ برای iOS و اندروید",
-        "بهینه‌سازی فرآیند کشینگ سرویس ورکر و دریافت بروزرسانی‌های آنی (Auto-Update Fix)"
-      ]
-    },
-    {
-      "version": "1.1.14",
-      "buildNumber": 142,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "m3r268z",
-      "commitMessage": "feat: add global accounts search, settled filter, and archiving indicators",
-      "changes": [
-        "افزودن قابلیت جستجوی پیشرفته متنی در تمامی کارت‌های وام، طلب، بدهی و اقساط",
-        "نمایش وضعیت تسویه‌شده بودن گروه‌ها و دوره‌های تسویه در کارت مخاطبین",
-        "اضافه شدن فیلتر هوشمند پرونده‌های وام تسویه‌شده با قابلیت مخفی‌سازی و نمایش در تنظیمات"
-      ]
-    },
-    {
-      "version": "1.1.13",
-      "buildNumber": 141,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "lxolw03",
-      "commitMessage": "fix: refine installment wizard modal and dark mode styling",
-      "changes": [
-        "بهبود فرم‌های جدید افزودن قسط و ویرایش تراکنش‌ها",
-        "تصحیح محاسبات مانده وام و بدهی پس از ثبت یا حذف تراکنش",
-        "ارتقاء ظاهر رابط کاربری کارت‌های مالی در حالت تم تاریک (Dark Mode)"
-      ]
-    },
-    {
-      "version": "1.1.12",
-      "buildNumber": 140,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "m4ybsj7",
-      "commitMessage": "feat: add personal demand/debt detail breakdown and contact IBAN formatting",
-      "changes": [
-        "ارتقاء بخش حساب‌ها و افزودن سربرگ اختصاصی مدیریت طلب‌ها و بدهی‌ها",
-        "محاسبه دقیق اقساط باقی‌مانده و تاریخ دقیق سررسید بعدی وام‌ها",
-        "بهینه‌سازی فرمت‌دهی شماره کارت و شماره شبا در پروفایل مخاطبین"
-      ]
-    },
-    {
-      "version": "1.1.11",
-      "buildNumber": 139,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "lysox1p",
-      "commitMessage": "feat: add transaction deletion with balance rollback and confirmation modal",
-      "changes": [
-        "افزودن قابلیت حذف تراکنش‌ها و اقساط ثبت‌شده با بازگشت آنی مانده حساب",
-        "اضافه شدن مودال تایید حذف ایمن برای جلوگیری از حذف اتفاقی اطلاعات",
-        "بهبود انیمیشن و روانی نمایش لیست تراکنش‌ها"
-      ]
-    },
-    {
-      "version": "1.1.10",
-      "buildNumber": 138,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "otn6ayw",
-      "commitMessage": "perf: optimize service worker caching and offline PWA reliability",
-      "changes": [
-        "بهینه‌سازی عملکرد کشینگ سرویس ورکر (Service Worker) جهت کارکرد کامل آفلاین",
-        "پشتیبانی از PWA Standalone با تجربه مشابه اپلیکیشن نیتیو iOS و اندروید",
-        "بهبود ثبت اطلاعات در حافظه محلی LocalStorage با بالاترین سرعت"
-      ]
-    },
-    {
-      "version": "1.1.9",
-      "buildNumber": 137,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "ikh6g3p",
-      "commitMessage": "ui: refine loan cards UI and quick actions layout",
-      "changes": [
-        "بهینه‌سازی رابط کاربری کارت‌های وام و نمایش وضعیت پرداخت هر قسط",
-        "افزودن دکمه‌های اقدام سریع (Quick Actions) در لایوت اصلی",
-        "بهبود فونت وزیرمتن و خوانایی اعداد فارسی و تومان"
-      ]
-    },
-    {
-      "version": "1.1.8",
-      "buildNumber": 136,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "8f1vi7c",
-      "commitMessage": "feat: add loan registration with smart installment table",
-      "changes": [
-        "افزودن امکان ثبت وام با جدول اقساط هوشمند و سررسید خودکار",
-        "قابلیت تعیین تعداد اقساط و مبلغ هر قسط همراه با یادداشت",
-        "بهبود فرم افزودن مخاطب جدید و اعتبارسنجی ورودی‌ها"
-      ]
-    },
-    {
-      "version": "1.1.7",
-      "buildNumber": 135,
-      "releaseDate": "2026-07-28",
-      "releaseChannel": "Stable",
-      "commitHash": "83o0e33",
-      "commitMessage": "feat: add personal debt and demand filters and step-by-step repayments",
-      "changes": [
-        "ارتقاء کارت‌های طلب و بدهی شخصی با فیلتر ماهانه و سالانه",
-        "امکان ثبت پرداخت بدهی و دریافت طلب به صورت مرحله‌ای",
-        "افزودن گزارش خلاصه وضعیت مالی کل در بالای صفحه اصلی"
-      ]
-    },
-    {
-      "version": "1.1.6",
-      "buildNumber": 134,
-      "releaseDate": "2026-07-27",
-      "releaseChannel": "Stable",
-      "commitHash": "yajtlm8",
-      "commitMessage": "feat: implement full account settlement and archiving system",
-      "changes": [
-        "افزودن قابلیت تسویه کامل حساب و آرشیو دوره‌های قبلی طلب و بدهی",
-        "نمایش نشان تسویه‌شده (Settled Badge) روی کارت مخاطبین",
-        "بهبود عملکرد کش و بارگذاری سریع در اولین ورود"
-      ]
-    },
-    {
-      "version": "1.1.5",
-      "buildNumber": 133,
-      "releaseDate": "2026-07-27",
-      "releaseChannel": "Stable",
-      "commitHash": "bnivdgt",
-      "commitMessage": "ui: add quick transaction type filter and floating action menu",
-      "changes": [
-        "افزودن فیلتر سریع بر اساس نوع تراکنش (وام، طلب، بدهی، قسط)",
-        "بهبود دکمه شناور ثبت سریع (FAB) با دسترسی آسان",
-        "اصلاح استایل متون و حاشیه‌ها در تم تاریک"
-      ]
-    },
-    {
-      "version": "1.1.4",
-      "buildNumber": 132,
-      "releaseDate": "2026-07-27",
-      "releaseChannel": "Stable",
-      "commitHash": "mhxrn39",
-      "commitMessage": "feat: add automatic and manual dark mode theme switching",
-      "changes": [
-        "افزودن پشتیبانی کامل از تم تاریک (Dark Mode) خودکار و دستی",
-        "بهینه‌سازی مصرف باتری و رنگ‌های استاندارد چشمی",
-        "بهبود رابط کاربری در تبلت‌ها و نمایشگرهای عریض"
-      ]
-    },
-    {
-      "version": "1.1.3",
-      "buildNumber": 131,
-      "releaseDate": "2026-07-27",
-      "releaseChannel": "Stable",
-      "commitHash": "k8xay25",
-      "commitMessage": "feat: refine settings accordion navigation and changelog list",
-      "changes": [
-        "ارتقاء سیستم مدیریت نسخه و بخش چنج‌لاگ آکاردئونی در تنظیمات",
-        "افزودن قابلیت بررسی آنلاین بروزرسانی‌ها با یک کلیک",
-        "بهبود سرعت پاسخگویی دکمه‌ها و فرم‌ها"
-      ]
-    },
-    {
-      "version": "1.1.2",
-      "buildNumber": 130,
-      "releaseDate": "2026-07-27",
-      "releaseChannel": "Stable",
-      "commitHash": "gvupahf",
-      "commitMessage": "ux: improve iOS-style swipe back gesture and transition animations",
-      "changes": [
-        "تصحیح ژست حرکتی بازگشت (Swipe Back) به سبک iOS",
-        "بهبود انیمیشن‌های ورود و خروج صفحات و مودال‌ها",
-        "رفع ایرادات جزیی در نمایش اعلان‌ها و توست‌ها"
-      ]
-    },
-    {
-      "version": "1.1.1",
-      "buildNumber": 129,
-      "releaseDate": "2026-07-27",
-      "releaseChannel": "Stable",
-      "commitHash": "mem7mxl",
-      "commitMessage": "feat: add JSON data backup and restore capabilities",
-      "changes": [
-        "بهبود رابط کاربری بخش تنظیمات و اطلاعات برنامه",
-        "قابلیت پشتیبان‌گیری (Backup) و بازیابی داده‌ها به صورت فایل JSON",
-        "افزایش پایداری و رفع خطاهای ناخواسته"
-      ]
-    },
-    {
-      "version": "1.1.0",
-      "buildNumber": 128,
-      "releaseDate": "2026-07-27",
-      "releaseChannel": "Stable",
-      "commitHash": "a3f89e2",
-      "commitMessage": "feat: add application version management system and gesture navigation",
-      "changes": [
-        "افزودن سیستم هوشمند مدیریت نسخه برنامه و تاریخچه بروزرسانی‌ها (Version Management)",
-        "ارتقاء روانی ژست حرکتی بازگشت (Swipe Back) به سبک سیستم‌عامل iOS",
-        "امکان بررسی بروزرسانی آنلاین و آفلاین همراه با جزئیات کامل چنج‌لاگ"
-      ]
-    },
-    {
-      "version": "1.0.3",
-      "buildNumber": 127,
-      "releaseDate": "2026-07-27",
-      "releaseChannel": "Stable",
-      "commitHash": "e92c4b1",
-      "commitMessage": "perf: improve floating action button animation and frame rate",
-      "changes": [
-        "افزایش روانی و نرخ فریم انیمیشن‌های برنامه (FAB & Motion)",
-        "همگام‌سازی شفافیت، مقیاس و موقعیت مکانی منوی شناور به سبک iOS"
-      ]
-    },
-    {
-      "version": "1.0.2",
-      "buildNumber": 126,
-      "releaseDate": "2026-07-25",
-      "releaseChannel": "Stable",
-      "commitHash": "c4d12a9",
-      "commitMessage": "fix: improve wheel picker scrolling and gesture recognition",
-      "changes": [
-        "ارتقاء روانی اسکرول انتخابی تاریخ و اعداد در ویل‌پیکر iOS",
-        "رفع مشکلات پایداری رویدادهای لمسی و ژست‌های حرکتی"
-      ]
-    },
-    {
-      "version": "1.0.1",
-      "buildNumber": 125,
-      "releaseDate": "2026-07-20",
-      "releaseChannel": "Stable",
-      "commitHash": "f8911c4",
-      "commitMessage": "fix: update loan repayment recalculation and keyboard dismiss behavior",
-      "changes": [
-        "تصحیح محاسبه مجدد اقساط وام هنگام ویرایش اطلاعات",
-        "بهبود تجربه کاربری کیبورد در فرم‌های ثبت وام و حساب"
-      ]
-    },
-    {
-      "version": "1.0.0",
-      "buildNumber": 124,
-      "releaseDate": "2026-07-15",
-      "releaseChannel": "Stable",
-      "commitHash": "e02b3f1",
-      "commitMessage": "feat: initial release of Amir Finance personal finance tracker",
-      "changes": [
-        "انتشار اولیه سیستم مدیریت مالی شخصی امیر فایننس",
-        "مدیریت کامل وام‌ها، اقساط، طلب‌ها و بدهی‌ها با پشتیبانی آفلاین",
-        "گزارشات کاربردی و تم تاریک و روشن اختصاصی"
       ]
     }
   ]

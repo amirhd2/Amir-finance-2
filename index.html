@@ -361,7 +361,8 @@
         }
 
         .smooth-transition {
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+            transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1) !important;
+            will-change: transform;
         }
 
         .backdrop-overlay {
@@ -375,7 +376,8 @@
         }
 
         .smooth-overlay {
-            transition: opacity 0.3s linear !important;
+            transition: opacity 0.28s linear !important;
+            will-change: opacity;
         }
 
         /* iOS Wheel Picker Styles & Mask */
@@ -1708,8 +1710,8 @@
                     overlay.classList.add('smooth-overlay');
                     void page2.offsetHeight;
 
-                    page2.style.transform = 'translateX(0%)';
-                    page1.style.transform = 'translateX(-25%)';
+                    page2.style.transform = 'translate3d(0%, 0, 0)';
+                    page1.style.transform = 'translate3d(-25%, 0, 0)';
                     overlay.style.opacity = '0.4';
                 }
             };
@@ -1729,8 +1731,8 @@
                     overlay.classList.add('smooth-overlay');
                     void page2.offsetHeight;
 
-                    page2.style.transform = 'translateX(100%)';
-                    page1.style.transform = 'translateX(0%)';
+                    page2.style.transform = 'translate3d(100%, 0, 0)';
+                    page1.style.transform = 'translate3d(0%, 0, 0)';
                     overlay.style.opacity = '0';
 
                     let triggered = false;
@@ -1742,7 +1744,7 @@
                     };
 
                     page2.addEventListener('transitionend', finishBack);
-                    setTimeout(finishBack, 220);
+                    setTimeout(finishBack, 280);
                 } else {
                     if (onBack) onBack(mode);
                 }
@@ -1772,8 +1774,8 @@
                     page2.classList.remove('smooth-transition');
                     overlay.classList.remove('smooth-overlay');
 
-                    page2.style.transform = 'translateX(100%)';
-                    page1.style.transform = 'translateX(0%)';
+                    page2.style.transform = 'translate3d(100%, 0, 0)';
+                    page1.style.transform = 'translate3d(0%, 0, 0)';
                     overlay.style.opacity = '0';
 
                     void page2.offsetHeight;
@@ -1913,7 +1915,7 @@
             }, []);
 
             const handleHeaderBack = () => {
-                if (onBack) onBack('button');
+                closePage('button');
             };
 
             return (
@@ -3231,16 +3233,16 @@
                     x: '0%',
                     opacity: 1,
                     transition: direction === 'none' ? { duration: 0 } : {
-                        duration: 0.3,
-                        ease: [0.22, 1, 0.36, 1]
+                        duration: 0.28,
+                        ease: [0.32, 0.72, 0, 1]
                     }
                 }),
                 exit: (direction) => ({
                     x: direction === 'none' ? '0%' : (direction === 'back' ? '100%' : '-25%'),
                     opacity: direction === 'none' ? 1 : (direction === 'back' ? 0 : 0.7),
                     transition: direction === 'none' ? { duration: 0 } : {
-                        duration: 0.25,
-                        ease: [0.22, 1, 0.36, 1]
+                        duration: 0.28,
+                        ease: [0.32, 0.72, 0, 1]
                     }
                 })
             };
@@ -3249,15 +3251,30 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.6.0",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '161', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.6.1",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '162', 10),
                 releaseDate: "2026-08-02",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.6.0",
-                latestBuild: 161,
+                latestVersion: "1.6.1",
+                latestBuild: 162,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.6.1",
+                        buildNumber: 162,
+                        releaseDate: "2026-08-02",
+                        releaseChannel: "Stable",
+                        commitHash: "v161rel",
+                        commitMessage: "fix & perf: ultra-smooth iOS push/pop page transitions, fix back button direction in settled loans/debts/demands, fix version update check in iOS installed PWA standalone mode, release v1.6.1 (build 162)",
+                        changes: [
+                            "ارتقا و روان‌سازی کامل انیمیشن‌های ورود و بازگشت صفحات (Push & Pop Transitions) با استاندارد iOS و فریم‌ریت بالا (Hardware-Accelerated Translate3D)",
+                            "اصلاح جهت انیمیشن بازگشت (از چپ به راست) هنگام کلیک روی دکمه بازگشت بالای صفحات وام، طلب و بدهی تسویه‌شده",
+                            "رفع مشکل دکمه بررسی بروزرسانی در نسخه وب‌اپ آیفون (PWA Standalone) با به‌روزرسانی هوشمند شماره بیلد محلی و فال‌بک خودکار (بیلد 162)",
+                            "بهینه‌سازی و تنظیم دقیق ارتفاع کارت‌های مخاطبین جهت جاگیری ایده‌آل آیکون آواتار و نام مخاطب",
+                            "همگام‌سازی کامل شماره بیلد 162 و نسخه 1.6.1 در کلیه فایل‌های برنامه"
+                        ]
+                    },
                     {
                         version: "1.6.0",
                         buildNumber: 161,
@@ -3822,6 +3839,22 @@
                     }
                 }
 
+                const EMBEDDED_BUILD = 162;
+                const EMBEDDED_VERSION = "1.6.1";
+
+                let localBuildStr = localStorage.getItem('amir_installed_build');
+                let localVersion = localStorage.getItem('amir_installed_version');
+
+                // If local build is missing or older than current code, set it to current embedded build
+                if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD) {
+                    localStorage.setItem('amir_installed_build', EMBEDDED_BUILD.toString());
+                    localStorage.setItem('amir_installed_version', EMBEDDED_VERSION);
+                    localBuildStr = EMBEDDED_BUILD.toString();
+                    localVersion = EMBEDDED_VERSION;
+                }
+
+                const localBuild = parseInt(localBuildStr, 10);
+
                 try {
                     const res = await fetch('/version.json?t=' + Date.now(), { 
                         cache: 'no-store',
@@ -3833,24 +3866,9 @@
                     if (!res.ok) throw new Error('version.json fetch failed');
                     const serverData = await res.json();
 
-                    const serverBuild = parseInt(serverData.buildNumber || '0', 10);
-                    const serverVersion = serverData.installedVersion || '1.4.0';
+                    const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || '162', 10);
+                    const serverVersion = serverData.installedVersion || serverData.latestVersion || '1.6.1';
 
-                    const EMBEDDED_BUILD = 157;
-                    const EMBEDDED_VERSION = "1.4.0";
-
-                    let localBuildStr = localStorage.getItem('amir_installed_build');
-                    let localVersion = localStorage.getItem('amir_installed_version');
-
-                    // If local build is missing or older than current code, set it to current embedded build
-                    if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD) {
-                        localStorage.setItem('amir_installed_build', EMBEDDED_BUILD.toString());
-                        localStorage.setItem('amir_installed_version', EMBEDDED_VERSION);
-                        localBuildStr = EMBEDDED_BUILD.toString();
-                        localVersion = EMBEDDED_VERSION;
-                    }
-
-                    const localBuild = parseInt(localBuildStr, 10);
                     const isUpdateAvailable = (serverBuild > localBuild) || hasSWUpdate || swFoundUpdate;
 
                     setVersionData({
@@ -3872,12 +3890,22 @@
                     }
                 } catch (err) {
                     console.log('Error checking version:', err);
+                    const isUpdateAvailable = hasSWUpdate || swFoundUpdate;
+                    setVersionData(prev => ({
+                        ...prev,
+                        installedVersion: localVersion || EMBEDDED_VERSION,
+                        buildNumber: localBuild,
+                        latestVersion: EMBEDDED_VERSION,
+                        latestBuild: EMBEDDED_BUILD,
+                        isUpdateAvailable: isUpdateAvailable
+                    }));
+
                     if (isManual) {
                         setIsCheckingUpdate(false);
-                        if (hasSWUpdate || swFoundUpdate) {
+                        if (isUpdateAvailable) {
                             showToast('یک نسخه جدیدتر آماده بروزرسانی است');
                         } else {
-                            showToast('امکان دریافت آنلاین نسخه جدید وجود ندارد. اتصال اینترنت خود را بررسی نمایید.');
+                            showToast('شما از آخرین نسخه استفاده می‌کنید (بیلد ' + localBuild + ')');
                         }
                     }
                 }
@@ -7220,15 +7248,15 @@
                                                     setCurrentTab('contact-detail');
                                                 }}
                                             >
-                                                <div className="bg-white dark:bg-slate-800 rounded-[28px] sm:rounded-[32px] border border-slate-100 dark:border-slate-700/60 p-5 shadow-sm hover:border-indigo-300 transition-all cursor-pointer">
-                                                    <div className="flex flex-col gap-4">
+                                                <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-slate-100 dark:border-slate-700/60 p-4 shadow-sm hover:border-indigo-300 transition-all cursor-pointer">
+                                                    <div className="flex flex-col gap-3">
                                                         {/* Row 1: Avatar + Name (Right), Phone (Left) */}
                                                         <div className="flex flex-row items-center justify-between">
-                                                            <div className="flex items-center gap-3.5">
-                                                                <div className={`rounded-full ${getAvatarColor(contact.id, contact.firstName + contact.lastName)} flex-shrink-0 flex items-center justify-center text-white font-bold w-12 h-12 text-base shadow-xs`}>
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={`rounded-full ${getAvatarColor(contact.id, contact.firstName + contact.lastName)} flex-shrink-0 flex items-center justify-center text-white font-bold w-10 h-10 text-xs sm:text-sm shadow-xs`}>
                                                                     {contact.firstName.charAt(0)} {contact.lastName.charAt(0)}
                                                                 </div>
-                                                                <span className="text-slate-900 dark:text-white font-bold text-base">{contact.firstName} {contact.lastName}</span>
+                                                                <span className="text-slate-900 dark:text-white font-bold text-sm sm:text-base">{contact.firstName} {contact.lastName}</span>
                                                             </div>
                                                             <span className="text-slate-400 dark:text-slate-500 tracking-wider font-mono text-xs dir-ltr">{contact.phone}</span>
                                                         </div>
@@ -8943,7 +8971,7 @@
                                     <div className="flex-1 relative w-full h-full">
                                         {currentTab === 'contact-detail' && selectedContact && (
                                             <SwipeBackWrapper 
-                                                onBack={(mode) => mode === 'swipe' ? navigateToTab('contacts', 'none') : navigateBack('contacts')}
+                                                onBack={() => navigateToTab('contacts', 'none')}
                                                 onRefresh={() => handleRefreshData('contact-detail')}
                                                 underlyingContent={renderTab(getUnderlyingTabForSubpage('contact-detail'))}
                                             >
@@ -8953,7 +8981,7 @@
 
                                         {currentTab === 'loan-detail' && selectedLoan && (
                                             <SwipeBackWrapper 
-                                                onBack={(mode) => mode === 'swipe' ? navigateToTab(loanReturnTab || 'accounts', 'none') : navigateBack(loanReturnTab || 'accounts')}
+                                                onBack={() => navigateToTab(loanReturnTab || 'accounts', 'none')}
                                                 onRefresh={() => handleRefreshData('loan-detail')}
                                                 underlyingContent={renderTab(getUnderlyingTabForSubpage('loan-detail'))}
                                             >
@@ -8963,7 +8991,7 @@
 
                                         {currentTab === 'archived-period-detail' && selectedPeriod && (
                                             <SwipeBackWrapper 
-                                                onBack={(mode) => mode === 'swipe' ? navigateToTab(loanReturnTab || 'contact-detail', 'none') : navigateBack(loanReturnTab || 'contact-detail')}
+                                                onBack={() => navigateToTab(loanReturnTab || 'contact-detail', 'none')}
                                                 onRefresh={() => handleRefreshData('archived-period-detail')}
                                                 underlyingContent={renderTab(getUnderlyingTabForSubpage('archived-period-detail'))}
                                             >
@@ -8973,7 +9001,7 @@
 
                                         {currentTab === 'all-transactions' && (
                                             <SwipeBackWrapper 
-                                                onBack={(mode) => mode === 'swipe' ? navigateToTab('dashboard', 'none') : navigateBack('dashboard')}
+                                                onBack={() => navigateToTab('dashboard', 'none')}
                                                 onRefresh={() => handleRefreshData('all-transactions')}
                                                 underlyingContent={renderTab(getUnderlyingTabForSubpage('all-transactions'))}
                                             >
