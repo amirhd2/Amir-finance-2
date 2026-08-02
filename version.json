@@ -1,14 +1,28 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.4.0",
-  "buildNumber": 157,
-  "releaseDate": "2026-08-01",
+  "installedVersion": "1.5.0",
+  "buildNumber": 158,
+  "releaseDate": "2026-08-02",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.4.0",
+  "latestVersion": "1.5.0",
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.5.0",
+      "buildNumber": 158,
+      "releaseDate": "2026-08-02",
+      "releaseChannel": "Stable",
+      "commitHash": "v150rel",
+      "commitMessage": "ui & feat: contact page filter active colors, conditional colored badges and settled tick icon indicators, release v1.5.0 (build 158)",
+      "changes": [
+        "تغییر عناوین و فعال‌سازی رنگ‌های اختصاصی دکمه‌های فیلتر در صفحه مخاطبین (همه، طلب، بدهی، وام، بایگانی) در حالت انتخاب",
+        "نمایش رنگی دکمه‌های نشان وضعیت (طلب، بدهی، وام) در باکس مخاطبین فقط در صورت وجود رکورد فعال و بی‌رنگ شدن در غیر این صورت",
+        "نمایش آیکون تیک برای رکوردهای تسویه‌شده در زیر دکمه هر نشان در باکس مخاطب",
+        "انتشار رسمی نسخه 1.5.0 (بیلد 158)"
+      ]
+    },
     {
       "version": "1.4.0",
       "buildNumber": 157,

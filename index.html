@@ -1714,7 +1714,7 @@
                 }
             };
 
-            const closePage = () => {
+            const closePage = (mode = 'button') => {
                 if (isClosingRef.current) return;
                 isClosingRef.current = true;
                 window._isSwipeBackNav = true;
@@ -1738,13 +1738,13 @@
                         if (triggered) return;
                         triggered = true;
                         if (page2) page2.removeEventListener('transitionend', finishBack);
-                        if (onBack) onBack();
+                        if (onBack) onBack(mode);
                     };
 
                     page2.addEventListener('transitionend', finishBack);
-                    setTimeout(finishBack, 310);
+                    setTimeout(finishBack, 220);
                 } else {
-                    if (onBack) onBack();
+                    if (onBack) onBack(mode);
                 }
             };
 
@@ -1885,7 +1885,7 @@
                     const velocityX = deltaX / elapsed;
 
                     if (deltaX > screenWidth * 0.25 || (deltaX > 40 && velocityX > 0.25)) {
-                        closePage();
+                        closePage('swipe');
                     } else {
                         openPage();
                     }
@@ -1913,7 +1913,7 @@
             }, []);
 
             const handleHeaderBack = () => {
-                closePage();
+                if (onBack) onBack('button');
             };
 
             return (
@@ -3119,14 +3119,83 @@
             );
         };
 
+        // NavRippleButton Component with Smooth Ripple Effect
+        function NavRippleButton({ id, onClick, isActive, iconName, label }) {
+            const [ripples, setRipples] = useState([]);
+
+            const handlePointerDown = (e) => {
+                const button = e.currentTarget;
+                const rect = button.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height) * 1.6;
+                const x = e.clientX ? (e.clientX - rect.left - size / 2) : (rect.width / 2 - size / 2);
+                const y = e.clientY ? (e.clientY - rect.top - size / 2) : (rect.height / 2 - size / 2);
+                const newRipple = {
+                    id: Date.now() + Math.random(),
+                    x,
+                    y,
+                    size
+                };
+
+                setRipples((prev) => [...prev.slice(-2), newRipple]);
+            };
+
+            const removeRipple = (rippleId) => {
+                setRipples((prev) => prev.filter((r) => r.id !== rippleId));
+            };
+
+            return (
+                <button 
+                    id={id}
+                    onPointerDown={handlePointerDown}
+                    onClick={onClick}
+                    className={`relative overflow-hidden flex flex-col items-center justify-center w-14 h-13 rounded-2xl transition-all duration-200 select-none cursor-pointer ${
+                        isActive ? 'text-indigo-600 dark:text-indigo-400 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+                    }`}
+                >
+                    <AnimatePresence>
+                        {ripples.map((ripple) => (
+                            <motion.span
+                                key={ripple.id}
+                                initial={{ scale: 0, opacity: 0.45 }}
+                                animate={{ scale: 2.5, opacity: 0 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.55, ease: [0.1, 0.8, 0.3, 1] }}
+                                onAnimationComplete={() => removeRipple(ripple.id)}
+                                className="absolute rounded-full bg-indigo-500/25 dark:bg-indigo-400/30 pointer-events-none"
+                                style={{
+                                    top: ripple.y,
+                                    left: ripple.x,
+                                    width: ripple.size,
+                                    height: ripple.size,
+                                }}
+                            />
+                        ))}
+                    </AnimatePresence>
+                    <Icon name={iconName} className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`} />
+                    <span className="text-[10px] mt-0.5 font-medium tracking-tight">{label}</span>
+                </button>
+            );
+        }
+
         function App() {
             const [currentTab, setCurrentTab] = useState('dashboard');
+            const [navDirection, setNavDirection] = useState('forward');
             const [selectedContact, setSelectedContact] = useState(null);
             const [selectedLoan, setSelectedLoan] = useState(null);
             const [selectedPeriod, setSelectedPeriod] = useState(null);
             const [loanReturnTab, setLoanReturnTab] = useState('accounts');
             const [accountsSubTab, setAccountsSubTab] = useState('all');
-            
+
+            const navigateToTab = (tabName, direction = 'forward') => {
+                setNavDirection(direction);
+                setCurrentTab(tabName);
+            };
+
+            const navigateBack = (targetTab) => {
+                setNavDirection('back');
+                setCurrentTab(targetTab);
+            };
+
             const openLoanDetail = (loan, overrideReturnTab) => {
                 setSelectedLoan(loan);
                 if (overrideReturnTab) {
@@ -3134,6 +3203,7 @@
                 } else if (currentTab !== 'loan-detail') {
                     setLoanReturnTab(currentTab);
                 }
+                setNavDirection('forward');
                 setCurrentTab('loan-detail');
             };
 
@@ -3144,25 +3214,78 @@
                 } else if (currentTab !== 'archived-period-detail') {
                     setLoanReturnTab(currentTab);
                 }
+                setNavDirection('forward');
                 setCurrentTab('archived-period-detail');
             };
             
             const [toastMessage, setToastMessage] = useState('');
             const [showPlusMenu, setShowPlusMenu] = useState(false);
 
+            // Page Slide Transition Animation Variants
+            const pageSlideVariants = {
+                initial: (direction) => ({
+                    x: direction === 'none' ? '0%' : (direction === 'back' ? '-25%' : '100%'),
+                    opacity: direction === 'none' ? 1 : (direction === 'back' ? 0.7 : 0.4),
+                }),
+                animate: (direction) => ({
+                    x: '0%',
+                    opacity: 1,
+                    transition: direction === 'none' ? { duration: 0 } : {
+                        duration: 0.3,
+                        ease: [0.22, 1, 0.36, 1]
+                    }
+                }),
+                exit: (direction) => ({
+                    x: direction === 'none' ? '0%' : (direction === 'back' ? '100%' : '-25%'),
+                    opacity: direction === 'none' ? 1 : (direction === 'back' ? 0 : 0.7),
+                    transition: direction === 'none' ? { duration: 0 } : {
+                        duration: 0.25,
+                        ease: [0.22, 1, 0.36, 1]
+                    }
+                })
+            };
+
             // Application Version Management State
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.4.0",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '157', 10),
-                releaseDate: "2026-08-01",
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.5.1",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '160', 10),
+                releaseDate: "2026-08-02",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.4.0",
-                latestBuild: 157,
+                latestVersion: "1.5.1",
+                latestBuild: 160,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.5.1",
+                        buildNumber: 160,
+                        releaseDate: "2026-08-02",
+                        releaseChannel: "Stable",
+                        commitHash: "v151rel2",
+                        commitMessage: "fix & release: eliminate swipe back multi-frame repeat glitch, remove slide animation for bottom navigation, fix return animation direction for completed loan/demand/debt pages, release v1.5.1 (build 160)",
+                        changes: [
+                            "رفع کامل انیمیشن تکراری و تداخل چند فریمی در لحظه پایانی حرکت سوایپ بک (Swipe Back)",
+                            "حذف انیمیشن اسلاید افقی هنگام جابجایی بین زبانه‌های اصلی نوار پایین (خانه، حساب‌ها، مخاطبین، تنظیمات)",
+                            "اصلاح انیمیشن بازگشت از چپ به راست هنگام کلیک روی دکمه بازگشت بالای صفحه در جزئیات وام‌های انجام شده، طلب‌های انجام شده و بدهی‌های انجام شده",
+                            "ثبت بیلد جدید شماره 160 و انتشار نهایی نسخه 1.5.1"
+                        ]
+                    },
+                    {
+                        version: "1.5.0",
+                        buildNumber: 158,
+                        releaseDate: "2026-08-02",
+                        releaseChannel: "Stable",
+                        commitHash: "v150rel",
+                        commitMessage: "ui & feat: contact page filter active colors, conditional colored badges and settled tick icon indicators, release v1.5.0 (build 158)",
+                        changes: [
+                            "تغییر عناوین و فعال‌سازی رنگ‌های اختصاصی دکمه‌های فیلتر در صفحه مخاطبین (همه، طلب، بدهی، وام، بایگانی) در حالت انتخاب",
+                            "نمایش رنگی دکمه‌های نشان وضعیت (طلب، بدهی، وام) در باکس مخاطبین فقط در صورت وجود رکورد فعال و بی‌رنگ شدن در غیر این صورت",
+                            "نمایش آیکون تیک برای رکوردهای تسویه‌شده در زیر دکمه هر نشان در باکس مخاطب",
+                            "انتشار رسمی نسخه 1.5.0 (بیلد 158)"
+                        ]
+                    },
                     {
                         version: "1.4.0",
                         buildNumber: 157,
@@ -6985,64 +7108,71 @@
                     case 'contacts':
                         return (
                             <div className="space-y-4 animate-fade-in">
-                                <div className="space-y-3 py-1">
-                                    <div className="flex justify-between items-center">
-                                        <div className="flex items-center space-x-2 space-x-reverse">
-                                            <Icon name="users" className="w-6 h-6 text-slate-800 dark:text-slate-200" />
-                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">مخاطبین</h2>
+                                {/* Header Section */}
+                                <div className="space-y-4 py-1">
+                                    {/* Row 1: Title (Right) and Add button (Left) */}
+                                    <div className="flex flex-row items-center justify-between w-full">
+                                        <div className="flex items-center gap-2">
+                                            <Icon name="users" className="w-7 h-7 text-slate-800 dark:text-slate-100" />
+                                            <span className="text-xl font-bold text-slate-900 dark:text-white">مخاطبین</span>
                                         </div>
-                                        <button onClick={() => setShowAddContactModal(true)} className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-md">
-                                            <Icon name="plus" className="w-5 h-5" />
+                                        <button onClick={() => setShowAddContactModal(true)} className="w-11 h-11 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white shadow-md active:scale-95 transition-transform rounded-full shrink-0">
+                                            <Icon name="plus" className="w-6 h-6" />
                                         </button>
                                     </div>
 
-                                    <div className="flex space-x-2 space-x-reverse items-center">
-                                        <div className="relative flex-1">
-                                            <Icon name="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
+                                    {/* Row 2: Search (Right) and C button (Left) */}
+                                    <div className="flex flex-row items-center gap-3 w-full">
+                                        <div className="flex-1 relative">
+                                            <Icon name="search" className="w-5 h-5 absolute top-1/2 -translate-y-1/2 right-4 text-slate-400" />
                                             <input 
                                                 type="text" 
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                                placeholder="نام یا شماره..." 
-                                                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none"
+                                                placeholder="جستجو..." 
+                                                className="w-full h-11 bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl pr-11 pl-4 text-right text-xs font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none shadow-xs"
                                             />
                                         </div>
                                         <button 
                                             onClick={() => setSearchQuery('')}
-                                            className="w-10 h-10 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-sm flex items-center justify-center shadow-md active:scale-90 transition-transform">
+                                            className="w-11 h-11 flex-shrink-0 flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white rounded-2xl shadow-sm active:scale-95 transition-transform font-bold text-lg">
                                             C
                                         </button>
                                     </div>
 
-                                    <div className="flex space-x-1.5 space-x-reverse overflow-x-auto hide-scrollbar pb-1 text-[11px] font-bold">
-                                        {[
-                                            { id: 'all', label: 'همه', activeClass: 'bg-indigo-600 text-white border-indigo-600 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700' },
-                                            { id: 'demand', label: 'طلبکارم', activeClass: 'bg-emerald-600 text-white border-emerald-600 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/60' },
-                                            { id: 'debt', label: 'بدهکارم', activeClass: 'bg-rose-600 text-white border-rose-600 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60' },
-                                            { id: 'loan', label: 'دارای وام', activeClass: 'bg-blue-600 text-white border-blue-600 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/60' },
-                                            { id: 'settled', label: 'تسویه‌شده', activeClass: 'bg-purple-600 text-white border-purple-600 shadow-sm', inactiveClass: 'bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-900/60' },
-                                            { id: 'favorite', isStar: true }
-                                        ].map(f => (
-                                            <button 
-                                                key={f.id}
-                                                onClick={() => setContactFilter(f.id)}
-                                                title={f.isStar ? "علاقه‌مندی‌ها" : f.label}
-                                                className={`px-3 py-1.5 rounded-full whitespace-nowrap transition-all border flex items-center justify-center ${
-                                                    f.isStar 
-                                                        ? (contactFilter === 'favorite' 
-                                                            ? 'bg-amber-100 dark:bg-amber-950/70 border-amber-400 text-amber-500 shadow-sm' 
-                                                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-amber-500')
-                                                        : (contactFilter === f.id ? f.activeClass : f.inactiveClass)
-                                                }`}>
-                                                {f.isStar ? (
-                                                    <Icon name="star" className={`w-4 h-4 ${contactFilter === 'favorite' ? 'fill-amber-400 text-amber-500' : 'text-slate-400'}`} />
-                                                ) : f.label}
-                                            </button>
-                                        ))}
+                                    {/* Filters Bar Section */}
+                                    <div className="flex flex-row items-center bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 rounded-full p-1 w-full shadow-xs">
+                                        <button 
+                                            onClick={() => setContactFilter(contactFilter === 'favorite' ? 'all' : 'favorite')}
+                                            title="علاقه‌مندی‌ها"
+                                            className={`flex items-center justify-center w-9 h-9 rounded-full transition-all shrink-0 ${contactFilter === 'favorite' ? 'bg-amber-100 dark:bg-amber-950 text-amber-500' : 'text-slate-400 hover:text-amber-500'}`}>
+                                            <Icon name="star" className={`w-5 h-5 ${contactFilter === 'favorite' ? 'fill-amber-400 text-amber-500' : 'text-slate-400'}`} />
+                                        </button>
+                                        <div className="flex-1 flex flex-row items-center justify-around">
+                                            {[
+                                                { id: 'all', label: 'همه', activeClass: 'bg-indigo-600 text-white shadow-sm font-bold' },
+                                                { id: 'demand', label: 'طلب', activeClass: 'bg-emerald-600 text-white shadow-sm font-bold' },
+                                                { id: 'debt', label: 'بدهی', activeClass: 'bg-rose-600 text-white shadow-sm font-bold' },
+                                                { id: 'loan', label: 'وام', activeClass: 'bg-blue-600 text-white shadow-sm font-bold' },
+                                                { id: 'settled', label: 'بایگانی', activeClass: 'bg-purple-600 text-white shadow-sm font-bold' }
+                                            ].map(tab => (
+                                                <button 
+                                                    key={tab.id}
+                                                    onClick={() => setContactFilter(tab.id)}
+                                                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap active:scale-95 transition-all ${
+                                                        contactFilter === tab.id 
+                                                            ? tab.activeClass 
+                                                            : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                                                    }`}>
+                                                    {tab.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-2.5">
+                                {/* Contacts List Cards */}
+                                <div className="space-y-4">
                                     {filteredContacts.map((contact) => {
                                         const contactLoans = loans.filter(l => l.contactId === contact.id);
                                         const hasActiveLoan = contactLoans.some(l => 
@@ -7073,74 +7203,83 @@
                                                     } else {
                                                         setProfileFilter('all');
                                                     }
+                                                    setNavDirection('forward');
                                                     setCurrentTab('contact-detail');
                                                 }}
                                             >
-                                                <div 
-                                                    className="bg-white dark:bg-slate-800 rounded-2xl p-3.5 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer hover:border-indigo-300 transition-all">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center space-x-3 space-x-reverse min-w-0">
-                                                        <div className={`w-10 h-10 rounded-full ${getAvatarColor(contact.id, contact.firstName + contact.lastName)} text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0`}>
-                                                            {contact.firstName.charAt(0)} {contact.lastName.charAt(0)}
+                                                <div className="bg-white dark:bg-slate-800 rounded-[28px] sm:rounded-[32px] border border-slate-100 dark:border-slate-700/60 p-5 shadow-sm hover:border-indigo-300 transition-all cursor-pointer">
+                                                    <div className="flex flex-col gap-4">
+                                                        {/* Row 1: Avatar + Name (Right), Phone (Left) */}
+                                                        <div className="flex flex-row items-center justify-between">
+                                                            <div className="flex items-center gap-3.5">
+                                                                <div className={`rounded-full ${getAvatarColor(contact.id, contact.firstName + contact.lastName)} flex-shrink-0 flex items-center justify-center text-white font-bold w-12 h-12 text-base shadow-xs`}>
+                                                                    {contact.firstName.charAt(0)} {contact.lastName.charAt(0)}
+                                                                </div>
+                                                                <span className="text-slate-900 dark:text-white font-bold text-base">{contact.firstName} {contact.lastName}</span>
+                                                            </div>
+                                                            <span className="text-slate-400 dark:text-slate-500 tracking-wider font-mono text-xs dir-ltr">{contact.phone}</span>
                                                         </div>
-                                                        <div className="min-w-0">
-                                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{contact.firstName} {contact.lastName}</h4>
-                                                            <div className="text-[10px] text-slate-400 mt-0.5 truncate">{contact.phone}</div>
+
+                                                        {/* Row 2: 3 Equal Width Buttons (وام, طلب, بدهی) */}
+                                                        <div className="flex gap-2 justify-start w-full">
+                                                            {/* 1. Loan (وام) */}
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedContact(contact);
+                                                                    setProfileFilter('loans');
+                                                                    setNavDirection('forward');
+                                                                    setCurrentTab('contact-detail');
+                                                                }}
+                                                                className={`flex-1 rounded-2xl h-8 text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                                                                    hasActiveLoan 
+                                                                        ? 'bg-blue-600 text-white shadow-sm active:scale-95' 
+                                                                        : 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-default'
+                                                                }`}
+                                                            >
+                                                                {hasSettledLoan && <Icon name="check" className="w-4 h-4 shrink-0" />}
+                                                                <span>وام</span>
+                                                            </button>
+
+                                                            {/* 2. Demand (طلب) */}
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedContact(contact);
+                                                                    setProfileFilter('demands');
+                                                                    setNavDirection('forward');
+                                                                    setCurrentTab('contact-detail');
+                                                                }}
+                                                                className={`flex-1 rounded-2xl h-8 text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                                                                    hasActiveDemand 
+                                                                        ? 'bg-emerald-600 text-white shadow-sm active:scale-95' 
+                                                                        : 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-default'
+                                                                }`}
+                                                            >
+                                                                {hasSettledDemand && <Icon name="check" className="w-4 h-4 shrink-0" />}
+                                                                <span>طلب</span>
+                                                            </button>
+
+                                                            {/* 3. Debt (بدهی) */}
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedContact(contact);
+                                                                    setProfileFilter('debts');
+                                                                    setNavDirection('forward');
+                                                                    setCurrentTab('contact-detail');
+                                                                }}
+                                                                className={`flex-1 rounded-2xl h-8 text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                                                                    hasActiveDebt 
+                                                                        ? 'bg-rose-600 text-white shadow-sm active:scale-95' 
+                                                                        : 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-default'
+                                                                }`}
+                                                            >
+                                                                {hasSettledDebt && <Icon name="check" className="w-4 h-4 shrink-0" />}
+                                                                <span>بدهی</span>
+                                                            </button>
                                                         </div>
                                                     </div>
-                                                    
-                                                    <div className="flex items-center space-x-1.5 space-x-reverse shrink-0">
-                                                        {/* Slot 1: Loan (وام) */}
-                                                        <div className="w-9 flex flex-col items-center justify-center shrink-0">
-                                                            <div className="h-5 flex items-center justify-center">
-                                                                {hasActiveLoan && (
-                                                                    <span className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-400 px-1.5 py-0.5 rounded-md whitespace-nowrap">
-                                                                        وام
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            <div className="h-4 flex items-center justify-center mt-0.5">
-                                                                {hasSettledLoan && (
-                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Slot 2: Demand (طلب) */}
-                                                        <div className="w-9 flex flex-col items-center justify-center shrink-0">
-                                                            <div className="h-5 flex items-center justify-center">
-                                                                {hasActiveDemand && (
-                                                                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-1.5 py-0.5 rounded-md whitespace-nowrap">
-                                                                        طلب
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            <div className="h-4 flex items-center justify-center mt-0.5">
-                                                                {hasSettledDemand && (
-                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Slot 3: Debt (بدهی) */}
-                                                        <div className="w-9 flex flex-col items-center justify-center shrink-0">
-                                                            <div className="h-5 flex items-center justify-center">
-                                                                {hasActiveDebt && (
-                                                                    <span className="text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/60 dark:text-rose-400 px-1.5 py-0.5 rounded-md whitespace-nowrap">
-                                                                        بدهی
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            <div className="h-4 flex items-center justify-center mt-0.5">
-                                                                {hasSettledDebt && (
-                                                                    <Icon name="archive" className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        <Icon name="chevron-left" className="w-4 h-4 text-slate-300" />
-                                                    </div>
-                                                </div>
                                                 </div>
                                             </SwipeToDeleteItem>
                                         );
@@ -7154,7 +7293,7 @@
                             <div className="space-y-4 animate-fade-in">
                                         {/* Header Bar */}
                                         <div className="flex justify-between items-center py-2">
-                                            <button onClick={onBack || (() => setCurrentTab('contacts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700">
+                                            <button onClick={onBack ? () => onBack('button') : (() => navigateBack('contacts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
                                                 <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                             </button>
                                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">پروفایل مخاطب</h3>
@@ -7684,7 +7823,7 @@
                             <div className="space-y-4 animate-fade-in pb-8">
                                 {/* Top Header Bar */}
                                 <div className="flex justify-between items-center py-2">
-                                    <button onClick={onBack || (() => setCurrentTab(loanReturnTab || 'accounts'))} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 active:scale-95 transition-transform">
+                                    <button onClick={onBack ? () => onBack('button') : (() => navigateBack(loanReturnTab || 'accounts'))} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 active:scale-95 transition-transform">
                                         <svg className="h-6 w-6 text-gray-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M10 19l-7-7m0 0l7-7m-7 7h18" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                                         </svg>
@@ -8049,7 +8188,7 @@
                                         {/* Header */}
                                         <div className="flex justify-between items-center py-2">
                                             <button 
-                                                onClick={onBack || (() => setCurrentTab(loanReturnTab || 'contact-detail'))} 
+                                                onClick={onBack ? () => onBack('button') : (() => navigateBack(loanReturnTab || 'contact-detail'))} 
                                                 className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
                                         <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                     </button>
@@ -8205,7 +8344,7 @@
                             <div className="space-y-4 animate-fade-in pb-12">
                                         <div className="flex justify-between items-center py-2">
                                             <button 
-                                                onClick={onBack || (() => setCurrentTab('dashboard'))} 
+                                                onClick={onBack ? () => onBack('button') : (() => navigateBack('dashboard'))} 
                                                 className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
                                         <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                     </button>
@@ -8750,56 +8889,70 @@
                     )}
 
                     {/* App Content Body */}
-                    {['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? (
-                        <div className="flex-1 relative w-full h-full">
-                            {currentTab === 'contact-detail' && selectedContact && (
-                                <SwipeBackWrapper 
-                                    onBack={() => setCurrentTab('contacts')}
-                                    onRefresh={() => handleRefreshData('contact-detail')}
-                                    underlyingContent={renderTab(getUnderlyingTabForSubpage('contact-detail'))}
-                                >
-                                    {({ onBack }) => renderTab('contact-detail', onBack)}
-                                </SwipeBackWrapper>
-                            )}
+                    <div className="flex-1 relative w-full h-full overflow-hidden">
+                        <AnimatePresence mode="popLayout" custom={navDirection} initial={false}>
+                            <motion.div
+                                key={currentTab + (currentTab === 'contact-detail' ? `-${selectedContact?.id}` : currentTab === 'loan-detail' ? `-${selectedLoan?.id}` : currentTab === 'archived-period-detail' ? `-${selectedPeriod?.id}` : '')}
+                                custom={navDirection}
+                                variants={pageSlideVariants}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                className="w-full h-full absolute inset-0 overflow-y-auto"
+                            >
+                                {['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? (
+                                    <div className="flex-1 relative w-full h-full">
+                                        {currentTab === 'contact-detail' && selectedContact && (
+                                            <SwipeBackWrapper 
+                                                onBack={(mode) => mode === 'swipe' ? navigateToTab('contacts', 'none') : navigateBack('contacts')}
+                                                onRefresh={() => handleRefreshData('contact-detail')}
+                                                underlyingContent={renderTab(getUnderlyingTabForSubpage('contact-detail'))}
+                                            >
+                                                {({ onBack }) => renderTab('contact-detail', onBack)}
+                                            </SwipeBackWrapper>
+                                        )}
 
-                            {currentTab === 'loan-detail' && selectedLoan && (
-                                <SwipeBackWrapper 
-                                    onBack={() => setCurrentTab(loanReturnTab || 'accounts')}
-                                    onRefresh={() => handleRefreshData('loan-detail')}
-                                    underlyingContent={renderTab(getUnderlyingTabForSubpage('loan-detail'))}
-                                >
-                                    {({ onBack }) => renderTab('loan-detail', onBack)}
-                                </SwipeBackWrapper>
-                            )}
+                                        {currentTab === 'loan-detail' && selectedLoan && (
+                                            <SwipeBackWrapper 
+                                                onBack={(mode) => mode === 'swipe' ? navigateToTab(loanReturnTab || 'accounts', 'none') : navigateBack(loanReturnTab || 'accounts')}
+                                                onRefresh={() => handleRefreshData('loan-detail')}
+                                                underlyingContent={renderTab(getUnderlyingTabForSubpage('loan-detail'))}
+                                            >
+                                                {({ onBack }) => renderTab('loan-detail', onBack)}
+                                            </SwipeBackWrapper>
+                                        )}
 
-                            {currentTab === 'archived-period-detail' && selectedPeriod && (
-                                <SwipeBackWrapper 
-                                    onBack={() => setCurrentTab(loanReturnTab || 'contact-detail')}
-                                    onRefresh={() => handleRefreshData('archived-period-detail')}
-                                    underlyingContent={renderTab(getUnderlyingTabForSubpage('archived-period-detail'))}
-                                >
-                                    {({ onBack }) => renderTab('archived-period-detail', onBack)}
-                                </SwipeBackWrapper>
-                            )}
+                                        {currentTab === 'archived-period-detail' && selectedPeriod && (
+                                            <SwipeBackWrapper 
+                                                onBack={(mode) => mode === 'swipe' ? navigateToTab(loanReturnTab || 'contact-detail', 'none') : navigateBack(loanReturnTab || 'contact-detail')}
+                                                onRefresh={() => handleRefreshData('archived-period-detail')}
+                                                underlyingContent={renderTab(getUnderlyingTabForSubpage('archived-period-detail'))}
+                                            >
+                                                {({ onBack }) => renderTab('archived-period-detail', onBack)}
+                                            </SwipeBackWrapper>
+                                        )}
 
-                            {currentTab === 'all-transactions' && (
-                                <SwipeBackWrapper 
-                                    onBack={() => setCurrentTab('dashboard')}
-                                    onRefresh={() => handleRefreshData('all-transactions')}
-                                    underlyingContent={renderTab(getUnderlyingTabForSubpage('all-transactions'))}
-                                >
-                                    {({ onBack }) => renderTab('all-transactions', onBack)}
-                                </SwipeBackWrapper>
-                            )}
-                        </div>
-                    ) : (
-                        <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24">
-                            {currentTab === 'dashboard' && renderTab('dashboard')}
-                            {currentTab === 'accounts' && renderTab('accounts')}
-                            {currentTab === 'contacts' && renderTab('contacts')}
-                            {currentTab === 'settings' && renderTab('settings')}
-                        </PullToRefresh>
-                    )}
+                                        {currentTab === 'all-transactions' && (
+                                            <SwipeBackWrapper 
+                                                onBack={(mode) => mode === 'swipe' ? navigateToTab('dashboard', 'none') : navigateBack('dashboard')}
+                                                onRefresh={() => handleRefreshData('all-transactions')}
+                                                underlyingContent={renderTab(getUnderlyingTabForSubpage('all-transactions'))}
+                                            >
+                                                {({ onBack }) => renderTab('all-transactions', onBack)}
+                                            </SwipeBackWrapper>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24 h-full overflow-y-auto">
+                                        {currentTab === 'dashboard' && renderTab('dashboard')}
+                                        {currentTab === 'accounts' && renderTab('accounts')}
+                                        {currentTab === 'contacts' && renderTab('contacts')}
+                                        {currentTab === 'settings' && renderTab('settings')}
+                                    </PullToRefresh>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
 
                     {/* Backdrop Overlay when FAB Menu is open */}
                     <AnimatePresence>
@@ -8924,19 +9077,21 @@
 
                     {/* Navigation Bar at Bottom */}
                     <div className="absolute bottom-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 z-40">
-                        <button 
-                            onClick={() => setCurrentTab('dashboard')}
-                            className={`flex flex-col items-center justify-center w-12 h-12 transition-all ${currentTab === 'dashboard' ? 'text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400'}`}>
-                            <Icon name="home" className="w-5 h-5" />
-                            <span className="text-[10px] mt-0.5">خانه</span>
-                        </button>
+                        <NavRippleButton 
+                            id="nav-btn-home"
+                            onClick={() => navigateToTab('dashboard', 'none')}
+                            isActive={currentTab === 'dashboard'}
+                            iconName="home"
+                            label="خانه"
+                        />
 
-                        <button 
-                            onClick={() => setCurrentTab('accounts')}
-                            className={`flex flex-col items-center justify-center w-12 h-12 transition-all ${currentTab === 'accounts' ? 'text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400'}`}>
-                            <Icon name="wallet" className="w-5 h-5" />
-                            <span className="text-[10px] mt-0.5">حساب‌ها</span>
-                        </button>
+                        <NavRippleButton 
+                            id="nav-btn-accounts"
+                            onClick={() => navigateToTab('accounts', 'none')}
+                            isActive={currentTab === 'accounts'}
+                            iconName="wallet"
+                            label="حساب‌ها"
+                        />
 
                         {/* Plus Button */}
                         <motion.button 
@@ -8961,19 +9116,21 @@
                             </motion.div>
                         </motion.button>
 
-                        <button 
-                            onClick={() => setCurrentTab('contacts')}
-                            className={`flex flex-col items-center justify-center w-12 h-12 transition-all ${currentTab === 'contacts' ? 'text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400'}`}>
-                            <Icon name="users" className="w-5 h-5" />
-                            <span className="text-[10px] mt-0.5">مخاطبین</span>
-                        </button>
+                        <NavRippleButton 
+                            id="nav-btn-contacts"
+                            onClick={() => navigateToTab('contacts', 'none')}
+                            isActive={currentTab === 'contacts'}
+                            iconName="users"
+                            label="مخاطبین"
+                        />
 
-                        <button 
-                            onClick={() => setCurrentTab('settings')}
-                            className={`flex flex-col items-center justify-center w-12 h-12 transition-all ${currentTab === 'settings' ? 'text-indigo-600 dark:text-indigo-400 font-extrabold' : 'text-slate-400'}`}>
-                            <Icon name="settings" className="w-5 h-5" />
-                            <span className="text-[10px] mt-0.5">تنظیمات</span>
-                        </button>
+                        <NavRippleButton 
+                            id="nav-btn-settings"
+                            onClick={() => navigateToTab('settings', 'none')}
+                            isActive={currentTab === 'settings'}
+                            iconName="settings"
+                            label="تنظیمات"
+                        />
                     </div>
 
                     {/* Stack Wizard Modal (وام، طلب، قرض، قسط) */}
