@@ -3249,15 +3249,28 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.5.1",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '160', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.6.0",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '161', 10),
                 releaseDate: "2026-08-02",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.5.1",
-                latestBuild: 160,
+                latestVersion: "1.6.0",
+                latestBuild: 161,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.6.0",
+                        buildNumber: 161,
+                        releaseDate: "2026-08-02",
+                        releaseChannel: "Stable",
+                        commitHash: "v160rel",
+                        commitMessage: "feat: revamp settings appearance (bento mode style) and backup section UI matching attached spec, release v1.6.0 (build 161)",
+                        changes: [
+                            "بازطراحی کامل بخش «ظاهر» (Appearance) در تنظیمات به سبک شبکه Bento Grid کاملاً مطابق با الگوی درخواستی",
+                            "بازطراحی کامل بخش «پشتیبان‌گیری» (Backup & Restore) در تنظیمات با کارت ردیفی و طراحی دقیق منطبق بر ساختار جدید",
+                            "ثبت بیلد جدید شماره 161 و انتشار رسمی نسخه 1.6.0"
+                        ]
+                    },
                     {
                         version: "1.5.1",
                         buildNumber: 160,
@@ -8611,132 +8624,158 @@
                                     </div>
                                 </div>
 
-                                {/* Accordion List */}
-                                <div className="space-y-2.5">
-                                    {/* 1. Appearance */}
-                                    <div 
-                                        onClick={() => toggleSettingsSection('appearance')}
-                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center space-x-3.5 space-x-reverse">
-                                                <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                                                    <Icon name="palette" className="w-5 h-5" />
-                                                </div>
-                                                <div>
-                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">ظاهر</h3>
-                                                    <p className="text-xs text-slate-400 mt-0.5">تم برنامه و رنگ‌بندی</p>
-                                                </div>
-                                            </div>
-                                            <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'appearance' ? 'rotate-180' : 'rotate-0'}`} />
-                                        </div>
+                                 {/* Settings Sections */}
+                                 <div className="space-y-3.5">
+                                     {/* 1. Appearance (Bento Style in Accordion) */}
+                                     <div 
+                                         onClick={() => toggleSettingsSection('appearance')}
+                                         className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                         <div className="flex items-center justify-between">
+                                             <div className="flex items-center space-x-3.5 space-x-reverse">
+                                                 <div className="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                                     <Icon name="palette" className="w-5 h-5" />
+                                                 </div>
+                                                 <div>
+                                                     <h3 className="text-sm font-bold text-slate-900 dark:text-white">ظاهر</h3>
+                                                     <p className="text-xs text-slate-400 mt-0.5">تنظیم تم و پوسته برنامه</p>
+                                                 </div>
+                                             </div>
+                                             <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'appearance' ? 'rotate-180' : 'rotate-0'}`} />
+                                         </div>
 
-                                        <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'appearance' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
-                                            <div className="overflow-hidden space-y-3">
-                                                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">انتخاب حالت تم:</label>
-                                                <div className="grid grid-cols-3 gap-2">
-                                                    {[
-                                                        { id: 'dark', label: 'تیره', icon: 'moon', desc: 'حالت تیره' },
-                                                        { id: 'light', label: 'روشن', icon: 'sun', desc: 'حالت روشن' },
-                                                        { id: 'system', label: 'سیستم', icon: 'monitor', desc: 'از خود سیستم' }
-                                                    ].map(t => {
-                                                        const isSelected = theme === t.id;
-                                                        return (
-                                                            <button
-                                                                key={t.id}
-                                                                onClick={() => setTheme(t.id)}
-                                                                className={`p-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center space-y-1.5 ${
-                                                                    isSelected 
-                                                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md scale-[1.02]' 
-                                                                        : 'bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-indigo-300'
-                                                                }`}>
-                                                                <Icon name={t.icon} className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-indigo-600 dark:text-indigo-400'}`} />
-                                                                <span className="text-xs font-bold">{t.label}</span>
-                                                                {isSelected && (
-                                                                    <span className="text-[9px] bg-white/20 text-white px-1.5 py-0.2 rounded-full font-bold">فعال</span>
-                                                                )}
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                         <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'appearance' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
+                                             <div className="overflow-hidden space-y-2.5">
+                                                 <div className="grid grid-cols-3 gap-2 bg-slate-100 dark:bg-slate-900/60 p-1.5 rounded-[20px]">
+                                                     {/* System Option */}
+                                                     <button 
+                                                         type="button"
+                                                         onClick={() => setTheme('system')}
+                                                         id="theme-system"
+                                                         className={`flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${
+                                                             theme === 'system' 
+                                                                 ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' 
+                                                                 : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'
+                                                         }`}>
+                                                         <Icon name="monitor" className={`w-5 h-5 mb-1 scale-90 ${theme === 'system' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`} />
+                                                         <span className="text-xs scale-90">سیستم</span>
+                                                         {theme === 'system' && <div className="mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"></div>}
+                                                     </button>
 
-                                    {/* 2. Backup & Restore */}
-                                    <div 
-                                        onClick={() => toggleSettingsSection('backup')}
-                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center space-x-3.5 space-x-reverse">
-                                                <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                                                    <Icon name="cloud" className="w-5 h-5" />
-                                                </div>
-                                                <div>
-                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">پشتیبان‌گیری</h3>
-                                                    <p className="text-xs text-slate-400 mt-0.5">بکاپ و بازیابی اطلاعات</p>
-                                                </div>
-                                            </div>
-                                            <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'backup' ? 'rotate-180' : 'rotate-0'}`} />
-                                        </div>
+                                                     {/* Light Option */}
+                                                     <button 
+                                                         type="button"
+                                                         onClick={() => setTheme('light')}
+                                                         id="theme-light"
+                                                         className={`flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${
+                                                             theme === 'light' 
+                                                                 ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' 
+                                                                 : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'
+                                                         }`}>
+                                                         <Icon name="sun" className={`w-5 h-5 mb-1 scale-90 ${theme === 'light' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`} />
+                                                         <span className="text-xs scale-90">روشن</span>
+                                                         {theme === 'light' && <div className="mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"></div>}
+                                                     </button>
 
-                                        <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'backup' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
-                                            <div className="overflow-hidden space-y-2.5">
-                                                <input 
-                                                    type="file" 
-                                                    ref={restoreInputRef} 
-                                                    onChange={handleRestoreFileChange} 
-                                                    accept=".json" 
-                                                    className="hidden" 
-                                                />
+                                                     {/* Dark Option */}
+                                                     <button 
+                                                         type="button"
+                                                         onClick={() => setTheme('dark')}
+                                                         id="theme-dark"
+                                                         className={`flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${
+                                                             theme === 'dark' 
+                                                                 ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' 
+                                                                 : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'
+                                                         }`}>
+                                                         <Icon name="moon" className={`w-5 h-5 mb-1 scale-90 ${theme === 'dark' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`} />
+                                                         <span className="text-xs scale-90">تیره</span>
+                                                         {theme === 'dark' && <div className="mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"></div>}
+                                                     </button>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
 
-                                                <button 
-                                                    onClick={handleExportBackup}
-                                                    className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white p-3 rounded-2xl font-bold text-xs shadow-md flex items-center justify-between active:scale-98 transition-all">
-                                                    <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                        <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                                                            <Icon name="download" className="w-4 h-4 text-white" />
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <div className="text-xs font-bold">پشتیبان‌گیری</div>
-                                                            <div className="text-[10px] text-white/80 font-normal">دانلود فایل کامل دیتابیس (JSON)</div>
-                                                        </div>
-                                                    </div>
-                                                    <Icon name="chevron-left" className="w-4 h-4 text-white/70" />
-                                                </button>
+                                     {/* 2. Backup & Restore (Accordion) */}
+                                     <div 
+                                         onClick={() => toggleSettingsSection('backup')}
+                                         className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                         <div className="flex items-center justify-between">
+                                             <div className="flex items-center space-x-3.5 space-x-reverse">
+                                                 <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                                     <Icon name="cloud" className="w-5 h-5" />
+                                                 </div>
+                                                 <div>
+                                                     <h3 className="text-sm font-bold text-slate-900 dark:text-white">پشتیبان‌گیری</h3>
+                                                     <p className="text-xs text-slate-400 mt-0.5">بکاپ و بازیابی اطلاعات</p>
+                                                 </div>
+                                             </div>
+                                             <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'backup' ? 'rotate-180' : 'rotate-0'}`} />
+                                         </div>
 
-                                                <button 
-                                                    onClick={() => restoreInputRef.current && restoreInputRef.current.click()}
-                                                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white p-3 rounded-2xl font-bold text-xs shadow-md flex items-center justify-between active:scale-98 transition-all">
-                                                    <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                        <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                                                            <Icon name="upload" className="w-4 h-4 text-white" />
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <div className="text-xs font-bold">بازیابی اطلاعات</div>
-                                                            <div className="text-[10px] text-white/80 font-normal">جایگزینی دیتابیس از فایل پشتیبان</div>
-                                                        </div>
-                                                    </div>
-                                                    <Icon name="chevron-left" className="w-4 h-4 text-white/70" />
-                                                </button>
+                                         <div className={`grid transition-all duration-300 ease-in-out ${openSettingsSection === 'backup' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`} onClick={e => e.stopPropagation()}>
+                                             <div className="overflow-hidden space-y-1">
+                                                 <input 
+                                                     type="file" 
+                                                     ref={restoreInputRef} 
+                                                     onChange={handleRestoreFileChange} 
+                                                     accept=".json" 
+                                                     className="hidden" 
+                                                 />
+                                                 <div className="divide-y divide-slate-100 dark:divide-slate-700/60 rounded-xl overflow-hidden">
+                                                     {/* Backup Row */}
+                                                     <button 
+                                                         type="button"
+                                                         onClick={handleExportBackup}
+                                                         className="w-full flex items-center justify-between p-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors group text-right">
+                                                         <div className="flex items-center gap-3.5">
+                                                             <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors text-indigo-600 dark:text-indigo-400 shrink-0">
+                                                                 <Icon name="download" className="w-4 h-4" />
+                                                             </div>
+                                                             <div className="text-right min-w-0">
+                                                                 <p className="text-xs font-bold text-slate-800 dark:text-slate-100">تهیه نسخه پشتیبان</p>
+                                                                 <p className="text-[11px] text-slate-400 mt-0.5">دانلود فایل کامل دیتابیس (JSON)</p>
+                                                             </div>
+                                                         </div>
+                                                         <Icon name="chevron-left" className="w-4 h-4 text-slate-400 scale-90 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0" />
+                                                     </button>
 
-                                                <button 
-                                                    onClick={handleResetDatabaseClick}
-                                                    className="w-full bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white p-3 rounded-2xl font-bold text-xs shadow-md flex items-center justify-between active:scale-98 transition-all">
-                                                    <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                        <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                                                            <Icon name="trash-2" className="w-4 h-4 text-white" />
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <div className="text-xs font-bold">حذف کلیه اطلاعات</div>
-                                                            <div className="text-[10px] text-white/80 font-normal">پاکسازی کامل کلیه حساب‌ها و تراکنش‌ها</div>
-                                                        </div>
-                                                    </div>
-                                                    <Icon name="chevron-left" className="w-4 h-4 text-white/70" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                                     {/* Restore Row */}
+                                                     <button 
+                                                         type="button"
+                                                         onClick={() => restoreInputRef.current && restoreInputRef.current.click()}
+                                                         className="w-full flex items-center justify-between p-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors group text-right">
+                                                         <div className="flex items-center gap-3.5">
+                                                             <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors text-indigo-600 dark:text-indigo-400 shrink-0">
+                                                                 <Icon name="upload" className="w-4 h-4" />
+                                                             </div>
+                                                             <div className="text-right min-w-0">
+                                                                 <p className="text-xs font-bold text-slate-800 dark:text-slate-100">بازیابی اطلاعات</p>
+                                                                 <p className="text-[11px] text-slate-400 mt-0.5">جایگزینی دیتابیس از فایل پشتیبان</p>
+                                                             </div>
+                                                         </div>
+                                                         <Icon name="chevron-left" className="w-4 h-4 text-slate-400 scale-90 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0" />
+                                                     </button>
 
+                                                     {/* Danger Zone Row */}
+                                                     <button 
+                                                         type="button"
+                                                         onClick={handleResetDatabaseClick}
+                                                         className="w-full flex items-center justify-between p-3.5 hover:bg-rose-50/50 dark:hover:bg-rose-950/30 transition-colors group text-right">
+                                                         <div className="flex items-center gap-3.5">
+                                                             <div className="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center group-hover:bg-rose-100 dark:group-hover:bg-rose-900/60 transition-colors text-rose-600 dark:text-rose-400 shrink-0">
+                                                                 <Icon name="trash-2" className="w-4 h-4" />
+                                                             </div>
+                                                             <div className="text-right min-w-0">
+                                                                 <p className="text-xs font-bold text-rose-600 dark:text-rose-400">حذف کلیه اطلاعات</p>
+                                                                 <p className="text-[11px] text-slate-400 mt-0.5">پاکسازی کامل کلیه حساب‌ها و تراکنش‌ها</p>
+                                                             </div>
+                                                         </div>
+                                                         <Icon name="chevron-left" className="w-4 h-4 text-rose-400/60 scale-90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors shrink-0" />
+                                                     </button>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
                                     {/* 3. Notifications */}
                                     <div 
                                         onClick={() => toggleSettingsSection('notifications')}
