@@ -569,7 +569,7 @@
     <div id="root" class="w-full sm:max-w-2xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl h-[100vh] sm:h-[94vh] bg-slate-50 dark:bg-slate-950 sm:rounded-3xl shadow-2xl relative overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800 my-auto"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef, useMemo } = React;
+        const { useState, useEffect, useRef, useMemo, useCallback } = React;
         const Motion = window.Motion || {};
         const motion = Motion.motion || {
             div: (props) => <div {...props} />,
@@ -2065,25 +2065,15 @@
             const lastSelectedIndexRef = useRef(-1);
             const scrollTimeoutRef = useRef(null);
             const rafIdRef = useRef(null);
+            const isProgrammaticRef = useRef(false);
+            const isUserInteractingRef = useRef(false);
+            const programTimeoutRef = useRef(null);
 
             const ITEM_HEIGHT = 44;
             const VISIBLE_HEIGHT = 210;
             const SPACER_HEIGHT = (VISIBLE_HEIGHT - ITEM_HEIGHT) / 2;
 
-            useEffect(() => {
-                if (elementRef.current && selectedIndex >= 0) {
-                    const targetScrollTop = selectedIndex * ITEM_HEIGHT;
-                    if (Math.abs(elementRef.current.scrollTop - targetScrollTop) > 1.5) {
-                        elementRef.current.scrollTo({
-                            top: targetScrollTop,
-                            behavior: 'smooth'
-                        });
-                        lastSelectedIndexRef.current = selectedIndex;
-                    }
-                }
-            }, [selectedIndex]);
-
-            const update3DEffects = () => {
+            const update3DEffects = useCallback(() => {
                 if (!elementRef.current || !containerRef.current) return;
                 const scrollTop = elementRef.current.scrollTop;
                 const children = containerRef.current.children;
@@ -2092,10 +2082,8 @@
                 let closestIndex = Math.round(scrollTop / ITEM_HEIGHT);
                 closestIndex = Math.max(0, Math.min(closestIndex, items.length - 1));
 
-                if (closestIndex !== lastSelectedIndexRef.current) {
-                    if (lastSelectedIndexRef.current !== -1) {
-                        playHapticTick();
-                    }
+                if (closestIndex !== lastSelectedIndexRef.current && isUserInteractingRef.current) {
+                    playHapticTick();
                     lastSelectedIndexRef.current = closestIndex;
                 }
 
@@ -2124,10 +2112,47 @@
                         }
                     }
                 }
-            };
+            }, [items.length]);
+
+            useEffect(() => {
+                if (!elementRef.current) return;
+                const safeIdx = Math.max(0, Math.min(selectedIndex, items.length - 1));
+                const targetScrollTop = safeIdx * ITEM_HEIGHT;
+
+                isProgrammaticRef.current = true;
+                if (programTimeoutRef.current) clearTimeout(programTimeoutRef.current);
+
+                const performScrollSync = () => {
+                    if (elementRef.current) {
+                        elementRef.current.scrollTop = targetScrollTop;
+                        update3DEffects();
+                    }
+                };
+
+                performScrollSync();
+
+                const raf1 = requestAnimationFrame(performScrollSync);
+                const t1 = setTimeout(performScrollSync, 60);
+                const t2 = setTimeout(performScrollSync, 150);
+                const t3 = setTimeout(performScrollSync, 300);
+
+                programTimeoutRef.current = setTimeout(() => {
+                    isProgrammaticRef.current = false;
+                }, 350);
+
+                lastSelectedIndexRef.current = safeIdx;
+
+                return () => {
+                    cancelAnimationFrame(raf1);
+                    clearTimeout(t1);
+                    clearTimeout(t2);
+                    clearTimeout(t3);
+                    if (programTimeoutRef.current) clearTimeout(programTimeoutRef.current);
+                };
+            }, [selectedIndex, items.length, update3DEffects]);
 
             const snapAndSelect = () => {
-                if (!elementRef.current) return;
+                if (!elementRef.current || isProgrammaticRef.current) return;
                 const scrollTop = elementRef.current.scrollTop;
                 const targetIndex = Math.max(0, Math.min(Math.round(scrollTop / ITEM_HEIGHT), items.length - 1));
                 const targetScrollTop = targetIndex * ITEM_HEIGHT;
@@ -2150,16 +2175,33 @@
                         rafIdRef.current = null;
                     });
                 }
+                if (isProgrammaticRef.current) return;
+
                 clearTimeout(scrollTimeoutRef.current);
                 scrollTimeoutRef.current = setTimeout(() => {
                     snapAndSelect();
                 }, 80);
             };
 
+            const handleTouchStart = () => {
+                isUserInteractingRef.current = true;
+                isProgrammaticRef.current = false;
+            };
+
+            const handleTouchEnd = () => {
+                setTimeout(() => {
+                    isUserInteractingRef.current = false;
+                }, 300);
+            };
+
             return (
                 <div 
                     ref={elementRef}
                     onScroll={handleScroll}
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    onMouseDown={handleTouchStart}
+                    onMouseUp={handleTouchEnd}
                     className={`${flexClass} h-full overflow-y-scroll no-scrollbar wheel-scroll relative cursor-grab active:cursor-grabbing`}
                     tabIndex={0}
                     aria-label={ariaLabel}
@@ -2170,6 +2212,8 @@
                             <div 
                                 key={idx}
                                 onClick={() => {
+                                    isUserInteractingRef.current = true;
+                                    isProgrammaticRef.current = false;
                                     if (elementRef.current) {
                                         elementRef.current.scrollTo({ top: idx * ITEM_HEIGHT, behavior: 'smooth' });
                                     }
@@ -2197,8 +2241,29 @@
                 return arr;
             }, []);
 
-            const selectedMonthIdx = Math.max(0, monthNames.indexOf(month));
-            const daysInMonth = getJalaliDaysInMonth(selectedMonthIdx + 1, year);
+            // Robust type conversion for year, month, and day
+            const numericYear = useMemo(() => {
+                if (typeof year === 'number' && !isNaN(year)) return year;
+                const clean = toEnglishDigits(String(year || '')).replace(/\D/g, '');
+                return parseInt(clean, 10) || getDeviceJalaliDate().year;
+            }, [year]);
+
+            const monthStr = useMemo(() => {
+                if (typeof month === 'number') {
+                    return monthNames[Math.max(0, Math.min(month - 1, 11))] || monthNames[0];
+                }
+                const str = String(month || '').trim();
+                return monthNames.includes(str) ? str : monthNames[0];
+            }, [month, monthNames]);
+
+            const numericDay = useMemo(() => {
+                if (typeof day === 'number' && !isNaN(day)) return day;
+                const clean = toEnglishDigits(String(day || '')).replace(/\D/g, '');
+                return parseInt(clean, 10) || 1;
+            }, [day]);
+
+            const selectedMonthIdx = Math.max(0, monthNames.indexOf(monthStr));
+            const daysInMonth = getJalaliDaysInMonth(selectedMonthIdx + 1, numericYear);
 
             const dayItems = useMemo(() => {
                 return Array.from({ length: daysInMonth }, (_, i) => ({
@@ -2221,8 +2286,9 @@
                 }));
             }, [years]);
 
-            const selectedDayIdx = Math.max(0, Math.min(day - 1, dayItems.length - 1));
-            const selectedYearIdx = Math.max(0, Math.min(years.indexOf(year), years.length - 1));
+            const selectedDayIdx = Math.max(0, Math.min(numericDay - 1, dayItems.length - 1));
+            const foundYearIdx = years.indexOf(numericYear);
+            const selectedYearIdx = foundYearIdx !== -1 ? foundYearIdx : Math.max(0, years.indexOf(1403));
 
             const handleToday = () => {
                 playHapticTick();
@@ -2238,7 +2304,7 @@
                         <div className="flex items-center space-x-2 space-x-reverse">
                             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">تاریخ انتخاب‌شده:</span>
                             <span className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-blue-400 tracking-tight">
-                                {toPersianDigits(day)} {month} {toPersianDigits(year)}
+                                {toPersianDigits(numericDay)} {monthStr} {toPersianDigits(numericYear)}
                             </span>
                         </div>
                         <button 
@@ -2260,8 +2326,8 @@
                                 selectedIndex={selectedYearIdx}
                                 onSelectIndex={(idx) => {
                                     const newYear = years[idx];
-                                    if (newYear !== year && onChange) {
-                                        onChange({ day, month, year: newYear });
+                                    if (newYear !== numericYear && onChange) {
+                                        onChange({ day: numericDay, month: monthStr, year: newYear });
                                     }
                                 }}
                                 flexClass="flex-1"
@@ -2273,8 +2339,8 @@
                                 selectedIndex={selectedMonthIdx}
                                 onSelectIndex={(idx) => {
                                     const newMonth = monthNames[idx];
-                                    if (newMonth !== month && onChange) {
-                                        onChange({ day, month: newMonth, year });
+                                    if (newMonth !== monthStr && onChange) {
+                                        onChange({ day: numericDay, month: newMonth, year: numericYear });
                                     }
                                 }}
                                 flexClass="flex-[1.3]"
@@ -2286,8 +2352,8 @@
                                 selectedIndex={selectedDayIdx}
                                 onSelectIndex={(idx) => {
                                     const newDay = dayItems[idx].value;
-                                    if (newDay !== day && onChange) {
-                                        onChange({ day: newDay, month, year });
+                                    if (newDay !== numericDay && onChange) {
+                                        onChange({ day: newDay, month: monthStr, year: numericYear });
                                     }
                                 }}
                                 flexClass="flex-1"
