@@ -2810,11 +2810,21 @@
                             </div>
                         </div>
 
-                        <div className="text-left shrink-0 flex flex-col items-center">
-                            <div className={`font-bold text-base leading-none ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                        <div className="text-center shrink-0 flex flex-col items-center justify-center min-w-[76px] sm:min-w-[90px] pl-1">
+                            <div className={`font-bold text-base sm:text-lg leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                 {Math.abs(tx.amount).toLocaleString()}
                             </div>
-                            <div className={`text-xs ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>تومان</div>
+                            <div className={`text-xs font-semibold text-center w-full mt-0.5 ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>تومان</div>
+                            {(() => {
+                                const rawDate = tx.dateStr || tx.date || tx.receiveDate || tx.startDate || tx.createdAt || '';
+                                const numericDate = formatDateToNumericJalali(rawDate);
+                                if (!numericDate || numericDate === '-') return null;
+                                return (
+                                    <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 font-mono mt-1 text-center whitespace-nowrap">
+                                        {toPersianDigits(numericDate)}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
                 </SwipeToDeleteItem>
@@ -2840,17 +2850,17 @@
 
             // Auto focus inputs inside active card (force focus & trigger soft keyboard)
             useEffect(() => {
-                if (depth === 0 && showStackWizard && !animatingCard && !animatingPrevCard && cardRef.current) {
+                if (depth === 0 && showStackWizard && cardRef.current) {
                     const focusInput = () => {
                         if (!cardRef.current) return;
                         const numInput = cardRef.current.querySelector('input[inputmode="numeric"]') ||
-                                         cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
+                                         cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]), textarea');
                         if (numInput) {
-                            if (document.activeElement && document.activeElement !== numInput) {
-                                document.activeElement.blur();
-                            }
-                            numInput.focus({ preventScroll: true });
                             try {
+                                numInput.focus();
+                                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                                    numInput.click();
+                                }
                                 if (numInput.value !== undefined && numInput.value !== null) {
                                     const len = String(numInput.value).length;
                                     if (typeof numInput.setSelectionRange === 'function') {
@@ -2862,11 +2872,15 @@
                     };
 
                     focusInput();
-                    const timer1 = setTimeout(focusInput, 60);
+                    const timer1 = setTimeout(focusInput, 50);
                     const timer2 = setTimeout(focusInput, 180);
+                    const timer3 = setTimeout(focusInput, 350);
+                    const timer4 = setTimeout(focusInput, 600);
                     return () => {
                         clearTimeout(timer1);
                         clearTimeout(timer2);
+                        clearTimeout(timer3);
+                        clearTimeout(timer4);
                     };
                 }
             }, [depth, currentCardIdx, showStackWizard, animatingCard, animatingPrevCard]);
@@ -7253,17 +7267,17 @@
                                     </button>
                                 </div>
 
-                                {/* Search Bar Section */}
-                                <div className="flex items-center gap-3 mb-4">
+                                 {/* Search Bar Section */}
+                                <div className="flex items-center gap-3 mb-3">
                                     <div className="flex-1 relative">
                                         <input 
                                             type="text" 
                                             value={accountsSearchQuery}
                                             onChange={(e) => setAccountsSearchQuery(e.target.value)}
                                             placeholder="جستجو..." 
-                                            className="w-full h-12 pr-10 pl-4 bg-slate-100 dark:bg-slate-800 border-none rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400"
+                                            className="w-full h-12 pr-10 pl-4 bg-slate-100 dark:bg-slate-800 border-none rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs"
                                         />
-                                        <Icon name="search" className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                        <Icon name="search" className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                     </div>
                                     <button 
                                         onClick={() => setAccountsSearchQuery('')}
@@ -7274,28 +7288,25 @@
                                 </div>
 
                                 {/* Filter Bar */}
-                                <div className="bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium">
+                                <div className="bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs">
                                     {[
-                                        { id: 'all', label: 'همه' },
-                                        { id: 'demands', label: 'طلب' },
-                                        { id: 'debts', label: 'بدهی' },
-                                        { id: 'loans', label: 'وام' },
-                                        { id: 'archived', label: 'بایگانی' }
+                                        { id: 'all', label: 'همه', activeClass: 'bg-indigo-600 text-white shadow-sm font-bold' },
+                                        { id: 'loans', label: 'وام', activeClass: 'bg-blue-600 text-white shadow-sm font-bold' },
+                                        { id: 'debts', label: 'بدهی', activeClass: 'bg-rose-600 text-white shadow-sm font-bold' },
+                                        { id: 'demands', label: 'طلب', activeClass: 'bg-emerald-600 text-white shadow-sm font-bold' },
+                                        { id: 'archived', label: 'بایگانی', activeClass: 'bg-purple-600 text-white shadow-sm font-bold' }
                                     ].map(tab => (
                                         <button 
                                             key={tab.id}
                                             onClick={() => setAccountsSubTab(tab.id)}
-                                            className={`py-2 rounded-full text-sm font-medium whitespace-nowrap px-3 sm:px-4 transition-all duration-200 ${
+                                            className={`py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${
                                                 accountsSubTab === tab.id 
-                                                    ? 'bg-indigo-600 text-white shadow-sm font-bold' 
-                                                    : 'text-slate-500 dark:text-slate-400 hover:text-indigo-600'
+                                                    ? tab.activeClass 
+                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                                             }`}>
                                             {tab.label}
                                         </button>
                                     ))}
-                                    <div className="px-2 shrink-0 text-slate-400">
-                                        <Icon name="star" className="w-4 h-4" />
-                                    </div>
                                 </div>
 
                                 <div className="space-y-6">
@@ -7513,53 +7524,52 @@
                                         </button>
                                     </div>
 
-                                    {/* Row 2: Search (Right) and C button (Left) */}
-                                    <div className="flex flex-row items-center gap-3 w-full">
+                                    {/* Search Bar Section */}
+                                    <div className="flex items-center gap-3 mb-3">
                                         <div className="flex-1 relative">
-                                            <Icon name="search" className="w-5 h-5 absolute top-1/2 -translate-y-1/2 right-4 text-slate-400" />
                                             <input 
                                                 type="text" 
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
                                                 placeholder="جستجو..." 
-                                                className="w-full h-11 bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl pr-11 pl-4 text-right text-xs font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none shadow-xs"
+                                                className="w-full h-12 pr-10 pl-4 bg-slate-100 dark:bg-slate-800 border-none rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs"
                                             />
+                                            <Icon name="search" className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                         </div>
                                         <button 
                                             onClick={() => setSearchQuery('')}
-                                            className="w-11 h-11 flex-shrink-0 flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white rounded-2xl shadow-sm active:scale-95 transition-transform font-bold text-lg">
+                                            className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform"
+                                            title="پاک‌سازی جستجو">
                                             C
                                         </button>
                                     </div>
 
                                     {/* Filters Bar Section */}
-                                    <div className="flex flex-row items-center bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 rounded-full p-1 w-full shadow-xs">
+                                    <div className="bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs">
                                         <button 
                                             onClick={() => setContactFilter(contactFilter === 'favorite' ? 'all' : 'favorite')}
                                             title="علاقه‌مندی‌ها"
                                             className={`flex items-center justify-center w-9 h-9 rounded-full transition-all shrink-0 ${contactFilter === 'favorite' ? 'bg-amber-100 dark:bg-amber-950 text-amber-500' : 'text-slate-400 hover:text-amber-500'}`}>
                                             <Icon name="star" className={`w-5 h-5 ${contactFilter === 'favorite' ? 'fill-amber-400 text-amber-500' : 'text-slate-400'}`} />
                                         </button>
-                                        <div className="flex-1 flex flex-row items-center justify-around">
-                                            {[
-                                                { id: 'all', label: 'همه', activeClass: 'bg-indigo-600 text-white shadow-sm font-bold' },
-                                                { id: 'demand', label: 'طلب', activeClass: 'bg-emerald-600 text-white shadow-sm font-bold' },
-                                                { id: 'debt', label: 'بدهی', activeClass: 'bg-rose-600 text-white shadow-sm font-bold' },
-                                                { id: 'loan', label: 'وام', activeClass: 'bg-blue-600 text-white shadow-sm font-bold' },
-                                                { id: 'settled', label: 'بایگانی', activeClass: 'bg-purple-600 text-white shadow-sm font-bold' }
-                                            ].map(tab => (
-                                                <button 
-                                                    key={tab.id}
-                                                    onClick={() => setContactFilter(tab.id)}
-                                                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap active:scale-95 transition-all ${
-                                                        contactFilter === tab.id 
-                                                            ? tab.activeClass 
-                                                            : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                                                    }`}>
-                                                    {tab.label}
-                                                </button>
-                                            ))}
-                                        </div>
+                                        {[
+                                            { id: 'all', label: 'همه', activeClass: 'bg-indigo-600 text-white shadow-sm font-bold' },
+                                            { id: 'loan', label: 'وام', activeClass: 'bg-blue-600 text-white shadow-sm font-bold' },
+                                            { id: 'debt', label: 'بدهی', activeClass: 'bg-rose-600 text-white shadow-sm font-bold' },
+                                            { id: 'demand', label: 'طلب', activeClass: 'bg-emerald-600 text-white shadow-sm font-bold' },
+                                            { id: 'settled', label: 'بایگانی', activeClass: 'bg-purple-600 text-white shadow-sm font-bold' }
+                                        ].map(tab => (
+                                            <button 
+                                                key={tab.id}
+                                                onClick={() => setContactFilter(tab.id)}
+                                                className={`py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${
+                                                    contactFilter === tab.id 
+                                                        ? tab.activeClass 
+                                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                                }`}>
+                                                {tab.label}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
 
@@ -8208,21 +8218,23 @@
                         return (
                             <div className="space-y-4 animate-fade-in pb-8">
                                 {/* Top Header Bar */}
-                                <div className="flex justify-between items-center py-2">
-                                    <button onClick={onBack ? () => onBack('button') : (() => navigateBack(loanReturnTab || 'accounts'))} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 active:scale-95 transition-transform">
-                                        <svg className="h-6 w-6 text-gray-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M10 19l-7-7m0 0l7-7m-7 7h18" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-                                        </svg>
+                                <div className="flex justify-between items-center py-1">
+                                    <button onClick={onBack ? () => onBack('button') : (() => navigateBack(loanReturnTab || 'accounts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
+                                        <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                     </button>
-                                    <h1 className="text-lg font-bold text-gray-800 dark:text-slate-100 truncate px-2">{selectedLoan.title}</h1>
-                                    <div className="flex gap-2 shrink-0">
-                                        <button onClick={() => openStackWizard('loan', 'edit', selectedLoan)} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-slate-300 active:scale-95 transition-transform" aria-label="Edit">
-                                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-                                            </svg>
+                                    <h1 className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate px-2">{selectedLoan.title}</h1>
+                                    <div className="flex items-center space-x-1.5 space-x-reverse shrink-0">
+                                        <button 
+                                            onClick={() => openStackWizard('loan', 'edit', selectedLoan)} 
+                                            className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform" 
+                                            title="ویرایش وام">
+                                            <Icon name="pencil" className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => handleDeleteLoanClick(selectedLoan)} className="p-2 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/60 text-rose-500 active:scale-95 transition-transform" aria-label="Delete">
-                                            <Icon name="trash-2" className="w-6 h-6" />
+                                        <button 
+                                            onClick={() => handleDeleteLoanClick(selectedLoan)} 
+                                            className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400" 
+                                            title="حذف وام">
+                                            <Icon name="trash-2" className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
@@ -8585,16 +8597,21 @@
                         return (
                             <div className="space-y-4 animate-fade-in pb-8">
                                 {/* Top Header Bar */}
-                                <div className="flex justify-between items-center py-2">
-                                    <button onClick={onBack ? () => onBack("button") : (() => navigateBack(loanReturnTab || "accounts"))} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 active:scale-95 transition-transform">
-                                        <svg className="h-6 w-6 text-gray-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M10 19l-7-7m0 0l7-7m-7 7h18" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-                                        </svg>
+                                <div className="flex justify-between items-center py-1">
+                                    <button onClick={onBack ? () => onBack("button") : (() => navigateBack(loanReturnTab || "accounts"))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
+                                        <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                     </button>
-                                    <h1 className="text-lg font-bold text-gray-800 dark:text-slate-100">
+                                    <h1 className="text-sm font-bold text-slate-800 dark:text-slate-100">
                                         پرونده تسویه‌شده ({isDebt ? "بدهی" : "طلب"})
                                     </h1>
-                                    <div className="w-10"></div>
+                                    <div className="flex items-center space-x-1.5 space-x-reverse shrink-0">
+                                        <button 
+                                            onClick={() => handleDeleteArchivedPeriodClick(selectedPeriod)} 
+                                            className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400" 
+                                            title="حذف پرونده تسویه‌شده">
+                                            <Icon name="trash-2" className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {/* BEGIN: Archived Period Hero Card (Loan Summary Card Style) */}
