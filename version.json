@@ -1,15 +1,102 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.8.2",
-  "buildNumber": 166,
+  "installedVersion": "1.8.8",
+  "buildNumber": 172,
   "releaseDate": "2026-08-03",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.8.2",
-  "latestBuild": 166,
+  "latestVersion": "1.8.8",
+  "latestBuild": 172,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.8.8",
+      "buildNumber": 172,
+      "releaseDate": "2026-08-03",
+      "releaseChannel": "Stable",
+      "commitHash": "v188rel",
+      "commitMessage": "fix: restore hero summary card with watermarks & 3-column quick stats grid in settled debt and demand pages",
+      "changes": [
+        "بازگردانی کامل کارت اصلی (کارت هدر با گرادیانت، واتر‌مارک اختصاصی و نشان تسویه‌شده) در صفحات طلب و بدهی تسویه‌شده",
+        "بازگردانی باکس آمار سریع سه ستونه (تعداد تراکنش‌ها، تاریخ افتتاح پرونده و تاریخ تسویه) در زیر کارت اصلی",
+        "حفظ نمایش نام مخاطب در خط دوم تمامی کارت‌های تراکنش",
+        "ثبت رسمی بیلد 172 و انتشار نسخه 1.8.8"
+      ]
+    },
+    {
+      "version": "1.8.7",
+      "buildNumber": 171,
+      "releaseDate": "2026-08-03",
+      "releaseChannel": "Stable",
+      "commitHash": "v187rel",
+      "commitMessage": "fix: resolve blank white screen issue when entering loan detail or settled debt/demand screens, restore archived period case, apply solid blue loan export button & colored settled export button, fix line 2 contact name display",
+      "changes": [
+        "رفع کامل مشکل صفحه سفید هنگام ورود به صفحات جزئیات وام، طلب تسویه‌شده و بدهی تسویه‌شده",
+        "استفاده از رنگ آبی یکدست و رسمی برای دکمه «خروجی گرفتن از گزارش وام» عینا هم‌رنگ دکمه ثبت پرداخت قسط",
+        "استفاده از رنگ متناسب با کارت بالای صفحه (قرمز برای بدهی تسویه‌شده و سبز برای طلب تسویه‌شده) برای دکمه «خروجی پرونده تسویه‌حساب»",
+        "اصلاح و نمایش حتمی نام مخاطب در خط دوم تمام کارت‌های تراکنش در صفحات تسویه‌شده بدهی و طلب",
+        "ثبت رسمی بیلد 171 و انتشار نسخه 1.8.7"
+      ]
+    },
+    {
+      "version": "1.8.6",
+      "buildNumber": 170,
+      "releaseDate": "2026-08-03",
+      "releaseChannel": "Stable",
+      "commitHash": "v186rel",
+      "commitMessage": "feat: blue export button for loan details, matching color export button for settled debt/demand periods, fix missing contact name in line 2 of transaction cards, release v1.8.6 (build 170)",
+      "changes": [
+        "استفاده از رنگ آبی اختصاصی برای دکمه «خروجی پرونده وام» عینا هم‌رنگ دکمه ثبت پرداخت قسط",
+        "استفاده از رنگ متناسب با کارت بالای صفحه (قرمز برای بدهی تسویه‌شده و سبز برای طلب تسویه‌شده) برای دکمه «خروجی پرونده تسویه‌حساب»",
+        "اصلاح و نمایش دقیق نام مخاطب در خط دوم تمامی کارت‌های تراکنش در صفحات بدهی و طلب تسویه‌شده",
+        "ثبت رسمی بیلد 170 و انتشار نسخه 1.8.6"
+      ]
+    },
+    {
+      "version": "1.8.5",
+      "buildNumber": 169,
+      "releaseDate": "2026-08-03",
+      "releaseChannel": "Stable",
+      "commitHash": "v185rel",
+      "commitMessage": "feat: strictly restrict transaction line 2 to contact name in settled screens, redesign top summary cards in settled debt and demand pages to match loan summary hero style with red/green gradients and 3-box quick stats grid, release v1.8.5 (build 169)",
+      "changes": [
+        "محدودسازی دقیق خط دوم کارت‌های تراکنش در صفحات طلب و بدهی تسویه‌شده به فقط «نام مخاطب»",
+        "بازطراحی هدر بالای صفحات پرونده طلب و بدهی تسویه‌شده به سبک کارت خلاصه وام (کارت هیپ گرادیانت قرمز برای بدهی و سبز برای طلب به همراه واترمارک اختصاصی)",
+        "طراحی باکس دوم صفحات تسویه‌شده به سبک باکس ۳ ستونه آمار سریع وام (تعداد تراکنش‌ها، تاریخ شروع پرونده و تاریخ تسویه)",
+        "ثبت رسمی بیلد 169 و انتشار نسخه 1.8.5"
+      ]
+    },
+    {
+      "version": "1.8.4",
+      "buildNumber": 168,
+      "releaseDate": "2026-08-03",
+      "releaseChannel": "Stable",
+      "commitHash": "v184rel",
+      "commitMessage": "feat: format loan and settled transactions into 3 structured lines with auto-expanding box height, restore contact card watermark to left position, release v1.8.4 (build 168)",
+      "changes": [
+        "تنظیم کارت تراکنش‌های وام به ۳ خط مجزا: خط اول شماره قسط (پرداخت قسط ۲)، خط دوم نام وام، خط سوم توضیحات بدون محدودیت ارتفاع",
+        "تنظیم کارت تراکنش‌های طلب (تسویه‌شده و فعال) به ۳ خط: خط اول نوع عملیات (ثبت طلب جدید / بازپرداخت طلب)، خط دوم نام مخاطب، خط سوم توضیحات با قابلیت افزایش ارتفاع باکس",
+        "تنظیم کارت تراکنش‌های بدهی (تسویه‌شده و فعال) به ۳ خط: خط اول نوع عملیات (ثبت بدهی جدید / بازپرداخت بدهی)، خط دوم نام مخاطب، خط سوم توضیحات با قابلیت افزایش ارتفاع باکس",
+        "بازگردانی واتر‌مارک کارت مخاطب در صفحه پروفایل به موقعیت اولیه در سمت چپ",
+        "ثبت رسمی بیلد 168 و انتشار نسخه 1.8.4"
+      ]
+    },
+    {
+      "version": "1.8.3",
+      "buildNumber": 167,
+      "releaseDate": "2026-08-03",
+      "releaseChannel": "Stable",
+      "commitHash": "v183rel",
+      "commitMessage": "feat: restore circular contact action buttons, align copy icon size, optimize contact watermark & phone icon, blue gradient loan card, release v1.8.3 (build 167)",
+      "changes": [
+        "بازگردانی دکمه‌های گرد ویرایش (با آیکون مداد)، علاقه‌مندی و حذف به نوار بالای صفحه پروفایل مخاطب",
+        "یکسان‌سازی دقیق اندازه آیکون کپی در شماره کارت با شماره شبا (اندازه یکسان text-lg)",
+        "تنظیم موقعیت واتر‌مارک پشت کارت مخاطب به سمت راست و انتقال آیکون تماس به سمت راست شماره موبایل",
+        "تغییر رنگ کارت خلاصه وام در صفحه وام‌ها به گرادیانت آبی اختصاصی و جابه‌جایی آیکون بانک به بالا و راست",
+        "ثبت رسمی بیلد 167 و انتشار نسخه 1.8.3"
+      ]
+    },
     {
       "version": "1.8.2",
       "buildNumber": 166,

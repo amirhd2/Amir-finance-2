@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Amir Finance - مدیریت مالی شخصی</title>
 
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+
     <!-- Favicon & Application Icons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -586,6 +589,102 @@
                 hash = str.charCodeAt(i) + ((hash << 5) - hash);
             }
             return avatarColors[Math.abs(hash) % avatarColors.length];
+        };
+
+        const getContactCardTheme = (contactId) => {
+            let idNum = 0;
+            if (typeof contactId === 'number') {
+                idNum = contactId;
+            } else if (contactId) {
+                idNum = String(contactId).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+            }
+            const themes = [
+                // 1: Building Watermark (Light Surface)
+                {
+                    watermark: 'apartment',
+                    containerClass: 'bg-slate-100 dark:bg-slate-800/95 text-slate-900 dark:text-white border-slate-200/80 dark:border-slate-700/80 shadow-sm',
+                    avatarClass: 'bg-indigo-600 text-white',
+                    nameClass: 'text-slate-900 dark:text-white',
+                    phoneClass: 'text-slate-500 dark:text-slate-400',
+                    buttonClass: 'bg-white/70 dark:bg-slate-700/70 text-slate-700 dark:text-slate-200 hover:bg-white',
+                    rowClass: 'bg-white/70 dark:bg-slate-700/50',
+                    rowLabelClass: 'text-slate-500 dark:text-slate-400',
+                    rowTextClass: 'text-slate-900 dark:text-white',
+                    accentColorClass: 'text-indigo-600 dark:text-indigo-400',
+                    watermarkColor: 'text-slate-900 dark:text-white'
+                },
+                // 2: Wallet Watermark (Dark Theme)
+                {
+                    watermark: 'account_balance_wallet',
+                    containerClass: 'bg-slate-900 text-white border-slate-800 shadow-lg',
+                    avatarClass: 'bg-amber-400 text-slate-950',
+                    nameClass: 'text-white',
+                    phoneClass: 'text-slate-300',
+                    buttonClass: 'bg-white/10 text-white hover:bg-white/20',
+                    rowClass: 'bg-white/10',
+                    rowLabelClass: 'text-slate-300',
+                    rowTextClass: 'text-white',
+                    accentColorClass: 'text-amber-400',
+                    watermarkColor: 'text-white'
+                },
+                // 3: Handshake Watermark (Tinted Surface)
+                {
+                    watermark: 'handshake',
+                    containerClass: 'bg-indigo-100/90 dark:bg-indigo-950/80 text-indigo-950 dark:text-indigo-100 border-indigo-200 dark:border-indigo-900 shadow-sm',
+                    avatarClass: 'bg-indigo-600 text-white',
+                    nameClass: 'text-indigo-950 dark:text-indigo-100',
+                    phoneClass: 'text-indigo-700 dark:text-indigo-300',
+                    buttonClass: 'bg-white/60 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 hover:bg-white/80',
+                    rowClass: 'bg-white/60 dark:bg-indigo-900/50',
+                    rowLabelClass: 'text-indigo-700 dark:text-indigo-300',
+                    rowTextClass: 'text-indigo-950 dark:text-indigo-100',
+                    accentColorClass: 'text-indigo-600 dark:text-indigo-400',
+                    watermarkColor: 'text-indigo-600 dark:text-indigo-400'
+                },
+                // 4: Briefcase Watermark (Emerald Dark)
+                {
+                    watermark: 'work',
+                    containerClass: 'bg-emerald-900 text-white border-emerald-800 shadow-lg',
+                    avatarClass: 'bg-emerald-400 text-emerald-950',
+                    nameClass: 'text-white',
+                    phoneClass: 'text-emerald-200',
+                    buttonClass: 'bg-white/10 text-white hover:bg-white/20',
+                    rowClass: 'bg-white/10',
+                    rowLabelClass: 'text-emerald-200',
+                    rowTextClass: 'text-white',
+                    accentColorClass: 'text-emerald-300',
+                    watermarkColor: 'text-white'
+                },
+                // 5: Team Watermark (Deep Blue Dark)
+                {
+                    watermark: 'groups',
+                    containerClass: 'bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 text-white border-indigo-900/80 shadow-lg',
+                    avatarClass: 'bg-sky-400 text-slate-950',
+                    nameClass: 'text-white',
+                    phoneClass: 'text-blue-200',
+                    buttonClass: 'bg-white/10 text-white hover:bg-white/20',
+                    rowClass: 'bg-white/10',
+                    rowLabelClass: 'text-blue-200',
+                    rowTextClass: 'text-white',
+                    accentColorClass: 'text-sky-400',
+                    watermarkColor: 'text-white'
+                },
+                // 6: Document Watermark (Rose Dark)
+                {
+                    watermark: 'description',
+                    containerClass: 'bg-rose-900 text-white border-rose-800 shadow-lg',
+                    avatarClass: 'bg-rose-400 text-rose-950',
+                    nameClass: 'text-white',
+                    phoneClass: 'text-rose-200',
+                    buttonClass: 'bg-white/10 text-white hover:bg-white/20',
+                    rowClass: 'bg-white/10',
+                    rowLabelClass: 'text-rose-200',
+                    rowTextClass: 'text-white',
+                    accentColorClass: 'text-rose-300',
+                    watermarkColor: 'text-white'
+                }
+            ];
+            return themes[Math.abs(idNum) % themes.length];
         };
 
         const jalaliMonths = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
@@ -2572,13 +2671,24 @@
             );
         }
 
-        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo' }) {
+        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [] }) {
             const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
 
-            const displayTitle = (() => {
-                const rawName = tx.contactName || (tx.contact ? `${tx.contact.firstName} ${tx.contact.lastName}` : '');
+            const { line1, line2, line3 } = (() => {
+                let rawContactName = contactName || tx.contactName || (tx.contact ? `${tx.contact.firstName || ''} ${tx.contact.lastName || ''}`.trim() : (tx.firstName ? `${tx.firstName || ''} ${tx.lastName || ''}`.trim() : ''));
+                if (!rawContactName && tx.contactId && Array.isArray(contacts) && contacts.length > 0) {
+                    const foundContact = contacts.find(c => c.id === tx.contactId);
+                    if (foundContact) rawContactName = `${foundContact.firstName || ''} ${foundContact.lastName || ''}`.trim();
+                }
+
+                let l1 = '';
+                let l2 = '';
+                let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : (tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده');
+
                 if (tx.type === 'repayment') {
                     const instNum = (totalCount !== undefined && index !== undefined) ? (totalCount - index) : (tx.installmentNum || 1);
+                    l1 = `پرداخت قسط ${instNum}`;
+
                     let loanName = tx.loanTitle || (tx.loan ? tx.loan.title : '');
                     if (!loanName && tx.title && tx.title.includes('-')) {
                         const parts = tx.title.split('-');
@@ -2588,29 +2698,25 @@
                         loanName = tx.title.substring(tx.title.indexOf('وام')).trim();
                     }
                     if (!loanName) loanName = 'وام';
-                    return `پرداخت قسط ${instNum} / ${loanName}`;
+                    l2 = loanName;
+                } else if (tx.type === 'demand') {
+                    l1 = 'ثبت طلب جدید';
+                    l2 = rawContactName.trim();
+                } else if (tx.type === 'demand_repayment') {
+                    l1 = 'بازپرداخت طلب';
+                    l2 = rawContactName.trim();
+                } else if (tx.type === 'debt') {
+                    l1 = 'ثبت بدهی جدید';
+                    l2 = rawContactName.trim();
+                } else if (tx.type === 'debt_repayment') {
+                    l1 = 'بازپرداخت بدهی';
+                    l2 = rawContactName.trim();
+                } else {
+                    l1 = tx.title || 'تراکنش';
+                    l2 = rawContactName.trim();
                 }
-                if (tx.type === 'debt') {
-                    if (rawName) return `ثبت بدهی/ ${rawName}`;
-                    if (tx.title && tx.title.includes('/')) return tx.title;
-                    if (tx.title && (tx.title.startsWith('ثبت قرض') || tx.title.startsWith('ثبت بدهی') || tx.title.startsWith('قرض جدید'))) return tx.title.replace(/(ثبت قرض \/ بدهی|قرض جدید|ثبت بدهی) (به )?/, 'ثبت بدهی/ ');
-                }
-                if (tx.type === 'debt_repayment') {
-                    if (rawName) return `بازپرداخت بدهی/ ${rawName}`;
-                    if (tx.title && tx.title.includes('/')) return tx.title;
-                    if (tx.title && tx.title.startsWith('بازپرداخت بدهی')) return tx.title.replace(/بازپرداخت بدهی (به )?/, 'بازپرداخت بدهی/ ');
-                }
-                if (tx.type === 'demand') {
-                    if (rawName) return `طلب جدید/ ${rawName}`;
-                    if (tx.title && tx.title.includes('/')) return tx.title;
-                    if (tx.title && tx.title.startsWith('ثبت طلب')) return tx.title.replace(/ثبت طلب (از )?/, 'طلب جدید/ ');
-                }
-                if (tx.type === 'demand_repayment') {
-                    if (rawName) return `بازپرداخت طلب/ ${rawName}`;
-                    if (tx.title && tx.title.includes('/')) return tx.title;
-                    if (tx.title && (tx.title.startsWith('دریافت / تسویه طلب') || tx.title.startsWith('بازپرداخت طلب'))) return tx.title.replace(/(دریافت \/ تسویه طلب|بازپرداخت طلب) (از )?/, 'بازپرداخت طلب/ ');
-                }
-                return tx.title || 'تراکنش';
+
+                return { line1: l1, line2: l2, line3: l3 };
             })();
 
             const isRedAmount = tx.type === 'debt' || tx.type === 'demand_repayment' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment');
@@ -2626,9 +2732,14 @@
                                 {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-6 h-6" />}
                             </div>
                             <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
-                                <h3 className="text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{displayTitle}</h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 whitespace-normal">
-                                    {tx.notes && tx.notes.trim() ? tx.notes : (tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'تراکنش ثبت شده')}
+                                <h3 className="text-sm font-extrabold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{line1}</h3>
+                                {line2 && (
+                                    <div className="text-xs font-bold text-slate-600 dark:text-slate-300 break-words whitespace-normal leading-snug">
+                                        {line2}
+                                    </div>
+                                )}
+                                <p className="text-xs text-slate-500 dark:text-slate-400 break-words whitespace-normal leading-relaxed mt-0.5">
+                                    {line3}
                                 </p>
                             </div>
                         </div>
@@ -3243,15 +3354,102 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.8.2",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '166', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.8.8",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '172', 10),
                 releaseDate: "2026-08-03",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.8.2",
-                latestBuild: 166,
+                latestVersion: "1.8.8",
+                latestBuild: 172,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.8.8",
+                        buildNumber: 172,
+                        releaseDate: "2026-08-03",
+                        releaseChannel: "Stable",
+                        commitHash: "v188rel",
+                        commitMessage: "fix: restore hero summary card with watermarks & 3-column quick stats grid in settled debt and demand pages",
+                        changes: [
+                            "بازگردانی کامل کارت اصلی (کارت هدر با گرادیانت، واتر‌مارک اختصاصی و نشان تسویه‌شده) در صفحات طلب و بدهی تسویه‌شده",
+                            "بازگردانی باکس آمار سریع سه ستونه (تعداد تراکنش‌ها، تاریخ افتتاح پرونده و تاریخ تسویه) در زیر کارت اصلی",
+                            "حفظ نمایش نام مخاطب در خط دوم تمامی کارت‌های تراکنش",
+                            "ثبت رسمی بیلد 172 و انتشار نسخه 1.8.8"
+                        ]
+                    },
+                    {
+                        version: "1.8.7",
+                        buildNumber: 171,
+                        releaseDate: "2026-08-03",
+                        releaseChannel: "Stable",
+                        commitHash: "v187rel",
+                        commitMessage: "fix: resolve blank white screen issue when entering loan detail or settled debt/demand screens, restore archived period case, apply solid blue loan export button & colored settled export button, fix line 2 contact name display",
+                        changes: [
+                            "رفع کامل مشکل صفحه سفید هنگام ورود به صفحات جزئیات وام، طلب تسویه‌شده و بدهی تسویه‌شده",
+                            "استفاده از رنگ آبی یکدست و رسمی برای دکمه «خروجی گرفتن از گزارش وام» عینا هم‌رنگ دکمه ثبت پرداخت قسط",
+                            "استفاده از رنگ متناسب با کارت بالای صفحه (قرمز برای بدهی تسویه‌شده و سبز برای طلب تسویه‌شده) برای دکمه «خروجی پرونده تسویه‌حساب»",
+                            "اصلاح و نمایش حتمی نام مخاطب در خط دوم تمام کارت‌های تراکنش در صفحات تسویه‌شده بدهی و طلب",
+                            "ثبت رسمی بیلد 171 و انتشار نسخه 1.8.7"
+                        ]
+                    },
+                    {
+                        version: "1.8.6",
+                        buildNumber: 170,
+                        releaseDate: "2026-08-03",
+                        releaseChannel: "Stable",
+                        commitHash: "v186rel",
+                        commitMessage: "feat: blue export button for loan details, matching color export button for settled debt/demand periods, fix missing contact name in line 2 of transaction cards, release v1.8.6 (build 170)",
+                        changes: [
+                            "استفاده از رنگ آبی اختصاصی برای دکمه «خروجی پرونده وام» عینا هم‌رنگ دکمه ثبت پرداخت قسط",
+                            "استفاده از رنگ متناسب با کارت بالای صفحه (قرمز برای بدهی تسویه‌شده و سبز برای طلب تسویه‌شده) برای دکمه «خروجی پرونده تسویه‌حساب»",
+                            "اصلاح و نمایش دقیق نام مخاطب در خط دوم تمامی کارت‌های تراکنش در صفحات بدهی و طلب تسویه‌شده",
+                            "ثبت رسمی بیلد 170 و انتشار نسخه 1.8.6"
+                        ]
+                    },
+                    {
+                        version: "1.8.5",
+                        buildNumber: 169,
+                        releaseDate: "2026-08-03",
+                        releaseChannel: "Stable",
+                        commitHash: "v185rel",
+                        commitMessage: "feat: strictly restrict transaction line 2 to contact name in settled screens, redesign top summary cards in settled debt and demand pages to match loan summary hero style with red/green gradients and 3-box quick stats grid, release v1.8.5 (build 169)",
+                        changes: [
+                            "محدودسازی دقیق خط دوم کارت‌های تراکنش در صفحات طلب و بدهی تسویه‌شده به فقط «نام مخاطب»",
+                            "بازطراحی هدر بالای صفحات پرونده طلب و بدهی تسویه‌شده به سبک کارت خلاصه وام (کارت هیپ گرادیانت قرمز برای بدهی و سبز برای طلب به همراه واترمارک اختصاصی)",
+                            "طراحی باکس دوم صفحات تسویه‌شده به سبک باکس ۳ ستونه آمار سریع وام (تعداد تراکنش‌ها، تاریخ شروع پرونده و تاریخ تسویه)",
+                            "ثبت رسمی بیلد 169 و انتشار نسخه 1.8.5"
+                        ]
+                    },
+                    {
+                        version: "1.8.4",
+                        buildNumber: 168,
+                        releaseDate: "2026-08-03",
+                        releaseChannel: "Stable",
+                        commitHash: "v184rel",
+                        commitMessage: "feat: format loan and settled transactions into 3 structured lines with auto-expanding box height, restore contact card watermark to left position, release v1.8.4 (build 168)",
+                        changes: [
+                            "تنظیم کارت تراکنش‌های وام به ۳ خط مجزا: خط اول شماره قسط (پرداخت قسط ۲)، خط دوم نام وام، خط سوم توضیحات بدون محدودیت ارتفاع",
+                            "تنظیم کارت تراکنش‌های طلب (تسویه‌شده و فعال) به ۳ خط: خط اول نوع عملیات (ثبت طلب جدید / بازپرداخت طلب)، خط دوم نام مخاطب، خط سوم توضیحات با قابلیت افزایش ارتفاع باکس",
+                            "تنظیم کارت تراکنش‌های بدهی (تسویه‌شده و فعال) به ۳ خط: خط اول نوع عملیات (ثبت بدهی جدید / بازپرداخت بدهی)، خط دوم نام مخاطب، خط سوم توضیحات با قابلیت افزایش ارتفاع باکس",
+                            "بازگردانی واتر‌مارک کارت مخاطب در صفحه پروفایل به موقعیت اولیه در سمت چپ",
+                            "ثبت رسمی بیلد 168 و انتشار نسخه 1.8.4"
+                        ]
+                    },
+                    {
+                        version: "1.8.3",
+                        buildNumber: 167,
+                        releaseDate: "2026-08-03",
+                        releaseChannel: "Stable",
+                        commitHash: "v183rel",
+                        commitMessage: "feat: restore circular contact action buttons, align copy icon size, optimize contact watermark & phone icon, blue gradient loan card, release v1.8.3 (build 167)",
+                        changes: [
+                            "بازگردانی دکمه‌های گرد ویرایش (با آیکون مداد)، علاقه‌مندی و حذف به نوار بالای صفحه پروفایل مخاطب",
+                            "یکسان‌سازی دقیق اندازه آیکون کپی در شماره کارت با شماره شبا (اندازه یکسان text-lg)",
+                            "تنظیم موقعیت واتر‌مارک پشت کارت مخاطب به سمت راست و انتقال آیکون تماس به سمت راست شماره موبایل",
+                            "تغییر رنگ کارت خلاصه وام در صفحه وام‌ها به گرادیانت آبی اختصاصی و جابه‌جایی آیکون بانک به بالا و راست",
+                            "ثبت رسمی بیلد 167 و انتشار نسخه 1.8.3"
+                        ]
+                    },
                     {
                         version: "1.8.2",
                         buildNumber: 166,
@@ -7419,224 +7617,221 @@
                         if (!selectedContact) return null;
                         return (
                             <div className="space-y-4 animate-fade-in">
-                                        {/* Header Bar */}
-                                        <div className="flex justify-between items-center py-2">
-                                            <button onClick={onBack ? () => onBack('button') : (() => navigateBack('contacts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
-                                                <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
-                                            </button>
-                                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">پروفایل مخاطب</h3>
-                                    <div className="flex items-center space-x-1.5 space-x-reverse">
-                                        <button 
-                                            onClick={() => {
-                                                setEditContactForm({
-                                                    id: selectedContact.id,
-                                                    firstName: selectedContact.firstName || '',
-                                                    lastName: selectedContact.lastName || '',
-                                                    phone: selectedContact.phone || '',
-                                                    bankName: selectedContact.bankName || '',
-                                                    bankCard: selectedContact.bankCard || '',
-                                                    iban: selectedContact.iban || ''
-                                                });
-                                                setShowEditContactModal(true);
-                                            }}
-                                            className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform">
-                                            <Icon name="pencil" className="w-4 h-4" />
-                                        </button>
-                                        <button 
-                                            onClick={handleDeleteContact}
-                                            className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400"
-                                            title="حذف مخاطب">
-                                            <Icon name="trash-2" className="w-4 h-4" />
-                                        </button>
-                                        <button 
-                                            onClick={() => {
-                                                const updated = contacts.map(c => c.id === selectedContact.id ? {...c, isFavorite: !c.isFavorite} : c);
-                                                setContacts(updated);
-                                                setSelectedContact({...selectedContact, isFavorite: !selectedContact.isFavorite});
-                                                showToast(selectedContact.isFavorite ? 'از علاقه مندی‌ها حذف شد' : 'به علاقه‌مندی‌ها اضافه شد');
-                                            }}
-                                            className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-amber-500 active:scale-95 transition-transform">
-                                            <Icon name="star" className={`w-5 h-5 ${selectedContact.isFavorite ? 'fill-amber-400' : ''}`} />
-                                        </button>
-                                    </div>
-                                </div>
+                                 {/* Header Bar */}
+                                 <div className="flex justify-between items-center py-1">
+                                     <button onClick={onBack ? () => onBack('button') : (() => navigateBack('contacts'))} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
+                                         <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                                     </button>
+                                     <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">پروفایل مخاطب</h3>
+                                     <div className="flex items-center space-x-1.5 space-x-reverse">
+                                         <button 
+                                             onClick={() => {
+                                                 setEditContactForm({
+                                                     id: selectedContact.id,
+                                                     firstName: selectedContact.firstName || '',
+                                                     lastName: selectedContact.lastName || '',
+                                                     phone: selectedContact.phone || '',
+                                                     bankName: selectedContact.bankName || '',
+                                                     bankCard: selectedContact.bankCard || '',
+                                                     iban: selectedContact.iban || ''
+                                                 });
+                                                 setShowEditContactModal(true);
+                                             }}
+                                             className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform"
+                                             title="ویرایش مخاطب">
+                                             <Icon name="pencil" className="w-4 h-4" />
+                                         </button>
+                                         <button 
+                                             onClick={handleDeleteContact}
+                                             className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400"
+                                             title="حذف مخاطب">
+                                             <Icon name="trash-2" className="w-4 h-4" />
+                                         </button>
+                                         <button 
+                                             onClick={() => {
+                                                 const updated = contacts.map(c => c.id === selectedContact.id ? {...c, isFavorite: !c.isFavorite} : c);
+                                                 setContacts(updated);
+                                                 setSelectedContact({...selectedContact, isFavorite: !selectedContact.isFavorite});
+                                                 showToast(selectedContact.isFavorite ? 'از علاقه مندی‌ها حذف شد' : 'به علاقه‌مندی‌ها اضافه شد');
+                                             }}
+                                             className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-amber-500 active:scale-95 transition-transform"
+                                             title="علاقه‌مندی">
+                                             <Icon name="star" className={`w-5 h-5 ${selectedContact.isFavorite ? 'fill-amber-400 text-amber-400' : ''}`} />
+                                         </button>
+                                     </div>
+                                 </div>
 
-                                {/* Contact Card Info Header */}
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 text-center space-y-2">
-                                    <div className={`w-16 h-16 rounded-full ${getAvatarColor(selectedContact.id, selectedContact.firstName + selectedContact.lastName)} text-white font-extrabold text-lg flex items-center justify-center mx-auto shadow-md`}>
-                                        {selectedContact.firstName.charAt(0)} {selectedContact.lastName.charAt(0)}
-                                    </div>
-                                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">{selectedContact.firstName} {selectedContact.lastName}</h3>
-                                    <p className="text-xs text-slate-400 font-mono">{selectedContact.phone || 'بدون شماره تماس'}</p>
-                                </div>
+                                 {/* Contact Card with Watermark Theme */}
+                                 {(() => {
+                                     const cardTheme = getContactCardTheme(selectedContact.id);
+                                     const contactInitials = (selectedContact.firstName ? selectedContact.firstName.charAt(0) : '') + (selectedContact.lastName ? selectedContact.lastName.charAt(0) : '');
+                                     return (
+                                         <div className={`relative overflow-hidden rounded-2xl p-4 border flex flex-col gap-3 group transition-transform duration-200 ${cardTheme.containerClass}`}>
+                                             {/* Background Watermark Icon */}
+                                             <span className={`material-symbols-outlined ${cardTheme.watermarkColor}`} style={{ position: 'absolute', top: '0rem', left: '0.25rem', fontSize: '8rem', opacity: 0.07, zIndex: 0, pointerEvents: 'none' }}>
+                                                 {cardTheme.watermark}
+                                             </span>
 
-                                {/* Summary 3 Cards in Contact Profile (وام، طلب، قرض) */}
-                                <div className="space-y-2.5">
-                                    <div className="grid grid-cols-3 gap-2.5">
-                                        <div 
-                                            onClick={() => setProfileFilter(prev => prev === 'loans' ? 'all' : 'loans')}
-                                            className={`bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center ${
-                                                profileFilter === 'loans' ? 'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900 scale-[1.02]' : ''
-                                            }`}>
-                                            <div className="w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm">
-                                                <Icon name="landmark" className="w-4 h-4" />
-                                            </div>
-                                            <div className="text-xs font-bold">وام‌ها</div>
-                                            <div className="text-[10px] text-white/80 mt-1">{loans.filter(l => l.contactId === selectedContact.id).length} پرونده</div>
-                                        </div>
+                                             <div className="relative z-10 w-full flex flex-col gap-3">
+                                                 {/* Top Row: Avatar, Name & Phone */}
+                                                 <div className="flex gap-3 items-center min-w-0">
+                                                     <div className={`w-12 h-12 rounded-full ${cardTheme.avatarClass} flex items-center justify-center font-bold text-lg shadow-md shrink-0`}>
+                                                         {contactInitials || '؟'}
+                                                     </div>
+                                                     <div className="min-w-0 flex-1">
+                                                         <h2 className={`text-base sm:text-lg font-bold leading-tight truncate ${cardTheme.nameClass}`}>
+                                                             {selectedContact.firstName} {selectedContact.lastName}
+                                                         </h2>
+                                                         <p className={`text-xs flex items-center gap-1.5 mt-0.5 ${cardTheme.phoneClass}`}>
+                                                             <span className="material-symbols-outlined text-xs shrink-0">call</span>
+                                                             <span dir="ltr" className="font-mono">{selectedContact.phone || 'بدون شماره تماس'}</span>
+                                                         </p>
+                                                     </div>
+                                                 </div>
 
-                                        <div 
-                                            onClick={() => setProfileFilter(prev => prev === 'debts' ? 'all' : 'debts')}
-                                            className={`bg-gradient-to-br from-rose-500 to-red-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center ${
-                                                profileFilter === 'debts' ? 'ring-2 ring-rose-500 ring-offset-2 dark:ring-offset-slate-900 scale-[1.02]' : ''
-                                            }`}>
-                                            <div className="w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm">
-                                                <Icon name="arrow-down-left" className="w-4 h-4" />
-                                            </div>
-                                            <div className="text-xs font-bold">بدهی</div>
-                                            <div className="text-[11px] font-extrabold mt-1">{(selectedContact.totalDebt || 0).toLocaleString()}</div>
-                                            <div className="text-[9px] text-white/70">تومان</div>
-                                        </div>
+                                                 {/* Card Number & Sheba Number Rows */}
+                                                 <div className="space-y-2 mt-1">
+                                                     {/* Card Row */}
+                                                     <div className={`flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`}>
+                                                         <div className="flex items-center gap-2 shrink-0">
+                                                             <span className={`material-symbols-outlined ${cardTheme.accentColorClass}`}>credit_card</span>
+                                                             <span className={`text-xs font-bold ${cardTheme.rowLabelClass}`}>کارت</span>
+                                                         </div>
+                                                         <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
+                                                             <span className={`font-mono text-sm sm:text-base font-bold tracking-wider dir-ltr truncate ${cardTheme.rowTextClass}`}>
+                                                                 {selectedContact.bankCard ? selectedContact.bankCard : 'ثبت نشده'}
+                                                             </span>
+                                                             {selectedContact.bankCard && (
+                                                                 <button 
+                                                                     onClick={() => copyToClipboard(selectedContact.bankCard, 'شماره کارت')}
+                                                                     className={`${cardTheme.accentColorClass} active:opacity-50 shrink-0 p-1`}
+                                                                     title="کپی شماره کارت">
+                                                                     <span className="material-symbols-outlined text-lg">content_copy</span>
+                                                                 </button>
+                                                             )}
+                                                         </div>
+                                                     </div>
 
-                                        <div 
-                                            onClick={() => setProfileFilter(prev => prev === 'demands' ? 'all' : 'demands')}
-                                            className={`bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center ${
-                                                profileFilter === 'demands' ? 'ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 scale-[1.02]' : ''
-                                            }`}>
-                                            <div className="w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm">
-                                                <Icon name="arrow-up-right" className="w-4 h-4" />
-                                            </div>
-                                            <div className="text-xs font-bold">طلب</div>
-                                            <div className="text-[11px] font-extrabold mt-1">{(selectedContact.totalDemand || 0).toLocaleString()}</div>
-                                            <div className="text-[9px] text-white/70">تومان</div>
-                                        </div>
-                                    </div>
+                                                     {/* Sheba Row */}
+                                                     <div className={`flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`}>
+                                                         <div className="flex items-center gap-2 shrink-0">
+                                                             <span className={`material-symbols-outlined ${cardTheme.accentColorClass}`}>account_balance</span>
+                                                             <span className={`text-xs font-bold ${cardTheme.rowLabelClass}`}>شبا</span>
+                                                         </div>
+                                                         <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
+                                                             <span className={`font-mono text-[11px] sm:text-xs font-bold dir-ltr truncate ${cardTheme.rowTextClass}`}>
+                                                                 {selectedContact.iban ? selectedContact.iban : 'ثبت نشده'}
+                                                             </span>
+                                                             {selectedContact.iban && (
+                                                                 <button 
+                                                                     onClick={() => copyToClipboard(selectedContact.iban, 'شماره شبا')}
+                                                                     className={`${cardTheme.accentColorClass} active:opacity-50 shrink-0 p-1`}
+                                                                     title="کپی شماره شبا">
+                                                                     <span className="material-symbols-outlined text-lg">content_copy</span>
+                                                                 </button>
+                                                             )}
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     );
+                                 })()}
 
-                                    {/* Sub-Action Buttons Under Active Selected Card */}
-                                    {profileFilter === 'loans' && (
-                                        <div className="grid grid-cols-2 gap-2 animate-fade-in pt-1">
-                                            <button 
-                                                onClick={() => openStackWizard('loan', 'add')}
-                                                className="py-2.5 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
-                                                <Icon name="landmark" className="w-4 h-4" />
-                                                <span>وام جدید</span>
-                                            </button>
-                                            <button 
-                                                onClick={() => openStackWizard('installment', 'add')}
-                                                className="py-2.5 px-3 bg-gradient-to-r from-indigo-500 to-sky-600 hover:from-indigo-600 hover:to-sky-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
-                                                <Icon name="receipt" className="w-4 h-4" />
-                                                <span>قسط جدید</span>
-                                            </button>
-                                        </div>
-                                    )}
+                                 {/* Summary 3 Cards in Contact Profile (وام، طلب، قرض) */}
+                                 <div className="space-y-2.5">
+                                     <div className="grid grid-cols-3 gap-2.5">
+                                         <div 
+                                             onClick={() => setProfileFilter(prev => prev === 'loans' ? 'all' : 'loans')}
+                                             className={`bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center ${
+                                                 profileFilter === 'loans' ? 'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900 scale-[1.02]' : ''
+                                             }`}>
+                                             <div className="w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm">
+                                                 <Icon name="landmark" className="w-4 h-4" />
+                                             </div>
+                                             <div className="text-xs font-bold">وام‌ها</div>
+                                             <div className="text-[10px] text-white/80 mt-1">{loans.filter(l => l.contactId === selectedContact.id).length} پرونده</div>
+                                         </div>
 
-                                    {profileFilter === 'debts' && (
-                                        <div className="grid grid-cols-2 gap-2 animate-fade-in pt-1">
-                                            <button 
-                                                onClick={() => openStackWizard('debt', 'add')}
-                                                className="py-2.5 px-3 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
-                                                <Icon name="arrow-down-left" className="w-4 h-4" />
-                                                <span>ثبت بدهی</span>
-                                            </button>
-                                            <button 
-                                                onClick={() => openStackWizard('debt_repayment', 'add')}
-                                                className="py-2.5 px-3 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
-                                                <Icon name="check-circle-2" className="w-4 h-4" />
-                                                <span>بازپرداخت جدید</span>
-                                            </button>
-                                        </div>
-                                    )}
+                                         <div 
+                                             onClick={() => setProfileFilter(prev => prev === 'debts' ? 'all' : 'debts')}
+                                             className={`bg-gradient-to-br from-rose-500 to-red-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center ${
+                                                 profileFilter === 'debts' ? 'ring-2 ring-rose-500 ring-offset-2 dark:ring-offset-slate-900 scale-[1.02]' : ''
+                                             }`}>
+                                             <div className="w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm">
+                                                 <Icon name="arrow-down-left" className="w-4 h-4" />
+                                             </div>
+                                             <div className="text-xs font-bold">بدهی</div>
+                                             <div className="text-[11px] font-extrabold mt-1">{(selectedContact.totalDebt || 0).toLocaleString()}</div>
+                                             <div className="text-[9px] text-white/70">تومان</div>
+                                         </div>
 
-                                    {profileFilter === 'demands' && (
-                                        <div className="grid grid-cols-2 gap-2 animate-fade-in pt-1">
-                                            <button 
-                                                onClick={() => openStackWizard('demand', 'add')}
-                                                className="py-2.5 px-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
-                                                <Icon name="arrow-up-right" className="w-4 h-4" />
-                                                <span>طلب جدید</span>
-                                            </button>
-                                            <button 
-                                                onClick={() => openStackWizard('demand_repayment', 'add')}
-                                                className="py-2.5 px-3 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
-                                                <Icon name="check-circle-2" className="w-4 h-4" />
-                                                <span>بازپرداخت جدید</span>
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
+                                         <div 
+                                             onClick={() => setProfileFilter(prev => prev === 'demands' ? 'all' : 'demands')}
+                                             className={`bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center ${
+                                                 profileFilter === 'demands' ? 'ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 scale-[1.02]' : ''
+                                             }`}>
+                                             <div className="w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm">
+                                                 <Icon name="arrow-up-right" className="w-4 h-4" />
+                                             </div>
+                                             <div className="text-xs font-bold">طلب</div>
+                                             <div className="text-[11px] font-extrabold mt-1">{(selectedContact.totalDemand || 0).toLocaleString()}</div>
+                                             <div className="text-[9px] text-white/70">تومان</div>
+                                         </div>
+                                     </div>
 
-                                {/* Bank Card & IBAN Info - Shorter & Sleek Compact Height */}
-                                <div className="space-y-1.5">
-                                    <div className="flex justify-between items-center px-1">
-                                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">اطلاعات حساب و کارت بانکی</h4>
-                                        <span className="text-[10px] font-bold text-slate-400">شبکه شتاب</span>
-                                    </div>
+                                     {/* Sub-Action Buttons Under Active Selected Card */}
+                                     {profileFilter === 'loans' && (
+                                         <div className="grid grid-cols-2 gap-2 animate-fade-in pt-1">
+                                             <button 
+                                                 onClick={() => openStackWizard('loan', 'add')}
+                                                 className="py-2.5 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
+                                                 <Icon name="landmark" className="w-4 h-4" />
+                                                 <span>وام جدید</span>
+                                             </button>
+                                             <button 
+                                                 onClick={() => openStackWizard('installment', 'add')}
+                                                 className="py-2.5 px-3 bg-gradient-to-r from-indigo-500 to-sky-600 hover:from-indigo-600 hover:to-sky-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
+                                                 <Icon name="receipt" className="w-4 h-4" />
+                                                 <span>قسط جدید</span>
+                                             </button>
+                                         </div>
+                                     )}
 
-                                    {/* Compact Iranian Bank Debit Card */}
-                                    <div className="relative overflow-hidden w-full bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-3.5 shadow-md border border-white/10 space-y-2.5">
-                                        {/* Background decorative gloss shape */}
-                                        <div className="absolute -top-10 -left-10 w-32 h-32 bg-indigo-500/15 rounded-full blur-xl pointer-events-none"></div>
+                                     {profileFilter === 'debts' && (
+                                         <div className="grid grid-cols-2 gap-2 animate-fade-in pt-1">
+                                             <button 
+                                                 onClick={() => openStackWizard('debt', 'add')}
+                                                 className="py-2.5 px-3 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
+                                                 <Icon name="arrow-down-left" className="w-4 h-4" />
+                                                 <span>ثبت بدهی</span>
+                                             </button>
+                                             <button 
+                                                 onClick={() => openStackWizard('debt_repayment', 'add')}
+                                                 className="py-2.5 px-3 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
+                                                 <Icon name="check-circle-2" className="w-4 h-4" />
+                                                 <span>بازپرداخت جدید</span>
+                                             </button>
+                                         </div>
+                                     )}
 
-                                        {/* Top Row: Bank Icon, Bank Name, Chip & Shetab Badge */}
-                                        <div className="flex justify-between items-center relative z-10">
-                                            <div className="flex items-center space-x-2 space-x-reverse">
-                                                <div className="w-6 h-6 rounded-md bg-amber-400/20 text-amber-300 flex items-center justify-center border border-amber-400/30">
-                                                    <Icon name="landmark" className="w-3.5 h-3.5" />
-                                                </div>
-                                                <span className="text-xs font-black text-amber-200">
-                                                    {selectedContact.bankName || 'بانک عضو شتاب'}
-                                                </span>
-                                                {/* Mini Chip */}
-                                                <div className="w-6 h-4 rounded bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 border border-amber-200/80 shadow-inner flex flex-col justify-between p-0.5 opacity-90 mr-1">
-                                                    <div className="border-b border-amber-800/40 w-full h-[1px]"></div>
-                                                    <div className="border-b border-amber-800/40 w-2/3 h-[1px]"></div>
-                                                </div>
-                                            </div>
-                                            <span className="text-[9px] font-mono font-bold text-slate-300 bg-white/10 px-2 py-0.5 rounded border border-white/10">
-                                                SHETAB
-                                            </span>
-                                        </div>
-
-                                        {/* Middle Row: Card Number */}
-                                        <div className="relative z-10 flex justify-between items-center bg-white/5 hover:bg-white/10 transition-colors px-2.5 py-1.5 rounded-xl border border-white/10">
-                                            <div className="flex items-center space-x-2 space-x-reverse w-full">
-                                                <span className="text-[9px] text-slate-400 font-bold shrink-0">کارت:</span>
-                                                <span className="font-mono text-sm tracking-[0.15em] font-black text-white text-center w-full dir-ltr select-all">
-                                                    {selectedContact.bankCard ? selectedContact.bankCard : '----  ----  ----  ----'}
-                                                </span>
-                                            </div>
-                                            {selectedContact.bankCard && (
-                                                <button 
-                                                    onClick={() => copyToClipboard(selectedContact.bankCard, 'شماره کارت')} 
-                                                    className="p-1 bg-white/10 hover:bg-white/20 text-white rounded transition-all active:scale-90 shrink-0"
-                                                    title="کپی شماره کارت">
-                                                    <Icon name="copy" className="w-3.5 h-3.5" />
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        {/* Bottom Row: Account Owner & IBAN */}
-                                        <div className="relative z-10 pt-1.5 border-t border-white/10 flex justify-between items-center text-[11px]">
-                                            <div className="flex items-center space-x-1.5 space-x-reverse">
-                                                <span className="text-[9px] text-slate-400 font-bold">صاحب کارت:</span>
-                                                <span className="font-extrabold text-slate-100">{selectedContact.firstName} {selectedContact.lastName}</span>
-                                            </div>
-                                            {selectedContact.iban ? (
-                                                <div className="flex items-center space-x-1 space-x-reverse dir-ltr">
-                                                    <span className="font-mono text-[10px] text-slate-200 font-bold select-all">{selectedContact.iban}</span>
-                                                    <button 
-                                                        onClick={() => copyToClipboard(selectedContact.iban, 'شماره شبا')} 
-                                                        className="p-0.5 text-slate-300 hover:text-white"
-                                                        title="کپی شماره شبا">
-                                                        <Icon name="copy" className="w-3 h-3" />
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <span className="text-[9px] text-slate-400">شبا ثبت نشده</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
+                                     {profileFilter === 'demands' && (
+                                         <div className="grid grid-cols-2 gap-2 animate-fade-in pt-1">
+                                             <button 
+                                                 onClick={() => openStackWizard('demand', 'add')}
+                                                 className="py-2.5 px-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
+                                                 <Icon name="arrow-up-right" className="w-4 h-4" />
+                                                 <span>طلب جدید</span>
+                                             </button>
+                                             <button 
+                                                 onClick={() => openStackWizard('demand_repayment', 'add')}
+                                                 className="py-2.5 px-3 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 space-x-reverse active:scale-95 transition-all">
+                                                 <Icon name="check-circle-2" className="w-4 h-4" />
+                                                 <span>بازپرداخت جدید</span>
+                                             </button>
+                                         </div>
+                                     )}
+                                 </div>
 
                                 {/* Filtered Items Section */}
                                 <div className="space-y-3">
@@ -7967,11 +8162,11 @@
                                 </div>
 
                                 {/* BEGIN: Loan Summary Card */}
-                                <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 rounded-3xl p-5 text-white relative overflow-hidden card-shadow border border-indigo-500/20 space-y-4" data-purpose="loan-summary-header">
+                                <div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-900 rounded-3xl p-5 text-white relative overflow-hidden card-shadow border border-blue-400/30 space-y-4" data-purpose="loan-summary-header">
                                     {/* Decorative Glowing Light & Background Watermark SVG */}
-                                    <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
-                                    <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-blue-500/20 rounded-full blur-2xl pointer-events-none" />
-                                    <div className="absolute -left-6 -bottom-6 opacity-15 pointer-events-none text-white">
+                                    <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl pointer-events-none" />
+                                    <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
+                                    <div className="absolute left-4 bottom-1 opacity-15 pointer-events-none text-white">
                                         <svg fill="currentColor" height="180" viewBox="0 0 24 24" width="180" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12 2L2 7v2h20V7L12 2zm0 18H4v-9h1v9h2v-9h2v9h2v-9h2v9h2v-9h2v9h1v-9h1v9h-2zm-10-9h20v2H2v-2z"></path>
                                         </svg>
@@ -8296,170 +8491,225 @@
                                 </section>
                                 {/* END: Transactions Section */}
 
-                                {/* Export Button */}
-                                <button 
-                                    onClick={() => openUniversalExportModal('loan', selectedLoan)}
-                                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 space-x-reverse card-shadow active:scale-95 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-200"
-                                >
-                                    <Icon name="file-output" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                                    <span>خروجی گرفتن از گزارش وام</span>
-                                </button>
-                            </div>
-                        );
-                    case 'archived-period-detail':
+                                                                 {/* Loan Export Button */}
+                                 <button 
+                                     onClick={() => openUniversalExportModal("loan", selectedLoan)}
+                                     className="w-full py-3.5 sm:py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-lg shadow-blue-200 dark:shadow-blue-950/50 active:scale-95 transition-all cursor-pointer"
+                                 >
+                                     <Icon name="file-output" className="w-5 h-5 text-white" />
+                                     <span>خروجی گرفتن از گزارش وام</span>
+                                 </button>
+                             </div>
+                         );
+
+                     case 'archived-period-detail':
                         if (!selectedPeriod) return null;
+                        const isDebt = selectedPeriod.type === 'debt';
+                        const periodContactObj = contacts.find(c => c.id === selectedPeriod.contactId);
+                        const contactDisplayName = periodContactObj 
+                            ? `${periodContactObj.firstName || ""} ${periodContactObj.lastName || ""}`.trim() 
+                            : (selectedPeriod.contactName || (selectedPeriod.contact ? `${selectedPeriod.contact.firstName || ""} ${selectedPeriod.contact.lastName || ""}`.trim() : "مخاطب"));
+                        
+                        let periodTxs = transactions.filter(t => t.periodId === selectedPeriod.id);
+                        if (periodTxs.length === 0 && selectedPeriod.transactions && selectedPeriod.transactions.length > 0) {
+                            periodTxs = selectedPeriod.transactions;
+                        }
+                        const totalAmt = selectedPeriod.totalAmount || periodTxs.reduce((acc, t) => acc + (t.type === "debt" || t.type === "demand" ? t.amount : 0), 0);
+
                         return (
-                            <div className="space-y-4 animate-fade-in">
-                                        {/* Header */}
-                                        <div className="flex justify-between items-center py-2">
-                                            <button 
-                                                onClick={onBack ? () => onBack('button') : (() => navigateBack(loanReturnTab || 'contact-detail'))} 
-                                                className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
-                                        <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                            <div className="space-y-4 animate-fade-in pb-8">
+                                {/* Top Header Bar */}
+                                <div className="flex justify-between items-center py-2">
+                                    <button onClick={onBack ? () => onBack("button") : (() => navigateBack(loanReturnTab || "accounts"))} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 active:scale-95 transition-transform">
+                                        <svg className="h-6 w-6 text-gray-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M10 19l-7-7m0 0l7-7m-7 7h18" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                        </svg>
                                     </button>
-                                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
-                                        {selectedPeriod.title || (selectedPeriod.type === 'debt' ? 'پرونده بدهی تسویه‌شده' : 'پرونده طلب تسویه‌شده')}
-                                    </h3>
-                                    <button 
-                                        onClick={() => handleDeleteArchivedPeriodClick(selectedPeriod)} 
-                                        className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400"
-                                        title="حذف تسویه‌حساب آرشیو شده">
-                                        <Icon name="trash-2" className="w-4 h-4" />
-                                    </button>
+                                    <h1 className="text-lg font-bold text-gray-800 dark:text-slate-100">
+                                        پرونده تسویه‌شده ({isDebt ? "بدهی" : "طلب"})
+                                    </h1>
+                                    <div className="w-10"></div>
                                 </div>
 
-                                {/* Contact Header Card */}
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
-                                    <div className="flex items-center space-x-3 space-x-reverse">
-                                        <div className={`w-11 h-11 rounded-full ${getAvatarColor(selectedPeriod.contactId, selectedPeriod.contactName)} text-white text-base font-bold flex items-center justify-center shadow-sm`}>
-                                            <Icon name="user" className="w-5 h-5" />
+                                {/* BEGIN: Archived Period Hero Card (Loan Summary Card Style) */}
+                                <div 
+                                    className={`rounded-3xl p-5 text-white relative overflow-hidden card-shadow space-y-4 border ${
+                                        isDebt 
+                                            ? "bg-gradient-to-br from-rose-600 via-red-600 to-rose-900 border-rose-400/30" 
+                                            : "bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-900 border-emerald-400/30"
+                                    }`}
+                                    data-purpose="archived-period-summary-header"
+                                >
+                                    {/* Decorative Glowing Light & Background Watermark SVG */}
+                                    <div className={`absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 rounded-full blur-2xl pointer-events-none ${isDebt ? "bg-rose-400/20" : "bg-emerald-400/20"}`} />
+                                    <div className={`absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 rounded-full blur-2xl pointer-events-none ${isDebt ? "bg-red-500/20" : "bg-teal-500/20"}`} />
+                                    
+                                    {/* Watermark Icon depending on type */}
+                                    <div className="absolute left-4 bottom-1 opacity-15 pointer-events-none text-white">
+                                        {isDebt ? (
+                                            /* Red Debt Watermark SVG */
+                                            <svg fill="currentColor" height="170" viewBox="0 0 24 24" width="170" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M19 14V6c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-4zm-2 4H7V6h10v12zm-9-7h8v2H8zm0 4h5v2H8z"/>
+                                            </svg>
+                                        ) : (
+                                            /* Green Demand Watermark SVG */
+                                            <svg fill="currentColor" height="170" viewBox="0 0 24 24" width="170" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                                            </svg>
+                                        )}
+                                    </div>
+
+                                    <div className="relative z-10 space-y-3">
+                                        {/* Top Header Row: Contact Name & Status Badge */}
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="flex items-start gap-3 min-w-0 flex-1">
+                                                <div className="bg-white/15 backdrop-blur-md p-2.5 rounded-2xl border border-white/20 shrink-0 mt-0.5">
+                                                    <Icon name="user" className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <h2 className="text-base sm:text-lg font-bold text-white break-words leading-snug">{contactDisplayName}</h2>
+                                                    <div className="flex items-center gap-1.5 text-xs opacity-90 mt-1">
+                                                        <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                                        <span className="text-white/90 font-medium">
+                                                            {isDebt ? "پرونده بدهی تسویه‌شده" : "پرونده طلب تسویه‌شده"}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md text-white border border-white/20 flex items-center space-x-1 space-x-reverse shrink-0">
+                                                <Icon name="check-circle-2" className="w-3.5 h-3.5 text-emerald-300" />
+                                                <span>تسویه‌شده</span>
+                                            </span>
                                         </div>
-                                        <div>
-                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                {selectedPeriod.contactName || (selectedContact ? `${selectedContact.firstName} ${selectedContact.lastName}` : 'مخاطب')}
-                                            </h4>
-                                            <div className="text-[10px] text-slate-400 mt-0.5">
-                                                {selectedPeriod.type === 'debt' ? 'دوره تسویه‌شده بدهی' : 'دوره تسویه‌شده طلب'}
+
+                                        {/* Total Settled Amount Section */}
+                                        <div className="bg-white/10 backdrop-blur-md rounded-2xl px-3.5 py-2 border border-white/10 flex items-center justify-between">
+                                            <span className="text-xs text-white/80 font-medium">
+                                                {isDebt ? "مبلغ کل بدهی تسویه‌شده" : "مبلغ کل طلب تسویه‌شده"}
+                                            </span>
+                                            <div className="flex items-baseline gap-1.5 font-mono">
+                                                <span className="text-xl sm:text-2xl font-black text-white">{Number(totalAmt).toLocaleString()}</span>
+                                                <span className="text-xs text-white/80 font-normal">تومان</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <span className="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40 flex items-center space-x-1 space-x-reverse">
-                                        <Icon name="check-circle-2" className="w-3.5 h-3.5" />
-                                        <span>تسویه‌شده</span>
-                                    </span>
-                                </div>
 
-                                {/* Summary Card */}
-                                {(() => {
-                                    let periodTxs = transactions.filter(t => t.periodId === selectedPeriod.id);
-                                    if (periodTxs.length === 0 && selectedPeriod.transactions && selectedPeriod.transactions.length > 0) {
-                                        periodTxs = selectedPeriod.transactions;
-                                    }
-                                    const isDebt = selectedPeriod.type === 'debt';
-                                    const calculatedTotalAmt = periodTxs.reduce((sum, t) => {
-                                        if (t.type === selectedPeriod.type) return sum + Math.abs(t.amount);
-                                        return sum;
-                                    }, 0);
-                                    const totalAmt = calculatedTotalAmt > 0 ? calculatedTotalAmt : (selectedPeriod.totalAmount || 0);
-
-                                    return (
-                                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-2.5 text-xs">
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">مبلغ کل تسویه‌شده</span>
-                                                <span className={`font-extrabold text-sm ${isDebt ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                                                    {Number(totalAmt).toLocaleString()} تومان
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">تعداد تراکنش‌های دوره</span>
-                                                <span className="font-bold text-slate-800 dark:text-slate-200">{periodTxs.length} مورد</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">تاریخ شروع دوره</span>
-                                                <span className="font-bold text-slate-700 dark:text-slate-300">{formatDateToNumericJalali(selectedPeriod.startDate) || 'نامشخص'}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">تاریخ پایان و تسویه</span>
-                                                <span className="font-bold text-slate-700 dark:text-slate-300">{formatDateToNumericJalali(selectedPeriod.endDate) || 'امروز'}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1 border-b border-slate-50 dark:border-slate-700/40">
-                                                <span className="text-slate-400">نوع پرونده</span>
-                                                <span className="font-bold text-indigo-600 dark:text-indigo-400">
-                                                    {isDebt ? 'تسویه کامل بدهی' : 'تسویه کامل طلب'}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between items-center py-1">
-                                                <span className="text-slate-400">وضعیت پرونده</span>
-                                                <span className="font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-lg">
-                                                    بسته و تسویه‌شده
-                                                </span>
-                                            </div>
+                                    {/* Progress/Completed Status Bar */}
+                                    <div className="pt-2 relative z-10 space-y-1.5">
+                                        <div className="flex justify-between items-center text-xs opacity-90">
+                                            <span className="text-white/80">وضعیت پرونده</span>
+                                            <span className="text-emerald-300 font-bold">۱۰۰٪ تسویه کامل</span>
                                         </div>
-                                    );
-                                })()}
-
-                                {/* Transactions List */}
-                                <div className="space-y-2 pt-1">
-                                    {(() => {
-                                        let periodTxs = transactions.filter(t => t.periodId === selectedPeriod.id);
-                                        if (periodTxs.length === 0 && selectedPeriod.transactions && selectedPeriod.transactions.length > 0) {
-                                            periodTxs = selectedPeriod.transactions;
-                                        }
-                                        const isDebt = selectedPeriod.type === 'debt';
-
-                                        return (
-                                            <>
-                                                <div className="flex justify-between items-center">
-                                                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                                                        سوابق و تراکنش‌های این دوره ({periodTxs.length})
-                                                    </h4>
-                                                </div>
-
-                                                {periodTxs.length === 0 ? (
-                                                    <div className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
-                                                        هیچ تراکنشی برای این دوره یافت نشد.
-                                                    </div>
-                                                ) : (
-                                                    <div className="space-y-2">
-                                                        {periodTxs.map((tx, idx) => {
-                                                            const txType = tx.type;
-                                                            const isRepay = txType === 'debt_repayment' || txType === 'demand_repayment';
-                                                            const editWizardType = isDebt 
-                                                                ? (isRepay ? 'debt_repayment' : 'debt')
-                                                                : (isRepay ? 'demand_repayment' : 'demand');
-
-                                                            return (
-                                                                <SwipeableTxCard
-                                                                    key={tx.id || idx}
-                                                                    tx={tx}
-                                                                    colorType={isDebt ? 'rose' : 'emerald'}
-                                                                    onEdit={(txItem) => openStackWizard(editWizardType, 'edit', txItem)}
-                                                                    onDelete={(txItem) => requestDeleteTx(txItem, isDebt ? 'debt' : 'demand')}
-                                                                />
-                                                            );
-                                                        })}
-                                                    </div>
-                                                )}
-                                            </>
-                                        );
-                                    })()}
+                                        <div className="w-full bg-white/15 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10">
+                                            <div className="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full w-full shadow-xs"></div>
+                                        </div>
+                                    </div>
                                 </div>
+                                {/* END: Archived Period Hero Card */}
+
+                                {/* BEGIN: Quick Info Connected Single Box (Loan Quick Stats Style) */}
+                                <div className="bg-white dark:bg-slate-800 rounded-2xl card-shadow border border-slate-100 dark:border-slate-700/60 p-2 sm:p-3 grid grid-cols-3 divide-x divide-x-reverse divide-slate-100 dark:divide-slate-700/60 text-center" data-purpose="archived-period-quick-stats">
+                                    {/* Box 1: Transactions Count */}
+                                    <div className="px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0">
+                                        <div className="bg-blue-50 dark:bg-blue-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0">
+                                            <svg className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 022 2h2a2 2 0 022-2M9 5a2 2 0 012-2h2a2 2 0 012 2" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
+                                        </div>
+                                        <div className="text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center">تعداد تراکنش‌ها</div>
+                                        <div className="text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono mt-0.5 break-words max-w-full text-center leading-tight">
+                                            {periodTxs.length}
+                                        </div>
+                                        <div className="text-[9px] text-gray-400 font-medium text-center mt-0.5">مورد ثبت شده</div>
+                                    </div>
+
+                                    {/* Box 2: Start Date */}
+                                    <div className="px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0">
+                                        <div className="bg-indigo-50 dark:bg-indigo-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0">
+                                            <svg className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
+                                        </div>
+                                        <div className="text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center">تاریخ شروع</div>
+                                        <div className="text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono mt-0.5 break-words max-w-full text-center leading-tight">
+                                            {formatDateToNumericJalali(selectedPeriod.startDate) || "نامشخص"}
+                                        </div>
+                                        <div className="text-[9px] text-gray-400 font-medium text-center mt-0.5">افتتاح پرونده</div>
+                                    </div>
+
+                                    {/* Box 3: End Date */}
+                                    <div className="px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0">
+                                        <div className="bg-emerald-50 dark:bg-emerald-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0">
+                                            <svg className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
+                                        </div>
+                                        <div className="text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center">تاریخ تسویه</div>
+                                        <div className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-0.5 break-words max-w-full text-center leading-tight">
+                                            {formatDateToNumericJalali(selectedPeriod.endDate) || "امروز"}
+                                        </div>
+                                        <div className="text-[9px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5 text-center leading-tight break-words">
+                                            تسویه‌شده
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* END: Quick Info Connected Single Box */}
+
+                                {/* BEGIN: Transactions Section */}
+                                <section className="space-y-4" data-purpose="transaction-history">
+                                    <div className="flex items-center justify-between px-1">
+                                        <div className="flex items-center gap-2">
+                                            <svg className="h-5 w-5 text-gray-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                                            </svg>
+                                            <h3 className="font-bold text-gray-800 dark:text-gray-100">تراکنش‌ها</h3>
+                                        </div>
+                                        <span className={`${isDebt ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"} text-xs font-semibold`}>
+                                            {periodTxs.length} تراکنش ثبت‌شده
+                                        </span>
+                                    </div>
+
+                                    {periodTxs.length === 0 ? (
+                                        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 card-shadow">
+                                            هنوز تراکنشی برای این دوره ثبت نشده است
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            {periodTxs.map((tx, idx) => {
+                                                const isRepay = tx.type === "debt_repayment" || tx.type === "demand_repayment";
+                                                return (
+                                                    <SwipeableTxCard 
+                                                        key={tx.id || idx}
+                                                        tx={tx}
+                                                        colorType={isDebt ? "rose" : "emerald"}
+                                                        contactName={contactDisplayName}
+                                                        contacts={contacts}
+                                                        onEdit={(txItem) => openStackWizard(isDebt ? (isRepay ? "debt_repayment" : "debt") : (isRepay ? "demand_repayment" : "demand"), "edit", txItem)}
+                                                        onDelete={(txItem) => requestDeleteTx(txItem, isDebt ? "debt" : "demand")}
+                                                    />
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </section>
+                                {/* END: Transactions Section */}
 
                                 {/* Export Button */}
                                 <button 
                                     onClick={() => {
-                                        let periodTxs = transactions.filter(t => t.periodId === selectedPeriod.id);
-                                        if (periodTxs.length === 0 && selectedPeriod.transactions && selectedPeriod.transactions.length > 0) {
-                                            periodTxs = selectedPeriod.transactions;
-                                        }
                                         const exportObj = {
                                             ...selectedPeriod,
                                             transactions: periodTxs
                                         };
-                                        openUniversalExportModal('period', exportObj);
+                                        openUniversalExportModal("period", exportObj);
                                     }}
-                                    className="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3 rounded-2xl text-xs flex items-center justify-center space-x-2 space-x-reverse shadow-md transition-all">
-                                    <Icon name="file-output" className="w-4 h-4" />
+                                    className={`w-full py-3.5 sm:py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2.5 text-white shadow-lg active:scale-95 transition-all cursor-pointer ${
+                                        isDebt 
+                                            ? "bg-rose-600 hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-500 shadow-rose-200 dark:shadow-rose-950/50" 
+                                            : "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-emerald-200 dark:shadow-emerald-950/50"
+                                    }`}
+                                >
+                                    <Icon name="file-output" className="w-5 h-5 text-white" />
                                     <span>خروجی پرونده تسویه‌حساب</span>
                                 </button>
                             </div>
