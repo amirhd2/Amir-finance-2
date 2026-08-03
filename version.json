@@ -1,15 +1,31 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.7.0",
-  "buildNumber": 163,
-  "releaseDate": "2026-08-02",
+  "installedVersion": "1.8.0",
+  "buildNumber": 164,
+  "releaseDate": "2026-08-03",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.7.0",
-  "latestBuild": 163,
+  "latestVersion": "1.8.0",
+  "latestBuild": 164,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.8.0",
+      "buildNumber": 164,
+      "releaseDate": "2026-08-03",
+      "releaseChannel": "Stable",
+      "commitHash": "v180rel",
+      "commitMessage": "feat: exact revamp of accounts management view matching specification, release v1.8.0 (build 164)",
+      "changes": [
+        "بازطراحی کامل و دقیق صفحه مدیریت حساب‌ها عینا مطابق با الگوی درخواستی (طراحی هدر جدید، سربرگ‌ها، فیلترها و کادر جستجو)",
+        "ارتقا و بازطراحی کارت‌های وام‌های در حال پرداخت با نمایش نام بانک، مبلغ کل، آخرین قسط پرداخت‌شده و سررسید قسط بعدی",
+        "طراحی اختصاصی کارت‌های وام‌های تسویه‌شده با آیکون تیک زمردی، خط‌خورده شدن مبلغ و کادر تایید تسویه اقساط",
+        "طراحی کامل بخش طلب‌ها و بدهی‌ها با آیکون‌های جهت‌دار، دکمه‌های نشان وضعیت و فرمت عددی دقیق",
+        "حفظ کامل قابلیت واکنش‌گرایی، جستجوی آنی، فیلتر زبانه‌ها و پشتیبانی از ژست لمسی حذف (Swipe-to-delete)",
+        "ثبت بیلد جدید شماره 164 و انتشار رسمی نسخه 1.8.0"
+      ]
+    },
     {
       "version": "1.7.0",
       "buildNumber": 163,
