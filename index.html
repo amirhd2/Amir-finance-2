@@ -2620,32 +2620,24 @@
                     onDelete={(confirmCb) => onDelete && onDelete(tx, confirmCb)}
                     onCardClick={() => onEdit && onEdit(tx)}
                 >
-                    <div className="bg-white dark:bg-slate-800 p-4 flex items-center justify-between cursor-pointer rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs hover:shadow-sm transition-all gap-3 min-h-[72px] h-auto">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">
                         <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
-                            <div className={`w-9 h-9 rounded-xl ${ (tx.type === 'debt' || tx.type === 'demand_repayment') ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : isRepay ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300' : colorType === 'rose' ? 'bg-rose-100 dark:bg-rose-900/70 text-rose-600 dark:text-rose-300' : colorType === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center font-extrabold text-xs shrink-0 shadow-xs`}>
-                                {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-4 h-4" />}
+                            <div className={`w-12 h-12 rounded-2xl ${ (tx.type === 'debt' || tx.type === 'demand_repayment') ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center shrink-0`}>
+                                {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-6 h-6" />}
                             </div>
-                            <div className="min-w-0 flex-1 text-right">
-                                <div className="text-xs font-extrabold text-slate-800 dark:text-slate-100 leading-snug break-words whitespace-normal">{displayTitle}</div>
-                                {tx.notes && tx.notes.trim() ? (
-                                    <div className="text-[11px] text-slate-400 font-medium leading-tight mt-1 break-words whitespace-normal">
-                                        {tx.notes}
-                                    </div>
-                                ) : (
-                                    <div className="text-[11px] text-slate-400/80 font-medium leading-tight mt-1 break-words whitespace-normal">
-                                        {tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'تراکنش ثبت شده'}
-                                    </div>
-                                )}
+                            <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                <h3 className="text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{displayTitle}</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 whitespace-normal">
+                                    {tx.notes && tx.notes.trim() ? tx.notes : (tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'تراکنش ثبت شده')}
+                                </p>
                             </div>
                         </div>
 
-                        <div className="flex flex-col items-end text-left shrink-0 space-y-0.5">
-                            <span className={`text-xs sm:text-sm font-black font-mono tracking-tight ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                                {Math.abs(tx.amount).toLocaleString()} تومان
-                            </span>
-                            <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 tracking-wider" dir="ltr">
-                                {formatDateToNumericJalali(tx.dateStr)}
-                            </span>
+                        <div className="text-left shrink-0 flex flex-col items-center">
+                            <div className={`font-bold text-base leading-none ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                {Math.abs(tx.amount).toLocaleString()}
+                            </div>
+                            <div className={`text-xs ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>تومان</div>
                         </div>
                     </div>
                 </SwipeToDeleteItem>
@@ -3251,15 +3243,42 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.7.0",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '163', 10),
-                releaseDate: "2026-08-02",
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.8.2",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '166', 10),
+                releaseDate: "2026-08-03",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.7.0",
-                latestBuild: 163,
+                latestVersion: "1.8.2",
+                latestBuild: 166,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.8.2",
+                        buildNumber: 166,
+                        releaseDate: "2026-08-03",
+                        releaseChannel: "Stable",
+                        commitHash: "v182rel",
+                        commitMessage: "feat: remove show completed loans button, isolate settled loans to archived tab, contact profile pill titles and exact 3-line card styling, release v1.8.2 (build 166)",
+                        changes: [
+                            "حذف کامل دکمه «نمایش تسویه‌شده‌ها» از بخش وام‌های صفحه مدیریت حساب‌ها و انتقال وام‌های تسویه‌شده به تب بایگانی",
+                            "تطبیق کامل و یکسان‌سازی ظاهر، اندازه، آیکون و نوع نمایش ۳ خطی کارت‌های طلب، بدهی و وام در صفحه پروفایل مخاطبین",
+                            "حذف عناوین اضافی و دکمه «نمایش همه» از پروفایل مخاطبین و استفاده از نشان‌های بیضوی (Pill) «طلب‌ها»، «بدهی‌ها» و «وام‌ها» با رنگ و حاشیه اختصاصی",
+                            "تغییر متون بخش بایگانی به «دوره‌های بایگانی شده» (با رنگ سبز/قرمز) و «بایگانی وام‌ها» (با رنگ آبی)",
+                            "ثبت رسمی بیلد 166 و انتشار نسخه 1.8.2"
+                        ]
+                    },
+                    {
+                        version: "1.8.0",
+                        buildNumber: 164,
+                        releaseDate: "2026-08-03",
+                        releaseChannel: "Stable",
+                        commitHash: "v180rel",
+                        commitMessage: "feat: exact revamp of accounts management view matching specification, release v1.8.0 (build 164)",
+                        changes: [
+                            "بازطراحی کامل و دقیق صفحه مدیریت حساب‌ها عینا مطابق با الگوی درخواستی",
+                            "ثبت بیلد 164 و انتشار نسخه 1.8.0"
+                        ]
+                    },
                     {
                         version: "1.7.0",
                         buildNumber: 163,
@@ -3854,8 +3873,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 164;
-                const EMBEDDED_VERSION = "1.8.0";
+                const EMBEDDED_BUILD = 165;
+                const EMBEDDED_VERSION = "1.8.1";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4173,7 +4192,12 @@
                     ));
                 });
 
-                if (!showCompletedLoans) {
+                if (accountsSubTab === 'archived') {
+                    list = list.filter(loan => {
+                        const info = getLoanNextDueInfo(loan, transactions);
+                        return info.isCompleted || (loan.remainingAmount !== undefined && loan.remainingAmount <= 0);
+                    });
+                } else {
                     list = list.filter(loan => {
                         const info = getLoanNextDueInfo(loan, transactions);
                         return !info.isCompleted && (loan.remainingAmount === undefined || loan.remainingAmount > 0);
@@ -4185,15 +4209,21 @@
                     const bCompleted = (getLoanNextDueInfo(b, transactions).isCompleted || (b.remainingAmount !== undefined && b.remainingAmount <= 0)) ? 1 : 0;
                     return aCompleted - bCompleted;
                 });
-            }, [loans, transactions, accountsQuery, showCompletedLoans]);
+            }, [loans, transactions, accountsQuery, accountsSubTab]);
 
             const filteredAccountsDemands = useMemo(() => {
                 return contacts.filter(contact => {
                     const settledCount = getSettledPeriodCount(contact.id, 'demand');
                     const hasActiveDemand = contact.totalDemand > 0;
-                    if (!hasActiveDemand && settledCount === 0) return false;
+                    const hasArchivedDemand = settledCount > 0 || completedPeriods.some(p => p.contactId === contact.id && p.type === 'demand');
 
-                    if (!accountsQuery) return hasActiveDemand;
+                    if (accountsSubTab === 'archived') {
+                        if (!hasArchivedDemand) return false;
+                    } else {
+                        if (!hasActiveDemand) return false;
+                    }
+
+                    if (!accountsQuery) return true;
 
                     const fullName = `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase();
                     const phone = (contact.phone || '').toLowerCase();
@@ -4218,15 +4248,21 @@
                         (p.endDate || '').includes(accountsQuery)
                     ));
                 });
-            }, [contacts, transactions, completedPeriods, accountsQuery]);
+            }, [contacts, transactions, completedPeriods, accountsQuery, accountsSubTab]);
 
             const filteredAccountsDebts = useMemo(() => {
                 return contacts.filter(contact => {
                     const settledCount = getSettledPeriodCount(contact.id, 'debt');
                     const hasActiveDebt = contact.totalDebt > 0;
-                    if (!hasActiveDebt && settledCount === 0) return false;
+                    const hasArchivedDebt = settledCount > 0 || completedPeriods.some(p => p.contactId === contact.id && p.type === 'debt');
 
-                    if (!accountsQuery) return hasActiveDebt;
+                    if (accountsSubTab === 'archived') {
+                        if (!hasArchivedDebt) return false;
+                    } else {
+                        if (!hasActiveDebt) return false;
+                    }
+
+                    if (!accountsQuery) return true;
 
                     const fullName = `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase();
                     const phone = (contact.phone || '').toLowerCase();
@@ -4251,7 +4287,7 @@
                         (p.endDate || '').includes(accountsQuery)
                     ));
                 });
-            }, [contacts, transactions, completedPeriods, accountsQuery]);
+            }, [contacts, transactions, completedPeriods, accountsQuery, accountsSubTab]);
 
             const [reminders, setReminders] = useState(initialReminders);
             const [expandedReminders, setExpandedReminders] = useState(false);
@@ -6940,27 +6976,21 @@
                         return (
                             <div className="space-y-4 animate-fade-in">
                                 {/* Header */}
-                                <div className="flex items-center justify-between py-2">
+                                <div className="flex items-center justify-between py-2 mb-4">
+                                    <div className="w-10 h-10 flex items-center justify-center text-slate-700 dark:text-slate-300">
+                                        <Icon name="user" className="w-6 h-6" />
+                                    </div>
+                                    <h1 className="text-xl font-bold text-slate-900 dark:text-white text-center">مدیریت حساب‌ها</h1>
                                     <button 
                                         onClick={() => setIsAddTxOpen(true)}
                                         className="w-10 h-10 bg-indigo-600 hover:bg-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-lg active:scale-95 transition-all"
                                         title="افزودن حساب / تراکنش جدید">
                                         <Icon name="plus" className="w-6 h-6" />
                                     </button>
-                                    <h1 className="text-xl font-bold text-slate-900 dark:text-white text-center">مدیریت حساب‌ها</h1>
-                                    <div className="w-10 h-10 flex items-center justify-center text-slate-700 dark:text-slate-300">
-                                        <Icon name="user" className="w-6 h-6" />
-                                    </div>
                                 </div>
 
                                 {/* Search Bar Section */}
                                 <div className="flex items-center gap-3 mb-4">
-                                    <button 
-                                        onClick={() => setAccountsSearchQuery('')}
-                                        className="w-12 h-12 bg-amber-500 hover:bg-amber-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform"
-                                        title="پاک‌سازی جستجو">
-                                        C
-                                    </button>
                                     <div className="flex-1 relative">
                                         <input 
                                             type="text" 
@@ -6971,6 +7001,12 @@
                                         />
                                         <Icon name="search" className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
                                     </div>
+                                    <button 
+                                        onClick={() => setAccountsSearchQuery('')}
+                                        className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform"
+                                        title="پاک‌سازی جستجو">
+                                        C
+                                    </button>
                                 </div>
 
                                 {/* Filter Bar */}
@@ -7002,34 +7038,14 @@
                                     {/* LOANS SECTION */}
                                     {(accountsSubTab === 'all' || accountsSubTab === 'loans' || accountsSubTab === 'archived') && (
                                         (() => {
-                                            const loansToDisplay = filteredAccountsLoans.filter(loan => {
-                                                const nextDueInfo = getLoanNextDueInfo(loan, transactions);
-                                                const isCompleted = nextDueInfo.isCompleted || (loan.remainingAmount !== undefined && loan.remainingAmount <= 0);
-                                                if (!showCompletedLoans && isCompleted && accountsSubTab !== 'archived') return false;
-                                                if (accountsSubTab === 'archived' && !isCompleted) return false;
-                                                return true;
-                                            });
+                                            const loansToDisplay = filteredAccountsLoans;
 
-                                            if (loansToDisplay.length === 0 && accountsSubTab === 'loans') return null;
-                                            if (loansToDisplay.length === 0 && accountsSubTab !== 'all') return null;
                                             if (loansToDisplay.length === 0) return null;
 
                                             return (
                                                 <div className="space-y-3">
                                                     <div className="flex items-center justify-between px-1">
                                                         <span className="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-4 py-1 rounded-full text-sm font-bold inline-block">وام ها</span>
-                                                        <button 
-                                                            onClick={() => {
-                                                                const next = !showCompletedLoans;
-                                                                setShowCompletedLoans(next);
-                                                                try { localStorage.setItem('showCompletedLoans', next); } catch(e) {}
-                                                            }}
-                                                            className="flex items-center space-x-1.5 space-x-reverse text-xs text-slate-500 dark:text-slate-400 hover:text-indigo-600 font-medium">
-                                                            <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors ${showCompletedLoans ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800'}`}>
-                                                                {showCompletedLoans && <Icon name="check" className="w-2.5 h-2.5" />}
-                                                            </div>
-                                                            <span>نمایش تسویه‌شده‌ها</span>
-                                                        </button>
                                                     </div>
 
                                                     <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
@@ -7047,8 +7063,8 @@
                                                                         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm p-4 sm:p-5 overflow-hidden relative transition-all cursor-pointer hover:border-emerald-300">
                                                                             <div className="w-full flex flex-col opacity-75 gap-2">
                                                                                 <div className="flex items-center justify-between w-full">
-                                                                                    <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">
-                                                                                        <Icon name="check-circle-2" className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                                                                                    <div className="w-14 h-14 bg-indigo-50/50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-blue-500 dark:text-blue-400 shrink-0">
+                                                                                        <Icon name="landmark" className="w-8 h-8 text-blue-500 dark:text-blue-400" />
                                                                                     </div>
                                                                                     <div className="flex-1 text-right flex flex-col gap-1 pl-4 pr-2">
                                                                                         <h3 className="font-bold text-slate-700 dark:text-slate-200 text-sm">{loan.title}</h3>
@@ -7062,9 +7078,12 @@
                                                                                 <div className="flex justify-center">
                                                                                     <span className="text-slate-500 dark:text-slate-400 font-bold text-xs">آخرین قسط پرداخت شده : {nextDueInfo.lastPaidDateStr || "تمامی اقساط پرداخت شده"}</span>
                                                                                 </div>
-                                                                                <div className="bg-emerald-50/40 dark:bg-emerald-950/40 rounded-lg py-2 px-4 text-center">
-                                                                                    <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm">تمامی اقساط پرداخت شده است</span>
+                                                                                <div className="bg-indigo-50/30 dark:bg-indigo-950/30 rounded-lg py-2 px-4 text-center">
+                                                                                    <span className="text-blue-500 dark:text-blue-400 font-bold text-sm">تمامی اقساط پرداخت شده است</span>
                                                                                 </div>
+                                                                            </div>
+                                                                            <div className="absolute bottom-4 left-4 w-12 h-12 bg-emerald-50 dark:bg-emerald-950 border-2 border-emerald-500 rounded-full flex items-center justify-center text-emerald-500 z-10">
+                                                                                <Icon name="check" className="w-6 h-6 stroke-[3]" />
                                                                             </div>
                                                                         </div>
                                                                     ) : (
@@ -7102,7 +7121,7 @@
                                     )}
 
                                     {/* DEMANDS SECTION */}
-                                    {(accountsSubTab === 'all' || accountsSubTab === 'demands') && filteredAccountsDemands.length > 0 && (
+                                    {(accountsSubTab === 'all' || accountsSubTab === 'demands' || accountsSubTab === 'archived') && filteredAccountsDemands.length > 0 && (
                                         <div className="space-y-3">
                                             <div className="mb-3 px-1">
                                                 <span className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 px-4 py-1 rounded-full text-sm font-bold inline-block">طلب‌ها</span>
@@ -7110,6 +7129,7 @@
                                             <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
                                                 {filteredAccountsDemands.map(contact => {
                                                     const settledCount = getSettledPeriodCount(contact.id, 'demand');
+                                                    const isArchived = settledCount > 0 || accountsSubTab === 'archived' || contact.totalDemand === 0;
                                                     return (
                                                         <SwipeToDeleteItem
                                                             key={contact.id}
@@ -7117,20 +7137,24 @@
                                                             onCardClick={() => { setSelectedContact(contact); setProfileFilter('demands'); setCurrentTab('contact-detail'); }}
                                                         >
                                                             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between">
-                                                                <div className="w-full flex flex-col gap-3">
+                                                                <div className="w-full flex flex-col gap-1">
                                                                     <div className="flex items-center justify-between w-full">
-                                                                        <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">
-                                                                            <Icon name="arrow-up-right" className="w-6 h-6" />
-                                                                        </div>
-                                                                        <div className="flex-1 text-right flex flex-col gap-1 pl-4 pr-2">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <h3 className="font-bold text-slate-800 dark:text-white text-sm">{contact.firstName} {contact.lastName}</h3>
+                                                                        <div className="flex flex-col items-center gap-1 shrink-0">
+                                                                            <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400">
+                                                                                <Icon name="arrow-up-right" className="w-6 h-6" />
                                                                             </div>
-                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">طلب شخصی</p>
+                                                                            {isArchived ? (
+                                                                                <span className="bg-emerald-500 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md">بایگانی</span>
+                                                                            ) : (
+                                                                                <span className="bg-slate-400 dark:bg-slate-600 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md opacity-50">بایگانی</span>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm">{contact.firstName} {contact.lastName}</h3>
+                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{contact.note || "طلب شخصی"}</p>
                                                                         </div>
                                                                         <div className="text-left shrink-0 flex flex-col items-center">
-                                                                            {settledCount > 0 && <Icon name="check-circle-2" className="w-4 h-4 text-emerald-500 mb-1" />}
-                                                                            <div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none">+{contact.totalDemand.toLocaleString()}</div>
+                                                                            <div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none">{contact.totalDemand.toLocaleString()}</div>
                                                                             <div className="text-emerald-600 dark:text-emerald-400 text-xs">تومان</div>
                                                                         </div>
                                                                     </div>
@@ -7144,7 +7168,7 @@
                                     )}
 
                                     {/* DEBTS SECTION */}
-                                    {(accountsSubTab === 'all' || accountsSubTab === 'debts') && filteredAccountsDebts.length > 0 && (
+                                    {(accountsSubTab === 'all' || accountsSubTab === 'debts' || accountsSubTab === 'archived') && filteredAccountsDebts.length > 0 && (
                                         <div className="space-y-3">
                                             <div className="mb-3 px-1">
                                                 <span className="bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 px-4 py-1 rounded-full text-sm font-bold inline-block">بدهی‌ها</span>
@@ -7152,6 +7176,7 @@
                                             <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
                                                 {filteredAccountsDebts.map(contact => {
                                                     const settledCount = getSettledPeriodCount(contact.id, 'debt');
+                                                    const isArchived = settledCount > 0 || accountsSubTab === 'archived' || contact.totalDebt === 0;
                                                     return (
                                                         <SwipeToDeleteItem
                                                             key={contact.id}
@@ -7159,20 +7184,24 @@
                                                             onCardClick={() => { setSelectedContact(contact); setProfileFilter('debts'); setCurrentTab('contact-detail'); }}
                                                         >
                                                             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between">
-                                                                <div className="w-full flex flex-col gap-3">
+                                                                <div className="w-full flex flex-col gap-1">
                                                                     <div className="flex items-center justify-between w-full">
-                                                                        <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0">
-                                                                            <Icon name="arrow-down-left" className="w-6 h-6" />
-                                                                        </div>
-                                                                        <div className="flex-1 text-right flex flex-col gap-1 pl-4 pr-2">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <h3 className="font-bold text-slate-800 dark:text-white text-sm">{contact.firstName} {contact.lastName}</h3>
+                                                                        <div className="flex flex-col items-center gap-1 shrink-0">
+                                                                            <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400">
+                                                                                <Icon name="arrow-down-left" className="w-6 h-6" />
                                                                             </div>
-                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">بدهی شخصی</p>
+                                                                            {isArchived ? (
+                                                                                <span className="bg-rose-500 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md">بایگانی</span>
+                                                                            ) : (
+                                                                                <span className="bg-slate-400 dark:bg-slate-600 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md opacity-50">بایگانی</span>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm">{contact.firstName} {contact.lastName}</h3>
+                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{contact.note || "بدهی شخصی"}</p>
                                                                         </div>
                                                                         <div className="text-left shrink-0 flex flex-col items-center">
-                                                                            {settledCount > 0 && <Icon name="check-circle-2" className="w-4 h-4 text-emerald-500 mb-1" />}
-                                                                            <div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none">-{contact.totalDebt.toLocaleString()}</div>
+                                                                            <div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none">{contact.totalDebt.toLocaleString()}</div>
                                                                             <div className="text-rose-600 dark:text-rose-400 text-xs">تومان</div>
                                                                         </div>
                                                                     </div>
@@ -7611,26 +7640,18 @@
 
                                 {/* Filtered Items Section */}
                                 <div className="space-y-3">
-                                    <div className="flex justify-between items-center">
-                                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                                            {profileFilter === 'loans' && 'وام‌های این مخاطب'}
-                                            {profileFilter === 'debts' && 'قرض‌ها و بدهی‌های این مخاطب'}
-                                            {profileFilter === 'demands' && 'طلب‌های این مخاطب'}
-                                            {profileFilter === 'all' && 'همه موارد مرتبط با مخاطب'}
-                                        </h4>
-                                        {profileFilter !== 'all' && (
-                                            <button 
-                                                onClick={() => setProfileFilter('all')}
-                                                className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-full">
-                                                نمایش همه
-                                            </button>
-                                        )}
-                                    </div>
+                                    {profileFilter === 'all' && (
+                                        <div className="flex justify-between items-center px-1 mb-1">
+                                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">همه موارد مرتبط با مخاطب</span>
+                                        </div>
+                                    )}
 
                                     {/* LOANS LIST */}
                                     {(profileFilter === 'all' || profileFilter === 'loans') && (
                                         <div className="space-y-2">
-                                            {profileFilter === 'all' && <div className="text-[10px] font-bold text-slate-400">وام‌ها</div>}
+                                            <div className="flex items-center justify-between px-1 mb-2">
+                                                <span className="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-4 py-1 rounded-full text-sm font-bold inline-block">وام ها</span>
+                                            </div>
                                             {(() => {
                                                 const contactLoans = loans.filter(l => l.contactId === selectedContact.id);
                                                 const activeLoans = contactLoans.filter(l => l.remainingAmount > 0);
@@ -7651,47 +7672,46 @@
                                                             <div 
                                                                 key={loan.id}
                                                                 onClick={() => openLoanDetail(loan)}
-                                                                className="bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/40 p-3.5 rounded-2xl cursor-pointer flex justify-between items-center shadow-sm hover:border-blue-400 transition-all">
-                                                                <div className="flex items-center space-x-3 space-x-reverse">
-                                                                    <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/70 text-blue-600 dark:text-blue-300 flex items-center justify-center font-bold">
-                                                                        <Icon name="landmark" className="w-4 h-4" />
+                                                                className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">
+                                                                <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
+                                                                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                                                        <Icon name="landmark" className="w-6 h-6" />
                                                                     </div>
-                                                                    <div>
-                                                                        <div className="text-xs font-bold text-slate-900 dark:text-white">{loan.title}</div>
-                                                                        <div className="text-[10px] text-slate-400">اقساط: {loan.installmentAmount.toLocaleString()} تومان</div>
+                                                                    <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                        <h3 className="text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{loan.title}</h3>
+                                                                        <p className="text-xs text-slate-500 dark:text-slate-400 whitespace-normal">اقساط: {loan.installmentAmount.toLocaleString()} تومان</p>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex items-center space-x-2 space-x-reverse">
-                                                                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{loan.principalAmount.toLocaleString()} تومان</span>
-                                                                    <Icon name="edit-2" className="w-3.5 h-3.5 text-slate-400" />
+                                                                <div className="text-left shrink-0 flex flex-col items-center">
+                                                                    <div className="font-bold text-base leading-none text-indigo-600 dark:text-indigo-400">{loan.principalAmount.toLocaleString()}</div>
+                                                                    <div className="text-xs text-indigo-600 dark:text-indigo-400">تومان</div>
                                                                 </div>
                                                             </div>
                                                         ))}
 
                                                         {/* Archived Closed Loans */}
                                                         {closedLoans.length > 0 && (
-                                                            <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
-                                                                <div className="flex items-center space-x-1.5 space-x-reverse text-xs font-bold text-slate-400">
-                                                                    <Icon name="archive" className="w-3.5 h-3.5" />
-                                                                    <span>بایگانی وام‌های تسویه‌شده ({closedLoans.length})</span>
+                                                            <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
+                                                                <div className="flex items-center justify-between px-1 mb-2">
+                                                                    <span className="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-4 py-1 rounded-full text-sm font-bold inline-block">بایگانی وام ها</span>
                                                                 </div>
                                                                 {closedLoans.map(loan => (
                                                                     <div 
                                                                         key={loan.id}
                                                                         onClick={() => openLoanDetail(loan)}
-                                                                        className="bg-slate-100/70 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700 p-3 rounded-2xl cursor-pointer flex justify-between items-center opacity-70 hover:opacity-100 transition-all">
-                                                                        <div className="flex items-center space-x-3 space-x-reverse">
-                                                                            <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">
-                                                                                <Icon name="check-circle-2" className="w-4 h-4 text-emerald-600" />
+                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-60 hover:opacity-90 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">
+                                                                        <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
+                                                                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                                                                <Icon name="check-circle-2" className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                                                                             </div>
-                                                                            <div>
-                                                                                <div className="text-xs font-bold text-slate-700 dark:text-slate-300 line-through decoration-slate-400">{loan.title}</div>
-                                                                                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">تسویه کامل شد</div>
+                                                                            <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                                <h3 className="text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal line-through decoration-slate-400">{loan.title}</h3>
+                                                                                <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold whitespace-normal">تسویه کامل شد</p>
                                                                             </div>
                                                                         </div>
-                                                                        <div className="flex items-center space-x-2 space-x-reverse">
-                                                                            <span className="text-xs font-bold text-slate-500">{loan.principalAmount.toLocaleString()} تومان</span>
-                                                                            <Icon name="chevron-left" className="w-3.5 h-3.5 text-slate-400" />
+                                                                        <div className="text-left shrink-0 flex flex-col items-center">
+                                                                            <div className="font-bold text-base leading-none text-slate-500">{loan.principalAmount.toLocaleString()}</div>
+                                                                            <div className="text-xs text-slate-500">تومان</div>
                                                                         </div>
                                                                     </div>
                                                                 ))}
@@ -7706,8 +7726,8 @@
                                     {/* DEBTS LIST */}
                                     {(profileFilter === 'all' || profileFilter === 'debts') && (
                                         <div className="space-y-2">
-                                            <div className="flex justify-between items-center mb-1">
-                                                <div className="text-[10px] font-bold text-slate-400">قرض / بدهی‌ها و بازپرداخت‌ها</div>
+                                            <div className="flex items-center justify-between px-1 mb-2">
+                                                <span className="bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 px-4 py-1 rounded-full text-sm font-bold inline-block">بدهی ها</span>
                                             </div>
                                             {(() => {
                                                 const contactDebts = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
@@ -7748,19 +7768,21 @@
                                                         ) : selectedContact.totalDebt > 0 ? (
                                                             <div 
                                                                 onClick={() => openStackWizard('debt', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDebt })}
-                                                                className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-700/60 cursor-pointer flex justify-between items-center shadow-sm hover:border-rose-400 transition-all">
-                                                                <div className="flex items-center space-x-3 space-x-reverse">
-                                                                    <div className="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center font-bold">
-                                                                        <Icon name="arrow-down-left" className="w-4 h-4" />
+                                                                className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between">
+                                                                <div className="w-full flex flex-col gap-1">
+                                                                    <div className="flex items-center justify-between w-full">
+                                                                        <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0">
+                                                                            <Icon name="arrow-down-left" className="w-6 h-6" />
+                                                                        </div>
+                                                                        <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm">بدهی شخصی</h3>
+                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || `بدهی به ${selectedContact.firstName} ${selectedContact.lastName}`}</p>
+                                                                        </div>
+                                                                        <div className="text-left shrink-0 flex flex-col items-center">
+                                                                            <div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none">{selectedContact.totalDebt.toLocaleString()}</div>
+                                                                            <div className="text-rose-600 dark:text-rose-400 text-xs">تومان</div>
+                                                                        </div>
                                                                     </div>
-                                                                    <div>
-                                                                        <div className="text-xs font-bold text-slate-900 dark:text-white">بدهی به {selectedContact.firstName}</div>
-                                                                        <div className="text-[10px] text-slate-400">لمس جهت ویرایش</div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex items-center space-x-2 space-x-reverse">
-                                                                    <span className="text-xs font-bold text-rose-500">-{selectedContact.totalDebt.toLocaleString()} تومان</span>
-                                                                    <Icon name="edit-2" className="w-3.5 h-3.5 text-slate-400" />
                                                                 </div>
                                                             </div>
                                                         ) : (
@@ -7772,27 +7794,28 @@
                                                         {/* Archived Debt Periods / Closed Cycles */}
                                                         {archivedDebtPeriods.length > 0 && (
                                                             <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
-                                                                <div className="flex items-center space-x-1.5 space-x-reverse text-xs font-bold text-slate-400">
-                                                                    <Icon name="archive" className="w-3.5 h-3.5" />
-                                                                    <span>بایگانی دوره‌های تسویه‌شده بدهی</span>
+                                                                <div className="flex items-center justify-between px-1 mb-2">
+                                                                    <span className="bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 px-4 py-1 rounded-full text-sm font-bold inline-block">دوره های بایگانی شده</span>
                                                                 </div>
                                                                 {archivedDebtPeriods.map(period => (
                                                                     <div 
                                                                         key={period.id}
                                                                         onClick={() => openArchivedPeriodDetail(period)}
-                                                                        className="bg-slate-100/70 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700/60 p-3 rounded-2xl flex justify-between items-center opacity-75 hover:opacity-100 transition-all cursor-pointer">
-                                                                        <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                                            <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">
-                                                                                <Icon name="check-circle-2" className="w-4 h-4 text-emerald-600" />
+                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-60 hover:opacity-90 transition-all cursor-pointer flex items-center justify-between">
+                                                                        <div className="w-full flex flex-col gap-1">
+                                                                            <div className="flex items-center justify-between w-full">
+                                                                                <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0">
+                                                                                    <Icon name="arrow-down-left" className="w-6 h-6" />
+                                                                                </div>
+                                                                                <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                                    <h3 className="font-bold text-slate-800 dark:text-white text-sm">{period.title || 'دوره تسویه‌شده بدهی'}</h3>
+                                                                                    <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{formatDateToNumericJalali(period.startDate)} تا {formatDateToNumericJalali(period.endDate)}</p>
+                                                                                </div>
+                                                                                <div className="text-left shrink-0 flex flex-col items-center">
+                                                                                    <div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none">{Number(period.totalAmount || 0).toLocaleString()}</div>
+                                                                                    <div className="text-rose-600 dark:text-rose-400 text-xs">تومان</div>
+                                                                                </div>
                                                                             </div>
-                                                                            <div>
-                                                                                <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{period.title || 'دوره تسویه‌شده بدهی'}</div>
-                                                                                <div className="text-[10px] text-slate-400">{formatDateToNumericJalali(period.startDate)} تا {formatDateToNumericJalali(period.endDate)}</div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="flex items-center space-x-1.5 space-x-reverse">
-                                                                            <span className="text-xs font-bold text-slate-500">{Number(period.totalAmount || 0).toLocaleString()} تومان</span>
-                                                                            <Icon name="chevron-left" className="w-3.5 h-3.5 text-slate-400" />
                                                                         </div>
                                                                     </div>
                                                                 ))}
@@ -7807,8 +7830,8 @@
                                     {/* DEMANDS LIST */}
                                     {(profileFilter === 'all' || profileFilter === 'demands') && (
                                         <div className="space-y-2">
-                                            <div className="flex justify-between items-center mb-1">
-                                                <div className="text-[10px] font-bold text-slate-400">طلب‌ها و دریافتی‌ها</div>
+                                            <div className="flex items-center justify-between px-1 mb-2">
+                                                <span className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 px-4 py-1 rounded-full text-sm font-bold inline-block">طلب ها</span>
                                             </div>
                                             {(() => {
                                                 const contactDemands = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
@@ -7849,19 +7872,21 @@
                                                         ) : selectedContact.totalDemand > 0 ? (
                                                             <div 
                                                                 onClick={() => openStackWizard('demand', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDemand })}
-                                                                className="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-900/40 p-3.5 rounded-2xl cursor-pointer flex justify-between items-center shadow-sm hover:border-emerald-400 transition-all">
-                                                                <div className="flex items-center space-x-3 space-x-reverse">
-                                                                    <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-300 flex items-center justify-center font-bold">
-                                                                        <Icon name="arrow-up-right" className="w-4 h-4" />
+                                                                className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between">
+                                                                <div className="w-full flex flex-col gap-1">
+                                                                    <div className="flex items-center justify-between w-full">
+                                                                        <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">
+                                                                            <Icon name="arrow-up-right" className="w-6 h-6" />
+                                                                        </div>
+                                                                        <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm">طلب شخصی</h3>
+                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || `طلب از ${selectedContact.firstName} ${selectedContact.lastName}`}</p>
+                                                                        </div>
+                                                                        <div className="text-left shrink-0 flex flex-col items-center">
+                                                                            <div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none">{selectedContact.totalDemand.toLocaleString()}</div>
+                                                                            <div className="text-emerald-600 dark:text-emerald-400 text-xs">تومان</div>
+                                                                        </div>
                                                                     </div>
-                                                                    <div>
-                                                                        <div className="text-xs font-bold text-slate-900 dark:text-white">طلب از {selectedContact.firstName}</div>
-                                                                        <div className="text-[10px] text-slate-400">لمس جهت ویرایش</div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex items-center space-x-2 space-x-reverse">
-                                                                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">+{selectedContact.totalDemand.toLocaleString()} تومان</span>
-                                                                    <Icon name="edit-2" className="w-3.5 h-3.5 text-slate-400" />
                                                                 </div>
                                                             </div>
                                                         ) : (
@@ -7873,27 +7898,28 @@
                                                         {/* Archived Demand Periods / Closed Cycles */}
                                                         {archivedDemandPeriods.length > 0 && (
                                                             <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
-                                                                <div className="flex items-center space-x-1.5 space-x-reverse text-xs font-bold text-slate-400">
-                                                                    <Icon name="archive" className="w-3.5 h-3.5" />
-                                                                    <span>بایگانی دوره‌های تسویه‌شده طلب</span>
+                                                                <div className="flex items-center justify-between px-1 mb-2">
+                                                                    <span className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 px-4 py-1 rounded-full text-sm font-bold inline-block">دوره های بایگانی شده</span>
                                                                 </div>
                                                                 {archivedDemandPeriods.map(period => (
                                                                     <div 
                                                                         key={period.id}
                                                                         onClick={() => openArchivedPeriodDetail(period)}
-                                                                        className="bg-slate-100/70 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700/60 p-3 rounded-2xl flex justify-between items-center opacity-75 hover:opacity-100 transition-all cursor-pointer">
-                                                                        <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                                            <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 flex items-center justify-center font-bold">
-                                                                                <Icon name="check-circle-2" className="w-4 h-4 text-emerald-600" />
+                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-60 hover:opacity-90 transition-all cursor-pointer flex items-center justify-between">
+                                                                        <div className="w-full flex flex-col gap-1">
+                                                                            <div className="flex items-center justify-between w-full">
+                                                                                <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">
+                                                                                    <Icon name="arrow-up-right" className="w-6 h-6" />
+                                                                                </div>
+                                                                                <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                                    <h3 className="font-bold text-slate-800 dark:text-white text-sm">{period.title || 'دوره تسویه‌شده طلب'}</h3>
+                                                                                    <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{formatDateToNumericJalali(period.startDate)} تا {formatDateToNumericJalali(period.endDate)}</p>
+                                                                                </div>
+                                                                                <div className="text-left shrink-0 flex flex-col items-center">
+                                                                                    <div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none">{Number(period.totalAmount || 0).toLocaleString()}</div>
+                                                                                    <div className="text-emerald-600 dark:text-emerald-400 text-xs">تومان</div>
+                                                                                </div>
                                                                             </div>
-                                                                            <div>
-                                                                                <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{period.title || 'دوره تسویه‌شده طلب'}</div>
-                                                                                <div className="text-[10px] text-slate-400">{formatDateToNumericJalali(period.startDate)} تا {formatDateToNumericJalali(period.endDate)}</div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="flex items-center space-x-1.5 space-x-reverse">
-                                                                            <span className="text-xs font-bold text-slate-500">{Number(period.totalAmount || 0).toLocaleString()} تومان</span>
-                                                                            <Icon name="chevron-left" className="w-3.5 h-3.5 text-slate-400" />
                                                                         </div>
                                                                     </div>
                                                                 ))}

@@ -1,15 +1,30 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.8.0",
-  "buildNumber": 164,
+  "installedVersion": "1.8.2",
+  "buildNumber": 166,
   "releaseDate": "2026-08-03",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.8.0",
-  "latestBuild": 164,
+  "latestVersion": "1.8.2",
+  "latestBuild": 166,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.8.2",
+      "buildNumber": 166,
+      "releaseDate": "2026-08-03",
+      "releaseChannel": "Stable",
+      "commitHash": "v182rel",
+      "commitMessage": "feat: remove show completed loans button, isolate settled loans to archived tab, exact 3-line card styling for contact detail demands & debts, release v1.8.2 (build 166)",
+      "changes": [
+        "حذف کامل دکمه «نمایش تسویه‌شده‌ها» از بخش وام‌های صفحه مدیریت حساب‌ها",
+        "محدودسازی نمایش وام‌های تسویه‌شده به فیلتر «بایگانی» و عدم نمایش آن‌ها در فیلترهای «همه» و «وام»",
+        "تطبیق کامل و یکسان‌سازی ظاهر، اندازه، آیکون و نوع نمایش سه خطی کارت‌های طلب و بدهی در صفحه پروفایل مخاطبین با بخش حساب‌ها",
+        "عدم نمایش دکمه بایگانی در صفحه پروفایل مخاطبین و نمایش کم‌رنگ‌تر (کمرنگ‌شده) کارت‌های تسویه‌شده دوره‌ها",
+        "ثبت رسمی بیلد 166 و انتشار نسخه 1.8.2"
+      ]
+    },
     {
       "version": "1.8.0",
       "buildNumber": 164,
