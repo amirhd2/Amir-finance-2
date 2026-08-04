@@ -2018,11 +2018,11 @@
             };
 
             return (
-                <div className={`app-viewport fixed inset-0 w-full h-full overflow-hidden bg-black z-30 ${className}`}>
+                <div className={`app-viewport fixed inset-0 w-full h-full overflow-hidden bg-slate-50 dark:bg-slate-950 z-30 ${className}`}>
                     {/* Page 1 (Underlying Page) */}
                     <div 
                         ref={page1Ref}
-                        className="page-view z-10 bg-slate-50 dark:bg-slate-900 overflow-y-auto w-full h-full"
+                        className="page-view z-10 bg-slate-50 dark:bg-slate-950 overflow-y-auto w-full h-full"
                     >
                         <div className="px-4 pt-4 pb-24 min-h-full">
                             {underlyingContent}
@@ -2038,7 +2038,7 @@
                     {/* Page 2 (Active Subpage) */}
                     <div 
                         ref={page2Ref}
-                        className="page-view z-20 bg-slate-50 dark:bg-slate-900 w-full h-full overflow-hidden"
+                        className="page-view z-20 bg-slate-50 dark:bg-slate-950 w-full h-full overflow-hidden"
                     >
                         {onRefresh ? (
                             <PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-4 pb-24">
@@ -2127,30 +2127,42 @@
                 const currentTop = elementRef.current.scrollTop;
                 const diff = Math.abs(currentTop - targetScrollTop);
 
-                if (diff > 2) {
-                    elementRef.current.scrollTo({
-                        top: targetScrollTop,
-                        behavior: 'smooth'
-                    });
-                    let startTime = performance.now();
-                    const animate3D = () => {
+                if (diff > 1) {
+                    const startTop = currentTop;
+                    const distance = targetScrollTop - startTop;
+                    const startTime = performance.now();
+                    const duration = 320; // ms
+
+                    const animateScroll = (now) => {
+                        const elapsed = now - startTime;
+                        const progress = Math.min(1, elapsed / duration);
+                        // easeOutCubic
+                        const ease = 1 - Math.pow(1 - progress, 3);
                         if (elementRef.current) {
+                            elementRef.current.scrollTop = startTop + distance * ease;
                             update3DEffects();
-                            if (performance.now() - startTime < 400) {
-                                requestAnimationFrame(animate3D);
+                        }
+                        if (progress < 1) {
+                            requestAnimationFrame(animateScroll);
+                        } else {
+                            if (elementRef.current) {
+                                elementRef.current.scrollTop = targetScrollTop;
+                                update3DEffects();
                             }
+                            isProgrammaticRef.current = false;
                         }
                     };
-                    requestAnimationFrame(animate3D);
+                    requestAnimationFrame(animateScroll);
                 } else {
                     elementRef.current.scrollTop = targetScrollTop;
                     update3DEffects();
+                    isProgrammaticRef.current = false;
                 }
 
                 programTimeoutRef.current = setTimeout(() => {
                     isProgrammaticRef.current = false;
                     if (elementRef.current) update3DEffects();
-                }, 400);
+                }, 350);
 
                 lastSelectedIndexRef.current = safeIdx;
 
@@ -2856,7 +2868,7 @@
             const isPrevReturningCard = animatingPrevCard && index === currentCardIdx - 1;
             const isShaking = shakeCardId === card.id;
 
-            // Auto focus inputs inside active card (force focus & trigger soft keyboard)
+            // Auto focus inputs inside active card (force focus & trigger soft keyboard rule)
             useEffect(() => {
                 if (depth === 0 && showStackWizard && cardRef.current) {
                     const focusInput = () => {
@@ -2865,10 +2877,7 @@
                                          cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
                         if (numInput) {
                             try {
-                                numInput.focus();
-                                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-                                    numInput.click();
-                                }
+                                numInput.focus({ preventScroll: false });
                                 if (numInput.value !== undefined && numInput.value !== null) {
                                     const len = String(numInput.value).length;
                                     if (typeof numInput.setSelectionRange === 'function') {
@@ -2880,10 +2889,10 @@
                     };
 
                     focusInput();
-                    const timer1 = setTimeout(focusInput, 30);
-                    const timer2 = setTimeout(focusInput, 120);
-                    const timer3 = setTimeout(focusInput, 280);
-                    const timer4 = setTimeout(focusInput, 500);
+                    const timer1 = setTimeout(focusInput, 50);
+                    const timer2 = setTimeout(focusInput, 180);
+                    const timer3 = setTimeout(focusInput, 350);
+                    const timer4 = setTimeout(focusInput, 600); // Trigger after card flip animation finishes!
                     return () => {
                         clearTimeout(timer1);
                         clearTimeout(timer2);
@@ -2939,19 +2948,7 @@
 
                         <button 
                             type="button"
-                            onClick={(e) => {
-                                if (cardRef.current) {
-                                    const targetInput = cardRef.current.querySelector('input[inputmode="numeric"]') ||
-                                                        cardRef.current.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
-                                    if (targetInput) {
-                                        try {
-                                            targetInput.focus();
-                                            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) targetInput.click();
-                                        } catch(err) {}
-                                    }
-                                }
-                                handleNextCard(cardsList);
-                            }}
+                            onClick={handleNextCard}
                             className="w-2/3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
                         >
                             <span>{index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'}</span>
@@ -4666,8 +4663,14 @@
 
                     if (activeDark) {
                         document.documentElement.classList.add('dark');
+                        if (document.body) document.body.style.backgroundColor = '#020617';
+                        const metaTheme = document.querySelector('meta[name="theme-color"]');
+                        if (metaTheme) metaTheme.setAttribute('content', '#020617');
                     } else {
                         document.documentElement.classList.remove('dark');
+                        if (document.body) document.body.style.backgroundColor = '#f8fafc';
+                        const metaTheme = document.querySelector('meta[name="theme-color"]');
+                        if (metaTheme) metaTheme.setAttribute('content', '#f8fafc');
                     }
                 };
 
