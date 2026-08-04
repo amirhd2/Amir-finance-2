@@ -1,15 +1,30 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.8.8",
-  "buildNumber": 172,
-  "releaseDate": "2026-08-03",
+  "installedVersion": "1.8.9",
+  "buildNumber": 173,
+  "releaseDate": "2026-08-04",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.8.8",
-  "latestBuild": 172,
+  "latestVersion": "1.8.9",
+  "latestBuild": 173,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.8.9",
+      "buildNumber": 173,
+      "releaseDate": "2026-08-04",
+      "releaseChannel": "Stable",
+      "commitHash": "v189rel",
+      "commitMessage": "fix & perf: english date digits, identical header search & filters for accounts & contacts, fix back navigation return to accounts, ultra smooth iOS slide transitions",
+      "changes": [
+        "نمایش یکدست اعداد تاریخ‌ها با رقوم انگلیسی در کلیه کارت‌ها و صفحات وام، طلب و بدهی",
+        "تطبیق و یکسان‌سازی دقیق ابعاد، ارتفاع و فواصل کادر سرچ و فیلترها بین دو صفحه حساب‌ها و مخاطبین جهت جابجایی بدون پرش",
+        "اصلاح مسیر بازگشت به صفحه حساب‌ها هنگام ورود به طلب‌ها و بدهی‌ها از زبانه مدیریت حساب‌ها",
+        "ارتقای روان‌سازی انیمیشن اسلاید iOS با فریم‌ریت بالا، عدم لغو انیمیشن در ورود و رفع کامل فریم شفاف/سفید لحظه‌ای",
+        "ثبت رسمی بیلد 173 و انتشار نسخه 1.8.9"
+      ]
+    },
     {
       "version": "1.8.8",
       "buildNumber": 172,
