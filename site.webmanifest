@@ -40,8 +40,8 @@
       "purpose": "any"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#EEF3FB",
+  "background_color": "#EEF3FB",
   "display": "standalone",
   "orientation": "portrait-primary",
   "start_url": "./",

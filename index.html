@@ -22,7 +22,7 @@
     <meta name="apple-mobile-web-app-title" content="Amir Finance" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#EEF3FB" />
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/site.webmanifest" />
@@ -85,11 +85,47 @@
         }
     </script>
     <style>
+        html {
+            background-color: #EEF3FB;
+        }
+        .dark html {
+            background-color: #020617 !important;
+        }
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: #f8fafc;
+            background: linear-gradient(180deg, #EEF3FB 0%, #F4F7FC 50%, #F8FAFD 100%) fixed;
+            background-attachment: fixed;
+            min-height: 100vh;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+        }
+        .dark body {
+            background: #020617 !important;
+        }
+        .bg-app-gradient {
+            background: linear-gradient(180deg, #EEF3FB 0%, #F4F7FC 50%, #F8FAFD 100%);
+        }
+        .dark .bg-app-gradient {
+            background: #020617 !important;
+        }
+        .card-premium {
+            background-color: #FCFCFD !important;
+            border-radius: 24px !important;
+            border: 1px solid rgba(70, 80, 120, 0.06) !important;
+            box-shadow: 0 2px 8px rgba(28, 35, 60, 0.05), 0 12px 28px rgba(28, 35, 60, 0.07) !important;
+        }
+        .dark .card-premium {
+            background-color: #1e293b !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+        .status-btn-inactive {
+            background-color: #E9EDF6 !important;
+            color: #9099AB !important;
+        }
+        .dark .status-btn-inactive {
+            background-color: #1e293b !important;
+            color: #94a3b8 !important;
         }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
@@ -99,7 +135,7 @@
             scrollbar-width: none;
         }
         .glass-header {
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(238, 243, 251, 0.88);
             backdrop-filter: blur(12px);
         }
         .dark .glass-header {
@@ -216,12 +252,12 @@
         }
 
         .card-exit-to-back, .animating-next {
-            animation: flipToBack 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+            animation: flipToBack 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
             z-index: 100 !important;
         }
 
         .card-enter-from-back, .animating-prev {
-            animation: returnToFront 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+            animation: returnToFront 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
             z-index: 200 !important;
         }
 
@@ -347,7 +383,10 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #000000;
+            background: linear-gradient(180deg, #EEF3FB 0%, #F4F7FC 50%, #F8FAFD 100%);
+        }
+        .dark .app-viewport {
+            background: #020617;
         }
 
         .page-view {
@@ -357,10 +396,14 @@
             height: 100%;
             will-change: transform;
             overflow-y: auto;
-            box-shadow: -15px 0 30px rgba(0, 0, 0, 0.25);
+            box-shadow: -15px 0 30px rgba(0, 0, 0, 0.15);
             touch-action: pan-y;
             user-select: none;
             -webkit-user-select: none;
+            background: linear-gradient(180deg, #EEF3FB 0%, #F4F7FC 50%, #F8FAFD 100%);
+        }
+        .dark .page-view {
+            background: #020617;
         }
 
         .smooth-transition {
@@ -2018,11 +2061,11 @@
             };
 
             return (
-                <div className={`app-viewport fixed inset-0 w-full h-full overflow-hidden bg-slate-50 dark:bg-slate-950 z-30 ${className}`}>
+                <div className={`app-viewport fixed inset-0 w-full h-full overflow-hidden bg-app-gradient dark:bg-slate-950 z-30 ${className}`}>
                     {/* Page 1 (Underlying Page) */}
                     <div 
                         ref={page1Ref}
-                        className="page-view z-10 bg-slate-50 dark:bg-slate-950 overflow-y-auto w-full h-full"
+                        className="page-view z-10 bg-app-gradient dark:bg-slate-950 overflow-y-auto w-full h-full"
                     >
                         <div className="px-4 pt-4 pb-24 min-h-full">
                             {underlyingContent}
@@ -2038,7 +2081,7 @@
                     {/* Page 2 (Active Subpage) */}
                     <div 
                         ref={page2Ref}
-                        className="page-view z-20 bg-slate-50 dark:bg-slate-950 w-full h-full overflow-hidden"
+                        className="page-view z-20 bg-app-gradient dark:bg-slate-950 w-full h-full overflow-hidden"
                     >
                         {onRefresh ? (
                             <PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-4 pb-24">
@@ -4668,9 +4711,9 @@
                         if (metaTheme) metaTheme.setAttribute('content', '#020617');
                     } else {
                         document.documentElement.classList.remove('dark');
-                        if (document.body) document.body.style.backgroundColor = '#f8fafc';
+                        if (document.body) document.body.style.backgroundColor = '#EEF3FB';
                         const metaTheme = document.querySelector('meta[name="theme-color"]');
-                        if (metaTheme) metaTheme.setAttribute('content', '#f8fafc');
+                        if (metaTheme) metaTheme.setAttribute('content', '#EEF3FB');
                     }
                 };
 
@@ -5104,6 +5147,10 @@
                 setWizardType(type);
                 setWizardMode(mode);
                 setCurrentCardIdx(0);
+                setAnimatingCard(false);
+                setAnimatingPrevCard(false);
+                setShakeCardId(null);
+                setValidationErrors({});
 
                 const deviceDate = getDeviceJalaliDate();
                 const todayFormatted = `${deviceDate.year}/${String(jalaliMonths.indexOf(deviceDate.month) + 1).padStart(2, '0')}/${String(deviceDate.day).padStart(2, '0')}`;
@@ -5250,7 +5297,7 @@
                     setTimeout(() => {
                         setCurrentCardIdx(prev => prev - 1);
                         setAnimatingPrevCard(false);
-                    }, 580);
+                    }, 320);
                 }
             };
 
@@ -5431,7 +5478,7 @@
                     setTimeout(() => {
                         setAnimatingCard(false);
                         setCurrentCardIdx(prev => prev + 1);
-                    }, 580);
+                    }, 320);
                 } else {
                     setIsFinalSubmitting(true);
                     setTimeout(() => {
@@ -7150,7 +7197,7 @@
                                     const extraList = sortedList.slice(2);
 
                                     return (
-                                        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all">
+                                        <div className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] p-4.5 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 transition-all">
                                             <div 
                                                 onClick={() => setExpandedReminders(!expandedReminders)}
                                                 className="flex justify-between items-center cursor-pointer select-none group"
@@ -7272,7 +7319,7 @@
                                 </div>
 
                                 {/* Dashboard Bottom: Recent Transactions */}
-                                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-3">
+                                <div className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] p-4.5 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 space-y-3">
                                     <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-2">
                                         <h3 className="text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1.5 space-x-reverse">
                                             <Icon name="history" className="w-4 h-4 text-indigo-600" />
@@ -7331,9 +7378,9 @@
                                             value={accountsSearchQuery}
                                             onChange={(e) => setAccountsSearchQuery(e.target.value)}
                                             placeholder="جستجو..." 
-                                            className="w-full h-12 pr-10 pl-4 bg-slate-100 dark:bg-slate-800 border-none rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs"
+                                            className="w-full h-12 pr-10 pl-4 bg-[#E9EDF6] dark:bg-slate-800 border-none rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-[#9099AB] shadow-xs"
                                         />
-                                        <Icon name="search" className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                        <Icon name="search" className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9099AB] dark:text-slate-400" />
                                     </div>
                                     <button 
                                         onClick={() => setAccountsSearchQuery('')}
@@ -7344,7 +7391,7 @@
                                 </div>
 
                                 {/* Filter Bar */}
-                                <div className="bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs">
+                                <div className="bg-[#E9EDF6] dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-[rgba(70,80,120,0.06)] dark:border-slate-700/50 text-sm font-medium mb-5 shadow-xs">
                                     {[
                                         { id: 'all', label: 'همه', activeClass: 'bg-indigo-600 text-white shadow-sm font-bold' },
                                         { id: 'loans', label: 'وام', activeClass: 'bg-blue-600 text-white shadow-sm font-bold' },
@@ -7358,7 +7405,7 @@
                                             className={`py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${
                                                 accountsSubTab === tab.id 
                                                     ? tab.activeClass 
-                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                                    : 'text-[#9099AB] dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                                             }`}>
                                             {tab.label}
                                         </button>
@@ -7379,7 +7426,7 @@
                                                         <span className="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-4 py-1 rounded-full text-sm font-bold inline-block">وام ها</span>
                                                     </div>
 
-                                                    <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
+                                                    <div className="space-y-5 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-5">
                                                         {loansToDisplay.map(loan => {
                                                             const nextDueInfo = getLoanNextDueInfo(loan, transactions);
                                                             const isCompleted = nextDueInfo.isCompleted || (loan.remainingAmount !== undefined && loan.remainingAmount <= 0);
@@ -7391,15 +7438,15 @@
                                                                     onCardClick={() => openLoanDetail(loan)}
                                                                 >
                                                                     {isCompleted ? (
-                                                                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm p-4 sm:p-5 overflow-hidden relative transition-all cursor-pointer hover:border-emerald-300">
+                                                                        <div className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] p-4.5 sm:p-5 overflow-hidden relative transition-all cursor-pointer hover:border-emerald-300">
                                                                             <div className="w-full flex flex-col opacity-75 gap-2">
                                                                                 <div className="flex items-center justify-between w-full">
                                                                                     <div className="w-14 h-14 bg-indigo-50/50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-blue-500 dark:text-blue-400 shrink-0">
                                                                                         <Icon name="landmark" className="w-8 h-8 text-blue-500 dark:text-blue-400" />
                                                                                     </div>
                                                                                     <div className="flex-1 text-right flex flex-col gap-1 pl-4 pr-2">
-                                                                                        <h3 className="font-bold text-slate-700 dark:text-slate-200 text-sm">{loan.title}</h3>
-                                                                                        <p className="text-slate-400 text-xs whitespace-normal">{loan.contactName || "بانک"}</p>
+                                                                                        <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{loan.title}</h3>
+                                                                                        <p className="text-[#9099AB] dark:text-slate-400 text-xs whitespace-normal mt-0.5">{loan.contactName || "بانک"}</p>
                                                                                     </div>
                                                                                     <div className="text-left shrink-0 flex flex-col items-center">
                                                                                         <div className="font-bold text-base leading-none line-through text-slate-400">{loan.principalAmount.toLocaleString()}</div>
@@ -7407,7 +7454,7 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="flex justify-center">
-                                                                                    <span className="text-slate-500 dark:text-slate-400 font-bold text-xs">آخرین قسط پرداخت شده : {nextDueInfo.lastPaidDateStr || "تمامی اقساط پرداخت شده"}</span>
+                                                                                    <span className="text-[#9099AB] dark:text-slate-400 font-bold text-xs">آخرین قسط پرداخت شده : {nextDueInfo.lastPaidDateStr || "تمامی اقساط پرداخت شده"}</span>
                                                                                 </div>
                                                                                 <div className="bg-indigo-50/30 dark:bg-indigo-950/30 rounded-lg py-2 px-4 text-center">
                                                                                     <span className="text-blue-500 dark:text-blue-400 font-bold text-sm">تمامی اقساط پرداخت شده است</span>
@@ -7418,15 +7465,15 @@
                                                                             </div>
                                                                         </div>
                                                                     ) : (
-                                                                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm p-4 sm:p-5 transition-all cursor-pointer hover:border-indigo-300">
+                                                                        <div className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] p-4.5 sm:p-5 transition-all cursor-pointer hover:border-indigo-300">
                                                                             <div className="w-full flex flex-col gap-2">
                                                                                 <div className="flex items-center justify-between w-full">
                                                                                     <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
                                                                                         <Icon name="landmark" className="w-6 h-6" />
                                                                                     </div>
                                                                                     <div className="flex-1 text-right flex flex-col gap-1 pl-4 pr-2">
-                                                                                        <h3 className="font-bold text-slate-800 dark:text-white text-sm">{loan.title}</h3>
-                                                                                        <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{loan.contactName || "بانک"}</p>
+                                                                                        <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{loan.title}</h3>
+                                                                                        <p className="text-[#9099AB] dark:text-slate-400 text-xs whitespace-normal mt-0.5">{loan.contactName || "بانک"}</p>
                                                                                     </div>
                                                                                     <div className="text-left shrink-0 flex flex-col items-center">
                                                                                         <div className="text-indigo-600 dark:text-indigo-400 font-bold text-base leading-none">{loan.principalAmount.toLocaleString()}</div>
@@ -7434,7 +7481,7 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="flex justify-center">
-                                                                                    <span className="text-slate-500 dark:text-slate-400 font-bold text-xs">آخرین قسط پرداخت شده : {nextDueInfo.lastPaidDateStr || "هنوز پرداختی ثبت نشده"}</span>
+                                                                                    <span className="text-[#9099AB] dark:text-slate-400 font-bold text-xs">آخرین قسط پرداخت شده : {nextDueInfo.lastPaidDateStr || "هنوز پرداختی ثبت نشده"}</span>
                                                                                 </div>
                                                                                 <div className="bg-indigo-50/50 dark:bg-indigo-950/40 rounded-lg py-2 px-4 text-center">
                                                                                     <span className="text-slate-600 dark:text-slate-300 font-bold text-sm">سررسید قسط {nextDueInfo.paidInst + 1}: {nextDueInfo.nextDueDateStr}</span>
@@ -7457,7 +7504,7 @@
                                             <div className="mb-3 px-1">
                                                 <span className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 px-4 py-1 rounded-full text-sm font-bold inline-block">طلب‌ها</span>
                                             </div>
-                                            <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
+                                            <div className="space-y-5 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-5">
                                                 {filteredAccountsDemands.map(contact => {
                                                     const settledCount = getSettledPeriodCount(contact.id, 'demand');
                                                     const isArchived = settledCount > 0 || accountsSubTab === 'archived' || contact.totalDemand === 0;
@@ -7467,7 +7514,7 @@
                                                             onDelete={(confirmCb) => handleDeleteContact(contact, confirmCb)}
                                                             onCardClick={() => openContactDetail(contact, 'demands', 'accounts')}
                                                         >
-                                                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between">
+                                                            <div className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] pl-6 pr-4 py-3.5 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between">
                                                                 <div className="w-full flex flex-col gap-1">
                                                                     <div className="flex items-center justify-between w-full">
                                                                         <div className="flex flex-col items-center gap-1 shrink-0">
@@ -7481,8 +7528,8 @@
                                                                             )}
                                                                         </div>
                                                                         <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
-                                                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm">{contact.firstName} {contact.lastName}</h3>
-                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{contact.note || "طلب شخصی"}</p>
+                                                                            <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{contact.firstName} {contact.lastName}</h3>
+                                                                            <p className="text-[#9099AB] dark:text-slate-400 text-xs whitespace-normal mt-0.5">{contact.note || "طلب شخصی"}</p>
                                                                         </div>
                                                                         <div className="text-left shrink-0 flex flex-col items-center">
                                                                             <div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none">{contact.totalDemand.toLocaleString()}</div>
@@ -7504,7 +7551,7 @@
                                             <div className="mb-3 px-1">
                                                 <span className="bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 px-4 py-1 rounded-full text-sm font-bold inline-block">بدهی‌ها</span>
                                             </div>
-                                            <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
+                                            <div className="space-y-5 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-5">
                                                 {filteredAccountsDebts.map(contact => {
                                                     const settledCount = getSettledPeriodCount(contact.id, 'debt');
                                                     const isArchived = settledCount > 0 || accountsSubTab === 'archived' || contact.totalDebt === 0;
@@ -7514,7 +7561,7 @@
                                                             onDelete={(confirmCb) => handleDeleteContact(contact, confirmCb)}
                                                             onCardClick={() => openContactDetail(contact, 'debts', 'accounts')}
                                                         >
-                                                            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between">
+                                                            <div className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] pl-6 pr-4 py-3.5 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between">
                                                                 <div className="w-full flex flex-col gap-1">
                                                                     <div className="flex items-center justify-between w-full">
                                                                         <div className="flex flex-col items-center gap-1 shrink-0">
@@ -7528,8 +7575,8 @@
                                                                             )}
                                                                         </div>
                                                                         <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
-                                                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm">{contact.firstName} {contact.lastName}</h3>
-                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{contact.note || "بدهی شخصی"}</p>
+                                                                            <h3 className="font-extrabold text-slate-900 dark:text-white text-base">{contact.firstName} {contact.lastName}</h3>
+                                                                            <p className="text-[#9099AB] dark:text-slate-400 text-xs whitespace-normal mt-0.5">{contact.note || "بدهی شخصی"}</p>
                                                                         </div>
                                                                         <div className="text-left shrink-0 flex flex-col items-center">
                                                                             <div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none">{contact.totalDebt.toLocaleString()}</div>
@@ -7589,9 +7636,9 @@
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
                                                 placeholder="جستجو..." 
-                                                className="w-full h-12 pr-10 pl-4 bg-slate-100 dark:bg-slate-800 border-none rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs"
+                                                className="w-full h-12 pr-10 pl-4 bg-[#E9EDF6] dark:bg-slate-800 border-none rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-[#9099AB] shadow-xs"
                                             />
-                                            <Icon name="search" className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                            <Icon name="search" className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9099AB] dark:text-slate-400" />
                                         </div>
                                         <button 
                                             onClick={() => setSearchQuery('')}
@@ -7602,12 +7649,12 @@
                                     </div>
 
                                     {/* Filters Bar Section */}
-                                    <div className="bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs">
+                                    <div className="bg-[#E9EDF6] dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-[rgba(70,80,120,0.06)] dark:border-slate-700/50 text-sm font-medium mb-5 shadow-xs">
                                         <button 
                                             onClick={() => setContactFilter(contactFilter === 'favorite' ? 'all' : 'favorite')}
                                             title="علاقه‌مندی‌ها"
-                                            className={`flex items-center justify-center w-9 h-9 rounded-full transition-all shrink-0 ${contactFilter === 'favorite' ? 'bg-amber-100 dark:bg-amber-950 text-amber-500' : 'text-slate-400 hover:text-amber-500'}`}>
-                                            <Icon name="star" className={`w-5 h-5 ${contactFilter === 'favorite' ? 'fill-amber-400 text-amber-500' : 'text-slate-400'}`} />
+                                            className={`flex items-center justify-center w-9 h-9 rounded-full transition-all shrink-0 ${contactFilter === 'favorite' ? 'bg-amber-100 dark:bg-amber-950 text-amber-500' : 'text-[#9099AB] hover:text-amber-500'}`}>
+                                            <Icon name="star" className={`w-5 h-5 ${contactFilter === 'favorite' ? 'fill-amber-400 text-amber-500' : 'text-[#9099AB]'}`} />
                                         </button>
                                         {[
                                             { id: 'all', label: 'همه', activeClass: 'bg-indigo-600 text-white shadow-sm font-bold' },
@@ -7622,7 +7669,7 @@
                                                 className={`py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${
                                                     contactFilter === tab.id 
                                                         ? tab.activeClass 
-                                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                                                        : 'text-[#9099AB] dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                                                 }`}>
                                                 {tab.label}
                                             </button>
@@ -7630,7 +7677,7 @@
                                     </div>
 
                                 {/* Contacts List Cards */}
-                                <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
+                                <div className="space-y-5 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-5">
                                     {filteredContacts.map((contact) => {
                                         const contactLoans = loans.filter(l => l.contactId === contact.id);
                                         const hasActiveLoan = contactLoans.some(l => 
@@ -7658,7 +7705,7 @@
                                                     openContactDetail(contact, f, 'contacts');
                                                 }}
                                             >
-                                                <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-slate-100 dark:border-slate-700/60 p-4 shadow-sm hover:border-indigo-300 transition-all cursor-pointer">
+                                                <div className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 p-4.5 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] hover:border-indigo-300 transition-all cursor-pointer">
                                                     <div className="flex flex-col gap-3">
                                                         {/* Row 1: Avatar + Name (Right), Phone (Left) */}
                                                         <div className="flex flex-row items-center justify-between">
@@ -7666,9 +7713,11 @@
                                                                 <div className={`rounded-full ${getAvatarColor(contact.id, contact.firstName + contact.lastName)} flex-shrink-0 flex items-center justify-center text-white font-bold w-10 h-10 text-xs sm:text-sm shadow-xs`}>
                                                                     {contact.firstName.charAt(0)} {contact.lastName.charAt(0)}
                                                                 </div>
-                                                                <span className="text-slate-900 dark:text-white font-bold text-sm sm:text-base">{contact.firstName} {contact.lastName}</span>
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-slate-900 dark:text-white font-extrabold text-base sm:text-lg leading-tight">{contact.firstName} {contact.lastName}</span>
+                                                                </div>
                                                             </div>
-                                                            <span className="text-slate-400 dark:text-slate-500 tracking-wider font-mono text-xs dir-ltr">{contact.phone}</span>
+                                                            <span className="text-[#9099AB] dark:text-slate-500 tracking-wider font-mono text-xs dir-ltr mt-0.5">{contact.phone}</span>
                                                         </div>
 
                                                         {/* Row 2: 3 Equal Width Buttons (وام, طلب, بدهی) */}
@@ -7682,7 +7731,7 @@
                                                                 className={`flex-1 rounded-2xl h-8 text-xs font-medium transition-all flex items-center justify-center gap-1 ${
                                                                     hasActiveLoan 
                                                                         ? 'bg-blue-600 text-white shadow-sm active:scale-95' 
-                                                                        : 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-default'
+                                                                        : 'bg-[#E9EDF6] dark:bg-slate-800 text-[#9099AB] dark:text-slate-400 cursor-default'
                                                                 }`}
                                                             >
                                                                 {hasSettledLoan && <Icon name="check" className="w-4 h-4 shrink-0" />}
@@ -7698,7 +7747,7 @@
                                                                 className={`flex-1 rounded-2xl h-8 text-xs font-medium transition-all flex items-center justify-center gap-1 ${
                                                                     hasActiveDemand 
                                                                         ? 'bg-emerald-600 text-white shadow-sm active:scale-95' 
-                                                                        : 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-default'
+                                                                        : 'bg-[#E9EDF6] dark:bg-slate-800 text-[#9099AB] dark:text-slate-400 cursor-default'
                                                                 }`}
                                                             >
                                                                 {hasSettledDemand && <Icon name="check" className="w-4 h-4 shrink-0" />}
@@ -7714,7 +7763,7 @@
                                                                 className={`flex-1 rounded-2xl h-8 text-xs font-medium transition-all flex items-center justify-center gap-1 ${
                                                                     hasActiveDebt 
                                                                         ? 'bg-rose-600 text-white shadow-sm active:scale-95' 
-                                                                        : 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-default'
+                                                                        : 'bg-[#E9EDF6] dark:bg-slate-800 text-[#9099AB] dark:text-slate-400 cursor-default'
                                                                 }`}
                                                             >
                                                                 {hasSettledDebt && <Icon name="check" className="w-4 h-4 shrink-0" />}
@@ -7784,7 +7833,7 @@
                                      return (
                                          <div className={`relative overflow-hidden rounded-2xl p-4 border flex flex-col gap-3 group transition-transform duration-200 ${cardTheme.containerClass}`}>
                                              {/* Background Watermark Icon */}
-                                             <span className={`material-symbols-outlined ${cardTheme.watermarkColor}`} style={{ position: 'absolute', top: '0rem', left: '0.25rem', fontSize: '8rem', opacity: 0.07, zIndex: 0, pointerEvents: 'none' }}>
+                                             <span className={`material-symbols-outlined ${cardTheme.watermarkColor}`} style={{ position: 'absolute', top: '0rem', left: '0.25rem', fontSize: '8rem', opacity: 0.03, zIndex: 0, pointerEvents: 'none' }}>
                                                  {cardTheme.watermark}
                                              </span>
 
@@ -8284,7 +8333,7 @@
                                     {/* Decorative Glowing Light & Background Watermark SVG */}
                                     <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl pointer-events-none" />
                                     <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
-                                    <div className="absolute left-4 bottom-1 opacity-15 pointer-events-none text-white">
+                                    <div className="absolute left-4 bottom-1 opacity-[0.03] pointer-events-none text-white">
                                         <svg fill="currentColor" height="180" viewBox="0 0 24 24" width="180" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12 2L2 7v2h20V7L12 2zm0 18H4v-9h1v9h2v-9h2v9h2v-9h2v9h2v-9h2v9h1v-9h1v9h-2zm-10-9h20v2H2v-2z"></path>
                                         </svg>
@@ -8668,7 +8717,7 @@
                                     <div className={`absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 rounded-full blur-2xl pointer-events-none ${isDebt ? "bg-red-500/20" : "bg-teal-500/20"}`} />
                                     
                                     {/* Watermark Icon depending on type */}
-                                    <div className="absolute left-4 bottom-1 opacity-15 pointer-events-none text-white">
+                                    <div className="absolute left-4 bottom-1 opacity-[0.03] pointer-events-none text-white">
                                         {isDebt ? (
                                             /* Red Debt Watermark SVG */
                                             <svg fill="currentColor" height="170" viewBox="0 0 24 24" width="170" xmlns="http://www.w3.org/2000/svg">
@@ -9110,11 +9159,11 @@
                                 </div>
 
                                  {/* Settings Sections */}
-                                 <div className="space-y-3.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start">
+                                 <div className="space-y-5 md:space-y-0 md:grid md:grid-cols-2 md:gap-5 md:items-start">
                                      {/* 1. Appearance (Bento Style in Accordion) */}
                                      <div 
                                          onClick={() => toggleSettingsSection('appearance')}
-                                         className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                         className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] p-4.5 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
                                          <div className="flex items-center justify-between">
                                              <div className="flex items-center space-x-3.5 space-x-reverse">
                                                  <div className="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
@@ -9183,7 +9232,7 @@
                                      {/* 2. Backup & Restore (Accordion) */}
                                      <div 
                                          onClick={() => toggleSettingsSection('backup')}
-                                         className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                         className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] p-4.5 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
                                          <div className="flex items-center justify-between">
                                              <div className="flex items-center space-x-3.5 space-x-reverse">
                                                  <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
@@ -9264,7 +9313,7 @@
                                     {/* 3. Notifications */}
                                     <div 
                                         onClick={() => toggleSettingsSection('notifications')}
-                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] p-4.5 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3.5 space-x-reverse">
                                                 <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
@@ -9310,7 +9359,7 @@
                                     {/* 4. Security */}
                                     <div 
                                         onClick={() => toggleSettingsSection('security')}
-                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] p-4.5 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3.5 space-x-reverse">
                                                 <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
@@ -9336,7 +9385,7 @@
                                     {/* 5. Data Management */}
                                     <div 
                                         onClick={() => toggleSettingsSection('data')}
-                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] p-4.5 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3.5 space-x-reverse">
                                                 <div className="w-10 h-10 rounded-2xl bg-cyan-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
@@ -9371,7 +9420,7 @@
                                     {/* 6. About App */}
                                     <div 
                                         onClick={() => toggleSettingsSection('about')}
-                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
+                                        className="card-premium bg-[#FCFCFD] dark:bg-slate-800 rounded-[24px] p-4.5 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3.5 space-x-reverse">
                                                 <div className="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
@@ -9403,7 +9452,7 @@
             const activeCards = getCurrentWizardCards();
 
             return (
-                <div className={`w-full h-full flex flex-col justify-between ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'}`}>
+                <div className={`w-full h-full flex flex-col justify-between ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-app-gradient text-slate-800'}`}>
 
                     {/* Notification Toast */}
                     {toastMessage && (
@@ -9423,7 +9472,7 @@
                                 animate="animate"
                                 exit="exit"
                                 style={{ willChange: 'transform', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}
-                                className="w-full h-full absolute inset-0 overflow-y-auto bg-slate-50 dark:bg-slate-950 z-10"
+                                className="w-full h-full absolute inset-0 overflow-y-auto bg-app-gradient dark:bg-slate-950 z-10"
                             >
                                 {['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? (
                                     <div className="flex-1 relative w-full h-full">
