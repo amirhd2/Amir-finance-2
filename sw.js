@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amir-finance-v1.9.1-b175';
+const CACHE_NAME = 'amir-finance-v1.9.4-b178';
 
 const ASSETS_TO_CACHE = [
   '/',
@@ -13,22 +13,50 @@ const ASSETS_TO_CACHE = [
   '/favicon-48x48.png',
   '/favicon-96x96.png',
   '/apple-touch-icon.png',
+  '/apple-touch-icon-152x152.png',
+  '/apple-touch-icon-167x167.png',
+  '/apple-touch-icon-180x180.png',
   '/icon-192x192.png',
   '/icon-512x512.png',
   '/maskable-icon-512x512.png',
   '/web-app-manifest-192x192.png',
   '/web-app-manifest-512x512.png',
   '/splash-portrait.png',
-  '/splash-landscape.png'
+  '/splash-landscape.png',
+
+  // Local Offline Vendor Dependencies
+  '/vendor/material-symbols.css',
+  '/vendor/vazirmatn.css',
+  '/vendor/tailwindcss.js',
+  '/vendor/react.production.min.js',
+  '/vendor/react-dom.production.min.js',
+  '/vendor/babel.min.js',
+  '/vendor/framer-motion.js',
+  '/vendor/lucide.js',
+
+  // Local Offline Fonts
+  '/vendor/fonts/material-symbols.woff2',
+  '/vendor/fonts/webfonts/Vazirmatn-Thin.woff2',
+  '/vendor/fonts/webfonts/Vazirmatn-ExtraLight.woff2',
+  '/vendor/fonts/webfonts/Vazirmatn-Light.woff2',
+  '/vendor/fonts/webfonts/Vazirmatn-Regular.woff2',
+  '/vendor/fonts/webfonts/Vazirmatn-Medium.woff2',
+  '/vendor/fonts/webfonts/Vazirmatn-SemiBold.woff2',
+  '/vendor/fonts/webfonts/Vazirmatn-Bold.woff2',
+  '/vendor/fonts/webfonts/Vazirmatn-ExtraBold.woff2',
+  '/vendor/fonts/webfonts/Vazirmatn-Black.woff2'
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       await Promise.allSettled(
-        ASSETS_TO_CACHE.map((asset) => cache.add(asset).catch(() => {}))
+        ASSETS_TO_CACHE.map((asset) => cache.add(asset).catch((err) => {
+          console.warn('SW pre-cache failed for:', asset, err);
+        }))
       );
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -49,18 +77,62 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Always fetch version.json directly from the network with cache-busting
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') return;
+
+  // Always fetch version.json with network-first but fallback to cache when offline
   if (url.pathname.endsWith('/version.json')) {
     event.respondWith(
-      fetch(event.request, { cache: 'no-store' }).catch(() => caches.match('/version.json'))
+      fetch(event.request, { cache: 'no-store' })
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match('/version.json'))
     );
     return;
   }
 
-  // Network-first strategy for index.html / navigation requests to ensure fresh content
+  // Navigation / HTML page requests (Network-first with immediate offline fallback to cached index.html)
   if (event.request.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html') {
     event.respondWith(
-      fetch(event.request, { cache: 'no-cache' })
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('/', responseClone));
+            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', responseClone));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match('/index.html')
+            .then((cachedIndex) => cachedIndex || caches.match('/'));
+        })
+    );
+    return;
+  }
+
+  // Cache-first strategy for static assets, vendor JS/CSS, icons, and fonts
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        // Return cached version immediately for 100% offline availability
+        if (navigator.onLine) {
+          fetch(event.request).then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
+            }
+          }).catch(() => {});
+        }
+        return cachedResponse;
+      }
+
+      // Not in cache yet, fetch from network and store in cache
+      return fetch(event.request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const responseClone = networkResponse.clone();
@@ -68,23 +140,9 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => caches.match('/index.html') || caches.match('/'))
-    );
-    return;
-  }
-
-  // Stale-while-revalidate for static assets
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
-        }
-        return networkResponse;
-      }).catch(() => cachedResponse);
-
-      return cachedResponse || fetchPromise;
+        .catch(() => {
+          return new Response('Offline resource not available', { status: 503, statusText: 'Offline' });
+        });
     })
   );
 });
@@ -94,4 +152,5 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+
 

@@ -1,15 +1,27 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.9.3",
-  "buildNumber": 177,
+  "installedVersion": "1.9.4",
+  "buildNumber": 178,
   "releaseDate": "2026-08-05",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.9.3",
-  "latestBuild": 177,
+  "latestVersion": "1.9.4",
+  "latestBuild": 178,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.9.4",
+      "buildNumber": 178,
+      "releaseDate": "2026-08-05",
+      "releaseChannel": "Stable",
+      "commitHash": "v194rel",
+      "commitMessage": "feat: full offline support by bundling vendor dependencies locally (React, ReactDOM, Babel, Tailwind, Framer Motion, Lucide, Vazirmatn fonts, Material Symbols) and updating ServiceWorker precache",
+      "changes": [
+        "پشتیبانی ۱۰۰٪ آفلاین PWA: دانلود و محلی‌سازی کامل تمامی کتابخانه‌های ریکت، ریکت-دام، بابل، تیلویند، فریمور موشن، لوسید و فونت‌های وزیرمتن و متریال سمبلز در پوشه داخلی vendor",
+        "به‌روزرسانی سرویس ورکر (sw.js) جهت کش‌پیشرفته تمام فایل‌های وابسته و فونت‌ها در زمان اولین نصب برای اجرای کاملاً مستقل از اینترنت حتی پس از بسته شدن برنامه یا ریستارت گوشی"
+      ]
+    },
     {
       "version": "1.9.3",
       "buildNumber": 177,
