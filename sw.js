@@ -1,14 +1,21 @@
-const CACHE_NAME = 'amir-finance-v1.4.0-b157';
+const CACHE_NAME = 'amir-finance-v1.9.1-b175';
 
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/version.json',
   '/site.webmanifest',
+  '/manifest.webmanifest',
   '/favicon.ico',
   '/favicon.svg',
+  '/favicon-16x16.png',
+  '/favicon-32x32.png',
+  '/favicon-48x48.png',
   '/favicon-96x96.png',
   '/apple-touch-icon.png',
+  '/icon-192x192.png',
+  '/icon-512x512.png',
+  '/maskable-icon-512x512.png',
   '/web-app-manifest-192x192.png',
   '/web-app-manifest-512x512.png',
   '/splash-portrait.png',

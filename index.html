@@ -11,31 +11,86 @@
     <!-- Favicon & Application Icons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
 
-    <!-- Apple iOS Compatibility -->
+    <!-- Apple iOS Compatibility & Touch Icons -->
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Amir Finance" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#0b101d" />
 
     <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- iOS Splash Screens / Apple Touch Startup Images -->
-    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
-    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
-    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
-    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
-    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+    <!-- iOS Apple Touch Startup Splash Screens (iPhone & iPad) -->
+    <!-- iPhone 14 Pro Max, 15 Plus, 15 Pro Max, 16 Plus (430x932 pt @3x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1290-2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2796-1290.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+
+    <!-- iPhone 14 Pro, 15, 15 Pro, 16 (393x852 pt @3x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1179-2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2556-1179.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+
+    <!-- iPhone 12 Pro Max, 13 Pro Max, 14 Plus (428x926 pt @3x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1284-2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2778-1284.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+
+    <!-- iPhone 12, 12 Pro, 13, 13 Pro, 14 (390x844 pt @3x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1170-2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2532-1170.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+
+    <!-- iPhone XS Max, 11 Pro Max (414x896 pt @3x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1242-2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2688-1242.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+
+    <!-- iPhone XR, 11 (414x896 pt @2x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-828-1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-1792-828.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+
+    <!-- iPhone X, XS, 11 Pro, 12 mini, 13 mini (375x812 pt @3x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1125-2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2436-1125.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+
+    <!-- iPhone 8 Plus, 7 Plus, 6s Plus (414x736 pt @3x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1242-2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2208-1242.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+
+    <!-- iPhone SE, 8, 7, 6 (375x667 pt @2x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-750-1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-1334-750.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+
+    <!-- iPad Pro 12.9" (1024x1366 pt @2x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2732-2048.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+
+    <!-- iPad Pro 11" (834x1194 pt @2x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1668-2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2388-1668.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+
+    <!-- iPad Air 10.5", iPad Pro 10.5" (834x1112 pt @2x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1668-2224.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2224-1668.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+
+    <!-- iPad 10.2" (810x1080 pt @2x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1620-2160.png" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2160-1620.png" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+
+    <!-- iPad 9.7", iPad mini (768x1024 pt @2x) -->
+    <link rel="apple-touch-startup-image" href="/apple-splash-1536-2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/apple-splash-2048-1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+
+    <!-- Android & Fallback Splash Screens -->
     <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(orientation: portrait)" />
     <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(orientation: landscape)" />
     <!-- Tailwind CSS CDN -->
@@ -915,6 +970,67 @@
             return resultParts.join(' و ') + ' تومان';
         };
 
+        const getInstallmentDueDate = (loan, instNum) => {
+            if (!loan || instNum < 1) return { dateStr: 'نامشخص', year: 1403, monthIdx: 0, day: 1, daysLeft: 0 };
+
+            let startYear, startMonthIdx, startDay;
+            if (loan.firstInstallmentDate) {
+                const parsed = parseJalaliDateStr(loan.firstInstallmentDate);
+                startYear = parsed.year;
+                startMonthIdx = jalaliMonths.indexOf(parsed.month);
+                if (startMonthIdx === -1) startMonthIdx = 0;
+                startDay = parsed.day;
+            } else if (loan.startDate) {
+                const parsedStart = parseJalaliDateStr(loan.startDate);
+                startYear = parsedStart.year;
+                startMonthIdx = jalaliMonths.indexOf(parsedStart.month);
+                if (startMonthIdx === -1) startMonthIdx = 0;
+                startDay = parsedStart.day;
+            } else {
+                const todayJ = getDeviceJalaliDate();
+                startYear = todayJ.year;
+                startMonthIdx = jalaliMonths.indexOf(todayJ.month);
+                if (startMonthIdx === -1) startMonthIdx = 0;
+                startDay = todayJ.day;
+            }
+
+            const dueDay = loan.firstInstallmentDate 
+                ? parseJalaliDateStr(loan.firstInstallmentDate).day 
+                : (loan.dueDayOfMonth || startDay || 25);
+
+            let firstDueMonthIdx = startMonthIdx;
+            let firstDueYear = startYear;
+
+            if (!loan.firstInstallmentDate && dueDay <= startDay) {
+                firstDueMonthIdx += 1;
+                if (firstDueMonthIdx >= 12) {
+                    firstDueMonthIdx = 0;
+                    firstDueYear += 1;
+                }
+            }
+
+            const monthsToAdd = instNum - 1;
+            let targetMonthIdx = firstDueMonthIdx + monthsToAdd;
+            let targetYear = firstDueYear + Math.floor(targetMonthIdx / 12);
+            targetMonthIdx = targetMonthIdx % 12;
+
+            const targetMonthName = jalaliMonths[targetMonthIdx];
+            const maxDays = getJalaliDaysInMonth(targetMonthIdx + 1, targetYear);
+            const targetDay = Math.min(dueDay, maxDays);
+
+            const dateStr = `${targetDay} ${targetMonthName} ${targetYear}`;
+            const daysLeft = getDaysDiffFromToday(targetYear, targetMonthIdx + 1, targetDay);
+
+            return {
+                dateStr,
+                year: targetYear,
+                monthIdx: targetMonthIdx,
+                monthName: targetMonthName,
+                day: targetDay,
+                daysLeft
+            };
+        };
+
         const getLoanNextDueInfo = (loan, txList) => {
             if (!loan) return { nextDueNum: 1, nextDueDateStr: 'نامشخص', daysLeft: 0, totalInst: 12, paidInst: 0, remainingInst: 12, isCompleted: false };
 
@@ -941,54 +1057,12 @@
             }
 
             const nextDueNum = paidInst + 1;
-
-            let startYear, startMonthIdx, startDay;
-            if (loan.startDate) {
-                const parsedStart = parseJalaliDateStr(loan.startDate);
-                startYear = parsedStart.year;
-                startMonthIdx = jalaliMonths.indexOf(parsedStart.month);
-                if (startMonthIdx === -1) startMonthIdx = 0;
-                startDay = parsedStart.day;
-            } else {
-                const todayJ = getDeviceJalaliDate();
-                startYear = todayJ.year;
-                startMonthIdx = jalaliMonths.indexOf(todayJ.month);
-                if (startMonthIdx === -1) startMonthIdx = 0;
-                startDay = todayJ.day;
-            }
-
-            const dueDay = loan.dueDayOfMonth || startDay || 25;
-
-            let firstDueMonthIdx = startMonthIdx;
-            let firstDueYear = startYear;
-            if (dueDay <= startDay) {
-                firstDueMonthIdx += 1;
-                if (firstDueMonthIdx >= 12) {
-                    firstDueMonthIdx = 0;
-                    firstDueYear += 1;
-                }
-            }
-
-            const monthsToAdd = nextDueNum - 1;
-            let targetMonthIdx = firstDueMonthIdx + monthsToAdd;
-            let targetYear = firstDueYear + Math.floor(targetMonthIdx / 12);
-            targetMonthIdx = targetMonthIdx % 12;
-
-            const targetMonthName = jalaliMonths[targetMonthIdx];
-
-            let maxDaysInMonth = 30;
-            if (targetMonthIdx < 6) maxDaysInMonth = 31;
-            else if (targetMonthIdx === 11) maxDaysInMonth = 29;
-
-            const targetDay = Math.min(dueDay, maxDaysInMonth);
-
-            const nextDueDateStr = `${targetDay} ${targetMonthName} ${targetYear}`;
-            const daysLeft = getDaysDiffFromToday(targetYear, targetMonthIdx + 1, targetDay);
+            const dueInfo = getInstallmentDueDate(loan, nextDueNum);
 
             return {
                 nextDueNum,
-                nextDueDateStr,
-                daysLeft,
+                nextDueDateStr: dueInfo.dateStr,
+                daysLeft: dueInfo.daysLeft,
                 totalInst,
                 paidInst,
                 remainingInst,
@@ -1469,10 +1543,26 @@
         };
 
         const initialContacts = [
-            { id: 1, firstName: 'محمد', lastName: 'احمدی', phone: '09121234567', bankName: 'بانک ملی ایران', bankCard: '6037 9975 4321 4582', iban: 'IR12 0123 4567 8910 1234 5678 90', isPinned: true, activeLoansCount: 1, totalDemand: 8300000, totalDebt: 0, monthlyInstallment: 4250000, isFavorite: true },
-            { id: 2, firstName: 'علی', lastName: 'رضایی', phone: '09129876543', bankName: 'بانک ملت', bankCard: '6104 3378 9012 1175', iban: 'IR88 0123 4567 8910 1234 5678 00', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 2100000, monthlyInstallment: 0, isFavorite: false },
-            { id: 3, firstName: 'سارا', lastName: 'محمدی', phone: '09351112233', bankName: 'بانک پاسارگاد', bankCard: '5022 2910 1122 3344', iban: 'IR44 0000 1111 2222 3333 4444 55', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 0, monthlyInstallment: 1500000, isFavorite: true },
-            { id: 4, firstName: 'رضا', lastName: 'اکبری', phone: '09123334455', bankName: 'بانک تجارت', bankCard: '5892 1012 4455 1123', iban: '', isPinned: false, activeLoansCount: 1, totalDemand: 4700000, totalDebt: 0, monthlyInstallment: 3000000, isFavorite: false }
+            { id: 1, firstName: 'محمد', lastName: 'احمدی', phone: '09121234567', bankName: 'بانک ملی ایران', bankCard: '6037 9975 4321 4582', iban: 'IR12 0120 0000 0001 2345 6789 01', isPinned: true, activeLoansCount: 1, totalDemand: 15000000, totalDebt: 0, monthlyInstallment: 20000000, isFavorite: true },
+            { id: 2, firstName: 'علی', lastName: 'رضایی', phone: '09129876543', bankName: 'بانک ملت', bankCard: '6104 3378 9012 1175', iban: 'IR88 0170 0000 0009 8765 4321 00', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 10000000, monthlyInstallment: 0, isFavorite: false },
+            { id: 3, firstName: 'سارا', lastName: 'محمدی', phone: '09351112233', bankName: 'بانک پاسارگاد', bankCard: '5022 2910 1122 3344', iban: 'IR44 0570 0000 0005 0222 9101 12', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 0, monthlyInstallment: 0, isFavorite: true },
+            { id: 4, firstName: 'رضا', lastName: 'اکبری', phone: '09123334455', bankName: 'بانک تجارت', bankCard: '5892 1012 4455 1123', iban: 'IR55 0180 0000 0005 8921 0124 45', isPinned: false, activeLoansCount: 1, totalDemand: 8000000, totalDebt: 0, monthlyInstallment: 20000000, isFavorite: false },
+            { id: 5, firstName: 'مریم', lastName: 'حسینی', phone: '09194445566', bankName: 'بانک سامان', bankCard: '6219 8610 2233 4455', iban: 'IR66 0560 0000 0006 2198 6102 23', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 8000000, monthlyInstallment: 0, isFavorite: false },
+            { id: 6, firstName: 'حسین', lastName: 'کریمی', phone: '09125556677', bankName: 'بانک پارسیان', bankCard: '6273 8111 5566 7788', iban: 'IR77 0540 0000 0006 2738 1115 56', isPinned: true, activeLoansCount: 1, totalDemand: 35000000, totalDebt: 0, monthlyInstallment: 10000000, isFavorite: true },
+            { id: 7, firstName: 'زهرا', lastName: 'صادقی', phone: '09366667788', bankName: 'بانک سپه', bankCard: '6037 6919 8899 0011', iban: 'IR88 0150 0000 0006 0376 9198 89', isPinned: false, activeLoansCount: 0, totalDemand: 7000000, totalDebt: 0, monthlyInstallment: 0, isFavorite: false },
+            { id: 8, firstName: 'مهدی', lastName: 'موسوی', phone: '09127778899', bankName: 'بانک رفاه کارگران', bankCard: '5894 6311 2233 4411', iban: 'IR99 0130 0000 0005 8946 3112 23', isPinned: false, activeLoansCount: 1, totalDemand: 18000000, totalDebt: 0, monthlyInstallment: 10000000, isFavorite: false },
+            { id: 9, firstName: 'نرگس', lastName: 'قاسمی', phone: '09308889900', bankName: 'بانک اقتصاد نوین', bankCard: '6274 1211 3344 5566', iban: 'IR10 0550 0000 0006 2741 2113 34', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 15000000, monthlyInstallment: 0, isFavorite: false },
+            { id: 10, firstName: 'امیرحسین', lastName: 'زارعی', phone: '09129990011', bankName: 'بانک شهر', bankCard: '5041 7210 6677 8899', iban: 'IR11 0610 0000 0005 0417 2106 67', isPinned: false, activeLoansCount: 1, totalDemand: 15000000, totalDebt: 0, monthlyInstallment: 16666000, isFavorite: true },
+            { id: 11, firstName: 'فاطمه', lastName: 'نوری', phone: '09370001122', bankName: 'بانک آینده', bankCard: '6393 4610 7788 9900', iban: 'IR12 0620 0000 0006 3934 6107 78', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 12000000, monthlyInstallment: 0, isFavorite: false },
+            { id: 12, firstName: 'سعید', lastName: 'نجفی', phone: '09121113355', bankName: 'بانک مهر ایران', bankCard: '6063 7310 1122 3344', iban: 'IR13 0630 0000 0006 0637 3101 12', isPinned: false, activeLoansCount: 1, totalDemand: 16000000, totalDebt: 0, monthlyInstallment: 12500000, isFavorite: false },
+            { id: 13, firstName: 'الناز', lastName: 'ابراهیمی', phone: '09382224466', bankName: 'بانک آینده', bankCard: '6362 1410 2233 4455', iban: 'IR14 0640 0000 0006 3621 4102 23', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 6000000, monthlyInstallment: 0, isFavorite: false },
+            { id: 14, firstName: 'کامران', lastName: 'طاهری', phone: '09123335577', bankName: 'بانک سپه', bankCard: '5058 0110 3344 5566', iban: 'IR15 0690 0000 0005 0580 1103 34', isPinned: false, activeLoansCount: 1, totalDemand: 25000000, totalDebt: 0, monthlyInstallment: 10000000, isFavorite: false },
+            { id: 15, firstName: 'مبینا', lastName: 'قربانی', phone: '09394446688', bankName: 'بانک سرمایه', bankCard: '6396 0710 4455 6677', iban: 'IR16 0600 0000 0006 3960 7104 45', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 14000000, monthlyInstallment: 0, isFavorite: false },
+            { id: 16, firstName: 'آرش', lastName: 'شریفی', phone: '09125557799', bankName: 'بانک صنعت و معدن', bankCard: '6279 6110 5566 7788', iban: 'IR17 0590 0000 0006 2796 1105 56', isPinned: false, activeLoansCount: 0, totalDemand: 9000000, totalDebt: 0, monthlyInstallment: 0, isFavorite: false },
+            { id: 17, firstName: 'شیما', lastName: 'کاظمی', phone: '09306668800', bankName: 'بانک کشاورزی', bankCard: '6037 7010 6677 8899', iban: 'IR18 0110 0000 0006 0377 0106 67', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 20000000, monthlyInstallment: 0, isFavorite: false },
+            { id: 18, firstName: 'فرزاد', lastName: 'مرادی', phone: '09127779911', bankName: 'بانک مسکن', bankCard: '6280 2310 7788 9900', iban: 'IR19 0510 0000 0006 2802 3107 78', isPinned: false, activeLoansCount: 0, totalDemand: 20000000, totalDebt: 9500000, monthlyInstallment: 0, isFavorite: false },
+            { id: 19, firstName: 'مینا', lastName: 'مرادی‌نیا', phone: '09338880022', bankName: 'بانک کارآفرین', bankCard: '6369 4910 8899 0011', iban: 'IR20 0530 0000 0006 3694 9108 89', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 15000000, monthlyInstallment: 0, isFavorite: false },
+            { id: 20, firstName: 'پیمان', lastName: 'باقری', phone: '09129991133', bankName: 'بانک دی', bankCard: '5029 0810 9900 1122', iban: 'IR21 0580 0000 0005 0290 8109 90', isPinned: false, activeLoansCount: 0, totalDemand: 0, totalDebt: 4000000, monthlyInstallment: 0, isFavorite: false }
         ];
 
         const initialLoans = [
@@ -1482,22 +1572,23 @@
                 contactId: 1,
                 contactName: 'محمد احمدی',
                 phone: '09121234567',
-                principalAmount: 500000000,
-                totalRepayment: 500000000,
-                installmentAmount: 28000000,
-                receiveDate: '1404/01/15',
-                startDate: '1404/02/12',
-                dueDate: '1406/08/15',
+                principalAmount: 300000000,
+                totalRepayment: 360000000,
+                installmentAmount: 20000000,
+                receiveDate: '1403/01/15',
+                startDate: '1403/02/12',
+                firstInstallmentDate: '25 اردیبهشت ۱۴۰۳',
+                dueDate: '1404/07/25',
                 totalInstallments: 18,
                 status: 'در حال پرداخت',
-                paidAmount: 84000000,
-                remainingAmount: 416000000,
+                paidAmount: 120000000,
+                remainingAmount: 240000000,
                 dueDayOfMonth: 25,
                 reminderDays: '1روز قبل',
-                nextDueNum: 8,
-                nextDueDateStr: '۲۵ مرداد ۱۴۰۴',
-                daysLeft: 4,
-                notes: 'اقساط خرید خودروی جدید'
+                nextDueNum: 7,
+                nextDueDateStr: '۲۵ آبان ۱۴۰۳',
+                daysLeft: 12,
+                notes: 'اقساط خرید خودروی ثبت‌نامی'
             },
             {
                 id: 502,
@@ -1505,30 +1596,312 @@
                 contactId: 4,
                 contactName: 'رضا اکبری',
                 phone: '09123334455',
-                principalAmount: 300000000,
-                totalRepayment: 360000000,
-                installmentAmount: 15000000,
-                receiveDate: '1403/09/15',
-                startDate: '1403/10/01',
-                dueDate: '1405/10/01',
+                principalAmount: 400000000,
+                totalRepayment: 480000000,
+                installmentAmount: 20000000,
+                receiveDate: '1402/11/10',
+                startDate: '1402/12/10',
+                firstInstallmentDate: '10 دی ۱۴۰۲',
+                dueDate: '1404/12/10',
                 totalInstallments: 24,
                 status: 'در حال پرداخت',
-                paidAmount: 90000000,
-                remainingAmount: 270000000,
+                paidAmount: 160000000,
+                remainingAmount: 320000000,
                 dueDayOfMonth: 10,
                 reminderDays: '2روز قبل',
-                nextDueNum: 7,
-                nextDueDateStr: '۱۰ شهریور ۱۴۰۴',
+                nextDueNum: 9,
+                nextDueDateStr: '۱۰ آذر ۱۴۰۳',
+                daysLeft: 27,
+                notes: 'وام جعاله و خرید مسکن'
+            },
+            {
+                id: 503,
+                title: 'وام ازدواج',
+                contactId: 6,
+                contactName: 'حسین کریمی',
+                phone: '09125556677',
+                principalAmount: 300000000,
+                totalRepayment: 300000000,
+                installmentAmount: 10000000,
+                receiveDate: '1402/09/01',
+                startDate: '1402/10/01',
+                firstInstallmentDate: '01 آبان ۱۴۰۲',
+                dueDate: '1405/04/01',
+                totalInstallments: 30,
+                status: 'در حال پرداخت',
+                paidAmount: 100000000,
+                remainingAmount: 200000000,
+                dueDayOfMonth: 1,
+                reminderDays: '1روز قبل',
+                nextDueNum: 11,
+                nextDueDateStr: '۰۱ شهریور ۱۴۰۳',
                 daysLeft: 18,
-                notes: 'وام پس‌انداز مسکن'
+                notes: 'وام ازدواج بانک پارسیان'
+            },
+            {
+                id: 504,
+                title: 'وام لوازم خانگی',
+                contactId: 8,
+                contactName: 'مهدی موسوی',
+                phone: '09127778899',
+                principalAmount: 100000000,
+                totalRepayment: 120000000,
+                installmentAmount: 10000000,
+                receiveDate: '1403/02/15',
+                startDate: '1403/03/15',
+                firstInstallmentDate: '15 خرداد ۱۴۰۳',
+                dueDate: '1404/03/15',
+                totalInstallments: 12,
+                status: 'در حال پرداخت',
+                paidAmount: 40000000,
+                remainingAmount: 80000000,
+                dueDayOfMonth: 15,
+                reminderDays: '1روز قبل',
+                nextDueNum: 5,
+                nextDueDateStr: '۱۵ مهر ۱۴۰۳',
+                daysLeft: 2,
+                notes: 'خرید اقساطی جهیزیه'
+            },
+            {
+                id: 505,
+                title: 'وام اشتغال',
+                contactId: 10,
+                contactName: 'امیرحسین زارعی',
+                phone: '09129990011',
+                principalAmount: 200000000,
+                totalRepayment: 200000000,
+                installmentAmount: 16666000,
+                receiveDate: '1403/01/20',
+                startDate: '1403/02/20',
+                firstInstallmentDate: '20 اردیبهشت ۱۴۰۳',
+                dueDate: '1404/02/20',
+                totalInstallments: 12,
+                status: 'در حال پرداخت',
+                paidAmount: 50000000,
+                remainingAmount: 150000000,
+                dueDayOfMonth: 20,
+                reminderDays: '3روز قبل',
+                nextDueNum: 4,
+                nextDueDateStr: '۲۰ مرداد ۱۴۰۳',
+                daysLeft: 8,
+                notes: 'وام توسعه کارگاه'
+            },
+            {
+                id: 506,
+                title: 'وام تعمیرات مسکن',
+                contactId: 12,
+                contactName: 'سعید نجفی',
+                phone: '09121113355',
+                principalAmount: 120000000,
+                totalRepayment: 150000000,
+                installmentAmount: 12500000,
+                receiveDate: '1402/12/05',
+                startDate: '1403/01/05',
+                firstInstallmentDate: '05 فروردین ۱۴۰۳',
+                dueDate: '1404/01/05',
+                totalInstallments: 12,
+                status: 'در حال پرداخت',
+                paidAmount: 62500000,
+                remainingAmount: 87500000,
+                dueDayOfMonth: 5,
+                reminderDays: '1روز قبل',
+                nextDueNum: 6,
+                nextDueDateStr: '۰۵ شهریور ۱۴۰۳',
+                daysLeft: 22,
+                notes: 'بازسازی و نقاشی منزل'
+            },
+            {
+                id: 507,
+                title: 'وام ودیعه مسکن',
+                contactId: 14,
+                contactName: 'کامران طاهری',
+                phone: '09123335577',
+                principalAmount: 200000000,
+                totalRepayment: 240000000,
+                installmentAmount: 10000000,
+                receiveDate: '1402/08/20',
+                startDate: '1402/09/20',
+                firstInstallmentDate: '20 آذر ۱۴۰۲',
+                dueDate: '1404/09/20',
+                totalInstallments: 24,
+                status: 'در حال پرداخت',
+                paidAmount: 70000000,
+                remainingAmount: 170000000,
+                dueDayOfMonth: 20,
+                reminderDays: '2روز قبل',
+                nextDueNum: 8,
+                nextDueDateStr: '۲۰ تیر ۱۴۰۳',
+                daysLeft: -15,
+                notes: 'کمک‌هزینه رهن آپارتمان'
+            },
+            {
+                id: 508,
+                title: 'وام خرید تجهیزات',
+                contactId: 16,
+                contactName: 'آرش شریفی',
+                phone: '09125557799',
+                principalAmount: 150000000,
+                totalRepayment: 180000000,
+                installmentAmount: 15000000,
+                receiveDate: '1402/01/10',
+                startDate: '1402/02/10',
+                firstInstallmentDate: '10 اردیبهشت ۱۴۰۲',
+                dueDate: '1403/02/10',
+                totalInstallments: 12,
+                status: 'تسویه‌شده',
+                paidAmount: 180000000,
+                remainingAmount: 0,
+                dueDayOfMonth: 10,
+                reminderDays: '1روز قبل',
+                nextDueNum: 12,
+                nextDueDateStr: 'کلیه اقساط پرداخت شده‌اند',
+                daysLeft: 0,
+                notes: 'خرید لپ‌تاپ و تجهیزات فنی'
+            },
+            {
+                id: 509,
+                title: 'وام ضروری رفاه',
+                contactId: 7,
+                contactName: 'زهرا صادقی',
+                phone: '09366667788',
+                principalAmount: 80000000,
+                totalRepayment: 100000000,
+                installmentAmount: 10000000,
+                receiveDate: '1402/03/15',
+                startDate: '1402/04/15',
+                firstInstallmentDate: '15 تیر ۱۴۰۲',
+                dueDate: '1403/01/15',
+                totalInstallments: 10,
+                status: 'تسویه‌شده',
+                paidAmount: 100000000,
+                remainingAmount: 0,
+                dueDayOfMonth: 15,
+                reminderDays: '1روز قبل',
+                nextDueNum: 10,
+                nextDueDateStr: 'کلیه اقساط پرداخت شده‌اند',
+                daysLeft: 0,
+                notes: 'وام کوتاه مدت بانک سپه'
+            },
+            {
+                id: 510,
+                title: 'وام اعتباری سامان',
+                contactId: 3,
+                contactName: 'سارا محمدی',
+                phone: '09351112233',
+                principalAmount: 50000000,
+                totalRepayment: 60000000,
+                installmentAmount: 5000000,
+                receiveDate: '1402/04/01',
+                startDate: '1402/05/01',
+                firstInstallmentDate: '01 مرداد ۱۴۰۲',
+                dueDate: '1403/04/01',
+                totalInstallments: 12,
+                status: 'تسویه‌شده',
+                paidAmount: 60000000,
+                remainingAmount: 0,
+                dueDayOfMonth: 1,
+                reminderDays: '1روز قبل',
+                nextDueNum: 12,
+                nextDueDateStr: 'کلیه اقساط پرداخت شده‌اند',
+                daysLeft: 0,
+                notes: 'وام خرد اعتباری'
             }
         ];
 
+        const initialCompletedPeriods = [
+            // 5 Settled Debts
+            { id: 'p_debt_101', contactId: 2, contactName: 'علی رضایی', type: 'debt', title: 'دوره تسویه‌شده بدهی به علی رضایی', totalAmount: 7000000, startDate: '1403/01/15', endDate: '1403/04/10' },
+            { id: 'p_debt_102', contactId: 5, contactName: 'مریم حسینی', type: 'debt', title: 'دوره تسویه‌شده بدهی به مریم حسینی', totalAmount: 14000000, startDate: '1403/02/01', endDate: '1403/05/15' },
+            { id: 'p_debt_103', contactId: 8, contactName: 'مهدی موسوی', type: 'debt', title: 'دوره تسویه‌شده بدهی به مهدی موسوی', totalAmount: 20000000, startDate: '1402/10/10', endDate: '1403/03/20' },
+            { id: 'p_debt_104', contactId: 11, contactName: 'فاطمه نوری', type: 'debt', title: 'دوره تسویه‌شده بدهی به فاطمه نوری', totalAmount: 9000000, startDate: '1403/03/05', endDate: '1403/06/12' },
+            { id: 'p_debt_105', contactId: 14, contactName: 'کامران طاهری', type: 'debt', title: 'دوره تسویه‌شده بدهی به کامران طاهری', totalAmount: 35000000, startDate: '1402/11/15', endDate: '1403/04/25' },
+            // 5 Settled Demands
+            { id: 'p_demand_201', contactId: 1, contactName: 'محمد احمدی', type: 'demand', title: 'دوره تسویه‌شده طلب از محمد احمدی', totalAmount: 10000000, startDate: '1403/01/10', endDate: '1403/03/15' },
+            { id: 'p_demand_202', contactId: 3, contactName: 'سارا محمدی', type: 'demand', title: 'دوره تسویه‌شده طلب از سارا محمدی', totalAmount: 15000000, startDate: '1403/02/05', endDate: '1403/05/01' },
+            { id: 'p_demand_203', contactId: 6, contactName: 'حسین کریمی', type: 'demand', title: 'دوره تسویه‌شده طلب از حسین کریمی', totalAmount: 28000000, startDate: '1402/09/12', endDate: '1403/02/20' },
+            { id: 'p_demand_204', contactId: 9, contactName: 'نرگس قاسمی', type: 'demand', title: 'دوره تسویه‌شده طلب از نرگس قاسمی', totalAmount: 12500000, startDate: '1403/03/01', endDate: '1403/06/10' },
+            { id: 'p_demand_205', contactId: 13, contactName: 'الناز ابراهیمی', type: 'demand', title: 'دوره تسویه‌شده طلب از الناز ابراهیمی', totalAmount: 22000000, startDate: '1402/12/01', endDate: '1403/04/18' }
+        ];
+
         const initialTransactions = [
-            { id: 101, loanId: 501, contactId: 1, type: 'repayment', title: 'پرداخت قسط شماره ۷ - وام خودرو', dateStr: '۲۰ مرداد ۱۴۰۴', amount: 28000000, isPositive: true },
-            { id: 102, loanId: 501, contactId: 1, type: 'repayment', title: 'پرداخت قسط شماره ۶ - وام خودرو', dateStr: '۲۰ تیر ۱۴۰۴', amount: 28000000, isPositive: true },
-            { id: 103, loanId: 502, contactId: 4, type: 'repayment', title: 'پرداخت قسط شماره ۶ - وام مسکن', dateStr: '۱۰ تیر ۱۴۰۴', amount: 15000000, isPositive: true },
-            { id: 104, loanId: 501, contactId: 1, type: 'creation', title: 'ثبت پرونده وام خودرو', dateStr: '۱۲ اردیبهشت ۱۴۰۴', amount: -500000000, isPositive: false }
+            // Active Debts Transactions
+            { id: 1001, contactId: 2, type: 'debt', title: 'ثبت بدهی جدید - خرید تجهیزات', dateStr: '۱۵ فروردین ۱۴۰۳', amount: -15000000, isPositive: false },
+            { id: 1002, contactId: 2, type: 'debt_repayment', title: 'بازپرداخت بدهی به علی رضایی', dateStr: '۲۰ اردیبهشت ۱۴۰۳', amount: 5000000, isPositive: true },
+            { id: 1003, contactId: 5, type: 'debt', title: 'ثبت بدهی جدید - قرض شخصی', dateStr: '۰۱ خرداد ۱۴۰۳', amount: -8000000, isPositive: false },
+            { id: 1004, contactId: 9, type: 'debt', title: 'ثبت بدهی جدید - کمک هزینه سفارشی', dateStr: '۱۰ اردیبهشت ۱۴۰۳', amount: -25000000, isPositive: false },
+            { id: 1005, contactId: 9, type: 'debt_repayment', title: 'بازپرداخت بدهی به نرگس قاسمی', dateStr: '۱۵ تیر ۱۴۰۳', amount: 10000000, isPositive: true },
+            { id: 1006, contactId: 11, type: 'debt', title: 'ثبت بدهی جدید - رزرو خدمات', dateStr: '۰۵ تیر ۱۴۰۳', amount: -12000000, isPositive: false },
+            { id: 1007, contactId: 13, type: 'debt', title: 'ثبت بدهی جدید - خرید کالا', dateStr: '۲۰ خرداد ۱۴۰۳', amount: -6000000, isPositive: false },
+            { id: 1008, contactId: 15, type: 'debt', title: 'ثبت بدهی جدید - بلیت هوایی', dateStr: '۱۲ فروردین ۱۴۰۳', amount: -18000000, isPositive: false },
+            { id: 1009, contactId: 15, type: 'debt_repayment', title: 'بازپرداخت بدهی به مبینا قربانی', dateStr: '۲۵ اردیبهشت ۱۴۰۳', amount: 4000000, isPositive: true },
+            { id: 1010, contactId: 17, type: 'debt', title: 'ثبت بدهی جدید - سرمایه‌گذاری خرد', dateStr: '۰۱ اردیبهشت ۱۴۰۳', amount: -30000000, isPositive: false },
+            { id: 1011, contactId: 17, type: 'debt_repayment', title: 'بازپرداخت بدهی به شیما کاظمی', dateStr: '۱۸ خرداد ۱۴۰۳', amount: 10000000, isPositive: true },
+            { id: 1012, contactId: 18, type: 'debt', title: 'ثبت بدهی جدید - خدمات کارگاهی', dateStr: '۰۸ تیر ۱۴۰۳', amount: -9500000, isPositive: false },
+            { id: 1013, contactId: 19, type: 'debt', title: 'ثبت بدهی جدید - سفارش اقلام', dateStr: '۱۵ فروردین ۱۴۰۳', amount: -22000000, isPositive: false },
+            { id: 1014, contactId: 19, type: 'debt_repayment', title: 'بازپرداخت بدهی به مینا مرادی‌نیا', dateStr: '۰۲ تیر ۱۴۰۳', amount: 7000000, isPositive: true },
+            { id: 1015, contactId: 20, type: 'debt', title: 'ثبت بدهی جدید - شارژ کارگاه', dateStr: '۱۰ تیر ۱۴۰۳', amount: -4000000, isPositive: false },
+
+            // Active Demands Transactions
+            { id: 2001, contactId: 1, type: 'demand', title: 'ثبت طلب جدید - امانت کاری', dateStr: '۱۰ فروردین ۱۴۰۳', amount: 20000000, isPositive: true },
+            { id: 2002, contactId: 1, type: 'demand_repayment', title: 'دریافت بازپرداخت طلب از محمد احمدی', dateStr: '۱۵ اردیبهشت ۱۴۰۳', amount: -5000000, isPositive: false },
+            { id: 2003, contactId: 4, type: 'demand', title: 'ثبت طلب جدید - فروش تجهیزات', dateStr: '۰۵ اردیبهشت ۱۴۰۳', amount: 12000000, isPositive: true },
+            { id: 2004, contactId: 4, type: 'demand_repayment', title: 'دریافت بازپرداخت طلب از رضا اکبری', dateStr: '۲۰ خرداد ۱۴۰۳', amount: -4000000, isPositive: false },
+            { id: 2005, contactId: 6, type: 'demand', title: 'ثبت طلب جدید - ودیعه تجاری', dateStr: '۰۱ فروردین ۱۴۰۳', amount: 35000000, isPositive: true },
+            { id: 2006, contactId: 7, type: 'demand', title: 'ثبت طلب جدید - پروژه برنامه‌نویسی', dateStr: '۱۸ خرداد ۱۴۰۳', amount: 10000000, isPositive: true },
+            { id: 2007, contactId: 7, type: 'demand_repayment', title: 'دریافت بازپرداخت طلب از زهرا صادقی', dateStr: '۱۰ تیر ۱۴۰۳', amount: -3000000, isPositive: false },
+            { id: 2008, contactId: 8, type: 'demand', title: 'ثبت طلب جدید - مشاوره اقتصادی', dateStr: '۲۵ اردیبهشت ۱۴۰۳', amount: 18000000, isPositive: true },
+            { id: 2009, contactId: 10, type: 'demand', title: 'ثبت طلب جدید - شراکت پروژه‌ای', dateStr: '۱۴ فروردین ۱۴۰۳', amount: 25000000, isPositive: true },
+            { id: 2010, contactId: 10, type: 'demand_repayment', title: 'دریافت بازپرداخت طلب از امیرحسین زارعی', dateStr: '۰۵ تیر ۱۴۰۳', amount: -10000000, isPositive: false },
+            { id: 2011, contactId: 12, type: 'demand', title: 'ثبت طلب جدید - فروش ابزار دقیق', dateStr: '۰۲ خرداد ۱۴۰۳', amount: 16000000, isPositive: true },
+            { id: 2012, contactId: 14, type: 'demand', title: 'ثبت طلب جدید - سرمایه‌گذاری متقابل', dateStr: '۲۰ فروردین ۱۴۰۳', amount: 40000000, isPositive: true },
+            { id: 2013, contactId: 14, type: 'demand_repayment', title: 'دریافت بازپرداخت طلب از کامران طاهری', dateStr: '۱۲ خرداد ۱۴۰۳', amount: -15000000, isPositive: false },
+            { id: 2014, contactId: 16, type: 'demand', title: 'ثبت طلب جدید - برندینگ و تبلیغات', dateStr: '۰۱ تیر ۱۴۰۳', amount: 9000000, isPositive: true },
+            { id: 2015, contactId: 18, type: 'demand', title: 'ثبت طلب جدید - تامین قطعات', dateStr: '۱۵ اردیبهشت ۱۴۰۳', amount: 30000000, isPositive: true },
+            { id: 2016, contactId: 18, type: 'demand_repayment', title: 'دریافت بازپرداخت طلب از فرزاد مرادی', dateStr: '۲۸ خرداد ۱۴۰۳', amount: -10000000, isPositive: false },
+
+            // Settled Debts Archived Transactions
+            { id: 3001, periodId: 'p_debt_101', contactId: 2, type: 'debt', title: 'ثبت بدهی قدیمی', dateStr: '۱۵ فروردین ۱۴۰۳', amount: -7000000, isPositive: false },
+            { id: 3002, periodId: 'p_debt_101', contactId: 2, type: 'debt_repayment', title: 'تسویه کامل بدهی به علی رضایی', dateStr: '۱۰ تیر ۱۴۰۳', amount: 7000000, isPositive: true },
+            { id: 3003, periodId: 'p_debt_102', contactId: 5, type: 'debt', title: 'ثبت بدهی قدیمی', dateStr: '۰۱ اردیبهشت ۱۴۰۳', amount: -14000000, isPositive: false },
+            { id: 3004, periodId: 'p_debt_102', contactId: 5, type: 'debt_repayment', title: 'تسویه کامل بدهی به مریم حسینی', dateStr: '۱۵ مرداد ۱۴۰۳', amount: 14000000, isPositive: true },
+            { id: 3005, periodId: 'p_debt_103', contactId: 8, type: 'debt', title: 'ثبت بدهی قدیمی', dateStr: '۱۰ دی ۱۴۰۲', amount: -20000000, isPositive: false },
+            { id: 3006, periodId: 'p_debt_103', contactId: 8, type: 'debt_repayment', title: 'تسویه کامل بدهی به مهدی موسوی', dateStr: '۲۰ اسفند ۱۴۰۲', amount: 20000000, isPositive: true },
+            { id: 3007, periodId: 'p_debt_104', contactId: 11, type: 'debt', title: 'ثبت بدهی قدیمی', dateStr: '۰۵ خرداد ۱۴۰۳', amount: -9000000, isPositive: false },
+            { id: 3008, periodId: 'p_debt_104', contactId: 11, type: 'debt_repayment', title: 'تسویه کامل بدهی به فاطمه نوری', dateStr: '۱۲ تیر ۱۴۰۳', amount: 9000000, isPositive: true },
+            { id: 3009, periodId: 'p_debt_105', contactId: 14, type: 'debt', title: 'ثبت بدهی قدیمی', dateStr: '۱۵ بهمن ۱۴۰۲', amount: -35000000, isPositive: false },
+            { id: 3010, periodId: 'p_debt_105', contactId: 14, type: 'debt_repayment', title: 'تسویه کامل بدهی به کامران طاهری', dateStr: '۲۵ فروردین ۱۴۰۳', amount: 35000000, isPositive: true },
+
+            // Settled Demands Archived Transactions
+            { id: 4001, periodId: 'p_demand_201', contactId: 1, type: 'demand', title: 'ثبت طلب قدیمی', dateStr: '۱۰ فروردین ۱۴۰۳', amount: 10000000, isPositive: true },
+            { id: 4002, periodId: 'p_demand_201', contactId: 1, type: 'demand_repayment', title: 'تسویه کامل طلب از محمد احمدی', dateStr: '۱۵ خرداد ۱۴۰۳', amount: -10000000, isPositive: false },
+            { id: 4003, periodId: 'p_demand_202', contactId: 3, type: 'demand', title: 'ثبت طلب قدیمی', dateStr: '۰۵ اردیبهشت ۱۴۰۳', amount: 15000000, isPositive: true },
+            { id: 4004, periodId: 'p_demand_202', contactId: 3, type: 'demand_repayment', title: 'تسویه کامل طلب از سارا محمدی', dateStr: '۰۱ مرداد ۱۴۰۳', amount: -15000000, isPositive: false },
+            { id: 4005, periodId: 'p_demand_203', contactId: 6, type: 'demand', title: 'ثبت طلب قدیمی', dateStr: '۱۲ آذر ۱۴۰۲', amount: 28000000, isPositive: true },
+            { id: 4006, periodId: 'p_demand_203', contactId: 6, type: 'demand_repayment', title: 'تسویه کامل طلب از حسین کریمی', dateStr: '۲۰ اردیبهشت ۱۴۰۳', amount: -28000000, isPositive: false },
+            { id: 4007, periodId: 'p_demand_204', contactId: 9, type: 'demand', title: 'ثبت طلب قدیمی', dateStr: '۰۱ خرداد ۱۴۰۳', amount: 12500000, isPositive: true },
+            { id: 4008, periodId: 'p_demand_204', contactId: 9, type: 'demand_repayment', title: 'تسویه کامل طلب از نرگس قاسمی', dateStr: '۱۰ شهریور ۱۴۰۳', amount: -12500000, isPositive: false },
+            { id: 4009, periodId: 'p_demand_205', contactId: 13, type: 'demand', title: 'ثبت طلب قدیمی', dateStr: '۰۱ اسفند ۱۴۰۲', amount: 22000000, isPositive: true },
+            { id: 4010, periodId: 'p_demand_205', contactId: 13, type: 'demand_repayment', title: 'تسویه کامل طلب از الناز ابراهیمی', dateStr: '۱۸ اردیبهشت ۱۴۰۳', amount: -22000000, isPositive: false },
+
+            // Loan Repayment Transactions
+            { id: 5001, loanId: 501, contactId: 1, type: 'repayment', title: 'پرداخت قسط شماره ۶ - وام خودرو', dateStr: '۲۵ مهر ۱۴۰۳', amount: 20000000, isPositive: true },
+            { id: 5002, loanId: 501, contactId: 1, type: 'repayment', title: 'پرداخت قسط شماره ۵ - وام خودرو', dateStr: '۲۵ شهریور ۱۴۰۳', amount: 20000000, isPositive: true },
+            { id: 5003, loanId: 501, contactId: 1, type: 'repayment', title: 'پرداخت قسط شماره ۴ - وام خودرو', dateStr: '۲۵ مرداد ۱۴۰۳', amount: 20000000, isPositive: true },
+            { id: 5004, loanId: 501, contactId: 1, type: 'repayment', title: 'پرداخت قسط شماره ۳ - وام خودرو', dateStr: '۲۵ تیر ۱۴۰۳', amount: 20000000, isPositive: true },
+            { id: 5005, loanId: 501, contactId: 1, type: 'repayment', title: 'پرداخت قسط شماره ۲ - وام خودرو', dateStr: '۲۵ خرداد ۱۴۰۳', amount: 20000000, isPositive: true },
+            { id: 5006, loanId: 501, contactId: 1, type: 'repayment', title: 'پرداخت قسط شماره ۱ - وام خودرو', dateStr: '۲۵ اردیبهشت ۱۴۰۳', amount: 20000000, isPositive: true },
+
+            { id: 5007, loanId: 502, contactId: 4, type: 'repayment', title: 'پرداخت قسط شماره ۸ - وام مسکن', dateStr: '۱۰ آبان ۱۴۰۳', amount: 20000000, isPositive: true },
+            { id: 5008, loanId: 502, contactId: 4, type: 'repayment', title: 'پرداخت قسط شماره ۷ - وام مسکن', dateStr: '۱۰ مهر ۱۴۰۳', amount: 20000000, isPositive: true },
+            { id: 5009, loanId: 502, contactId: 4, type: 'repayment', title: 'پرداخت قسط شماره ۶ - وام مسکن', dateStr: '۱۰ شهریور ۱۴۰۳', amount: 20000000, isPositive: true },
+
+            { id: 5010, loanId: 503, contactId: 6, type: 'repayment', title: 'پرداخت قسط شماره ۱۰ - وام ازدواج', dateStr: '۰۱ مرداد ۱۴۰۳', amount: 10000000, isPositive: true },
+            { id: 5011, loanId: 503, contactId: 6, type: 'repayment', title: 'پرداخت قسط شماره ۹ - وام ازدواج', dateStr: '۰۱ تیر ۱۴۰۳', amount: 10000000, isPositive: true },
+
+            { id: 5012, loanId: 504, contactId: 8, type: 'repayment', title: 'پرداخت قسط شماره ۴ - وام لوازم خانگی', dateStr: '۱۵ شهریور ۱۴۰۳', amount: 10000000, isPositive: true },
+            { id: 5013, loanId: 505, contactId: 10, type: 'repayment', title: 'پرداخت قسط شماره ۳ - وام اشتغال', dateStr: '۲۰ تیر ۱۴۰۳', amount: 16666000, isPositive: true },
+            { id: 5014, loanId: 506, contactId: 12, type: 'repayment', title: 'پرداخت قسط شماره ۵ - وام تعمیرات مسکن', dateStr: '۰۵ مرداد ۱۴۰۳', amount: 12500000, isPositive: true },
+            { id: 5015, loanId: 507, contactId: 14, type: 'repayment', title: 'پرداخت قسط شماره ۷ - وام ودیعه مسکن', dateStr: '۲۰ خرداد ۱۴۰۳', amount: 10000000, isPositive: true }
         ];
 
         const initialReminders = [
@@ -3387,6 +3760,7 @@
             const [selectedPeriod, setSelectedPeriod] = useState(null);
             const [loanReturnTab, setLoanReturnTab] = useState('accounts');
             const [accountsSubTab, setAccountsSubTab] = useState('all');
+            const [loanTabFilter, setLoanTabFilter] = useState('paid');
 
             const navigateToTab = (tabName, direction = 'forward') => {
                 setNavDirection(direction);
@@ -3459,15 +3833,45 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "/apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "1.8.9",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '173', 10),
-                releaseDate: "2026-08-04",
+                installedVersion: localStorage.getItem('amir_installed_version') || "1.9.1",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '175', 10),
+                releaseDate: "2026-08-05",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "1.8.9",
-                latestBuild: 173,
+                latestVersion: "1.9.1",
+                latestBuild: 175,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "1.9.1",
+                        buildNumber: 175,
+                        releaseDate: "2026-08-05",
+                        releaseChannel: "Stable",
+                        commitHash: "v191rel",
+                        commitMessage: "feat: remove reminder card from loan wizard, restore 31-day selector grid in due date card without top text, and implement Card Stack Wizard for adding and editing contacts",
+                        changes: [
+                            "حذف کامل کارت انتخاب سررسید/ریمایندر از کارت استک ثبت وام",
+                            "بازگرداندن جدول انتخاب روزهای ۱ تا ۳۱ ماه به کارت سررسید اولین قسط وام با حذف عنوان بالای جدول",
+                            "پیاده‌سازی کارت استک برای ثبت مخاطب جدید (کارت اول: نام و نام خانوادگی در ۲ کادر مجزا، کارت دوم: شماره تماس، شماره کارت و شماره شبا)",
+                            "استفاده از کارت استک جدید برای ویرایش مخاطب به همراه دکمه حذف مخاطب",
+                            "ثبت رسمی بیلد 175 و انتشار نسخه 1.9.1"
+                        ]
+                    },
+                    {
+                        version: "1.9.0",
+                        buildNumber: 174,
+                        releaseDate: "2026-08-05",
+                        releaseChannel: "Stable",
+                        commitHash: "v190rel",
+                        commitMessage: "feat: loan detail installment payment filter tabs (paid/unpaid), loan wizard due date UI optimization, and complete standardized mock data reset",
+                        changes: [
+                            "ایجاد دو زبانه فیلتر «پرداخت شده» و «پرداخت نشده» تحت دکمه ثبت قسط در صفحه جزئیات وام با طراحی و رنگ‌بندی متناسب",
+                            "حذف متون اضافه «تراکنش ها» و «قسط ثبت شده» از صفحه جزئیات وام",
+                            "بازطراحی کارت تعیین تاریخ اولین قسط وام در فرم ثبت وام جدید (حذف کادر انتخاب روز، اصلاح جهت دکمه‌های ماه قبلی و بعدی و تنظیم پیش‌فرض سال بر اساس تاریخ دریافت وام)",
+                            "بازنشانی دیتابیس برنامه و بارگذاری دیتای ثابت پایه شامل ۲۰ مخاطب با شماره تماس، کارت و شبای کامل، ۱۰ وام (۷ فعال و ۳ تسویه‌شده)، ۱۵ بدهی (۱۰ فعال و ۵ تسویه‌شده) و ۱۵ طلب (۱۰ فعال و ۵ تسویه‌شده)",
+                            "ثبت رسمی بیلد 174 و انتشار نسخه 1.9.0"
+                        ]
+                    },
                     {
                         version: "1.8.9",
                         buildNumber: 173,
@@ -4354,7 +4758,10 @@
                 totalRepayment: '',
                 installmentAmount: '',
                 customInstallmentCount: '',
-                dueDayOfMonth: 25,
+                dueDayOfMonth: initialDevDate.day,
+                firstInstallmentDay: initialDevDate.day,
+                firstInstallmentMonth: initialDevDate.month,
+                firstInstallmentYear: initialDevDate.year,
                 reminderOption: '1روز قبل',
                 customReminderDate: '',
                 notes: ''
@@ -4388,6 +4795,7 @@
             const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
             const [newContactForm, setNewContactForm] = useState({ firstName: '', lastName: '', phone: '', bankName: '', bankCard: '', iban: '' });
             const [editContactForm, setEditContactForm] = useState({ id: null, firstName: '', lastName: '', phone: '', bankName: '', bankCard: '', iban: '' });
+            const [contactWizardForm, setContactWizardForm] = useState({ id: null, firstName: '', lastName: '', phone: '', bankName: '', bankCard: '', iban: '' });
             const [showExportModal, setShowExportModal] = useState(false);
             const [exportModalConfig, setExportModalConfig] = useState(null);
 
@@ -4430,32 +4838,32 @@
 
             const [completedPeriods, setCompletedPeriods] = useState(() => {
                 try {
-                    const saved = localStorage.getItem('amir_fin_completed_periods');
-                    return saved ? JSON.parse(saved) : [];
+                    const saved = localStorage.getItem('amir_fin_completed_periods_v3');
+                    return saved ? JSON.parse(saved) : initialCompletedPeriods;
                 } catch (e) {
-                    return [];
+                    return initialCompletedPeriods;
                 }
             });
 
             useEffect(() => {
                 try {
-                    localStorage.setItem('amir_fin_completed_periods', JSON.stringify(completedPeriods));
+                    localStorage.setItem('amir_fin_completed_periods_v3', JSON.stringify(completedPeriods));
                 } catch (e) {}
             }, [completedPeriods]);
 
             // App Saved Data States
             const [contacts, setContacts] = useState(() => {
-                const saved = localStorage.getItem('amir_fin_contacts_v2');
+                const saved = localStorage.getItem('amir_fin_contacts_v3');
                 return saved ? JSON.parse(saved) : initialContacts;
             });
 
             const [loans, setLoans] = useState(() => {
-                const saved = localStorage.getItem('amir_fin_loans_v2');
+                const saved = localStorage.getItem('amir_fin_loans_v3');
                 return saved ? JSON.parse(saved) : initialLoans;
             });
             
             const [transactions, setTransactions] = useState(() => {
-                const saved = localStorage.getItem('amir_fin_txs_v2');
+                const saved = localStorage.getItem('amir_fin_txs_v3');
                 return saved ? JSON.parse(saved) : initialTransactions;
             });
 
@@ -4803,29 +5211,33 @@
             };
 
             const handleConfirmDeleteAllData = () => {
-                setContacts([]);
-                setLoans([]);
-                setTransactions([]);
+                setContacts(initialContacts);
+                setLoans(initialLoans);
+                setTransactions(initialTransactions);
                 setReminders([]);
-                setCompletedPeriods([]);
+                setCompletedPeriods(initialCompletedPeriods);
+                localStorage.removeItem('amir_fin_contacts_v3');
+                localStorage.removeItem('amir_fin_loans_v3');
+                localStorage.removeItem('amir_fin_txs_v3');
+                localStorage.removeItem('amir_fin_completed_periods_v3');
                 localStorage.removeItem('amir_fin_contacts_v2');
                 localStorage.removeItem('amir_fin_loans_v2');
                 localStorage.removeItem('amir_fin_txs_v2');
                 localStorage.removeItem('amir_fin_completed_periods');
                 setShowResetConfirmModal(false);
-                showToast('کلیه اطلاعات دیتابیس برنامه حذف گردید');
+                showToast('دیتابیس برنامه با موفقیت بازنشانی و دیتای استاندارد بارگذاری شد');
             };
 
             useEffect(() => {
-                localStorage.setItem('amir_fin_contacts_v2', JSON.stringify(contacts));
+                localStorage.setItem('amir_fin_contacts_v3', JSON.stringify(contacts));
             }, [contacts]);
 
             useEffect(() => {
-                localStorage.setItem('amir_fin_loans_v2', JSON.stringify(loans));
+                localStorage.setItem('amir_fin_loans_v3', JSON.stringify(loans));
             }, [loans]);
 
             useEffect(() => {
-                localStorage.setItem('amir_fin_txs_v2', JSON.stringify(transactions));
+                localStorage.setItem('amir_fin_txs_v3', JSON.stringify(transactions));
             }, [transactions]);
 
 
@@ -5127,6 +5539,16 @@
                         : deviceDate.day;
 
                     if (mode === 'edit' && data && data.title) {
+                        let fMonth = deviceDate.month;
+                        let fYear = deviceDate.year;
+                        let fDay = data.dueDayOfMonth || startDayVal;
+                        if (data.firstInstallmentDate) {
+                            const parsedF = parseJalaliDateStr(data.firstInstallmentDate);
+                            fDay = parsedF.day;
+                            fMonth = parsedF.month;
+                            fYear = parsedF.year;
+                        }
+
                         setLoanForm({
                             id: data.id,
                             title: data.title || '',
@@ -5138,7 +5560,10 @@
                             totalRepayment: data.totalRepayment || '',
                             installmentAmount: data.installmentAmount || '',
                             customInstallmentCount: data.totalInstallments || '',
-                            dueDayOfMonth: data.dueDayOfMonth || startDayVal,
+                            dueDayOfMonth: fDay,
+                            firstInstallmentDay: fDay,
+                            firstInstallmentMonth: fMonth,
+                            firstInstallmentYear: fYear,
                             reminderOption: data.reminderDays || '1روز قبل',
                             customReminderDate: '',
                             notes: data.notes || ''
@@ -5158,7 +5583,10 @@
                             totalRepayment: '',
                             installmentAmount: '',
                             customInstallmentCount: '',
-                            dueDayOfMonth: startDayVal,
+                            dueDayOfMonth: deviceDate.day,
+                            firstInstallmentDay: deviceDate.day,
+                            firstInstallmentMonth: deviceDate.month,
+                            firstInstallmentYear: deviceDate.year,
                             reminderOption: '1روز قبل',
                             customReminderDate: '',
                             notes: ''
@@ -5236,6 +5664,29 @@
                         amount: editAmt,
                         notes: editNotes
                     });
+                } else if (type === 'contact') {
+                    const isEdit = mode === 'edit' && data && data.id;
+                    if (isEdit) {
+                        setContactWizardForm({
+                            id: data.id,
+                            firstName: data.firstName || '',
+                            lastName: data.lastName || '',
+                            phone: data.phone || '',
+                            bankName: data.bankName || '',
+                            bankCard: data.bankCard || '',
+                            iban: data.iban || ''
+                        });
+                    } else {
+                        setContactWizardForm({
+                            id: null,
+                            firstName: '',
+                            lastName: '',
+                            phone: '',
+                            bankName: '',
+                            bankCard: '',
+                            iban: ''
+                        });
+                    }
                 }
 
                 setIsFinalSubmitting(false);
@@ -5425,6 +5876,16 @@
                     }
                 }
 
+                // Validation for contact wizard
+                if (wizardType === 'contact') {
+                    if (currentCardIdx === 0) {
+                        if (!contactWizardForm.firstName.trim()) {
+                            triggerCardError('contact_firstname', 'لطفاً نام مخاطب را وارد کنید');
+                            return;
+                        }
+                    }
+                }
+
                 setValidationErrors({});
                 if (currentCardIdx < cardsList.length - 1) {
                     setAnimatingCard(true);
@@ -5452,6 +5913,11 @@
                     const calcTotalInst = userCustomInst > 0 ? userCustomInst : (instAmt > 0 ? Math.ceil(totalRepay / instAmt) : 12);
                     const startDateFormatted = `${pickerYear}/${String(jalaliMonths.indexOf(pickerMonth)+1).padStart(2, '0')}/${String(pickerDay).padStart(2, '0')}`;
                     
+                    const firstInstDay = loanForm.firstInstallmentDay || loanForm.dueDayOfMonth || pickerDay;
+                    const firstInstMonth = loanForm.firstInstallmentMonth || pickerMonth;
+                    const firstInstYear = loanForm.firstInstallmentYear || pickerYear;
+                    const firstInstallmentDateStr = `${firstInstDay} ${firstInstMonth} ${firstInstYear}`;
+
                     if (wizardMode === 'edit' && loanForm.id) {
                         const updatedLoans = loans.map(l => {
                             if (l.id === loanForm.id) {
@@ -5465,7 +5931,8 @@
                                     installmentAmount: instAmt,
                                     totalInstallments: calcTotalInst,
                                     startDate: startDateFormatted,
-                                    dueDayOfMonth: loanForm.dueDayOfMonth,
+                                    dueDayOfMonth: firstInstDay,
+                                    firstInstallmentDate: firstInstallmentDateStr,
                                     reminderDays: loanForm.reminderOption,
                                     notes: loanForm.notes
                                 };
@@ -5492,10 +5959,11 @@
                             status: 'در حال پرداخت',
                             paidAmount: 0,
                             remainingAmount: totalRepay,
-                            dueDayOfMonth: loanForm.dueDayOfMonth || 25,
+                            dueDayOfMonth: firstInstDay,
+                            firstInstallmentDate: firstInstallmentDateStr,
                             reminderDays: loanForm.reminderOption,
                             nextDueNum: 1,
-                            nextDueDateStr: `${pickerDay} ${pickerMonth} ${pickerYear}`,
+                            nextDueDateStr: firstInstallmentDateStr,
                             daysLeft: 5,
                             notes: loanForm.notes || ''
                         };
@@ -5902,6 +6370,50 @@
                             showToast('بازپرداخت طلب با موفقیت ثبت شد');
                         }
                     }
+                } else if (wizardType === 'contact') {
+                    const fn = contactWizardForm.firstName.trim();
+                    const ln = contactWizardForm.lastName.trim();
+                    const ph = contactWizardForm.phone.trim();
+                    const card = contactWizardForm.bankCard.trim();
+                    const ib = contactWizardForm.iban.trim();
+                    const bName = contactWizardForm.bankName || getBankNameFromCard(card) || '';
+
+                    if (wizardMode === 'edit' && contactWizardForm.id) {
+                        const updatedContacts = contacts.map(c => {
+                            if (c.id === contactWizardForm.id) {
+                                return {
+                                    ...c,
+                                    firstName: fn,
+                                    lastName: ln,
+                                    phone: ph,
+                                    bankName: bName,
+                                    bankCard: card,
+                                    iban: ib
+                                };
+                            }
+                            return c;
+                        });
+                        setContacts(updatedContacts);
+                        const currentUpdated = updatedContacts.find(c => c.id === contactWizardForm.id);
+                        if (currentUpdated) setSelectedContact(currentUpdated);
+                        showToast('اطلاعات مخاطب با موفقیت به‌روزرسانی شد');
+                    } else {
+                        const newContact = {
+                            id: Date.now(),
+                            firstName: fn,
+                            lastName: ln,
+                            phone: ph,
+                            bankName: bName,
+                            bankCard: card,
+                            iban: ib,
+                            totalDemand: 0,
+                            totalDebt: 0,
+                            monthlyInstallment: 0,
+                            isFavorite: false
+                        };
+                        setContacts([newContact, ...contacts]);
+                        showToast('مخاطب جدید با موفقیت اضافه شد');
+                    }
                 }
 
                 setShowStackWizard(false);
@@ -6163,6 +6675,10 @@
                                 setPickerDay(day);
                                 setPickerMonth(month);
                                 setPickerYear(year);
+                                setLoanForm(prev => ({
+                                    ...prev,
+                                    firstInstallmentYear: year
+                                }));
                             }}
                         />
                     )
@@ -6406,22 +6922,88 @@
                 },
                 {
                     id: 'due_date',
-                    title: '۵- موعد سررسید هر قسط',
+                    title: '۵- تاریخ اولین قسط وام',
                     render: () => {
-                        const activeDueDay = loanForm.dueDayOfMonth || pickerDay;
+                        const activeDueDay = loanForm.firstInstallmentDay || loanForm.dueDayOfMonth || pickerDay;
+                        const curMonthName = loanForm.firstInstallmentMonth || pickerMonth;
+                        const curYear = loanForm.firstInstallmentYear || pickerYear;
+
+                        const handleNextMonth = () => {
+                            const curIdx = jalaliMonths.indexOf(curMonthName);
+                            let nextIdx = curIdx + 1;
+                            let nextYear = curYear;
+                            if (nextIdx >= 12) {
+                                nextIdx = 0;
+                                nextYear = curYear + 1;
+                            }
+                            setLoanForm(prev => ({
+                                ...prev,
+                                firstInstallmentMonth: jalaliMonths[nextIdx],
+                                firstInstallmentYear: nextYear
+                            }));
+                        };
+
+                        const handlePrevMonth = () => {
+                            const curIdx = jalaliMonths.indexOf(curMonthName);
+                            let prevIdx = curIdx - 1;
+                            let prevYear = curYear;
+                            if (prevIdx < 0) {
+                                prevIdx = 11;
+                                prevYear = curYear - 1;
+                            }
+                            setLoanForm(prev => ({
+                                ...prev,
+                                firstInstallmentMonth: jalaliMonths[prevIdx],
+                                firstInstallmentYear: prevYear
+                            }));
+                        };
+
                         return (
-                            <div className="space-y-2">
-                                <label className="block text-xs text-slate-500 font-bold">روز سررسید قسط در هر ماه:</label>
-                                <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-2.5 border border-slate-200 dark:border-slate-800">
-                                    <div className="text-center font-bold text-indigo-600 dark:text-indigo-400 text-xs mb-2">
-                                        هر ماه، روز {activeDueDay} ام (پیش‌فرض: روز دریافت وام {pickerDay} ام)
+                            <div className="space-y-3">
+                                <label className="block text-xs text-slate-500 font-bold">تاریخ و ماه اولین قسط وام:</label>
+                                <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-3 border border-slate-200 dark:border-slate-800 space-y-3">
+                                    
+                                    {/* Top Box for Month Selection: Right = Prev Month, Left = Next Month */}
+                                    <div className="p-2.5 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between shadow-2xs">
+                                        {/* Right Button (Previous Month) */}
+                                        <button 
+                                            type="button"
+                                            onClick={handlePrevMonth}
+                                            title="ماه قبل"
+                                            className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0">
+                                            <Icon name="chevron-right" className="w-5 h-5" />
+                                        </button>
+
+                                        {/* Month & Year Display Box */}
+                                        <div className="text-center min-w-0 px-2">
+                                            <div className="text-[10px] text-indigo-700/80 dark:text-indigo-300/80 font-bold">ماه اولین قسط</div>
+                                            <div className="text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100 mt-0.5">
+                                                {curMonthName} {curYear}
+                                            </div>
+                                        </div>
+
+                                        {/* Left Button (Next Month) */}
+                                        <button 
+                                            type="button"
+                                            onClick={handleNextMonth}
+                                            title="ماه بعد"
+                                            className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0">
+                                            <Icon name="chevron-left" className="w-5 h-5" />
+                                        </button>
                                     </div>
-                                    <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold">
+
+                                    {/* Summary Badge */}
+                                    <div className="p-2.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs">
+                                        سررسید اولین قسط: روز {activeDueDay} {curMonthName} {curYear}
+                                    </div>
+
+                                    {/* Days Grid (1 to 31, without top label) */}
+                                    <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold pt-1">
                                         {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                                             <button 
                                                 key={day}
                                                 type="button"
-                                                onClick={() => setLoanForm({...loanForm, dueDayOfMonth: day})}
+                                                onClick={() => setLoanForm(prev => ({ ...prev, dueDayOfMonth: day, firstInstallmentDay: day }))}
                                                 className={`h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
                                                     activeDueDay === day 
                                                         ? 'bg-indigo-600 text-white font-black shadow-md scale-105' 
@@ -6437,70 +7019,8 @@
                     }
                 },
                 {
-                    id: 'reminder',
-                    title: '۶- تنظیم یادآوری و نوتیفیکیشن',
-                    render: () => (
-                        <div className="space-y-3">
-                            <div className="space-y-2">
-                                {[
-                                    { label: 'خیر، نیازی نیست', val: 'خیر' },
-                                    { label: '۱ روز قبل از سررسید', val: '1روز قبل' },
-                                    { label: '۲ روز قبل از سررسید', val: '2روز قبل' },
-                                    { label: 'تاریخ و زمان دلخواه (iOS Picker)', val: 'دلخواه' }
-                                ].map((opt, i) => (
-                                    <button 
-                                        key={i}
-                                        type="button"
-                                        onClick={() => {
-                                            setLoanForm({...loanForm, reminderOption: opt.val});
-                                            if (opt.val !== 'دلخواه') {
-                                                handleSetupNotification(opt.val);
-                                            }
-                                        }}
-                                        className={`w-full p-2.5 rounded-xl border text-right font-bold text-xs flex items-center justify-between transition-all ${loanForm.reminderOption === opt.val ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'}`}>
-                                        <span>{opt.label}</span>
-                                        {loanForm.reminderOption === opt.val && <Icon name="check" className="w-4 h-4 text-indigo-600" />}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {loanForm.reminderOption === 'دلخواه' && (
-                                <div className="p-3 bg-indigo-50/50 dark:bg-indigo-950/30 rounded-2xl border border-indigo-200 dark:border-indigo-800 space-y-2">
-                                    <div className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300">تنظیم تاریخ و ساعت دقیق:</div>
-                                    <div className="flex space-x-2 space-x-reverse items-center justify-between">
-                                        <IOSWheelPicker 
-                                            label="روز"
-                                            items={Array.from({length: 31}, (_, i) => i + 1)}
-                                            selectedValue={remDay}
-                                            onChange={(v) => setRemDay(v)}
-                                        />
-                                        <IOSWheelPicker 
-                                            label="ماه"
-                                            items={jalaliMonths}
-                                            selectedValue={remMonth}
-                                            onChange={(v) => setRemMonth(v)}
-                                        />
-                                        <IOSWheelPicker 
-                                            label="ساعت"
-                                            items={['08:00', '09:00', '10:00', '12:00', '16:00', '18:00', '20:00']}
-                                            selectedValue={remHour}
-                                            onChange={(v) => setRemHour(v)}
-                                        />
-                                    </div>
-                                    <button 
-                                        type="button"
-                                        onClick={() => handleSetupNotification(`${remDay} ${remMonth} ساعت ${remHour}`)}
-                                        className="w-full py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm">
-                                        ثبت و فعال‌سازی اعلان دستگاه
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )
-                },
-                {
                     id: 'notes',
-                    title: '۷- توضیحات تکمیلی',
+                    title: '۶- توضیحات تکمیلی',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500">یادداشت یا توضیحات اضافی برای این پرونده وام:</label>
@@ -7078,6 +7598,118 @@
                 }
             ];
 
+            const contactWizardCards = [
+                {
+                    id: 'contact_names',
+                    title: wizardMode === 'edit' ? '۱- ویرایش نام و نام خانوادگی' : '۱- نام و نام خانوادگی مخاطب',
+                    render: () => (
+                        <div className="space-y-4">
+                            {wizardMode === 'edit' && (
+                                <div className="flex justify-end mb-1">
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            handleDeleteContact(contactWizardForm, () => {
+                                                setShowStackWizard(false);
+                                            });
+                                        }}
+                                        className="bg-rose-500 hover:bg-rose-600 active:scale-95 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm flex items-center space-x-1 space-x-reverse transition-all cursor-pointer">
+                                        <Icon name="trash-2" className="w-3.5 h-3.5" />
+                                        <span>حذف مخاطب</span>
+                                    </button>
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">نام</label>
+                                <input 
+                                    type="text"
+                                    placeholder="نام مخاطب را وارد کنید"
+                                    value={contactWizardForm.firstName}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setContactWizardForm(prev => ({ ...prev, firstName: val }));
+                                        if (val.trim()) {
+                                            setValidationErrors(errs => { const { contact_firstname, ...rest } = errs; return rest; });
+                                        }
+                                    }}
+                                    className={`w-full bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none transition-all ${
+                                        validationErrors.contact_firstname 
+                                            ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' 
+                                            : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'
+                                    }`}
+                                />
+                                {validationErrors.contact_firstname && (
+                                    <p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">
+                                        <Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />
+                                        <span>{validationErrors.contact_firstname}</span>
+                                    </p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">نام خانوادگی</label>
+                                <input 
+                                    type="text"
+                                    placeholder="نام خانوادگی مخاطب را وارد کنید"
+                                    value={contactWizardForm.lastName}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setContactWizardForm(prev => ({ ...prev, lastName: val }));
+                                    }}
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                                />
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    id: 'contact_info',
+                    title: wizardMode === 'edit' ? '۲- ویرایش تماس و حساب بانکی' : '۲- شماره تماس و اطلاعات حساب بانکی',
+                    render: () => (
+                        <div className="space-y-3.5">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره تماس</label>
+                                <input 
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="مثلاً: 09121234567"
+                                    value={contactWizardForm.phone}
+                                    onChange={(e) => setContactWizardForm(prev => ({ ...prev, phone: e.target.value }))}
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره کارت (۱۶ رقمی - اختیاری)</label>
+                                <input 
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="مثلاً: 6037 9975 4321 4582"
+                                    value={contactWizardForm.bankCard}
+                                    onChange={(e) => {
+                                        const formatted = formatCardNumber(e.target.value);
+                                        const detectedBank = getBankNameFromCard(e.target.value) || contactWizardForm.bankName;
+                                        setContactWizardForm(prev => ({ ...prev, bankCard: formatted, bankName: detectedBank }));
+                                    }}
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره شبا (اختیاری)</label>
+                                <input 
+                                    type="text"
+                                    placeholder="مثلاً: IR12 0120 0000 0001 2345 6789 01"
+                                    value={contactWizardForm.iban}
+                                    onChange={(e) => setContactWizardForm(prev => ({ ...prev, iban: e.target.value }))}
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
+                                />
+                            </div>
+                        </div>
+                    )
+                }
+            ];
+
             const getCurrentWizardCards = () => {
                 if (wizardType === 'loan') return loanWizardCards;
                 if (wizardType === 'demand') return demandWizardCards;
@@ -7085,6 +7717,7 @@
                 if (wizardType === 'installment') return installmentWizardCards;
                 if (wizardType === 'debt_repayment') return debtRepaymentWizardCards;
                 if (wizardType === 'demand_repayment') return demandRepaymentWizardCards;
+                if (wizardType === 'contact') return contactWizardCards;
                 return loanWizardCards;
             };
 
@@ -7574,7 +8207,7 @@
                                         <h1 className="text-xl font-bold text-slate-900 dark:text-white">مخاطبین</h1>
                                     </div>
                                     <button 
-                                        onClick={() => setShowAddContactModal(true)} 
+                                        onClick={() => openStackWizard('contact', 'add')} 
                                         className="w-11 h-11 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white shadow-md active:scale-95 transition-all shrink-0"
                                         title="افزودن مخاطب جدید">
                                         <Icon name="plus" className="w-6 h-6" />
@@ -7741,18 +8374,7 @@
                                      <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">پروفایل مخاطب</h3>
                                      <div className="flex items-center space-x-1.5 space-x-reverse">
                                          <button 
-                                             onClick={() => {
-                                                 setEditContactForm({
-                                                     id: selectedContact.id,
-                                                     firstName: selectedContact.firstName || '',
-                                                     lastName: selectedContact.lastName || '',
-                                                     phone: selectedContact.phone || '',
-                                                     bankName: selectedContact.bankName || '',
-                                                     bankCard: selectedContact.bankCard || '',
-                                                     iban: selectedContact.iban || ''
-                                                 });
-                                                 setShowEditContactModal(true);
-                                             }}
+                                             onClick={() => openStackWizard('contact', 'edit', selectedContact)}
                                              className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform"
                                              title="ویرایش مخاطب">
                                              <Icon name="pencil" className="w-4 h-4" />
@@ -8574,38 +9196,160 @@
                                 {/* END: Action Button */}
 
                                 {/* BEGIN: Transactions Section */}
-                                <section className="space-y-4" data-purpose="transaction-history">
-                                    <div className="flex items-center justify-between px-1">
-                                        <div className="flex items-center gap-2">
-                                            <svg className="h-5 w-5 text-gray-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-                                            </svg>
-                                            <h3 className="font-bold text-gray-800 dark:text-gray-100">تراکنش‌ها</h3>
-                                        </div>
-                                        <span className="text-blue-600 dark:text-blue-400 text-xs font-semibold">
-                                            {repaymentTxs.length} قسط ثبت‌شده
-                                        </span>
+                                <section className="space-y-3" data-purpose="transaction-history">
+                                    {/* Installment Filter Tabs */}
+                                    <div className="bg-slate-200/80 dark:bg-slate-800/90 p-1 rounded-2xl flex items-center gap-1 border border-slate-300/50 dark:border-slate-700/60 shadow-inner">
+                                        <button
+                                            type="button"
+                                            onClick={() => setLoanTabFilter('paid')}
+                                            className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                                                loanTabFilter === 'paid'
+                                                    ? 'bg-blue-600 dark:bg-blue-600 text-white shadow-md'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                            }`}
+                                        >
+                                            <Icon name="check-circle-2" className="w-4 h-4" />
+                                            <span>پرداخت شده</span>
+                                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                                                loanTabFilter === 'paid'
+                                                    ? 'bg-white/20 text-white'
+                                                    : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                            }`}>
+                                                {repaymentTxs.length}
+                                            </span>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setLoanTabFilter('unpaid')}
+                                            className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                                                loanTabFilter === 'unpaid'
+                                                    ? 'bg-amber-600 dark:bg-amber-600 text-white shadow-md'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                            }`}
+                                        >
+                                            <Icon name="clock" className="w-4 h-4" />
+                                            <span>پرداخت نشده</span>
+                                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                                                loanTabFilter === 'unpaid'
+                                                    ? 'bg-white/20 text-white'
+                                                    : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                            }`}>
+                                                {Math.max(0, totalInst - repaymentTxs.length)}
+                                            </span>
+                                        </button>
                                     </div>
 
-                                    {repaymentTxs.length === 0 ? (
-                                        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 card-shadow">
-                                            هنوز قسطی برای این وام ثبت نشده است
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-3">
-                                            {repaymentTxs.map((tx, idx) => (
-                                                <SwipeableTxCard 
-                                                    key={tx.id}
-                                                    tx={tx}
-                                                    index={idx}
-                                                    totalCount={repaymentTxs.length}
-                                                    colorType="indigo"
-                                                    onEdit={(txItem) => openStackWizard('installment', 'edit', txItem)}
-                                                    onDelete={(txItem) => requestDeleteTx(txItem, 'loan_installment')}
-                                                />
-                                            ))}
-                                        </div>
-                                    )}
+                                    {/* Tab Content List with AnimatePresence */}
+                                    <AnimatePresence mode="wait">
+                                        {loanTabFilter === 'paid' ? (
+                                            <motion.div
+                                                key="paid-list"
+                                                initial={{ opacity: 0, y: 8 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -8 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="space-y-3"
+                                            >
+                                                {repaymentTxs.length === 0 ? (
+                                                    <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 card-shadow">
+                                                        هنوز قسطی برای این وام پرداخت نشده است
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-3">
+                                                        {repaymentTxs.map((tx, idx) => (
+                                                            <SwipeableTxCard 
+                                                                key={tx.id}
+                                                                tx={tx}
+                                                                index={idx}
+                                                                totalCount={repaymentTxs.length}
+                                                                colorType="indigo"
+                                                                onEdit={(txItem) => openStackWizard('installment', 'edit', txItem)}
+                                                                onDelete={(txItem) => requestDeleteTx(txItem, 'loan_installment')}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </motion.div>
+                                        ) : (
+                                            <motion.div
+                                                key="unpaid-list"
+                                                initial={{ opacity: 0, y: 8 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -8 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="space-y-3"
+                                            >
+                                                {(() => {
+                                                    const paidCount = repaymentTxs.length;
+                                                    if (paidCount >= totalInst) {
+                                                        return (
+                                                            <div className="bg-emerald-50 dark:bg-emerald-950/40 p-6 rounded-3xl text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 card-shadow flex flex-col items-center gap-2">
+                                                                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                                                    <Icon name="check-circle-2" className="w-6 h-6" />
+                                                                </div>
+                                                                <span>تمامی اقساط این وام با موفقیت پرداخت شده‌اند</span>
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    const unpaidItems = [];
+                                                    for (let i = paidCount + 1; i <= totalInst; i++) {
+                                                        const dueInfo = getInstallmentDueDate(selectedLoan, i);
+                                                        unpaidItems.push({
+                                                            instNum: i,
+                                                            ...dueInfo
+                                                        });
+                                                    }
+
+                                                    return (
+                                                        <div className="space-y-2.5">
+                                                            {unpaidItems.map((item) => (
+                                                                <div 
+                                                                    key={`unpaid-${item.instNum}`}
+                                                                    className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-700/70 card-shadow flex items-center justify-between gap-3"
+                                                                >
+                                                                    <div className="flex items-center gap-3 min-w-0">
+                                                                        <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200/60 dark:border-amber-800/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-bold text-xs">
+                                                                            <span>#{item.instNum}</span>
+                                                                        </div>
+                                                                        <div className="min-w-0">
+                                                                            <div className="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 truncate">
+                                                                                قسط {item.instNum} از {totalInst}
+                                                                            </div>
+                                                                            <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                                                                                <Icon name="calendar" className="w-3.5 h-3.5 text-slate-400" />
+                                                                                <span>موعد: {formatDateToNumericJalali(item.dateStr)}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="text-left shrink-0 flex flex-col items-end gap-1">
+                                                                        <div className="font-mono font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 dir-ltr">
+                                                                            {formatWithCommas(installmentAmount)} <span className="font-sans text-[10px] text-slate-500">تومان</span>
+                                                                        </div>
+                                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                                                            item.daysLeft < 0 
+                                                                                ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800'
+                                                                                : item.daysLeft === 0
+                                                                                ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                                                                                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                                                                        }`}>
+                                                                            {item.daysLeft < 0 
+                                                                                ? `${Math.abs(item.daysLeft)} روز تاخیر` 
+                                                                                : item.daysLeft === 0 
+                                                                                ? 'سررسید امروز' 
+                                                                                : `${item.daysLeft} روز مانده`}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </section>
                                 {/* END: Transactions Section */}
 

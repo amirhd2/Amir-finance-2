@@ -1,15 +1,45 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.8.9",
-  "buildNumber": 173,
-  "releaseDate": "2026-08-04",
+  "installedVersion": "1.9.1",
+  "buildNumber": 175,
+  "releaseDate": "2026-08-05",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.8.9",
-  "latestBuild": 173,
+  "latestVersion": "1.9.1",
+  "latestBuild": 175,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.9.1",
+      "buildNumber": 175,
+      "releaseDate": "2026-08-05",
+      "releaseChannel": "Stable",
+      "commitHash": "v191rel",
+      "commitMessage": "feat: remove reminder card from loan wizard, restore 31-day selector grid in due date card without top text, and implement Card Stack Wizard for adding and editing contacts",
+      "changes": [
+        "حذف کامل کارت انتخاب سررسید/ریمایندر از کارت استک ثبت وام",
+        "بازگرداندن جدول انتخاب روزهای ۱ تا ۳۱ ماه به کارت سررسید اولین قسط وام با حذف عنوان بالای جدول",
+        "پیاده‌سازی کارت استک برای ثبت مخاطب جدید (کارت اول: نام و نام خانوادگی در ۲ کادر مجزا، کارت دوم: شماره تماس، شماره کارت و شماره شبا)",
+        "استفاده از کارت استک جدید برای ویرایش مخاطب به همراه دکمه حذف مخاطب",
+        "ثبت رسمی بیلد 175 و انتشار نسخه 1.9.1"
+      ]
+    },
+    {
+      "version": "1.9.0",
+      "buildNumber": 174,
+      "releaseDate": "2026-08-05",
+      "releaseChannel": "Stable",
+      "commitHash": "v190rel",
+      "commitMessage": "feat: loan detail installment payment filter tabs (paid/unpaid), loan wizard due date UI optimization, and complete standardized mock data reset",
+      "changes": [
+        "ایجاد دو زبانه فیلتر «پرداخت شده» و «پرداخت نشده» تحت دکمه ثبت قسط در صفحه جزئیات وام با طراحی و رنگ‌بندی متناسب",
+        "حذف متون اضافه «تراکنش ها» و «قسط ثبت شده» از صفحه جزئیات وام",
+        "بازطراحی کارت تعیین تاریخ اولین قسط وام در فرم ثبت وام جدید (حذف کادر انتخاب روز، اصلاح جهت دکمه‌های ماه قبلی و بعدی و تنظیم پیش‌فرض سال بر اساس تاریخ دریافت وام)",
+        "بازنشانی دیتابیس برنامه و بارگذاری دیتای ثابت پایه شامل ۲۰ مخاطب با شماره تماس، کارت و شبای کامل، ۱۰ وام (۷ فعال و ۳ تسویه‌شده)، ۱۵ بدهی (۱۰ فعال و ۵ تسویه‌شده) و ۱۵ طلب (۱۰ فعال و ۵ تسویه‌شده)",
+        "ثبت رسمی بیلد 174 و انتشار نسخه 1.9.0"
+      ]
+    },
     {
       "version": "1.8.9",
       "buildNumber": 173,
