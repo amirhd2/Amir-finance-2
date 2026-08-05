@@ -1,15 +1,30 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.9.1",
-  "buildNumber": 175,
+  "installedVersion": "1.9.2",
+  "buildNumber": 176,
   "releaseDate": "2026-08-05",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.9.1",
-  "latestBuild": 175,
+  "latestVersion": "1.9.2",
+  "latestBuild": 176,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.9.2",
+      "buildNumber": 176,
+      "releaseDate": "2026-08-05",
+      "releaseChannel": "Stable",
+      "commitHash": "v192rel",
+      "commitMessage": "fix: restore legacy user data fallback on app load, clean data clearing to empty state, use Card Stack Wizard from FAB for new contact, add stylish avatar to contact wizard card 1, and format loan due date as YYYY/MM/DD with dynamic start month",
+      "changes": [
+        "بازیابی هوشمند دیتای قبلی کاربران از کلیدهای ذخیره‌سازی قبلی (v2 و غیره) در هنگام بارگذاری برنامه جهت حفظ کامل دیتای مخاطبین و حساب‌های موجود روی گوشی کاربر",
+        "اصلاح کامل عملکرد «حذف کل اطلاعات» به طوری که تمام اطلاعات را به صفر و حالت خالی پاک کرده و از بارگذاری مجدد دیتای نمونه جلوگیری می‌کند",
+        "اتصال دکمه شناور «مخاطب جدید» (+ Menu) به کارت استک جدید برای ثبت مخاطب",
+        "افزایش زیبایی کارت اول استک مخاطب با افزودن تصویرک/آواتار گرد، گرادیان شیک و نمایش حروف اول نام در مرکز کارت",
+        "نمایش تاریخ سررسید اولین قسط وام به صورت عددی استاندارد 1405/05/12 و استفاده هوشمند از ماه انتخاب شده در حین ثبت وام"
+      ]
+    },
     {
       "version": "1.9.1",
       "buildNumber": 175,

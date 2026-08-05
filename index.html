@@ -4595,8 +4595,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 173;
-                const EMBEDDED_VERSION = "1.8.9";
+                const EMBEDDED_BUILD = 176;
+                const EMBEDDED_VERSION = "1.9.2";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4806,29 +4806,50 @@
             const [showCompletedExportModal, setShowCompletedExportModal] = useState({ show: false, contact: null, type: 'debt' });
             
             
+            const loadSavedArray = (primaryKey, legacyKeys, defaultFallback = []) => {
+                try {
+                    if (localStorage.getItem('amir_fin_data_cleared') === 'true') {
+                        return [];
+                    }
+                    const primary = localStorage.getItem(primaryKey);
+                    if (primary !== null && primary !== 'undefined') {
+                        const parsed = JSON.parse(primary);
+                        if (Array.isArray(parsed)) return parsed;
+                    }
+                    for (const legKey of legacyKeys) {
+                        const legacy = localStorage.getItem(legKey);
+                        if (legacy !== null && legacy !== 'undefined') {
+                            const parsed = JSON.parse(legacy);
+                            if (Array.isArray(parsed)) return parsed;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error loading data from storage:', e);
+                }
+                return defaultFallback;
+            };
+
             const handleRefreshData = async (tabName) => {
                 try {
-                    const savedLoans = localStorage.getItem('amir_fin_loans');
-                    if (savedLoans) setLoans(JSON.parse(savedLoans));
+                    const savedLoans = loadSavedArray('amir_fin_loans_v3', ['amir_fin_loans_v2', 'amir_fin_loans'], loans);
+                    setLoans(savedLoans);
 
-                    const savedTx = localStorage.getItem('amir_fin_tx');
-                    if (savedTx) setTransactions(JSON.parse(savedTx));
+                    const savedTx = loadSavedArray('amir_fin_txs_v3', ['amir_fin_txs_v2', 'amir_fin_tx'], transactions);
+                    setTransactions(savedTx);
 
-                    const savedContacts = localStorage.getItem('amir_fin_contacts');
-                    if (savedContacts) setContacts(JSON.parse(savedContacts));
+                    const savedContacts = loadSavedArray('amir_fin_contacts_v3', ['amir_fin_contacts_v2', 'amir_fin_contacts'], contacts);
+                    setContacts(savedContacts);
 
-                    const savedPeriods = localStorage.getItem('amir_fin_completed_periods');
-                    if (savedPeriods) setCompletedPeriods(JSON.parse(savedPeriods));
+                    const savedPeriods = loadSavedArray('amir_fin_completed_periods_v3', ['amir_fin_completed_periods_v2', 'amir_fin_completed_periods'], completedPeriods);
+                    setCompletedPeriods(savedPeriods);
 
                     if (tabName === 'contact-detail' && selectedContact) {
-                        const currentContacts = savedContacts ? JSON.parse(savedContacts) : contacts;
-                        const updatedContact = currentContacts.find(c => c.id === selectedContact.id);
+                        const updatedContact = savedContacts.find(c => c.id === selectedContact.id);
                         if (updatedContact) setSelectedContact(updatedContact);
                     }
 
                     if (tabName === 'loan-detail' && selectedLoan) {
-                        const currentLoans = savedLoans ? JSON.parse(savedLoans) : loans;
-                        const updatedLoan = currentLoans.find(l => l.id === selectedLoan.id);
+                        const updatedLoan = savedLoans.find(l => l.id === selectedLoan.id);
                         if (updatedLoan) setSelectedLoan(updatedLoan);
                     }
                 } catch (e) {
@@ -4836,14 +4857,9 @@
                 }
             };
 
-            const [completedPeriods, setCompletedPeriods] = useState(() => {
-                try {
-                    const saved = localStorage.getItem('amir_fin_completed_periods_v3');
-                    return saved ? JSON.parse(saved) : initialCompletedPeriods;
-                } catch (e) {
-                    return initialCompletedPeriods;
-                }
-            });
+            const [completedPeriods, setCompletedPeriods] = useState(() => 
+                loadSavedArray('amir_fin_completed_periods_v3', ['amir_fin_completed_periods_v2', 'amir_fin_completed_periods'], initialCompletedPeriods)
+            );
 
             useEffect(() => {
                 try {
@@ -4852,20 +4868,17 @@
             }, [completedPeriods]);
 
             // App Saved Data States
-            const [contacts, setContacts] = useState(() => {
-                const saved = localStorage.getItem('amir_fin_contacts_v3');
-                return saved ? JSON.parse(saved) : initialContacts;
-            });
+            const [contacts, setContacts] = useState(() => 
+                loadSavedArray('amir_fin_contacts_v3', ['amir_fin_contacts_v2', 'amir_fin_contacts'], initialContacts)
+            );
 
-            const [loans, setLoans] = useState(() => {
-                const saved = localStorage.getItem('amir_fin_loans_v3');
-                return saved ? JSON.parse(saved) : initialLoans;
-            });
+            const [loans, setLoans] = useState(() => 
+                loadSavedArray('amir_fin_loans_v3', ['amir_fin_loans_v2', 'amir_fin_loans'], initialLoans)
+            );
             
-            const [transactions, setTransactions] = useState(() => {
-                const saved = localStorage.getItem('amir_fin_txs_v3');
-                return saved ? JSON.parse(saved) : initialTransactions;
-            });
+            const [transactions, setTransactions] = useState(() => 
+                loadSavedArray('amir_fin_txs_v3', ['amir_fin_txs_v2', 'amir_fin_tx'], initialTransactions)
+            );
 
             const [accountsSearchQuery, setAccountsSearchQuery] = useState('');
             const [showCompletedLoans, setShowCompletedLoans] = useState(() => {
@@ -5211,11 +5224,12 @@
             };
 
             const handleConfirmDeleteAllData = () => {
-                setContacts(initialContacts);
-                setLoans(initialLoans);
-                setTransactions(initialTransactions);
+                setContacts([]);
+                setLoans([]);
+                setTransactions([]);
                 setReminders([]);
-                setCompletedPeriods(initialCompletedPeriods);
+                setCompletedPeriods([]);
+                localStorage.setItem('amir_fin_data_cleared', 'true');
                 localStorage.removeItem('amir_fin_contacts_v3');
                 localStorage.removeItem('amir_fin_loans_v3');
                 localStorage.removeItem('amir_fin_txs_v3');
@@ -5224,20 +5238,26 @@
                 localStorage.removeItem('amir_fin_loans_v2');
                 localStorage.removeItem('amir_fin_txs_v2');
                 localStorage.removeItem('amir_fin_completed_periods');
+                localStorage.removeItem('amir_fin_contacts');
+                localStorage.removeItem('amir_fin_loans');
+                localStorage.removeItem('amir_fin_tx');
                 setShowResetConfirmModal(false);
-                showToast('دیتابیس برنامه با موفقیت بازنشانی و دیتای استاندارد بارگذاری شد');
+                showToast('کل اطلاعات برنامه با موفقیت پاک شد');
             };
 
             useEffect(() => {
                 localStorage.setItem('amir_fin_contacts_v3', JSON.stringify(contacts));
+                if (contacts.length > 0) localStorage.removeItem('amir_fin_data_cleared');
             }, [contacts]);
 
             useEffect(() => {
                 localStorage.setItem('amir_fin_loans_v3', JSON.stringify(loans));
+                if (loans.length > 0) localStorage.removeItem('amir_fin_data_cleared');
             }, [loans]);
 
             useEffect(() => {
                 localStorage.setItem('amir_fin_txs_v3', JSON.stringify(transactions));
+                if (transactions.length > 0) localStorage.removeItem('amir_fin_data_cleared');
             }, [transactions]);
 
 
@@ -6677,7 +6697,11 @@
                                 setPickerYear(year);
                                 setLoanForm(prev => ({
                                     ...prev,
-                                    firstInstallmentYear: year
+                                    startDate: `${year}/${String(jalaliMonths.indexOf(month) + 1).padStart(2, '0')}/${String(day).padStart(2, '0')}`,
+                                    firstInstallmentYear: year,
+                                    firstInstallmentMonth: month,
+                                    firstInstallmentDay: day,
+                                    dueDayOfMonth: day
                                 }));
                             }}
                         />
@@ -6928,6 +6952,12 @@
                         const curMonthName = loanForm.firstInstallmentMonth || pickerMonth;
                         const curYear = loanForm.firstInstallmentYear || pickerYear;
 
+                        const monthIdx = jalaliMonths.indexOf(curMonthName) + 1;
+                        const monthStr = String(monthIdx > 0 ? monthIdx : 1).padStart(2, '0');
+                        const dayStr = String(activeDueDay).padStart(2, '0');
+                        const yearStr = String(curYear);
+                        const formattedDueDateStr = `${yearStr}/${monthStr}/${dayStr}`;
+
                         const handleNextMonth = () => {
                             const curIdx = jalaliMonths.indexOf(curMonthName);
                             let nextIdx = curIdx + 1;
@@ -6992,9 +7022,10 @@
                                         </button>
                                     </div>
 
-                                    {/* Summary Badge */}
-                                    <div className="p-2.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs">
-                                        سررسید اولین قسط: روز {activeDueDay} {curMonthName} {curYear}
+                                    {/* Summary Badge formatted as YYYY/MM/DD */}
+                                    <div className="p-2.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs flex items-center justify-center space-x-1.5 space-x-reverse">
+                                        <span>سررسید اولین قسط:</span>
+                                        <span className="font-mono text-xs sm:text-sm tracking-wider font-extrabold dir-ltr text-indigo-700 dark:text-indigo-300 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-indigo-200 dark:border-indigo-700 shadow-2xs">{formattedDueDateStr}</span>
                                     </div>
 
                                     {/* Days Grid (1 to 31, without top label) */}
@@ -7619,6 +7650,28 @@
                                     </button>
                                 </div>
                             )}
+
+                            {/* Center Avatar Display Box */}
+                            <div className="flex flex-col items-center justify-center pt-1 pb-2">
+                                <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg ring-4 ring-indigo-500/15 dark:ring-indigo-400/20">
+                                    {contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? (
+                                        <span className="text-2xl font-black tracking-tight">
+                                            {(contactWizardForm.firstName.trim()[0] || '') + (contactWizardForm.lastName.trim()[0] || '')}
+                                        </span>
+                                    ) : (
+                                        <Icon name="user-plus" className="w-9 h-9 opacity-90" />
+                                    )}
+                                    <div className="absolute -bottom-0.5 -right-0.5 w-7 h-7 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm">
+                                        <Icon name="user" className="w-3.5 h-3.5" />
+                                    </div>
+                                </div>
+                                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2">
+                                    {contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() 
+                                        ? `${contactWizardForm.firstName.trim()} ${contactWizardForm.lastName.trim()}`.trim()
+                                        : 'اطلاعات مخاطب جدید'}
+                                </span>
+                            </div>
+
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">نام</label>
                                 <input 
@@ -10262,7 +10315,7 @@
 
                                     {/* مخاطب جدید */}
                                     <button 
-                                        onClick={() => closePlusMenu(() => setShowAddContactModal(true))}
+                                        onClick={() => closePlusMenu(() => openStackWizard('contact', 'add'))}
                                         className="w-full bg-slate-50/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all">
                                         <div className="w-8.5 h-8.5 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                                             <Icon name="user-plus" className="w-4 h-4" />
