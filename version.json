@@ -1,15 +1,28 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.9.2",
-  "buildNumber": 176,
+  "installedVersion": "1.9.3",
+  "buildNumber": 177,
   "releaseDate": "2026-08-05",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.9.2",
-  "latestBuild": 176,
+  "latestVersion": "1.9.3",
+  "latestBuild": 177,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.9.3",
+      "buildNumber": 177,
+      "releaseDate": "2026-08-05",
+      "releaseChannel": "Stable",
+      "commitHash": "v193rel",
+      "commitMessage": "fix: add missing formatCardNumber & getBankNameFromCard functions for phone/card inputs in contact wizard, refine virtual keyboard focus logic in card stack, and move all PWA icons/splash assets into public directory for browser and iOS Web App support",
+      "changes": [
+        "حل کامل مشکل تایپ شماره کارت و شماره تماس در استک مخاطب جدید با تعریف توابع جهانی formatCardNumber و getBankNameFromCard به همراه تشخیص خودکار بانک",
+        "اصلاح کامل نحوه فراخوانی کیبورد مجازی در تمامی کارت‌های استک و حذف تایمرهای مکرر جابجایی فوکوس برای تجربه روان و بدون لغزش تایپ",
+        "انتقال کلیه فایل‌های آیکون، فاوآیکون، فاوآیکون SVG، مانیفست و اسپلش اسکرین‌های iOS به پوشه public جهت بارگذاری صحیح در مرورگر و حالت وب‌اپ (PWA) روی iOS و اندروید"
+      ]
+    },
     {
       "version": "1.9.2",
       "buildNumber": 176,

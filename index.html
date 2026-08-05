@@ -870,6 +870,47 @@
             return String(n).replace(/\d/g, x => farsiDigits[x]);
         };
 
+        const formatCardNumber = (val) => {
+            if (!val) return '';
+            const clean = String(val).replace(/\D/g, '').slice(0, 16);
+            return clean.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+        };
+
+        const getBankNameFromCard = (cardNo) => {
+            if (!cardNo) return '';
+            const clean = String(cardNo).replace(/\D/g, '');
+            if (clean.length < 6) return '';
+            const prefix6 = clean.slice(0, 6);
+            const bankMap = {
+                '603799': 'بانک ملی ایران',
+                '610433': 'بانک ملت',
+                '621986': 'بانک سامان',
+                '589210': 'بانک سپه',
+                '627381': 'بانک انصار',
+                '603770': 'بانک کشاورزی',
+                '628023': 'بانک مسکن',
+                '627412': 'بانک کارآفرین',
+                '627488': 'بانک خاورمیانه',
+                '502229': 'بانک پاسارگاد',
+                '639346': 'بانک سینا',
+                '639607': 'بانک سرمایه',
+                '636214': 'بانک آینده',
+                '502908': 'بانک توسعه تعاون',
+                '504172': 'قرض‌الحسنه رسالت',
+                '505416': 'بانک گردشگری',
+                '606373': 'قرض‌الحسنه مهر ایران',
+                '622106': 'بانک پارسیان',
+                '639194': 'بانک پارسیان',
+                '505785': 'بانک ایران زمین',
+                '636949': 'بانک حکمت ایرانیان',
+                '502938': 'بانک دی',
+                '603769': 'بانک صادرات',
+                '610000': 'بانک صادرات',
+                '589463': 'بانک رفاه کارگران'
+            };
+            return bankMap[prefix6] || '';
+        };
+
         const isJalaliLeapYear = (year) => {
             const y = Number(year) || 1403;
             const r = y % 33;
@@ -3241,39 +3282,30 @@
             const isPrevReturningCard = animatingPrevCard && index === currentCardIdx - 1;
             const isShaking = shakeCardId === card.id;
 
-            // Auto focus inputs inside active card (force focus & trigger soft keyboard rule)
+            // Focus input smoothly ONLY when changing card step or opening stack wizard
             useEffect(() => {
                 if (depth === 0 && showStackWizard && cardRef.current) {
-                    const focusInput = () => {
+                    // Do not steal focus if an input inside this card is ALREADY focused
+                    if (cardRef.current.contains(document.activeElement)) {
+                        return;
+                    }
+
+                    const timer = setTimeout(() => {
                         if (!cardRef.current) return;
-                        const numInput = cardRef.current.querySelector('input[inputmode="numeric"]') ||
-                                         cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
-                        if (numInput) {
+                        if (cardRef.current.contains(document.activeElement)) return;
+
+                        const targetInput = cardRef.current.querySelector('input[autofocus]') ||
+                                            cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
+                        if (targetInput) {
                             try {
-                                numInput.focus({ preventScroll: false });
-                                if (numInput.value !== undefined && numInput.value !== null) {
-                                    const len = String(numInput.value).length;
-                                    if (typeof numInput.setSelectionRange === 'function') {
-                                        numInput.setSelectionRange(len, len);
-                                    }
-                                }
+                                targetInput.focus({ preventScroll: false });
                             } catch (e) {}
                         }
-                    };
+                    }, 120);
 
-                    focusInput();
-                    const timer1 = setTimeout(focusInput, 50);
-                    const timer2 = setTimeout(focusInput, 180);
-                    const timer3 = setTimeout(focusInput, 350);
-                    const timer4 = setTimeout(focusInput, 600); // Trigger after card flip animation finishes!
-                    return () => {
-                        clearTimeout(timer1);
-                        clearTimeout(timer2);
-                        clearTimeout(timer3);
-                        clearTimeout(timer4);
-                    };
+                    return () => clearTimeout(timer);
                 }
-            }, [depth, currentCardIdx, showStackWizard, animatingCard, animatingPrevCard, isShaking, shakeCardId]);
+            }, [depth, currentCardIdx, showStackWizard]);
 
             if (depth < 0 && !isPrevReturningCard) return null;
 
@@ -3293,6 +3325,8 @@
                     key={card.id}
                     data-depth={depthAttr}
                     className={`stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${
+                        depth !== 0 ? 'pointer-events-none select-none' : ''
+                    } ${
                         isShaking ? 'animate-shake' : ''
                     } ${
                         isExitNext ? 'card-exit-to-back animating-next' : ''
@@ -7675,6 +7709,7 @@
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">نام</label>
                                 <input 
+                                    autoFocus
                                     type="text"
                                     placeholder="نام مخاطب را وارد کنید"
                                     value={contactWizardForm.firstName}
@@ -7723,6 +7758,7 @@
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره تماس</label>
                                 <input 
+                                    autoFocus
                                     type="text"
                                     inputMode="numeric"
                                     placeholder="مثلاً: 09121234567"
@@ -7733,15 +7769,23 @@
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره کارت (۱۶ رقمی - اختیاری)</label>
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">شماره کارت (۱۶ رقمی - اختیاری)</label>
+                                    {contactWizardForm.bankName && (
+                                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800">
+                                            {contactWizardForm.bankName}
+                                        </span>
+                                    )}
+                                </div>
                                 <input 
                                     type="text"
                                     inputMode="numeric"
                                     placeholder="مثلاً: 6037 9975 4321 4582"
                                     value={contactWizardForm.bankCard}
                                     onChange={(e) => {
-                                        const formatted = formatCardNumber(e.target.value);
-                                        const detectedBank = getBankNameFromCard(e.target.value) || contactWizardForm.bankName;
+                                        const val = e.target.value;
+                                        const formatted = formatCardNumber(val);
+                                        const detectedBank = getBankNameFromCard(val) || contactWizardForm.bankName;
                                         setContactWizardForm(prev => ({ ...prev, bankCard: formatted, bankName: detectedBank }));
                                     }}
                                     className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
