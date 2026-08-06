@@ -1,15 +1,28 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "1.9.6",
-  "buildNumber": 180,
+  "installedVersion": "1.9.7",
+  "buildNumber": 181,
   "releaseDate": "2026-08-06",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.9.6",
-  "latestBuild": 180,
+  "latestVersion": "1.9.7",
+  "latestBuild": 181,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.9.7",
+      "buildNumber": 181,
+      "releaseDate": "2026-08-06",
+      "releaseChannel": "Stable",
+      "commitHash": "v197pwa",
+      "commitMessage": "fix: resolve Web App white screen with fail-safe bootstrapper and instant Lucide SVGs for contact profile card icons",
+      "changes": [
+        "رفع قطعی مشکل صفحه سفید در حالت وب اپلیکیشن (PWA) با اسکریپت بوت‌استرپر پشتیبان Babel و بازیابی خودکار",
+        "جایگزینی آیکون‌های شماره کارت، شبا، کپی و تماس در کارت مخاطب با آیکون‌های برداری SVG (Lucide) جهت نمایش آنی بدون تاخیر فنت",
+        "به‌روزرسانی فونت و استایل Material Symbols با WOFF2 کامل و بهینه‌سازی کش آنلاین/آفلاین در Service Worker"
+      ]
+    },
     {
       "version": "1.9.6",
       "buildNumber": 180,
