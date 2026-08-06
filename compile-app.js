@@ -36,22 +36,28 @@ function syncPublicFiles() {
 }
 
 function compileApp() {
-  console.log('[compile-app] Extracting JSX from index.html...');
-  const htmlPath = path.join(process.cwd(), 'index.html');
-  if (!fs.existsSync(htmlPath)) {
-    console.error('[compile-app] index.html not found!');
-    return;
+  console.log('[compile-app] Checking source JSX file...');
+  let jsxCode = '';
+  const appJsxPath = path.join(process.cwd(), 'src', 'App.jsx');
+  const indexHtmlPath = path.join(process.cwd(), 'index.html');
+
+  if (fs.existsSync(appJsxPath)) {
+    console.log('[compile-app] Reading JSX from src/App.jsx...');
+    jsxCode = fs.readFileSync(appJsxPath, 'utf8');
+  } else if (fs.existsSync(indexHtmlPath)) {
+    console.log('[compile-app] Reading JSX from index.html script tag...');
+    const html = fs.readFileSync(indexHtmlPath, 'utf8');
+    const match = html.match(/<script type="text\/babel">([\s\S]*?)<\/script>/);
+    if (match) {
+      jsxCode = match[1];
+    }
   }
 
-  const html = fs.readFileSync(htmlPath, 'utf8');
-  const match = html.match(/<script type="text\/babel">([\s\S]*?)<\/script>/);
-
-  if (!match) {
-    console.error('[compile-app] <script type="text/babel"> block not found in index.html!');
-    return;
+  if (!jsxCode) {
+    console.error('[compile-app] No JSX code found to compile!');
+    process.exit(1);
   }
 
-  const jsxCode = match[1];
   console.log(`[compile-app] Found JSX code (${(jsxCode.length / 1024).toFixed(1)} KB). Compiling with Babel...`);
 
   try {
@@ -65,7 +71,7 @@ function compileApp() {
 
     fs.writeFileSync(compiledPath, compiledJs, 'utf8');
 
-    // Sync all files to public folder
+    // Sync all static files to public/
     syncPublicFiles();
 
     console.log(`[compile-app] Successfully pre-compiled React components into app.compiled.js (${(compiledJs.length / 1024).toFixed(1)} KB) and synced to public/!`);
