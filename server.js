@@ -7,11 +7,12 @@ const HOST = '0.0.0.0';
 
 const rootPath = process.cwd();
 
-// Explicitly serve site.webmanifest with manifest JSON content type
-app.get('/site.webmanifest', (req, res) => {
+// Explicitly serve site.webmanifest and manifest.webmanifest with manifest JSON content type
+app.get(['/site.webmanifest', '/manifest.webmanifest'], (req, res) => {
   res.setHeader('Content-Type', 'application/manifest+json; charset=UTF-8');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.sendFile(path.join(rootPath, 'site.webmanifest'));
+  const reqFile = req.path.endsWith('manifest.webmanifest') ? 'manifest.webmanifest' : 'site.webmanifest';
+  res.sendFile(path.join(rootPath, reqFile));
 });
 
 // Explicitly disable HTTP caching for version.json

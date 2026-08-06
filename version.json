@@ -1,15 +1,28 @@
 {
   "appName": "Amir Finance",
   "appLogo": "/apple-touch-icon.png",
-  "installedVersion": "1.9.4",
-  "buildNumber": 178,
-  "releaseDate": "2026-08-05",
+  "installedVersion": "1.9.5",
+  "buildNumber": 179,
+  "releaseDate": "2026-08-06",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.9.4",
-  "latestBuild": 178,
+  "latestVersion": "1.9.5",
+  "latestBuild": 179,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "1.9.5",
+      "buildNumber": 179,
+      "releaseDate": "2026-08-06",
+      "releaseChannel": "Stable",
+      "commitHash": "v195rel",
+      "commitMessage": "fix: resolve white screen startup issue by downloading complete Babel standalone bundle, fix favicon SVG and 96x96 PNG paths, eliminate duplicate ICO favicons, and serve manifest.webmanifest with proper headers",
+      "changes": [
+        "حل کامل مشکل صفحه سفید هنگام بالا آمدن برنامه با بارگذاری ۱۰۰٪ کامل فایل bable.min.js به حجم ۲.۴۵ مگابایت",
+        "حل مشکل favicon.svg و favicon-96x96.png و apple-touch-icon.png و رفع خطای ۴۰۴ آنها در مرورگر و حالت PWA",
+        "حذف تگ تکراری ICO favicon در index.html و پیکربندی اختصاصی مسیریابی manifest.webmanifest و site.webmanifest با نوع محتوای application/manifest+json در سرور"
+      ]
+    },
     {
       "version": "1.9.4",
       "buildNumber": 178,
