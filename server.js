@@ -34,6 +34,13 @@ app.get('/sw.js', (req, res) => {
   res.sendFile(path.join(rootPath, 'sw.js'));
 });
 
+// Explicit route for app.compiled.js with correct MIME type
+app.get('/app.compiled.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.sendFile(path.join(rootPath, 'app.compiled.js'));
+});
+
 // Disable caching for index.html / navigation so app reloads always receive fresh code
 app.get(['/', '/index.html'], (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');

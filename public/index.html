@@ -629,6 +629,9 @@
     <!-- Main Mobile & Responsive App Container Frame -->
     <div id="root" class="w-full sm:max-w-2xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl h-[100vh] sm:h-[94vh] bg-slate-50 dark:bg-slate-950 sm:rounded-3xl shadow-2xl relative overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800 my-auto"></div>
 
+    <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
+    <script src="app.compiled.js?v=1.9.7-b181" onerror="console.warn('Pre-compiled script not available, falling back to runtime Babel');"></script>
+
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo, useCallback } = React;
         const Motion = window.Motion || {};
@@ -1530,60 +1533,7 @@
                         <div class="footer">
                             تاریخ صدور گزارش: ${nowJalali.day} ${nowJalali.month} ${nowJalali.year}
                         </div>
-                        <!-- Fail-safe PWA / Standalone Babel Execution & Auto-Recovery Script -->
-    <script>
-        (function() {
-            function runBabelStandalone() {
-                if (window.__APP_MOUNTED__) return;
-                if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
-                    try {
-                        window.Babel.transformScriptTags();
-                    } catch (e) {
-                        console.error('Babel transform error:', e);
-                    }
-                }
-            }
-
-            // Trigger immediately in case DOMContentLoaded already fired
-            runBabelStandalone();
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', runBabelStandalone);
-                window.addEventListener('load', runBabelStandalone);
-            } else {
-                setTimeout(runBabelStandalone, 10);
-                setTimeout(runBabelStandalone, 100);
-                setTimeout(runBabelStandalone, 300);
-            }
-
-            // Emergency Root Check for Standalone / Web App Mode
-            setTimeout(function() {
-                var root = document.getElementById('root');
-                if (root && (!root.children || root.children.length === 0) && !window.__APP_MOUNTED__) {
-                    console.warn('Root element empty after 1.5s in Web App mode. Forcing Babel execution...');
-                    runBabelStandalone();
-                }
-            }, 1500);
-
-            // Ultimate Fallback Screen if App Fails to Mount after 3.5s
-            setTimeout(function() {
-                var root = document.getElementById('root');
-                if (root && (!root.children || root.children.length === 0) && !window.__APP_MOUNTED__) {
-                    root.innerHTML = '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;background:#0b101d;color:#fff;text-align:center;font-family:Vazirmatn,sans-serif;direction:rtl;">' +
-                        '<div style="font-size:3.5rem;margin-bottom:1rem;animation:pulse 1.5s infinite;">⚡</div>' +
-                        '<h2 style="font-size:1.25rem;font-weight:bold;margin-bottom:0.5rem;color:#f8fafc;">راه‌اندازی مجدد امیر فایننس</h2>' +
-                        '<p style="font-size:0.875rem;color:#94a3b8;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">نسخه جدید برنامه آماده است. جهت بارگذاری دکمه زیر را لمس کنید:</p>' +
-                        '<button onclick="localStorage.clear();sessionStorage.clear();if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){for(var r of rs)r.unregister();});}window.location.reload(true);" style="background:#4f46e5;color:#fff;padding:0.875rem 1.75rem;border-radius:0.875rem;font-weight:bold;border:none;cursor:pointer;box-shadow:0 10px 15px -3px rgba(79,70,229,0.3);">' +
-                        'بروزرسانی و ورود به برنامه' +
-                        '</button>' +
-                        '</div>';
-                }
-            }, 3500);
-        })();
-    </script>
-</body>
-                    </html>
-                `;
+                        </body></html>`;
 
                 const win = printIframe.contentWindow || printIframe.contentDocument;
                 const doc = win.document || win;
@@ -8560,7 +8510,7 @@
                                      return (
                                          <div className={`relative overflow-hidden rounded-2xl p-4 border flex flex-col gap-3 group transition-transform duration-200 ${cardTheme.containerClass}`}>
                                              {/* Background Watermark Icon */}
-                                             <div className={} style={{ opacity: 0.08, zIndex: 0, pointerEvents: "none" }}>
+                                             <div className={`absolute -top-2 -left-2 ${cardTheme.watermarkColor}`} style={{ opacity: 0.08, zIndex: 0, pointerEvents: "none" }}>
                                                  <Icon name="landmark" className="w-28 h-28 sm:w-32 sm:h-32" />
                                              </div>
 
@@ -8586,7 +8536,7 @@
                                                      {/* Card Row */}
                                                      <div className={`flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`}>
                                                          <div className="flex items-center gap-2 shrink-0">
-                                                             <Icon name="credit-card" className={} />
+                                                             <Icon name="credit-card" className={`w-4 h-4 shrink-0 ${cardTheme.accentColorClass}`} />
                                                              <span className={`text-xs font-bold ${cardTheme.rowLabelClass}`}>کارت</span>
                                                          </div>
                                                          <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
@@ -8607,7 +8557,7 @@
                                                      {/* Sheba Row */}
                                                      <div className={`flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`}>
                                                          <div className="flex items-center gap-2 shrink-0">
-                                                             <Icon name="landmark" className={} />
+                                                             <Icon name="landmark" className={`w-4 h-4 shrink-0 ${cardTheme.accentColorClass}`} />
                                                              <span className={`text-xs font-bold ${cardTheme.rowLabelClass}`}>شبا</span>
                                                          </div>
                                                          <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
@@ -11032,8 +10982,10 @@
             );
         }
 
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-        window.__APP_MOUNTED__ = true;
+        if (!window.__APP_MOUNTED__) {
+            ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+            window.__APP_MOUNTED__ = true;
+        }
     </script>
     <!-- Fail-safe PWA / Standalone Babel Execution & Auto-Recovery Script -->
     <script>
@@ -11078,7 +11030,7 @@
                         '<div style="font-size:3.5rem;margin-bottom:1rem;animation:pulse 1.5s infinite;">⚡</div>' +
                         '<h2 style="font-size:1.25rem;font-weight:bold;margin-bottom:0.5rem;color:#f8fafc;">راه‌اندازی مجدد امیر فایننس</h2>' +
                         '<p style="font-size:0.875rem;color:#94a3b8;margin-bottom:1.5rem;max-width:320px;line-height:1.6;">نسخه جدید برنامه آماده است. جهت بارگذاری دکمه زیر را لمس کنید:</p>' +
-                        '<button onclick="localStorage.clear();sessionStorage.clear();if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){for(var r of rs)r.unregister();});}window.location.reload(true);" style="background:#4f46e5;color:#fff;padding:0.875rem 1.75rem;border-radius:0.875rem;font-weight:bold;border:none;cursor:pointer;box-shadow:0 10px 15px -3px rgba(79,70,229,0.3);">' +
+                        '<button onclick="localStorage.clear();sessionStorage.clear();if(\'serviceWorker\' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){for(var r of rs)r.unregister();});}window.location.reload(true);" style="background:#4f46e5;color:#fff;padding:0.875rem 1.75rem;border-radius:0.875rem;font-weight:bold;border:none;cursor:pointer;box-shadow:0 10px 15px -3px rgba(79,70,229,0.3);">' +
                         'بروزرسانی و ورود به برنامه' +
                         '</button>' +
                         '</div>';

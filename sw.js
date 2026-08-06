@@ -3,6 +3,7 @@ const CACHE_NAME = 'amir-finance-v1.9.7-b181';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './app.compiled.js',
   './version.json',
   './site.webmanifest',
   './manifest.webmanifest',
