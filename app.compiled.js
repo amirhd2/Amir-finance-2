@@ -4,16 +4,84 @@ const {
   useEffect,
   useRef,
   useMemo,
-  useCallback
+  useCallback,
+  Component
 } = React;
-const Motion = window.Motion || {};
-const motion = Motion.motion || {
-  div: props => /*#__PURE__*/React.createElement("div", props),
-  button: props => /*#__PURE__*/React.createElement("button", props)
-};
+const Motion = window.Motion || window.framerMotion || {};
+const motionProxy = Motion.motion || new Proxy({}, {
+  get: (target, tag) => {
+    return function MotionFallback({
+      children,
+      initial,
+      animate,
+      exit,
+      transition,
+      variants,
+      custom,
+      whileHover,
+      whileTap,
+      drag,
+      dragConstraints,
+      ...props
+    }) {
+      return React.createElement(tag, props, children);
+    };
+  }
+});
+const motion = Motion.motion || motionProxy;
 const AnimatePresence = Motion.AnimatePresence || (({
   children
-}) => /*#__PURE__*/React.createElement(React.Fragment, null, children));
+}) => React.createElement(React.Fragment, null, children));
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasError: false,
+      error: null
+    };
+  }
+  static getDerivedStateFromError(error) {
+    return {
+      hasError: true,
+      error
+    };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return /*#__PURE__*/React.createElement("div", {
+        className: "min-h-screen w-full flex flex-col items-center justify-center p-6 bg-slate-950 text-white text-center font-vazir dir-rtl"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "text-5xl mb-4 animate-bounce"
+      }, "\u26A1"), /*#__PURE__*/React.createElement("h2", {
+        className: "text-lg font-bold mb-2 text-slate-100"
+      }, "\u0631\u0627\u0647\u200C\u0627\u0646\u062F\u0627\u0632\u06CC \u0645\u062C\u062F\u062F \u0627\u0645\u06CC\u0631 \u0641\u0627\u06CC\u0646\u0646\u0633"), /*#__PURE__*/React.createElement("p", {
+        className: "text-xs text-slate-400 mb-6 max-w-xs leading-relaxed"
+      }, this.state.error ? String(this.state.error) : 'نسخه جدید برنامه آماده است. جهت بارگذاری دکمه زیر را لمس کنید.'), /*#__PURE__*/React.createElement("div", {
+        className: "flex gap-3"
+      }, /*#__PURE__*/React.createElement("button", {
+        onClick: () => {
+          this.setState({
+            hasError: false,
+            error: null
+          });
+          window.location.reload();
+        },
+        className: "bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all cursor-pointer"
+      }, "\u0648\u0631\u0648\u062F \u0628\u0647 \u0628\u0631\u0646\u0627\u0645\u0647"), /*#__PURE__*/React.createElement("button", {
+        onClick: () => {
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.reload();
+        },
+        className: "bg-slate-800 text-slate-300 px-5 py-2.5 rounded-xl font-bold text-xs active:scale-95 transition-all cursor-pointer"
+      }, "\u067E\u0627\u06A9\u0633\u0627\u0632\u06CC \u062D\u0627\u0641\u0638\u0647 \u0648 \u0628\u0627\u0632\u06CC\u0627\u0628\u06CC")));
+    }
+    return this.props.children;
+  }
+}
 const avatarColors = ['bg-blue-600', 'bg-amber-600', 'bg-emerald-600', 'bg-indigo-600', 'bg-teal-600', 'bg-rose-600', 'bg-purple-600', 'bg-cyan-600', 'bg-orange-600', 'bg-violet-600'];
 const getAvatarColor = (id, name) => {
   let hash = 0;
@@ -3346,26 +3414,29 @@ function StackCardItem({
   const isPrevReturningCard = animatingPrevCard && index === currentCardIdx - 1;
   const isShaking = shakeCardId === card.id;
 
-  // Focus input smoothly ONLY when changing card step or opening stack wizard
+  // Focus input smoothly and immediately when changing card step or opening stack wizard
   useEffect(() => {
     if (depth === 0 && showStackWizard && cardRef.current) {
-      // Do not steal focus if an input inside this card is ALREADY focused
-      if (cardRef.current.contains(document.activeElement)) {
-        return;
-      }
-      const timer = setTimeout(() => {
+      const focusActiveInput = () => {
         if (!cardRef.current) return;
-        if (cardRef.current.contains(document.activeElement)) return;
         const targetInput = cardRef.current.querySelector('input[autofocus]') || cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
-        if (targetInput) {
+        if (targetInput && document.activeElement !== targetInput) {
           try {
             targetInput.focus({
               preventScroll: false
             });
           } catch (e) {}
         }
-      }, 120);
-      return () => clearTimeout(timer);
+      };
+      focusActiveInput();
+      const r1 = requestAnimationFrame(focusActiveInput);
+      const t1 = setTimeout(focusActiveInput, 40);
+      const t2 = setTimeout(focusActiveInput, 150);
+      return () => {
+        cancelAnimationFrame(r1);
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
     }
   }, [depth, currentCardIdx, showStackWizard]);
   if (depth < 0 && !isPrevReturningCard) return null;
@@ -3380,7 +3451,17 @@ function StackCardItem({
     "data-depth": depthAttr,
     className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${depth !== 0 ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'card-exit-to-back animating-next' : ''} ${isEnterPrev ? 'card-enter-from-back animating-prev' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y"
+    className: "flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y",
+    onClick: e => {
+      if (cardRef.current) {
+        const targetInput = cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
+        if (targetInput && e.target !== targetInput) {
+          try {
+            targetInput.focus();
+          } catch (err) {}
+        }
+      }
+    }
   }, card.render()), /*#__PURE__*/React.createElement("div", {
     className: "pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse h-12"
   }, /*#__PURE__*/React.createElement("button", {
@@ -10546,7 +10627,25 @@ function App() {
     isOpen: !!confirmConfig
   }, confirmConfig)));
 }
-if (!window.__APP_MOUNTED__) {
-  ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
-  window.__APP_MOUNTED__ = true;
+function RootApp() {
+  return /*#__PURE__*/React.createElement(ErrorBoundary, null, /*#__PURE__*/React.createElement(App, null));
+}
+if (typeof document !== 'undefined' && document.getElementById('root')) {
+  const rootEl = document.getElementById('root');
+  try {
+    if (ReactDOM.createRoot) {
+      ReactDOM.createRoot(rootEl).render(/*#__PURE__*/React.createElement(RootApp, null));
+    } else {
+      ReactDOM.render(/*#__PURE__*/React.createElement(RootApp, null), rootEl);
+    }
+    window.__APP_MOUNTED__ = true;
+  } catch (err) {
+    console.error('Error mounting React app:', err);
+    try {
+      ReactDOM.render(/*#__PURE__*/React.createElement(RootApp, null), rootEl);
+      window.__APP_MOUNTED__ = true;
+    } catch (e2) {
+      console.error('Fallback render error:', e2);
+    }
+  }
 }

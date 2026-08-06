@@ -1,11 +1,56 @@
 
-        const { useState, useEffect, useRef, useMemo, useCallback } = React;
-        const Motion = window.Motion || {};
-        const motion = Motion.motion || {
-            div: (props) => <div {...props} />,
-            button: (props) => <button {...props} />
-        };
-        const AnimatePresence = Motion.AnimatePresence || (({ children }) => <React.Fragment>{children}</React.Fragment>);
+        const { useState, useEffect, useRef, useMemo, useCallback, Component } = React;
+        const Motion = window.Motion || window.framerMotion || {};
+        const motionProxy = Motion.motion || new Proxy({}, {
+            get: (target, tag) => {
+                return function MotionFallback({ children, initial, animate, exit, transition, variants, custom, whileHover, whileTap, drag, dragConstraints, ...props }) {
+                    return React.createElement(tag, props, children);
+                };
+            }
+        });
+        const motion = Motion.motion || motionProxy;
+        const AnimatePresence = Motion.AnimatePresence || (({ children }) => React.createElement(React.Fragment, null, children));
+
+        class ErrorBoundary extends Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null };
+            }
+            static getDerivedStateFromError(error) {
+                return { hasError: true, error };
+            }
+            componentDidCatch(error, errorInfo) {
+                console.error('ErrorBoundary caught an error:', error, errorInfo);
+            }
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 bg-slate-950 text-white text-center font-vazir dir-rtl">
+                            <div className="text-5xl mb-4 animate-bounce">⚡</div>
+                            <h2 className="text-lg font-bold mb-2 text-slate-100">راه‌اندازی مجدد امیر فایننس</h2>
+                            <p className="text-xs text-slate-400 mb-6 max-w-xs leading-relaxed">
+                                {this.state.error ? String(this.state.error) : 'نسخه جدید برنامه آماده است. جهت بارگذاری دکمه زیر را لمس کنید.'}
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}
+                                    className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all cursor-pointer"
+                                >
+                                    ورود به برنامه
+                                </button>
+                                <button
+                                    onClick={() => { localStorage.clear(); sessionStorage.clear(); window.location.reload(); }}
+                                    className="bg-slate-800 text-slate-300 px-5 py-2.5 rounded-xl font-bold text-xs active:scale-95 transition-all cursor-pointer"
+                                >
+                                    پاکسازی حافظه و بازیابی
+                                </button>
+                            </div>
+                        </div>
+                    );
+                }
+                return this.props.children;
+            }
+        }
 
         const avatarColors = [
             'bg-blue-600', 'bg-amber-600', 'bg-emerald-600', 'bg-indigo-600', 'bg-teal-600',
@@ -2655,28 +2700,33 @@
             const isPrevReturningCard = animatingPrevCard && index === currentCardIdx - 1;
             const isShaking = shakeCardId === card.id;
 
-            // Focus input smoothly ONLY when changing card step or opening stack wizard
+            // Focus input smoothly and immediately when changing card step or opening stack wizard
             useEffect(() => {
                 if (depth === 0 && showStackWizard && cardRef.current) {
-                    // Do not steal focus if an input inside this card is ALREADY focused
-                    if (cardRef.current.contains(document.activeElement)) {
-                        return;
-                    }
-
-                    const timer = setTimeout(() => {
+                    const focusActiveInput = () => {
                         if (!cardRef.current) return;
-                        if (cardRef.current.contains(document.activeElement)) return;
-
                         const targetInput = cardRef.current.querySelector('input[autofocus]') ||
                                             cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
                         if (targetInput) {
                             try {
                                 targetInput.focus({ preventScroll: false });
+                                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                                    targetInput.click();
+                                }
                             } catch (e) {}
                         }
-                    }, 120);
+                    };
 
-                    return () => clearTimeout(timer);
+                    focusActiveInput();
+                    const r1 = requestAnimationFrame(focusActiveInput);
+                    const t1 = setTimeout(focusActiveInput, 30);
+                    const t2 = setTimeout(focusActiveInput, 120);
+
+                    return () => {
+                        cancelAnimationFrame(r1);
+                        clearTimeout(t1);
+                        clearTimeout(t2);
+                    };
                 }
             }, [depth, currentCardIdx, showStackWizard]);
 
@@ -2707,7 +2757,17 @@
                         isEnterPrev ? 'card-enter-from-back animating-prev' : ''
                     }`}
                 >
-                    <div className="flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y">
+                    <div 
+                        className="flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y"
+                        onClick={(e) => {
+                            if (cardRef.current) {
+                                const targetInput = cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
+                                if (targetInput && e.target !== targetInput) {
+                                    try { targetInput.focus(); } catch (err) {}
+                                }
+                            }
+                        }}
+                    >
                         {card.render()}
                     </div>
 
@@ -5124,11 +5184,25 @@
             const handlePrevCard = () => {
                 if (animatingCard || animatingPrevCard) return;
                 if (currentCardIdx > 0) {
+                    const prevIdx = currentCardIdx - 1;
                     setAnimatingPrevCard(true);
+                    setCurrentCardIdx(prevIdx);
                     setTimeout(() => {
-                        setCurrentCardIdx(prev => prev - 1);
                         setAnimatingPrevCard(false);
-                    }, 580);
+                    }, 450);
+
+                    requestAnimationFrame(() => {
+                        const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
+                        if (activeCardNode) {
+                            const targetInput = activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
+                            if (targetInput) {
+                                try {
+                                    targetInput.focus();
+                                    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) targetInput.click();
+                                } catch(e) {}
+                            }
+                        }
+                    });
                 }
             };
 
@@ -5315,11 +5389,25 @@
 
                 setValidationErrors({});
                 if (currentCardIdx < cardsList.length - 1) {
+                    const nextIdx = currentCardIdx + 1;
                     setAnimatingCard(true);
+                    setCurrentCardIdx(nextIdx);
                     setTimeout(() => {
                         setAnimatingCard(false);
-                        setCurrentCardIdx(prev => prev + 1);
-                    }, 580);
+                    }, 450);
+
+                    requestAnimationFrame(() => {
+                        const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
+                        if (activeCardNode) {
+                            const targetInput = activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
+                            if (targetInput) {
+                                try {
+                                    targetInput.focus();
+                                    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) targetInput.click();
+                                } catch(e) {}
+                            }
+                        }
+                    });
                 } else {
                     setIsFinalSubmitting(true);
                     setTimeout(() => {
@@ -6052,6 +6140,7 @@
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">عنوان وام</label>
                                 <input 
+                                    autoFocus
                                     type="text"
                                     placeholder="مثلاً: وام خرید خودرو، وام مسکن"
                                     value={loanForm.title}
@@ -6121,6 +6210,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ اصل وامی که دریافت کرده‌اید (تومان):</label>
                             <input 
+                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلا: ۵۰۰,۰۰۰,۰۰۰"
@@ -6164,6 +6254,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مجموع کل مبلغ بازپرداخت شامل اصل و کارمزد:</label>
                             <input 
+                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلا: ۵۵۰,۰۰۰,۰۰۰"
@@ -6207,6 +6298,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ هر قسط ماهانه (تومان):</label>
                             <input 
+                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلا: ۲۸,۰۰۰,۰۰۰"
@@ -6499,6 +6591,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ طلب (تومان):</label>
                             <input 
+                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلاً: ۵,۰۰۰,۰۰۰"
@@ -6558,6 +6651,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات و بابت طلب:</label>
                             <textarea 
+                                autoFocus
                                 rows="3"
                                 placeholder="توضیحات مربوط به طلب..."
                                 value={demandDebtForm.notes}
@@ -6594,6 +6688,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ قرض (تومان):</label>
                             <input 
+                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلاً: ۲,۰۰۰,۰۰۰"
@@ -6653,6 +6748,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات تکمیلی:</label>
                             <textarea 
+                                autoFocus
                                 rows="3"
                                 placeholder="توضیحات بابت قرض..."
                                 value={demandDebtForm.notes}
@@ -6723,6 +6819,7 @@
                             <div className="space-y-3">
                                 <label className="block text-xs text-slate-500 font-bold">مبلغ پرداخت قسط (بارگذاری شده از وام - قابل ویرایش):</label>
                                 <input 
+                                    autoFocus
                                     type="text"
                                     inputMode="numeric"
                                     value={formatWithCommas(installmentForm.amount)}
@@ -6783,6 +6880,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات یا شماره پیگیری پرداخت:</label>
                             <textarea 
+                                autoFocus
                                 rows="3"
                                 placeholder="شماره ارجاع، کد پیگیری و..."
                                 value={installmentForm.notes}
@@ -6829,6 +6927,7 @@
                                     مبلغ پرداختی جهت کسر از بدهی به {targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب'} (تومان):
                                 </label>
                                 <input 
+                                    autoFocus
                                     type="text"
                                     inputMode="numeric"
                                     placeholder="مثلاً: ۵۰۰,۰۰۰"
@@ -6904,6 +7003,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات و بابت بازپرداخت:</label>
                             <textarea 
+                                autoFocus
                                 rows="3"
                                 placeholder="شماره پیگیری، فیش و توضیحات..."
                                 value={repaymentForm.notes}
@@ -6950,6 +7050,7 @@
                                     مبلغ دریافتی جهت کسر از طلب از {targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب'} (تومان):
                                 </label>
                                 <input 
+                                    autoFocus
                                     type="text"
                                     inputMode="numeric"
                                     placeholder="مثلاً: ۱,۰۰۰,۰۰۰"
@@ -7025,6 +7126,7 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات بابت دریافتی:</label>
                             <textarea 
+                                autoFocus
                                 rows="3"
                                 placeholder="شماره پیگیری، فیش و توضیحات..."
                                 value={repaymentForm.notes}
@@ -9890,7 +9992,7 @@
                                     animate="animate"
                                     exit="exit"
                                     style={{ transformOrigin: "center center" }}
-                                    className="w-full flex flex-col items-center"
+                                    className="w-full max-w-md md:max-w-2xl flex flex-col items-center mx-auto"
                                 >
                                     <div className={`card-stack-container w-full ${isFinalSubmitting ? 'card-stack-fall-submit' : ''}`}>
                                         {activeCards.map((card, index) => (
@@ -10348,8 +10450,31 @@
             );
         }
 
-        if (!window.__APP_MOUNTED__) {
-            ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-            window.__APP_MOUNTED__ = true;
+        function RootApp() {
+            return (
+                <ErrorBoundary>
+                    <App />
+                </ErrorBoundary>
+            );
+        }
+
+        if (typeof document !== 'undefined' && document.getElementById('root')) {
+            const rootEl = document.getElementById('root');
+            try {
+                if (ReactDOM.createRoot) {
+                    ReactDOM.createRoot(rootEl).render(<RootApp />);
+                } else {
+                    ReactDOM.render(<RootApp />, rootEl);
+                }
+                window.__APP_MOUNTED__ = true;
+            } catch (err) {
+                console.error('Error mounting React app:', err);
+                try {
+                    ReactDOM.render(<RootApp />, rootEl);
+                    window.__APP_MOUNTED__ = true;
+                } catch (e2) {
+                    console.error('Fallback render error:', e2);
+                }
+            }
         }
     

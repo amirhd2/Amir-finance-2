@@ -22,18 +22,20 @@
     </script>
 
     <!-- Favicon & Application Icons -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png" />
-    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
 
     <!-- Apple iOS Compatibility & Touch Icons -->
-    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png" />
-    <link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167x167.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="/apple-touch-icon-180x180.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Amir Finance" />
@@ -42,7 +44,7 @@
     <meta name="theme-color" content="#0b101d" />
 
     <!-- Web App Manifest -->
-    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="manifest" href="/manifest.webmanifest" />
 
     <!-- iOS Apple Touch Startup Splash Screens (iPhone & iPad) -->
     <!-- iPhone 14 Pro Max, 15 Plus, 15 Pro Max, 16 Plus (430x932 pt @3x) -->
@@ -624,9 +626,9 @@
 
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex justify-center items-center p-0 sm:p-4">
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-[100dvh] w-full h-full flex flex-col p-0 m-0 overflow-hidden">
     <!-- Main Mobile & Responsive App Container Frame -->
-    <div id="root" class="w-full sm:max-w-2xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl h-[100vh] sm:h-[94vh] bg-slate-50 dark:bg-slate-950 sm:rounded-3xl shadow-2xl relative overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800 my-auto"></div>
+    <div id="root" class="w-full h-full min-h-[100dvh] flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
     <script src="app.compiled.js?v=1.9.7-b181"></script>
