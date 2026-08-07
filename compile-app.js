@@ -2,6 +2,35 @@ import fs from 'fs';
 import path from 'path';
 import Babel from '@babel/standalone';
 
+function updateVersionTags() {
+  const versionPath = path.join(process.cwd(), 'version.json');
+  const indexHtmlPath = path.join(process.cwd(), 'index.html');
+  const swPath = path.join(process.cwd(), 'sw.js');
+
+  if (fs.existsSync(versionPath)) {
+    try {
+      const vData = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
+      const versionTag = `${vData.installedVersion || '2.1.0'}-b${vData.buildNumber || 202}`;
+
+      if (fs.existsSync(indexHtmlPath)) {
+        let html = fs.readFileSync(indexHtmlPath, 'utf8');
+        html = html.replace(/app\.compiled\.js\?v=[^"']*/g, `app.compiled.js?v=${versionTag}`);
+        fs.writeFileSync(indexHtmlPath, html, 'utf8');
+        console.log(`[compile-app] Updated index.html script tag to app.compiled.js?v=${versionTag}`);
+      }
+
+      if (fs.existsSync(swPath)) {
+        let sw = fs.readFileSync(swPath, 'utf8');
+        sw = sw.replace(/const CACHE_NAME = ['"][^'"]*['"];/, `const CACHE_NAME = 'amir-finance-v${versionTag}';`);
+        fs.writeFileSync(swPath, sw, 'utf8');
+        console.log(`[compile-app] Updated sw.js CACHE_NAME to amir-finance-v${versionTag}`);
+      }
+    } catch (e) {
+      console.warn('[compile-app] Warning updating version tags:', e);
+    }
+  }
+}
+
 function syncPublicFiles() {
   const publicDir = path.join(process.cwd(), 'public');
   if (!fs.existsSync(publicDir)) {
@@ -37,6 +66,8 @@ function syncPublicFiles() {
 
 function compileApp() {
   console.log('[compile-app] Checking source JSX file...');
+  updateVersionTags();
+
   let jsxCode = '';
   const appJsxPath = path.join(process.cwd(), 'src', 'App.jsx');
   const indexHtmlPath = path.join(process.cwd(), 'index.html');
