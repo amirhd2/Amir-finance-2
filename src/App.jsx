@@ -2760,6 +2760,7 @@
                     <div 
                         className="flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y"
                         onClick={(e) => {
+                            if (e.target.closest('input, textarea, select, button, label, a')) return;
                             if (cardRef.current) {
                                 const targetInput = cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
                                 if (targetInput && e.target !== targetInput) {
@@ -4514,6 +4515,9 @@
             const [expandedReminders, setExpandedReminders] = useState(false);
             const [contactFilter, setContactFilter] = useState('all');
             const [profileFilter, setProfileFilter] = useState('all');
+            const [contactLoansSubFilter, setContactLoansSubFilter] = useState('active');
+            const [contactDebtsSubFilter, setContactDebtsSubFilter] = useState('active');
+            const [contactDemandsSubFilter, setContactDemandsSubFilter] = useState('active');
             const [searchQuery, setSearchQuery] = useState('');
             const [theme, setTheme] = useState(() => {
                 try {
@@ -7159,22 +7163,6 @@
                     title: wizardMode === 'edit' ? '۱- ویرایش نام و نام خانوادگی' : '۱- نام و نام خانوادگی مخاطب',
                     render: () => (
                         <div className="space-y-4">
-                            {wizardMode === 'edit' && (
-                                <div className="flex justify-end mb-1">
-                                    <button 
-                                        type="button"
-                                        onClick={() => {
-                                            handleDeleteContact(contactWizardForm, () => {
-                                                setShowStackWizard(false);
-                                            });
-                                        }}
-                                        className="bg-rose-500 hover:bg-rose-600 active:scale-95 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm flex items-center space-x-1 space-x-reverse transition-all cursor-pointer">
-                                        <Icon name="trash-2" className="w-3.5 h-3.5" />
-                                        <span>حذف مخاطب</span>
-                                    </button>
-                                </div>
-                            )}
-
                             {/* Center Avatar Display Box */}
                             <div className="flex flex-col items-center justify-center pt-1 pb-2">
                                 <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg ring-4 ring-indigo-500/15 dark:ring-indigo-400/20">
@@ -7595,8 +7583,10 @@
 
                                             return (
                                                 <div className="space-y-3">
-                                                    <div className="flex items-center justify-between px-1">
-                                                        <span className="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-4 py-1 rounded-full text-sm font-bold inline-block">وام ها</span>
+                                                    <div className="w-full flex items-center justify-center mb-3">
+                                                        <div className="w-full text-center bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-500/80 dark:border-indigo-400/60 text-indigo-700 dark:text-indigo-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs">
+                                                            وام‌ها
+                                                        </div>
                                                     </div>
 
                                                     <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
@@ -7674,8 +7664,10 @@
                                     {/* DEMANDS SECTION */}
                                     {(accountsSubTab === 'all' || accountsSubTab === 'demands' || accountsSubTab === 'archived') && filteredAccountsDemands.length > 0 && (
                                         <div className="space-y-3">
-                                            <div className="mb-3 px-1">
-                                                <span className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 px-4 py-1 rounded-full text-sm font-bold inline-block">طلب‌ها</span>
+                                            <div className="w-full flex items-center justify-center mb-3">
+                                                <div className="w-full text-center bg-emerald-50/90 dark:bg-emerald-950/70 border-2 border-emerald-500/80 dark:border-emerald-400/60 text-emerald-700 dark:text-emerald-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs">
+                                                    طلب‌ها
+                                                </div>
                                             </div>
                                             <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
                                                 {filteredAccountsDemands.map(contact => {
@@ -7721,8 +7713,10 @@
                                     {/* DEBTS SECTION */}
                                     {(accountsSubTab === 'all' || accountsSubTab === 'debts' || accountsSubTab === 'archived') && filteredAccountsDebts.length > 0 && (
                                         <div className="space-y-3">
-                                            <div className="mb-3 px-1">
-                                                <span className="bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 px-4 py-1 rounded-full text-sm font-bold inline-block">بدهی‌ها</span>
+                                            <div className="w-full flex items-center justify-center mb-3">
+                                                <div className="w-full text-center bg-rose-50/90 dark:bg-rose-950/70 border-2 border-rose-500/80 dark:border-rose-400/60 text-rose-700 dark:text-rose-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs">
+                                                    بدهی‌ها
+                                                </div>
                                             </div>
                                             <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">
                                                 {filteredAccountsDebts.map(contact => {
@@ -8169,57 +8163,70 @@
                                     {/* LOANS LIST */}
                                     {(profileFilter === 'all' || profileFilter === 'loans') && (
                                         <div className="space-y-2">
-                                            <div className="flex items-center justify-between px-1 mb-2">
-                                                <span className="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-4 py-1 rounded-full text-sm font-bold inline-block">وام ها</span>
-                                            </div>
                                             {(() => {
                                                 const contactLoans = loans.filter(l => l.contactId === selectedContact.id);
                                                 const activeLoans = contactLoans.filter(l => l.remainingAmount > 0);
                                                 const closedLoans = contactLoans.filter(l => l.remainingAmount <= 0);
 
-                                                if (contactLoans.length === 0) {
-                                                    return (
-                                                        <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
-                                                            هیچ وامی برای این شخص ثبت نشده است.
-                                                        </div>
-                                                    );
-                                                }
-
                                                 return (
                                                     <div className="space-y-2.5">
-                                                        {/* Active Loans */}
-                                                        {activeLoans.map(loan => (
-                                                            <div 
-                                                                key={loan.id}
-                                                                onClick={() => openLoanDetail(loan)}
-                                                                className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">
-                                                                <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
-                                                                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                                                                        <Icon name="landmark" className="w-6 h-6" />
-                                                                    </div>
-                                                                    <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
-                                                                        <h3 className="text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{loan.title}</h3>
-                                                                        <p className="text-xs text-slate-500 dark:text-slate-400 whitespace-normal">اقساط: {loan.installmentAmount.toLocaleString()} تومان</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="text-left shrink-0 flex flex-col items-center">
-                                                                    <div className="font-bold text-base leading-none text-indigo-600 dark:text-indigo-400">{loan.principalAmount.toLocaleString()}</div>
-                                                                    <div className="text-xs text-indigo-600 dark:text-indigo-400">تومان</div>
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                                        <div className="bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1 flex items-center justify-between border border-slate-200/50 dark:border-slate-700/50 text-xs font-bold mb-3 shadow-xs">
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => setContactLoansSubFilter('active')}
+                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
+                                                                    contactLoansSubFilter === 'active' 
+                                                                        ? 'bg-indigo-600 text-white shadow-sm' 
+                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600'
+                                                                }`}>
+                                                                وام‌ها ({activeLoans.length})
+                                                            </button>
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => setContactLoansSubFilter('archived')}
+                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
+                                                                    contactLoansSubFilter === 'archived' 
+                                                                        ? 'bg-indigo-600 text-white shadow-sm' 
+                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600'
+                                                                }`}>
+                                                                بایگانی ({closedLoans.length})
+                                                            </button>
+                                                        </div>
 
-                                                        {/* Archived Closed Loans */}
-                                                        {closedLoans.length > 0 && (
-                                                            <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
-                                                                <div className="flex items-center justify-between px-1 mb-2">
-                                                                    <span className="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-4 py-1 rounded-full text-sm font-bold inline-block">بایگانی وام ها</span>
-                                                                </div>
-                                                                {closedLoans.map(loan => (
+                                                        {contactLoansSubFilter === 'active' ? (
+                                                            activeLoans.length > 0 ? (
+                                                                activeLoans.map(loan => (
                                                                     <div 
                                                                         key={loan.id}
                                                                         onClick={() => openLoanDetail(loan)}
-                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-60 hover:opacity-90 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">
+                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">
+                                                                        <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
+                                                                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                                                                <Icon name="landmark" className="w-6 h-6" />
+                                                                            </div>
+                                                                            <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                                <h3 className="text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{loan.title}</h3>
+                                                                                <p className="text-xs text-slate-500 dark:text-slate-400 whitespace-normal">اقساط: {loan.installmentAmount.toLocaleString()} تومان</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="text-left shrink-0 flex flex-col items-center">
+                                                                            <div className="font-bold text-base leading-none text-indigo-600 dark:text-indigo-400">{loan.principalAmount.toLocaleString()}</div>
+                                                                            <div className="text-xs text-indigo-600 dark:text-indigo-400">تومان</div>
+                                                                        </div>
+                                                                    </div>
+                                                                ))
+                                                            ) : (
+                                                                <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                                    هیچ وام فعالی برای این شخص ثبت نشده است.
+                                                                </div>
+                                                            )
+                                                        ) : (
+                                                            closedLoans.length > 0 ? (
+                                                                closedLoans.map(loan => (
+                                                                    <div 
+                                                                        key={loan.id}
+                                                                        onClick={() => openLoanDetail(loan)}
+                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">
                                                                         <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
                                                                             <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                                                                                 <Icon name="check-circle-2" className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
@@ -8234,8 +8241,12 @@
                                                                             <div className="text-xs text-slate-500">تومان</div>
                                                                         </div>
                                                                     </div>
-                                                                ))}
-                                                            </div>
+                                                                ))
+                                                            ) : (
+                                                                <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                                    هیچ وام تسویه‌شده یا بایگانی‌شده‌ای وجود ندارد.
+                                                                </div>
+                                                            )
                                                         )}
                                                     </div>
                                                 );
@@ -8246,9 +8257,6 @@
                                     {/* DEBTS LIST */}
                                     {(profileFilter === 'all' || profileFilter === 'debts') && (
                                         <div className="space-y-2">
-                                            <div className="flex items-center justify-between px-1 mb-2">
-                                                <span className="bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 px-4 py-1 rounded-full text-sm font-bold inline-block">بدهی ها</span>
-                                            </div>
                                             {(() => {
                                                 const contactDebts = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
                                                 let archivedDebtPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'debt');
@@ -8270,58 +8278,79 @@
                                                     }];
                                                 }
 
+                                                const activeDebtCount = contactDebts.length > 0 ? contactDebts.length : (selectedContact.totalDebt > 0 ? 1 : 0);
+
                                                 return (
                                                     <div className="space-y-2">
-                                                        {contactDebts.length > 0 ? (
-                                                            contactDebts.map(tx => {
-                                                                const isRepay = tx.type === 'debt_repayment';
-                                                                return (
-                                                                    <SwipeableTxCard 
-                                                                        key={tx.id}
-                                                                        tx={tx}
-                                                                        colorType="rose"
-                                                                        onEdit={(txItem) => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem)}
-                                                                        onDelete={(txItem) => requestDeleteTx(txItem, 'debt')}
-                                                                    />
-                                                                );
-                                                            })
-                                                        ) : selectedContact.totalDebt > 0 ? (
-                                                            <div 
-                                                                onClick={() => openStackWizard('debt', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDebt })}
-                                                                className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between">
-                                                                <div className="w-full flex flex-col gap-1">
-                                                                    <div className="flex items-center justify-between w-full">
-                                                                        <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0">
-                                                                            <Icon name="arrow-down-left" className="w-6 h-6" />
-                                                                        </div>
-                                                                        <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
-                                                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm">بدهی شخصی</h3>
-                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || `بدهی به ${selectedContact.firstName} ${selectedContact.lastName}`}</p>
-                                                                        </div>
-                                                                        <div className="text-left shrink-0 flex flex-col items-center">
-                                                                            <div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none">{selectedContact.totalDebt.toLocaleString()}</div>
-                                                                            <div className="text-rose-600 dark:text-rose-400 text-xs">تومان</div>
+                                                        <div className="bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1 flex items-center justify-between border border-slate-200/50 dark:border-slate-700/50 text-xs font-bold mb-3 shadow-xs">
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => setContactDebtsSubFilter('active')}
+                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
+                                                                    contactDebtsSubFilter === 'active' 
+                                                                        ? 'bg-rose-600 text-white shadow-sm' 
+                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-rose-600'
+                                                                }`}>
+                                                                بدهی‌ها ({activeDebtCount})
+                                                            </button>
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => setContactDebtsSubFilter('archived')}
+                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
+                                                                    contactDebtsSubFilter === 'archived' 
+                                                                        ? 'bg-rose-600 text-white shadow-sm' 
+                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-rose-600'
+                                                                }`}>
+                                                                بایگانی ({archivedDebtPeriods.length})
+                                                            </button>
+                                                        </div>
+
+                                                        {contactDebtsSubFilter === 'active' ? (
+                                                            contactDebts.length > 0 ? (
+                                                                contactDebts.map(tx => {
+                                                                    const isRepay = tx.type === 'debt_repayment';
+                                                                    return (
+                                                                        <SwipeableTxCard 
+                                                                            key={tx.id}
+                                                                            tx={tx}
+                                                                            colorType="rose"
+                                                                            onEdit={(txItem) => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem)}
+                                                                            onDelete={(txItem) => requestDeleteTx(txItem, 'debt')}
+                                                                        />
+                                                                    );
+                                                                })
+                                                            ) : selectedContact.totalDebt > 0 ? (
+                                                                <div 
+                                                                    onClick={() => openStackWizard('debt', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDebt })}
+                                                                    className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between">
+                                                                    <div className="w-full flex flex-col gap-1">
+                                                                        <div className="flex items-center justify-between w-full">
+                                                                            <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0">
+                                                                                <Icon name="arrow-down-left" className="w-6 h-6" />
+                                                                            </div>
+                                                                            <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                                <h3 className="font-bold text-slate-800 dark:text-white text-sm">بدهی شخصی</h3>
+                                                                                <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || `بدهی به ${selectedContact.firstName} ${selectedContact.lastName}`}</p>
+                                                                            </div>
+                                                                            <div className="text-left shrink-0 flex flex-col items-center">
+                                                                                <div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none">{selectedContact.totalDebt.toLocaleString()}</div>
+                                                                                <div className="text-rose-600 dark:text-rose-400 text-xs">تومان</div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
-                                                                هیچ بدهی فعالی برای این شخص ثبت نشده است.
-                                                            </div>
-                                                        )}
-
-                                                        {/* Archived Debt Periods / Closed Cycles */}
-                                                        {archivedDebtPeriods.length > 0 && (
-                                                            <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
-                                                                <div className="flex items-center justify-between px-1 mb-2">
-                                                                    <span className="bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 px-4 py-1 rounded-full text-sm font-bold inline-block">دوره های بایگانی شده</span>
+                                                            ) : (
+                                                                <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                                    هیچ بدهی فعالی برای این شخص ثبت نشده است.
                                                                 </div>
-                                                                {archivedDebtPeriods.map(period => (
+                                                            )
+                                                        ) : (
+                                                            archivedDebtPeriods.length > 0 ? (
+                                                                archivedDebtPeriods.map(period => (
                                                                     <div 
                                                                         key={period.id}
                                                                         onClick={() => openArchivedPeriodDetail(period)}
-                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-60 hover:opacity-90 transition-all cursor-pointer flex items-center justify-between">
+                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between">
                                                                         <div className="w-full flex flex-col gap-1">
                                                                             <div className="flex items-center justify-between w-full">
                                                                                 <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0">
@@ -8338,8 +8367,12 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                ))}
-                                                            </div>
+                                                                ))
+                                                            ) : (
+                                                                <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                                    هیچ دوره بدهی تسویه‌شده یا بایگانی‌شده‌ای وجود ندارد.
+                                                                </div>
+                                                            )
                                                         )}
                                                     </div>
                                                 );
@@ -8350,9 +8383,6 @@
                                     {/* DEMANDS LIST */}
                                     {(profileFilter === 'all' || profileFilter === 'demands') && (
                                         <div className="space-y-2">
-                                            <div className="flex items-center justify-between px-1 mb-2">
-                                                <span className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 px-4 py-1 rounded-full text-sm font-bold inline-block">طلب ها</span>
-                                            </div>
                                             {(() => {
                                                 const contactDemands = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
                                                 let archivedDemandPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'demand');
@@ -8374,58 +8404,79 @@
                                                     }];
                                                 }
 
+                                                const activeDemandCount = contactDemands.length > 0 ? contactDemands.length : (selectedContact.totalDemand > 0 ? 1 : 0);
+
                                                 return (
                                                     <div className="space-y-2">
-                                                        {contactDemands.length > 0 ? (
-                                                            contactDemands.map(tx => {
-                                                                const isRepay = tx.type === 'demand_repayment';
-                                                                return (
-                                                                    <SwipeableTxCard 
-                                                                        key={tx.id}
-                                                                        tx={tx}
-                                                                        colorType="emerald"
-                                                                        onEdit={(txItem) => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem)}
-                                                                        onDelete={(txItem) => requestDeleteTx(txItem, 'demand')}
-                                                                    />
-                                                                );
-                                                            })
-                                                        ) : selectedContact.totalDemand > 0 ? (
-                                                            <div 
-                                                                onClick={() => openStackWizard('demand', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDemand })}
-                                                                className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between">
-                                                                <div className="w-full flex flex-col gap-1">
-                                                                    <div className="flex items-center justify-between w-full">
-                                                                        <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">
-                                                                            <Icon name="arrow-up-right" className="w-6 h-6" />
-                                                                        </div>
-                                                                        <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
-                                                                            <h3 className="font-bold text-slate-800 dark:text-white text-sm">طلب شخصی</h3>
-                                                                            <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || `طلب از ${selectedContact.firstName} ${selectedContact.lastName}`}</p>
-                                                                        </div>
-                                                                        <div className="text-left shrink-0 flex flex-col items-center">
-                                                                            <div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none">{selectedContact.totalDemand.toLocaleString()}</div>
-                                                                            <div className="text-emerald-600 dark:text-emerald-400 text-xs">تومان</div>
+                                                        <div className="bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1 flex items-center justify-between border border-slate-200/50 dark:border-slate-700/50 text-xs font-bold mb-3 shadow-xs">
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => setContactDemandsSubFilter('active')}
+                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
+                                                                    contactDemandsSubFilter === 'active' 
+                                                                        ? 'bg-emerald-600 text-white shadow-sm' 
+                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-emerald-600'
+                                                                }`}>
+                                                                طلب‌ها ({activeDemandCount})
+                                                            </button>
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => setContactDemandsSubFilter('archived')}
+                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
+                                                                    contactDemandsSubFilter === 'archived' 
+                                                                        ? 'bg-emerald-600 text-white shadow-sm' 
+                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-emerald-600'
+                                                                }`}>
+                                                                بایگانی ({archivedDemandPeriods.length})
+                                                            </button>
+                                                        </div>
+
+                                                        {contactDemandsSubFilter === 'active' ? (
+                                                            contactDemands.length > 0 ? (
+                                                                contactDemands.map(tx => {
+                                                                    const isRepay = tx.type === 'demand_repayment';
+                                                                    return (
+                                                                        <SwipeableTxCard 
+                                                                            key={tx.id}
+                                                                            tx={tx}
+                                                                            colorType="emerald"
+                                                                            onEdit={(txItem) => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem)}
+                                                                            onDelete={(txItem) => requestDeleteTx(txItem, 'demand')}
+                                                                        />
+                                                                    );
+                                                                })
+                                                            ) : selectedContact.totalDemand > 0 ? (
+                                                                <div 
+                                                                    onClick={() => openStackWizard('demand', 'edit', { contactId: selectedContact.id, amount: selectedContact.totalDemand })}
+                                                                    className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between">
+                                                                    <div className="w-full flex flex-col gap-1">
+                                                                        <div className="flex items-center justify-between w-full">
+                                                                            <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">
+                                                                                <Icon name="arrow-up-right" className="w-6 h-6" />
+                                                                            </div>
+                                                                            <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
+                                                                                <h3 className="font-bold text-slate-800 dark:text-white text-sm">طلب شخصی</h3>
+                                                                                <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || `طلب از ${selectedContact.firstName} ${selectedContact.lastName}`}</p>
+                                                                            </div>
+                                                                            <div className="text-left shrink-0 flex flex-col items-center">
+                                                                                <div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none">{selectedContact.totalDemand.toLocaleString()}</div>
+                                                                                <div className="text-emerald-600 dark:text-emerald-400 text-xs">تومان</div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
-                                                                هیچ طلبی از این شخص ثبت نشده است.
-                                                            </div>
-                                                        )}
-
-                                                        {/* Archived Demand Periods / Closed Cycles */}
-                                                        {archivedDemandPeriods.length > 0 && (
-                                                            <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
-                                                                <div className="flex items-center justify-between px-1 mb-2">
-                                                                    <span className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 px-4 py-1 rounded-full text-sm font-bold inline-block">دوره های بایگانی شده</span>
+                                                            ) : (
+                                                                <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                                    هیچ طلبی از این شخص ثبت نشده است.
                                                                 </div>
-                                                                {archivedDemandPeriods.map(period => (
+                                                            )
+                                                        ) : (
+                                                            archivedDemandPeriods.length > 0 ? (
+                                                                archivedDemandPeriods.map(period => (
                                                                     <div 
                                                                         key={period.id}
                                                                         onClick={() => openArchivedPeriodDetail(period)}
-                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-60 hover:opacity-90 transition-all cursor-pointer flex items-center justify-between">
+                                                                        className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between">
                                                                         <div className="w-full flex flex-col gap-1">
                                                                             <div className="flex items-center justify-between w-full">
                                                                                 <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">
@@ -8442,8 +8493,12 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                ))}
-                                                            </div>
+                                                                ))
+                                                            ) : (
+                                                                <div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">
+                                                                    هیچ دوره طلب تسویه‌شده یا بایگانی‌شده‌ای وجود ندارد.
+                                                                </div>
+                                                            )
                                                         )}
                                                     </div>
                                                 );
