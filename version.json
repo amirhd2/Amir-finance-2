@@ -1,15 +1,30 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "2.1.0",
-  "buildNumber": 202,
+  "installedVersion": "2.1.2",
+  "buildNumber": 203,
   "releaseDate": "2026-08-07",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "2.1.0",
-  "latestBuild": 202,
+  "latestVersion": "2.1.2",
+  "latestBuild": 203,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "2.1.2",
+      "buildNumber": 203,
+      "releaseDate": "2026-08-07",
+      "releaseChannel": "Stable",
+      "commitHash": "v212cardFix",
+      "commitMessage": "release: v2.1.2 - uniform card height, top shadow sticky overlap, floating bottom close button & unsaved changes overlay fix",
+      "changes": [
+        "هم‌اندازه شدن کامل ارتفاع تمامی کارت‌ها در حالت استک عمودی موبایل (Uniform Card Height)",
+        "افزودن سایه برجسته بالای کارت‌ها هنگام حرکت استیکی و قرارگیری روی کارت قبلی (Top Overlapping Shadow)",
+        "حذف کامل منوی بالای صفحه در حالت ویرایش کارت‌ها جهت نمایش خالص کارت‌ها در صفحه",
+        "افزودن دکمه شناور ضربدر (X) در پایین کارت‌ها جهت خروج سریع و آسان",
+        "اصلاح موقعیت و لایه منوی تغییرات ذخیره‌نشده در پایین صفحه بدون ایجاد مزاحمت برای ویرایش سایر کارت‌ها"
+      ]
+    },
     {
       "version": "2.1.0",
       "buildNumber": 202,

@@ -3301,15 +3301,30 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "2.1.0",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '202', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "2.1.2",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '203', 10),
                 releaseDate: "2026-08-07",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "2.1.0",
-                latestBuild: 202,
+                latestVersion: "2.1.2",
+                latestBuild: 203,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "2.1.2",
+                        buildNumber: 203,
+                        releaseDate: "2026-08-07",
+                        releaseChannel: "Stable",
+                        commitHash: "v212cardFix",
+                        commitMessage: "release: v2.1.2 - uniform card height, top shadow sticky overlap, floating bottom close button & unsaved changes overlay fix",
+                        changes: [
+                            "هم‌اندازه شدن کامل ارتفاع تمامی کارت‌ها در حالت استک عمودی موبایل (Uniform Card Height)",
+                            "افزودن سایه برجسته بالای کارت‌ها هنگام حرکت استیکی و قرارگیری روی کارت قبلی (Top Overlapping Shadow)",
+                            "حذف کامل منوی بالای صفحه در حالت ویرایش کارت‌ها جهت نمایش خالص کارت‌ها در صفحه",
+                            "افزودن دکمه شناور ضربدر (X) در پایین کارت‌ها جهت خروج سریع و آسان",
+                            "اصلاح موقعیت و لایه منوی تغییرات ذخیره‌نشده در پایین صفحه بدون ایجاد مزاحمت برای ویرایش سایر کارت‌ها"
+                        ]
+                    },
                     {
                         version: "2.1.0",
                         buildNumber: 202,
@@ -4109,8 +4124,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 202;
-                const EMBEDDED_VERSION = "2.1.0";
+                const EMBEDDED_BUILD = 203;
+                const EMBEDDED_VERSION = "2.1.2";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -10237,46 +10252,9 @@
                                 >
                                     {(wizardMode === 'edit' || wizardViewStyle === 'stacked') ? (
                                         /* Premium Mobile Vertical Sticky Stacked Cards Editing View */
-                                        <div className="w-full flex flex-col items-center h-full max-h-[88vh] relative">
-                                            {/* Modal Sticky Header */}
-                                            <div className="w-full px-3 py-2 flex items-center justify-between border-b border-white/15 mb-2 shrink-0 bg-white/5 backdrop-blur-md rounded-2xl">
-                                                <div className="flex items-center space-x-2 space-x-reverse text-white">
-                                                    <div className="w-8 h-8 rounded-xl bg-indigo-500/25 border border-indigo-400/40 flex items-center justify-center text-indigo-300">
-                                                        <Icon name="edit-3" className="w-4 h-4" />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="font-extrabold text-xs text-white">
-                                                            {wizardMode === 'edit' ? 'ویرایش کارت‌های اطلاعات' : 'نمای پشته‌ای کارت‌ها'}
-                                                        </h3>
-                                                        <p className="text-[10px] text-slate-300">
-                                                            روی کارت ضربه بزنید تا ویرایش درون‌خطی شود
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center space-x-2 space-x-reverse">
-                                                    {/* View Mode Switcher Toggle */}
-                                                    <button 
-                                                        type="button"
-                                                        onClick={() => setWizardViewStyle(wizardViewStyle === 'stacked' ? 'step' : 'stacked')}
-                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white/90 border border-white/20 transition-all cursor-pointer flex items-center gap-1">
-                                                        <Icon name="layers" className="w-3 h-3" />
-                                                        <span>{wizardViewStyle === 'stacked' ? 'گام به گام' : 'نمای عمومی'}</span>
-                                                    </button>
-
-                                                    <button 
-                                                        type="button"
-                                                        onClick={() => closeStackWizard(false)}
-                                                        className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer"
-                                                        title="بستن"
-                                                    >
-                                                        <Icon name="x" className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            </div>
-
+                                        <div className="w-full flex flex-col items-center h-full max-h-[92vh] relative">
                                             {/* Scrollable Floating Cards Area */}
-                                            <div className="w-full flex-1 overflow-y-auto hide-scrollbar py-2 px-1 space-y-4 snap-y snap-mandatory touch-pan-y relative pb-28">
+                                            <div className="w-full flex-1 overflow-y-auto hide-scrollbar py-2 px-1 space-y-4 snap-y snap-mandatory touch-pan-y relative pb-48">
                                                 {activeCards.map((card, index) => {
                                                     const isEditingThis = editingCardId === card.id;
                                                     const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
@@ -10298,10 +10276,10 @@
                                                                 top: `${12 + index * 8}px`,
                                                                 zIndex: isEditingThis ? 40 : 10 + index
                                                             }}
-                                                            className={`sticky snap-start rounded-[28px] p-4 border transition-all duration-250 ease-out bg-white dark:bg-slate-800 ${
+                                                            className={`sticky snap-start rounded-[28px] p-4.5 border transition-all duration-250 ease-out bg-white dark:bg-slate-800 min-h-[410px] h-[410px] flex flex-col justify-between ${
                                                                 isEditingThis 
                                                                     ? 'w-full shadow-2xl shadow-indigo-500/25 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' 
-                                                                    : 'w-[92%] mx-auto shadow-md border-slate-100 dark:border-slate-700/80 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
+                                                                    : 'w-[92%] mx-auto shadow-[0_-12px_28px_rgba(15,23,42,0.18)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white/80 dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
                                                             } ${
                                                                 isOtherCardBlur ? 'blur-[1.5px] pointer-events-none select-none' : ''
                                                             } ${
@@ -10314,7 +10292,7 @@
                                                             }}
                                                         >
                                                             {/* Card Title Header */}
-                                                            <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-700/60 mb-3">
+                                                            <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-700/60 mb-2 shrink-0">
                                                                 <div className="flex items-center space-x-2 space-x-reverse">
                                                                     <div className={`w-7 h-7 rounded-xl flex items-center justify-center font-extrabold text-xs transition-all ${
                                                                         isEditingThis
@@ -10344,8 +10322,8 @@
                                                                 </div>
                                                             </div>
 
-                                                            {/* Card Editable Inputs */}
-                                                            <div className={`transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-90' : ''}`}>
+                                                            {/* Card Editable Inputs Body */}
+                                                            <div className={`flex-1 overflow-y-auto hide-scrollbar my-1 transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-90' : ''}`}>
                                                                 {card.render()}
                                                             </div>
 
@@ -10357,7 +10335,7 @@
                                                                         animate={{ opacity: 1, height: 'auto' }}
                                                                         exit={{ opacity: 0, height: 0 }}
                                                                         transition={{ duration: 0.22 }}
-                                                                        className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse"
+                                                                        className="pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse shrink-0"
                                                                     >
                                                                         <button 
                                                                             type="button"
@@ -10390,39 +10368,53 @@
                                                 })}
                                             </div>
 
-                                            {/* Unsaved Changes Sticky Bottom Action Bar */}
+                                            {/* Unsaved Changes Non-blocking Floating Bottom Action Bar */}
                                             <AnimatePresence>
                                                 {modifiedCardIds.length > 0 && (
                                                     <motion.div 
-                                                        initial={{ opacity: 0, y: 35, scale: 0.95 }}
+                                                        initial={{ opacity: 0, y: 25, scale: 0.92 }}
                                                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                        exit={{ opacity: 0, y: 35, scale: 0.95 }}
+                                                        exit={{ opacity: 0, y: 25, scale: 0.92 }}
                                                         transition={{ type: "spring", stiffness: 420, damping: 26 }}
-                                                        className="absolute bottom-2 left-2 right-2 z-50 w-[95%] mx-auto bg-slate-900/95 dark:bg-slate-800/95 text-white p-3 rounded-2xl shadow-2xl backdrop-blur-xl border border-white/20 flex items-center justify-between"
+                                                        className="absolute bottom-16 left-0 right-0 z-50 px-3 pointer-events-none flex justify-center"
                                                     >
-                                                        <div className="flex items-center space-x-2 space-x-reverse">
-                                                            <div className="w-8 h-8 rounded-xl bg-amber-500/25 border border-amber-400/30 text-amber-300 flex items-center justify-center font-extrabold text-xs shrink-0 shadow-sm">
-                                                                {modifiedCardIds.length}
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-xs font-bold text-white">
-                                                                    {modifiedCardIds.length} تغییر ذخیره‌نشده
+                                                        <div className="w-full max-w-sm bg-slate-900/95 dark:bg-slate-800/95 text-white p-3 rounded-2xl shadow-2xl backdrop-blur-xl border border-white/20 flex items-center justify-between pointer-events-auto">
+                                                            <div className="flex items-center space-x-2 space-x-reverse">
+                                                                <div className="w-7 h-7 rounded-xl bg-amber-500/25 border border-amber-400/30 text-amber-300 flex items-center justify-center font-extrabold text-xs shrink-0 shadow-sm">
+                                                                    {modifiedCardIds.length}
                                                                 </div>
-                                                                <div className="text-[10px] text-slate-300">برای ثبت کلی داده‌ها کلیک کنید</div>
+                                                                <div>
+                                                                    <div className="text-xs font-bold text-white">
+                                                                        {modifiedCardIds.length} تغییر ذخیره‌نشده
+                                                                    </div>
+                                                                    <div className="text-[10px] text-slate-300">برای ثبت کلی داده‌ها کلیک کنید</div>
+                                                                </div>
                                                             </div>
-                                                        </div>
 
-                                                        <button 
-                                                            type="button"
-                                                            onClick={handleSaveAllChanges}
-                                                            className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg transition-all flex items-center space-x-1.5 space-x-reverse cursor-pointer"
-                                                        >
-                                                            <Icon name="check-circle" className="w-4 h-4" />
-                                                            <span>ثبت همه تغییرات</span>
-                                                        </button>
+                                                            <button 
+                                                                type="button"
+                                                                onClick={handleSaveAllChanges}
+                                                                className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-lg transition-all flex items-center space-x-1.5 space-x-reverse cursor-pointer shrink-0"
+                                                            >
+                                                                <Icon name="check-circle" className="w-4 h-4" />
+                                                                <span>ثبت تغییرات</span>
+                                                            </button>
+                                                        </div>
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
+
+                                            {/* Floating Close X Button at Bottom */}
+                                            <div className="w-full flex justify-center items-center py-2 shrink-0 z-40 relative">
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => closeStackWizard(false)}
+                                                    className="w-12 h-12 rounded-full bg-slate-900/85 hover:bg-slate-900 active:scale-90 text-white flex items-center justify-center border border-white/20 shadow-2xl transition-all cursor-pointer backdrop-blur-lg"
+                                                    title="بستن"
+                                                >
+                                                    <Icon name="x" className="w-6 h-6" />
+                                                </button>
+                                            </div>
                                         </div>
                                     ) : (
                                         /* Step-by-Step Stack Card Mode */
