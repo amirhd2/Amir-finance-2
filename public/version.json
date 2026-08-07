@@ -1,15 +1,30 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "1.9.7",
-  "buildNumber": 181,
-  "releaseDate": "2026-08-06",
+  "installedVersion": "2.0.0",
+  "buildNumber": 200,
+  "releaseDate": "2026-08-07",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "1.9.7",
-  "latestBuild": 181,
+  "latestVersion": "2.0.0",
+  "latestBuild": 200,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "2.0.0",
+      "buildNumber": 200,
+      "releaseDate": "2026-08-07",
+      "releaseChannel": "Stable",
+      "commitHash": "v200major",
+      "commitMessage": "release: v2.0.0 major update - preview viewport & root height fix, prevent mobile keyboard zoom, verified PWA icons & iOS touch support, stack wizard card animation & responsive auto-focus",
+      "changes": [
+        "حل ساختاری و کامل مشکل نمایش ناقص صفحه برنامه در حالت Preview و iFrame با تنظیم ارتفاع ۱۰۰٪ روی html، body و root#",
+        "جلوگیری کامل از زوم ناخواسته صفحه‌نمایش هنگام باز شدن کیبورد مجازی در تمامی فیلدهای ورودی (موبایل و آیفون) با تنظیم اندازه فونت استاندارد ۱۶پیکسل و viewport-fit=cover",
+        "بررسی دقیق و تطبیق ۱۰۰٪ مسیر تمامی فایل‌های Favicon، Apple Touch Icon، Web Manifest و تصاویر Splash Screen در index.html و public/index.html جهت نمایش دقیق آیکون در آیفون و PWA",
+        "بهینه‌سازی انیمیشن‌های ورود و خروج (AnimatePresence) و سیستم فوکوس خودکار (autoFocus) در فرم‌ها و کارت‌های استک لایه‌ای (Stack Wizard)",
+        "به‌روزرسانی سرویس ورکر (Service Worker v2.0.0-b200) جهت کش آفلاین و به‌روزرسانی آنی نسخه جدید"
+      ]
+    },
     {
       "version": "1.9.7",
       "buildNumber": 181,

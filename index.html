@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Amir Finance - مدیریت مالی شخصی</title>
 
     <!-- Material Symbols (Local / Offline) -->
@@ -104,8 +104,8 @@
     <link rel="apple-touch-startup-image" href="/apple-splash-2048-1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
 
     <!-- Android & Fallback Splash Screens -->
-    <link rel="apple-touch-startup-image" href="splash-portrait.png" media="(orientation: portrait)" />
-    <link rel="apple-touch-startup-image" href="splash-landscape.png" media="(orientation: landscape)" />
+    <link rel="apple-touch-startup-image" href="/splash-portrait.png" media="(orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-landscape.png" media="(orientation: landscape)" />
     <!-- Local Offline Vendor Dependencies -->
     <script src="vendor/tailwindcss.js"></script>
     <link rel="stylesheet" href="vendor/vazirmatn.css" />
@@ -148,11 +148,25 @@
         }
     </script>
     <style>
+        html, body, #root {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
         body {
             font-family: 'Vazirmatn', sans-serif;
             background-color: #f8fafc;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Prevent auto-zoom on mobile focus */
+        input, textarea, select {
+            font-size: 16px !important;
         }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
