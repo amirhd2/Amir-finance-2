@@ -10,7 +10,7 @@ function updateVersionTags() {
   if (fs.existsSync(versionPath)) {
     try {
       const vData = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
-      const versionTag = `${vData.installedVersion || '2.1.2'}-b${vData.buildNumber || 203}`;
+      const versionTag = `${vData.installedVersion || '2.1.3'}-b${vData.buildNumber || 204}`;
 
       if (fs.existsSync(indexHtmlPath)) {
         let html = fs.readFileSync(indexHtmlPath, 'utf8');

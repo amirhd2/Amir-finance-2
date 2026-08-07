@@ -1,15 +1,29 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "2.1.2",
-  "buildNumber": 203,
+  "installedVersion": "2.1.3",
+  "buildNumber": 204,
   "releaseDate": "2026-08-07",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "2.1.2",
-  "latestBuild": 203,
+  "latestVersion": "2.1.3",
+  "latestBuild": 204,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "2.1.3",
+      "buildNumber": 204,
+      "releaseDate": "2026-08-07",
+      "releaseChannel": "Stable",
+      "commitHash": "v213mouseFix",
+      "commitMessage": "release: v2.1.3 - fixed edit card layout & side margins, smooth desktop mouse scrolling (removed snap locking), auto-scroll to first card on wizard launch",
+      "changes": [
+        "حفظ فاصله کناری و ظاهر اصلی کارت‌ها در زمان ویرایش بدون زوم شدگی یا بهم‌ریختگی (Preserved Card Margins & Unzoomed Appearance)",
+        "نمایش همیشگی اولین کارت در ابتدای باز شدن حالت ویرایش (Auto-scroll to First Card on Launch)",
+        "رفع کامل قفل شدن و پرش اسکرول موس روی دسکتاپ (Fixed Desktop Mouse Scroll & Snap Locking Issue)",
+        "بهبود روان‌تر شدن حرکت استیکی کارت‌ها در دسکتاپ و موبایل"
+      ]
+    },
     {
       "version": "2.1.2",
       "buildNumber": 203,

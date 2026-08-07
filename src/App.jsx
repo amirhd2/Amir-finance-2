@@ -3301,15 +3301,29 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "2.1.2",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '203', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "2.1.3",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '204', 10),
                 releaseDate: "2026-08-07",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "2.1.2",
-                latestBuild: 203,
+                latestVersion: "2.1.3",
+                latestBuild: 204,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "2.1.3",
+                        buildNumber: 204,
+                        releaseDate: "2026-08-07",
+                        releaseChannel: "Stable",
+                        commitHash: "v213mouseFix",
+                        commitMessage: "release: v2.1.3 - fixed edit card layout & side margins, smooth desktop mouse scrolling (removed snap locking), auto-scroll to first card on wizard launch",
+                        changes: [
+                            "حفظ فاصله کناری و ظاهر اصلی کارت‌ها در زمان ویرایش بدون زوم شدگی یا بهم‌ریختگی (Preserved Card Margins & Unzoomed Appearance)",
+                            "نمایش همیشگی اولین کارت در ابتدای باز شدن حالت ویرایش (Auto-scroll to First Card on Launch)",
+                            "رفع کامل قفل شدن و پرش اسکرول موس روی دسکتاپ (Fixed Desktop Mouse Scroll & Snap Locking Issue)",
+                            "بهبود روان‌تر شدن حرکت استیکی کارت‌ها در دسکتاپ و موبایل"
+                        ]
+                    },
                     {
                         version: "2.1.2",
                         buildNumber: 203,
@@ -4124,8 +4138,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 203;
-                const EMBEDDED_VERSION = "2.1.2";
+                const EMBEDDED_BUILD = 204;
+                const EMBEDDED_VERSION = "2.1.3";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4270,6 +4284,26 @@
             const [cardFormBackup, setCardFormBackup] = useState(null);
             const [showUnsavedConfirmDialog, setShowUnsavedConfirmDialog] = useState(false);
             const [wizardViewStyle, setWizardViewStyle] = useState('auto'); // 'auto', 'stacked', 'step'
+            const editCardsContainerRef = useRef(null);
+
+            useEffect(() => {
+                if (showStackWizard) {
+                    setCurrentCardIdx(0);
+                    setEditingCardId(null);
+                    const scrollToTop = () => {
+                        if (editCardsContainerRef.current) {
+                            editCardsContainerRef.current.scrollTop = 0;
+                        }
+                    };
+                    scrollToTop();
+                    const t1 = setTimeout(scrollToTop, 40);
+                    const t2 = setTimeout(scrollToTop, 120);
+                    return () => {
+                        clearTimeout(t1);
+                        clearTimeout(t2);
+                    };
+                }
+            }, [showStackWizard, wizardMode, wizardType]);
 
             // Wheel Picker Date States
             const initialDevDate = getDeviceJalaliDate();
@@ -10254,7 +10288,10 @@
                                         /* Premium Mobile Vertical Sticky Stacked Cards Editing View */
                                         <div className="w-full flex flex-col items-center h-full max-h-[92vh] relative">
                                             {/* Scrollable Floating Cards Area */}
-                                            <div className="w-full flex-1 overflow-y-auto hide-scrollbar py-2 px-1 space-y-4 snap-y snap-mandatory touch-pan-y relative pb-48">
+                                            <div 
+                                                ref={editCardsContainerRef}
+                                                className="w-full flex-1 overflow-y-auto hide-scrollbar py-2 px-1 space-y-5 relative pb-44"
+                                            >
                                                 {activeCards.map((card, index) => {
                                                     const isEditingThis = editingCardId === card.id;
                                                     const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
@@ -10268,7 +10305,7 @@
                                                             initial={{ opacity: 0, y: 20 }}
                                                             animate={{ 
                                                                 opacity: isOtherCardBlur ? 0.35 : 1, 
-                                                                scale: isEditingThis ? 1.0 : (isOtherCardBlur ? 0.88 : 0.92),
+                                                                scale: isEditingThis ? 1.0 : (isOtherCardBlur ? 0.95 : 0.98),
                                                                 y: 0 
                                                             }}
                                                             transition={{ type: "spring", stiffness: 380, damping: 26 }}
@@ -10276,10 +10313,10 @@
                                                                 top: `${12 + index * 8}px`,
                                                                 zIndex: isEditingThis ? 40 : 10 + index
                                                             }}
-                                                            className={`sticky snap-start rounded-[28px] p-4.5 border transition-all duration-250 ease-out bg-white dark:bg-slate-800 min-h-[410px] h-[410px] flex flex-col justify-between ${
+                                                            className={`sticky rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 min-h-[410px] flex flex-col justify-between w-[96%] max-w-md mx-auto ${
                                                                 isEditingThis 
-                                                                    ? 'w-full shadow-2xl shadow-indigo-500/25 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' 
-                                                                    : 'w-[92%] mx-auto shadow-[0_-12px_28px_rgba(15,23,42,0.18)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white/80 dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
+                                                                    ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' 
+                                                                    : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
                                                             } ${
                                                                 isOtherCardBlur ? 'blur-[1.5px] pointer-events-none select-none' : ''
                                                             } ${
@@ -10291,78 +10328,83 @@
                                                                 }
                                                             }}
                                                         >
-                                                            {/* Card Title Header */}
-                                                            <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-700/60 mb-2 shrink-0">
-                                                                <div className="flex items-center space-x-2 space-x-reverse">
-                                                                    <div className={`w-7 h-7 rounded-xl flex items-center justify-center font-extrabold text-xs transition-all ${
-                                                                        isEditingThis
-                                                                            ? 'bg-indigo-600 text-white shadow-md scale-105'
-                                                                            : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
-                                                                    }`}>
-                                                                        {index + 1}
-                                                                    </div>
-                                                                    <h4 className="font-extrabold text-xs text-slate-800 dark:text-slate-100">
-                                                                        {card.title}
-                                                                    </h4>
-                                                                </div>
-
-                                                                <div className="flex items-center space-x-2 space-x-reverse">
-                                                                    {isModified && (
-                                                                        <span className="inline-flex items-center gap-1 bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30 shadow-2xs">
-                                                                            <Icon name="check" className="w-3 h-3" />
-                                                                            <span>اصلاح‌شده</span>
-                                                                        </span>
-                                                                    )}
-
-                                                                    {!isEditingThis && (
-                                                                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-full">
-                                                                            لمس جهت ویرایش
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Card Editable Inputs Body */}
-                                                            <div className={`flex-1 overflow-y-auto hide-scrollbar my-1 transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-90' : ''}`}>
+                                                            {/* Card Editable Inputs Body - Exact match to stack card appearance */}
+                                                            <div className={`flex-1 py-1 transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-95' : ''}`}>
                                                                 {card.render()}
                                                             </div>
 
-                                                            {/* Card Action Bar (Visible when editing card) */}
-                                                            <AnimatePresence>
-                                                                {isEditingThis && (
-                                                                    <motion.div 
-                                                                        initial={{ opacity: 0, height: 0 }}
-                                                                        animate={{ opacity: 1, height: 'auto' }}
-                                                                        exit={{ opacity: 0, height: 0 }}
-                                                                        transition={{ duration: 0.22 }}
-                                                                        className="pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse shrink-0"
-                                                                    >
-                                                                        <button 
-                                                                            type="button"
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                cancelEditingCard();
-                                                                            }}
-                                                                            className="w-1/3 py-2.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-all active:scale-95 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
+                                                            {/* Card Action Bar */}
+                                                            <div className="pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between shrink-0 h-12">
+                                                                <AnimatePresence mode="wait">
+                                                                    {isEditingThis ? (
+                                                                        <motion.div 
+                                                                            key="editing-actions"
+                                                                            initial={{ opacity: 0, y: 5 }}
+                                                                            animate={{ opacity: 1, y: 0 }}
+                                                                            exit={{ opacity: 0, y: -5 }}
+                                                                            transition={{ duration: 0.18 }}
+                                                                            className="w-full flex items-center space-x-2 space-x-reverse"
                                                                         >
-                                                                            <Icon name="x" className="w-3.5 h-3.5 shrink-0" />
-                                                                            <span>انصراف</span>
-                                                                        </button>
+                                                                            <button 
+                                                                                type="button"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    cancelEditingCard();
+                                                                                }}
+                                                                                className="w-1/3 py-2.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-all active:scale-95 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
+                                                                            >
+                                                                                <Icon name="x" className="w-3.5 h-3.5 shrink-0" />
+                                                                                <span>انصراف</span>
+                                                                            </button>
 
-                                                                        <button 
-                                                                            type="button"
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                saveEditingCard(card);
-                                                                            }}
-                                                                            className="w-2/3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1.5 space-x-reverse"
+                                                                            <button 
+                                                                                type="button"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    saveEditingCard(card);
+                                                                                }}
+                                                                                className="w-2/3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1.5 space-x-reverse"
+                                                                            >
+                                                                                <Icon name="check" className="w-3.5 h-3.5 shrink-0" />
+                                                                                <span>ثبت تغییرات</span>
+                                                                            </button>
+                                                                        </motion.div>
+                                                                    ) : (
+                                                                        <motion.div 
+                                                                            key="view-actions"
+                                                                            initial={{ opacity: 0, y: -5 }}
+                                                                            animate={{ opacity: 1, y: 0 }}
+                                                                            exit={{ opacity: 0, y: 5 }}
+                                                                            transition={{ duration: 0.18 }}
+                                                                            className="w-full flex items-center justify-between"
                                                                         >
-                                                                            <Icon name="check" className="w-3.5 h-3.5 shrink-0" />
-                                                                            <span>ثبت تغییرات</span>
-                                                                        </button>
-                                                                    </motion.div>
-                                                                )}
-                                                            </AnimatePresence>
+                                                                            <div className="flex items-center space-x-2 space-x-reverse">
+                                                                                <span className="text-xs font-extrabold text-slate-500 dark:text-slate-400">
+                                                                                    کارت {index + 1} از {activeCards.length}: {card.title}
+                                                                                </span>
+                                                                                {isModified && (
+                                                                                    <span className="inline-flex items-center gap-1 bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-emerald-500/30">
+                                                                                        <Icon name="check" className="w-3 h-3" />
+                                                                                        <span>اصلاح‌شده</span>
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
+
+                                                                            <button 
+                                                                                type="button"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    startEditingCard(card);
+                                                                                }}
+                                                                                className="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all cursor-pointer flex items-center space-x-1 space-x-reverse"
+                                                                            >
+                                                                                <Icon name="edit-2" className="w-3.5 h-3.5 shrink-0" />
+                                                                                <span>ویرایش</span>
+                                                                            </button>
+                                                                        </motion.div>
+                                                                    )}
+                                                                </AnimatePresence>
+                                                            </div>
                                                         </motion.div>
                                                     );
                                                 })}
