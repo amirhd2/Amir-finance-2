@@ -1,15 +1,32 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "2.0.1",
-  "buildNumber": 201,
+  "installedVersion": "2.1.0",
+  "buildNumber": 202,
   "releaseDate": "2026-08-07",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "2.0.1",
-  "latestBuild": 201,
+  "latestVersion": "2.1.0",
+  "latestBuild": 202,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "2.1.0",
+      "buildNumber": 202,
+      "releaseDate": "2026-08-07",
+      "releaseChannel": "Stable",
+      "commitHash": "v210mobileEdit",
+      "commitMessage": "release: v2.1.0 - premium mobile editing experience with vertical sticky stacked cards, iOS scroll snap, inline card editing & unsaved changes sticky bottom bar",
+      "changes": [
+        "طراحی و پیاده‌سازی تجربه جدید و اختصاصی ویرایش کارت‌های استک (Sticky Stacked Cards) در نسخه موبایل PWA",
+        "پشتیبانی از اسکرول عمودی روان، چسبندگی کارت‌ها در بالای صفحه به سبک iOS (Sticky Headers) و لغزش نرم کارت بعدی روی کارت قبلی با Scroll Snap",
+        "نمایش کارت‌ها به‌صورت شناور با عرض اولیه ۹۲٪، گوشه‌های گرد، فواصل بهینه و حذف کامل دکمه‌های قبلی/بعدی در حالت ویرایش",
+        "قابلیت ویرایش درون‌خطی کارت فعال با لمس، بزرگ‌نمایی نرم (از ۰.۹۲ به ۱.۰) و انیمیشن مات و کم‌رنگ شدن سایر کارت‌ها (Blur & Dimming)",
+        "افزودن دکمه‌های «ثبت تغییرات» و «انصراف» به همراه نشانگر سبز «اصلاح‌شده» برای شناسایی کارت‌های تغییریافته",
+        "افزودن نوار شناور پایین صفحه با شمارنده تغییرات ذخیره‌نشده و دکمه «ثبت همه تغییرات» جهت ذخیره یکجای داده‌ها",
+        "نمایش پنجره هشدار تایید هوشمند هنگام تمایل کاربر به خروج از ویرایشگر در صورت وجود تغییرات ذخیره‌نشده"
+      ]
+    },
     {
       "version": "2.0.1",
       "buildNumber": 201,

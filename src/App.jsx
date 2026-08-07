@@ -3301,15 +3301,32 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "2.0.1",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '201', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "2.1.0",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '202', 10),
                 releaseDate: "2026-08-07",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "2.0.1",
-                latestBuild: 201,
+                latestVersion: "2.1.0",
+                latestBuild: 202,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "2.1.0",
+                        buildNumber: 202,
+                        releaseDate: "2026-08-07",
+                        releaseChannel: "Stable",
+                        commitHash: "v210mobileEdit",
+                        commitMessage: "release: v2.1.0 - premium mobile editing experience with vertical sticky stacked cards, iOS scroll snap, inline card editing & unsaved changes sticky bottom bar",
+                        changes: [
+                            "طراحی و پیاده‌سازی تجربه جدید و اختصاصی ویرایش کارت‌های استک (Sticky Stacked Cards) در نسخه موبایل PWA",
+                            "پشتیبانی از اسکرول عمودی روان، چسبندگی کارت‌ها در بالای صفحه به سبک iOS (Sticky Headers) و لغزش نرم کارت بعدی روی کارت قبلی با Scroll Snap",
+                            "نمایش کارت‌ها به‌صورت شناور با عرض اولیه ۹۲٪، گوشه‌های گرد، فواصل بهینه و حذف کامل دکمه‌های قبلی/بعدی در حالت ویرایش",
+                            "قابلیت ویرایش درون‌خطی کارت فعال با لمس، بزرگ‌نمایی نرم (از ۰.۹۲ به ۱.۰) و انیمیشن مات و کم‌رنگ شدن سایر کارت‌ها (Blur & Dimming)",
+                            "افزودن دکمه‌های «ثبت تغییرات» و «انصراف» به همراه نشانگر سبز «اصلاح‌شده» برای شناسایی کارت‌های تغییریافته",
+                            "افزودن نوار شناور پایین صفحه با شمارنده تغییرات ذخیره‌نشده و دکمه «ثبت همه تغییرات» جهت ذخیره یکجای داده‌ها",
+                            "نمایش پنجره هشدار تایید هوشمند هنگام تمایل کاربر به خروج از ویرایشگر در صورت وجود تغییرات ذخیره‌نشده"
+                        ]
+                    },
                     {
                         version: "2.0.1",
                         buildNumber: 201,
@@ -4092,8 +4109,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 201;
-                const EMBEDDED_VERSION = "2.0.1";
+                const EMBEDDED_BUILD = 202;
+                const EMBEDDED_VERSION = "2.1.0";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4231,6 +4248,13 @@
             const [isFinalSubmitting, setIsFinalSubmitting] = useState(false);
             const [validationErrors, setValidationErrors] = useState({});
             const [shakeCardId, setShakeCardId] = useState(null);
+
+            // Premium Mobile Editing Experience States
+            const [editingCardId, setEditingCardId] = useState(null);
+            const [modifiedCardIds, setModifiedCardIds] = useState([]);
+            const [cardFormBackup, setCardFormBackup] = useState(null);
+            const [showUnsavedConfirmDialog, setShowUnsavedConfirmDialog] = useState(false);
+            const [wizardViewStyle, setWizardViewStyle] = useState('auto'); // 'auto', 'stacked', 'step'
 
             // Wheel Picker Date States
             const initialDevDate = getDeviceJalaliDate();
@@ -5036,6 +5060,11 @@
                 setWizardType(type);
                 setWizardMode(mode);
                 setCurrentCardIdx(0);
+                setEditingCardId(null);
+                setModifiedCardIds([]);
+                setCardFormBackup(null);
+                setShowUnsavedConfirmDialog(false);
+                setValidationErrors({});
 
                 const deviceDate = getDeviceJalaliDate();
                 const todayFormatted = `${deviceDate.year}/${String(jalaliMonths.indexOf(deviceDate.month) + 1).padStart(2, '0')}/${String(deviceDate.day).padStart(2, '0')}`;
@@ -5965,6 +5994,134 @@
                 }
 
                 setShowStackWizard(false);
+            };
+
+            // Stack Wizard Close & Mobile Editing Handlers
+            const closeStackWizard = (force = false) => {
+                if (!force && modifiedCardIds.length > 0) {
+                    setShowUnsavedConfirmDialog(true);
+                    return;
+                }
+                setEditingCardId(null);
+                setModifiedCardIds([]);
+                setCardFormBackup(null);
+                setShowUnsavedConfirmDialog(false);
+                setShowStackWizard(false);
+            };
+
+            const startEditingCard = (card) => {
+                setEditingCardId(card.id);
+                setCardFormBackup({
+                    loanForm: { ...loanForm },
+                    demandDebtForm: { ...demandDebtForm },
+                    installmentForm: { ...installmentForm },
+                    repaymentForm: { ...repaymentForm },
+                    contactWizardForm: { ...contactWizardForm },
+                    pickerDay,
+                    pickerMonth,
+                    pickerYear
+                });
+            };
+
+            const cancelEditingCard = () => {
+                if (cardFormBackup) {
+                    setLoanForm(cardFormBackup.loanForm);
+                    setDemandDebtForm(cardFormBackup.demandDebtForm);
+                    setInstallmentForm(cardFormBackup.installmentForm);
+                    setRepaymentForm(cardFormBackup.repaymentForm);
+                    setContactWizardForm(cardFormBackup.contactWizardForm);
+                    setPickerDay(cardFormBackup.pickerDay);
+                    setPickerMonth(cardFormBackup.pickerMonth);
+                    setPickerYear(cardFormBackup.pickerYear);
+                }
+                setEditingCardId(null);
+            };
+
+            const saveEditingCard = (card) => {
+                const triggerError = (fKey, msg) => {
+                    setValidationErrors({ [fKey]: msg });
+                    setShakeCardId(card.id);
+                    setTimeout(() => setShakeCardId(null), 450);
+                    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+                        try { navigator.vibrate([15, 30, 15]); } catch (e) {}
+                    }
+                };
+
+                let isValid = true;
+                if (wizardType === 'loan') {
+                    if (card.id === 'title_contact') {
+                        if (!loanForm.title.trim()) {
+                            triggerError('loan_title', 'لطفاً عنوان وام را وارد کنید');
+                            isValid = false;
+                        } else if (!loanForm.selectedContactId) {
+                            triggerError('loan_contact', 'لطفاً یک مخاطب انتخاب کنید');
+                            isValid = false;
+                        }
+                    } else if (card.id === 'principal_amount') {
+                        if ((Number(loanForm.principalAmount) || 0) <= 0) {
+                            triggerError('principal_amount', 'لطفاً مبلغ اصل وام را وارد نمایید');
+                            isValid = false;
+                        }
+                    } else if (card.id === 'total_repayment') {
+                        if ((Number(loanForm.totalRepayment) || 0) <= 0) {
+                            triggerError('total_repayment', 'لطفاً مبلغ کل بازپرداخت را وارد نمایید');
+                            isValid = false;
+                        }
+                    } else if (card.id === 'installment_amount') {
+                        if ((Number(loanForm.installmentAmount) || 0) <= 0) {
+                            triggerError('installment_amount', 'لطفاً مبلغ هر قسط را وارد نمایید');
+                            isValid = false;
+                        }
+                    }
+                } else if (wizardType === 'demand' || wizardType === 'debt') {
+                    if (card.id === 'demand_contact' || card.id === 'debt_contact') {
+                        if (!demandDebtForm.selectedContactId) {
+                            triggerError('contact', 'لطفاً یک مخاطب انتخاب کنید');
+                            isValid = false;
+                        }
+                    } else if (card.id === 'demand_amount' || card.id === 'debt_amount') {
+                        if ((Number(demandDebtForm.amount) || 0) <= 0) {
+                            triggerError('amount', 'لطفاً مبلغ را وارد نمایید');
+                            isValid = false;
+                        }
+                    }
+                } else if (wizardType === 'installment') {
+                    if (card.id === 'inst_select_loan') {
+                        if (!installmentForm.selectedLoanId) {
+                            triggerError('inst_select_loan', 'لطفاً یک وام را انتخاب کنید');
+                            isValid = false;
+                        }
+                    } else if (card.id === 'inst_amount') {
+                        if ((Number(installmentForm.amount) || 0) <= 0) {
+                            triggerError('inst_amount', 'لطفاً مبلغ پرداخت قسط را وارد نمایید');
+                            isValid = false;
+                        }
+                    }
+                } else if (wizardType === 'contact') {
+                    if (card.id === 'contact_firstname' || card.id === 'contact_info') {
+                        if (!contactWizardForm.firstName.trim()) {
+                            triggerError('contact_firstname', 'لطفاً نام مخاطب را وارد کنید');
+                            isValid = false;
+                        }
+                    }
+                }
+
+                if (!isValid) return;
+
+                setValidationErrors({});
+                if (!modifiedCardIds.includes(card.id)) {
+                    setModifiedCardIds(prev => [...prev, card.id]);
+                }
+                setEditingCardId(null);
+                showToast('تغییرات کارت ثبت شد');
+            };
+
+            const handleSaveAllChanges = () => {
+                saveWizardData();
+                setModifiedCardIds([]);
+                setEditingCardId(null);
+                setShowStackWizard(false);
+                showToast('تمامی تغییرات با موفقیت ثبت و ذخیره شدند');
             };
 
             const handleCreateContact = () => {
@@ -10076,46 +10233,300 @@
                                     animate="animate"
                                     exit="exit"
                                     style={{ transformOrigin: "center center" }}
-                                    className="w-full max-w-md md:max-w-2xl flex flex-col items-center mx-auto"
+                                    className="w-full max-w-md md:max-w-2xl flex flex-col items-center mx-auto h-full"
                                 >
-                                    <div className={`card-stack-container w-full ${isFinalSubmitting ? 'card-stack-fall-submit' : ''}`}>
-                                        {activeCards.map((card, index) => (
-                                            <StackCardItem 
-                                                key={card.id}
-                                                card={card}
-                                                index={index}
-                                                currentCardIdx={currentCardIdx}
-                                                animatingCard={animatingCard}
-                                                animatingPrevCard={animatingPrevCard}
-                                                handlePrevCard={handlePrevCard}
-                                                handleNextCard={() => handleNextCard(activeCards)}
-                                                totalCards={activeCards.length}
-                                                showStackWizard={showStackWizard}
-                                            />
-                                        ))}
-                                    </div>
+                                    {(wizardMode === 'edit' || wizardViewStyle === 'stacked') ? (
+                                        /* Premium Mobile Vertical Sticky Stacked Cards Editing View */
+                                        <div className="w-full flex flex-col items-center h-full max-h-[88vh] relative">
+                                            {/* Modal Sticky Header */}
+                                            <div className="w-full px-3 py-2 flex items-center justify-between border-b border-white/15 mb-2 shrink-0 bg-white/5 backdrop-blur-md rounded-2xl">
+                                                <div className="flex items-center space-x-2 space-x-reverse text-white">
+                                                    <div className="w-8 h-8 rounded-xl bg-indigo-500/25 border border-indigo-400/40 flex items-center justify-center text-indigo-300">
+                                                        <Icon name="edit-3" className="w-4 h-4" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-extrabold text-xs text-white">
+                                                            {wizardMode === 'edit' ? 'ویرایش کارت‌های اطلاعات' : 'نمای پشته‌ای کارت‌ها'}
+                                                        </h3>
+                                                        <p className="text-[10px] text-slate-300">
+                                                            روی کارت ضربه بزنید تا ویرایش درون‌خطی شود
+                                                        </p>
+                                                    </div>
+                                                </div>
 
-                                    {/* Progress dots */}
-                                    <div className="flex justify-center items-center space-x-1.5 space-x-reverse mt-3">
-                                        {activeCards.map((_, i) => (
-                                            <div 
-                                                key={i} 
-                                                className={`h-1.5 rounded-full transition-all duration-300 ${
-                                                    i === currentCardIdx ? 'w-6 bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]' : 'w-1.5 bg-slate-400/40'
-                                                }`}
-                                            />
-                                        ))}
-                                    </div>
+                                                <div className="flex items-center space-x-2 space-x-reverse">
+                                                    {/* View Mode Switcher Toggle */}
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => setWizardViewStyle(wizardViewStyle === 'stacked' ? 'step' : 'stacked')}
+                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white/90 border border-white/20 transition-all cursor-pointer flex items-center gap-1">
+                                                        <Icon name="layers" className="w-3 h-3" />
+                                                        <span>{wizardViewStyle === 'stacked' ? 'گام به گام' : 'نمای عمومی'}</span>
+                                                    </button>
 
-                                    {/* Bottom Center Close X Button */}
-                                    <div className="flex justify-center items-center mt-5 mb-1">
-                                        <motion.button 
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => closeStackWizard(false)}
+                                                        className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer"
+                                                        title="بستن"
+                                                    >
+                                                        <Icon name="x" className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Scrollable Floating Cards Area */}
+                                            <div className="w-full flex-1 overflow-y-auto hide-scrollbar py-2 px-1 space-y-4 snap-y snap-mandatory touch-pan-y relative pb-28">
+                                                {activeCards.map((card, index) => {
+                                                    const isEditingThis = editingCardId === card.id;
+                                                    const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
+                                                    const isModified = modifiedCardIds.includes(card.id);
+
+                                                    return (
+                                                        <motion.div 
+                                                            key={card.id}
+                                                            id={`sticky-card-${card.id}`}
+                                                            layout
+                                                            initial={{ opacity: 0, y: 20 }}
+                                                            animate={{ 
+                                                                opacity: isOtherCardBlur ? 0.35 : 1, 
+                                                                scale: isEditingThis ? 1.0 : (isOtherCardBlur ? 0.88 : 0.92),
+                                                                y: 0 
+                                                            }}
+                                                            transition={{ type: "spring", stiffness: 380, damping: 26 }}
+                                                            style={{
+                                                                top: `${12 + index * 8}px`,
+                                                                zIndex: isEditingThis ? 40 : 10 + index
+                                                            }}
+                                                            className={`sticky snap-start rounded-[28px] p-4 border transition-all duration-250 ease-out bg-white dark:bg-slate-800 ${
+                                                                isEditingThis 
+                                                                    ? 'w-full shadow-2xl shadow-indigo-500/25 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' 
+                                                                    : 'w-[92%] mx-auto shadow-md border-slate-100 dark:border-slate-700/80 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
+                                                            } ${
+                                                                isOtherCardBlur ? 'blur-[1.5px] pointer-events-none select-none' : ''
+                                                            } ${
+                                                                shakeCardId === card.id ? 'animate-shake' : ''
+                                                            }`}
+                                                            onClick={(e) => {
+                                                                if (!isEditingThis && editingCardId === null) {
+                                                                    startEditingCard(card);
+                                                                }
+                                                            }}
+                                                        >
+                                                            {/* Card Title Header */}
+                                                            <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-700/60 mb-3">
+                                                                <div className="flex items-center space-x-2 space-x-reverse">
+                                                                    <div className={`w-7 h-7 rounded-xl flex items-center justify-center font-extrabold text-xs transition-all ${
+                                                                        isEditingThis
+                                                                            ? 'bg-indigo-600 text-white shadow-md scale-105'
+                                                                            : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'
+                                                                    }`}>
+                                                                        {index + 1}
+                                                                    </div>
+                                                                    <h4 className="font-extrabold text-xs text-slate-800 dark:text-slate-100">
+                                                                        {card.title}
+                                                                    </h4>
+                                                                </div>
+
+                                                                <div className="flex items-center space-x-2 space-x-reverse">
+                                                                    {isModified && (
+                                                                        <span className="inline-flex items-center gap-1 bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30 shadow-2xs">
+                                                                            <Icon name="check" className="w-3 h-3" />
+                                                                            <span>اصلاح‌شده</span>
+                                                                        </span>
+                                                                    )}
+
+                                                                    {!isEditingThis && (
+                                                                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-full">
+                                                                            لمس جهت ویرایش
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Card Editable Inputs */}
+                                                            <div className={`transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-90' : ''}`}>
+                                                                {card.render()}
+                                                            </div>
+
+                                                            {/* Card Action Bar (Visible when editing card) */}
+                                                            <AnimatePresence>
+                                                                {isEditingThis && (
+                                                                    <motion.div 
+                                                                        initial={{ opacity: 0, height: 0 }}
+                                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                                        exit={{ opacity: 0, height: 0 }}
+                                                                        transition={{ duration: 0.22 }}
+                                                                        className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse"
+                                                                    >
+                                                                        <button 
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                cancelEditingCard();
+                                                                            }}
+                                                                            className="w-1/3 py-2.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-all active:scale-95 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
+                                                                        >
+                                                                            <Icon name="x" className="w-3.5 h-3.5 shrink-0" />
+                                                                            <span>انصراف</span>
+                                                                        </button>
+
+                                                                        <button 
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                saveEditingCard(card);
+                                                                            }}
+                                                                            className="w-2/3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1.5 space-x-reverse"
+                                                                        >
+                                                                            <Icon name="check" className="w-3.5 h-3.5 shrink-0" />
+                                                                            <span>ثبت تغییرات</span>
+                                                                        </button>
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </motion.div>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            {/* Unsaved Changes Sticky Bottom Action Bar */}
+                                            <AnimatePresence>
+                                                {modifiedCardIds.length > 0 && (
+                                                    <motion.div 
+                                                        initial={{ opacity: 0, y: 35, scale: 0.95 }}
+                                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                        exit={{ opacity: 0, y: 35, scale: 0.95 }}
+                                                        transition={{ type: "spring", stiffness: 420, damping: 26 }}
+                                                        className="absolute bottom-2 left-2 right-2 z-50 w-[95%] mx-auto bg-slate-900/95 dark:bg-slate-800/95 text-white p-3 rounded-2xl shadow-2xl backdrop-blur-xl border border-white/20 flex items-center justify-between"
+                                                    >
+                                                        <div className="flex items-center space-x-2 space-x-reverse">
+                                                            <div className="w-8 h-8 rounded-xl bg-amber-500/25 border border-amber-400/30 text-amber-300 flex items-center justify-center font-extrabold text-xs shrink-0 shadow-sm">
+                                                                {modifiedCardIds.length}
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-xs font-bold text-white">
+                                                                    {modifiedCardIds.length} تغییر ذخیره‌نشده
+                                                                </div>
+                                                                <div className="text-[10px] text-slate-300">برای ثبت کلی داده‌ها کلیک کنید</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <button 
+                                                            type="button"
+                                                            onClick={handleSaveAllChanges}
+                                                            className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg transition-all flex items-center space-x-1.5 space-x-reverse cursor-pointer"
+                                                        >
+                                                            <Icon name="check-circle" className="w-4 h-4" />
+                                                            <span>ثبت همه تغییرات</span>
+                                                        </button>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    ) : (
+                                        /* Step-by-Step Stack Card Mode */
+                                        <div className="w-full flex flex-col items-center">
+                                            {/* Header with View Toggle */}
+                                            <div className="w-full px-2 py-1 flex items-center justify-end mb-1">
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setWizardViewStyle('stacked')}
+                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 transition-all cursor-pointer flex items-center gap-1">
+                                                    <Icon name="layers" className="w-3 h-3" />
+                                                    <span>نمای یکجای کارت‌ها</span>
+                                                </button>
+                                            </div>
+
+                                            <div className={`card-stack-container w-full ${isFinalSubmitting ? 'card-stack-fall-submit' : ''}`}>
+                                                {activeCards.map((card, index) => (
+                                                    <StackCardItem 
+                                                        key={card.id}
+                                                        card={card}
+                                                        index={index}
+                                                        currentCardIdx={currentCardIdx}
+                                                        animatingCard={animatingCard}
+                                                        animatingPrevCard={animatingPrevCard}
+                                                        handlePrevCard={handlePrevCard}
+                                                        handleNextCard={() => handleNextCard(activeCards)}
+                                                        totalCards={activeCards.length}
+                                                        showStackWizard={showStackWizard}
+                                                        shakeCardId={shakeCardId}
+                                                    />
+                                                ))}
+                                            </div>
+
+                                            {/* Progress dots */}
+                                            <div className="flex justify-center items-center space-x-1.5 space-x-reverse mt-3">
+                                                {activeCards.map((_, i) => (
+                                                    <div 
+                                                        key={i} 
+                                                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                                                            i === currentCardIdx ? 'w-6 bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]' : 'w-1.5 bg-slate-400/40'
+                                                        }`}
+                                                    />
+                                                ))}
+                                            </div>
+
+                                            {/* Bottom Center Close X Button */}
+                                            <div className="flex justify-center items-center mt-5 mb-1">
+                                                <motion.button 
+                                                    type="button"
+                                                    whileTap={{ scale: 0.88 }}
+                                                    onClick={() => closeStackWizard(false)}
+                                                    className="w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 active:scale-90 text-white flex items-center justify-center border border-white/25 shadow-xl backdrop-blur-md transition-all cursor-pointer">
+                                                    <Icon name="x" className="w-5 h-5" />
+                                                </motion.button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Exit Confirmation Dialog for Unsaved Changes */}
+                    <AnimatePresence>
+                        {showUnsavedConfirmDialog && (
+                            <motion.div 
+                                key="unsaved-confirm-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4"
+                            >
+                                <motion.div 
+                                    key="unsaved-confirm-panel"
+                                    initial={{ scale: 0.88, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    exit={{ scale: 0.88, opacity: 0 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                                    className="bg-white dark:bg-slate-800 rounded-3xl p-5 max-w-xs w-full text-center space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700"
+                                >
+                                    <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 mx-auto flex items-center justify-center">
+                                        <Icon name="alert-triangle" className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-extrabold text-slate-800 dark:text-white text-sm">تغییرات ذخیره‌نشده</h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                                            شما {modifiedCardIds.length} تغییر ذخیره‌نشده دارید. آیا مایلید تغییرات نادیده گرفته شوند و خارج شوید؟
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button 
                                             type="button"
-                                            whileTap={{ scale: 0.88 }}
-                                            onClick={() => setShowStackWizard(false)}
-                                            className="w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 active:scale-90 text-white flex items-center justify-center border border-white/25 shadow-xl backdrop-blur-md transition-all cursor-pointer">
-                                            <Icon name="x" className="w-5 h-5" />
-                                        </motion.button>
+                                            onClick={() => setShowUnsavedConfirmDialog(false)}
+                                            className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                                        >
+                                            ادامه ویرایش
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            onClick={() => closeStackWizard(true)}
+                                            className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors"
+                                        >
+                                            خروج بدون ذخیره
+                                        </button>
                                     </div>
                                 </motion.div>
                             </motion.div>
