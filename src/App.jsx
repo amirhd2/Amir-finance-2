@@ -3301,15 +3301,29 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "2.0.0",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '200', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "2.0.1",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '201', 10),
                 releaseDate: "2026-08-07",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "2.0.0",
-                latestBuild: 200,
+                latestVersion: "2.0.1",
+                latestBuild: 201,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "2.0.1",
+                        buildNumber: 201,
+                        releaseDate: "2026-08-07",
+                        releaseChannel: "Stable",
+                        commitHash: "v201rel",
+                        commitMessage: "release: v2.0.1 - contact wizard card improvements, virtual keyboard focus fix, centered accounts headers & profile page sub-filter buttons",
+                        changes: [
+                            "حذف دکمه «حذف مخاطب» از بالای کارت ویرایش مخاطب در استک کارت جهت جلوگیری از نیاز به اسکرول کارت",
+                            "اصلاح و روان‌سازی کامل عملکرد کلیک روی کادرهای ورودی در کارت‌های استک جهت باز شدن آنی کیبورد و فوکوس بدون مشکل روی موبایل و آیفون",
+                            "بازطراحی عناوین بخش‌های وام‌ها، طلب‌ها و بدهی‌ها در صفحه حساب‌ها به صورت مرکزچین و حاشیه‌دار در تمام عرض صفحه",
+                            "افزودن دکمه‌های فیلتر دوگانه (اصلی و بایگانی به همراه شمارنده تعداد) در صفحه پروفایل مخاطب برای هر ۳ بخش وام‌ها، بدهی‌ها و طلب‌ها"
+                        ]
+                    },
                     {
                         version: "2.0.0",
                         buildNumber: 200,
@@ -4078,8 +4092,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 181;
-                const EMBEDDED_VERSION = "1.9.6";
+                const EMBEDDED_BUILD = 201;
+                const EMBEDDED_VERSION = "2.0.1";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');

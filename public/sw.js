@@ -97,6 +97,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Network-first strategy for app.compiled.js to ensure fresh code on reload when online
+  if (url.pathname.endsWith('/app.compiled.js') || url.pathname.endsWith('app.compiled.js')) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match('./app.compiled.js') || caches.match('app.compiled.js'))
+    );
+    return;
+  }
+
   // Navigation / HTML page requests (Network-first with immediate offline fallback to cached index.html)
   if (event.request.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html') || url.pathname.endsWith('index.html')) {
     event.respondWith(

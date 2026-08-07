@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amir-finance-v2.0.0-b200';
+const CACHE_NAME = 'amir-finance-v2.0.1-b201';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -93,6 +93,22 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => caches.match('./version.json') || caches.match('version.json'))
+    );
+    return;
+  }
+
+  // Network-first strategy for app.compiled.js to ensure fresh code on reload when online
+  if (url.pathname.endsWith('/app.compiled.js') || url.pathname.endsWith('app.compiled.js')) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match('./app.compiled.js') || caches.match('app.compiled.js'))
     );
     return;
   }
