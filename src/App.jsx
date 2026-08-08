@@ -2589,7 +2589,7 @@
             );
         }
 
-        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [] }) {
+        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [], isHighlighted = false }) {
             const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
 
             const { line1, line2, line3 } = (() => {
@@ -2644,7 +2644,12 @@
                     onDelete={(confirmCb) => onDelete && onDelete(tx, confirmCb)}
                     onCardClick={() => onEdit && onEdit(tx)}
                 >
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">
+                    <div 
+                        id={`tx-card-${tx.id}`}
+                        className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${
+                            isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''
+                        }`}
+                    >
                         <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
                             <div className={`w-12 h-12 rounded-2xl ${ (tx.type === 'debt' || tx.type === 'demand_repayment') ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center shrink-0`}>
                                 {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-6 h-6" />}
@@ -2697,12 +2702,14 @@
         }) {
             const cardRef = useRef(null);
             const depth = index - currentCardIdx;
-            const isPrevReturningCard = animatingPrevCard && index === currentCardIdx - 1;
+            
+            const isExitingNextCard = animatingCard && index === currentCardIdx - 1;
+            const isReturningPrevCard = animatingPrevCard && index === currentCardIdx;
             const isShaking = shakeCardId === card.id;
 
             // Focus input smoothly and immediately when changing card step or opening stack wizard
             useEffect(() => {
-                if (depth === 0 && showStackWizard && cardRef.current && wizardViewStyle === 'step') {
+                if (depth === 0 && showStackWizard && cardRef.current) {
                     const focusActiveInput = () => {
                         if (!cardRef.current) return;
                         const targetInput = cardRef.current.querySelector('input[autofocus]') ||
@@ -2730,15 +2737,15 @@
                 }
             }, [depth, currentCardIdx, showStackWizard]);
 
-            if (depth < 0 && !isPrevReturningCard) return null;
+            if (depth < 0 && !isExitingNextCard) return null;
 
             let depthAttr = 'hidden';
-            if (isPrevReturningCard || depth === 0) depthAttr = '0';
+            if (isReturningPrevCard || isExitingNextCard || depth === 0) depthAttr = '0';
             else if (depth === 1) depthAttr = '1';
             else if (depth === 2) depthAttr = '2';
 
-            const isExitNext = depth === 0 && animatingCard;
-            const isEnterPrev = isPrevReturningCard;
+            const isExitNext = isExitingNextCard;
+            const isEnterPrev = isReturningPrevCard;
 
             const isFirstCard = currentCardIdx === 0;
 
@@ -2748,13 +2755,13 @@
                     key={card.id}
                     data-depth={depthAttr}
                     className={`stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${
-                        depth !== 0 ? 'pointer-events-none select-none' : ''
+                        depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''
                     } ${
                         isShaking ? 'animate-shake' : ''
                     } ${
-                        isExitNext ? 'card-exit-to-back animating-next' : ''
+                        isExitNext ? 'animating-next' : ''
                     } ${
-                        isEnterPrev ? 'card-enter-from-back animating-prev' : ''
+                        isEnterPrev ? 'animating-prev' : ''
                     }`}
                 >
                     <div 
@@ -3300,15 +3307,30 @@
             const defaultVersionData = {
                 appName: "Amir Finance",
                 appLogo: "apple-touch-icon.png",
-                installedVersion: localStorage.getItem('amir_installed_version') || "2.1.3",
-                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '204', 10),
+                installedVersion: localStorage.getItem('amir_installed_version') || "2.1.5",
+                buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '206', 10),
                 releaseDate: "2026-08-07",
                 releaseChannel: "Stable",
                 channelLabel: "نسخه پایدار",
-                latestVersion: "2.1.3",
-                latestBuild: 204,
+                latestVersion: "2.1.5",
+                latestBuild: 206,
                 isUpdateAvailable: false,
                 history: [
+                    {
+                        version: "2.1.5",
+                        buildNumber: 206,
+                        releaseDate: "2026-08-08",
+                        releaseChannel: "Stable",
+                        commitHash: "v215stackFix",
+                        commitMessage: "release: v2.1.5 - optimized stack cards height, removed overview button, status bar matching theme, exact rewind animation on prev step",
+                        changes: [
+                            "حذف دکمه «نمای یکجای کارت‌ها» از بالای مدال استک کارت‌ها",
+                            "تطبیق و یکسان‌سازی دقیق ارتفاع تمامی کارت‌های استک و استیکی جهت حذف فضای خالی اضافه در پایین کارت‌ها",
+                            "هم‌رنگ شدن هوشمند status bar با پس‌زمینه برنامه در زمان باز بودن مدال استک کارت و کارت‌های استیکی",
+                            "اعمال انیمیشن دقیق بازگشت (Rewind) عینا معکوس انیمیشن خروج کارت در زمان کلیک روی دکمه «مرحله قبلی»",
+                            "انتشار رسمی نسخه 2.1.5 (بیلد 206)"
+                        ]
+                    },
                     {
                         version: "2.1.3",
                         buildNumber: 204,
@@ -4137,8 +4159,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 204;
-                const EMBEDDED_VERSION = "2.1.3";
+                const EMBEDDED_BUILD = 206;
+                const EMBEDDED_VERSION = "2.1.5";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4303,6 +4325,8 @@
                     };
                 }
             }, [showStackWizard, wizardMode, wizardType]);
+
+
 
             // Wheel Picker Date States
             const initialDevDate = getDeviceJalaliDate();
@@ -4622,6 +4646,7 @@
 
             const [openSettingsSection, setOpenSettingsSection] = useState(null);
             const [allTxsPage, setAllTxsPage] = useState(1);
+            const [highlightedTxId, setHighlightedTxId] = useState(null);
             const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
             const [showRestoreConfirmModal, setShowRestoreConfirmModal] = useState(false);
             const [showDeleteLoanModal, setShowDeleteLoanModal] = useState(false);
@@ -4630,6 +4655,97 @@
             const [enableReminders, setEnableReminders] = useState(true);
             const [enableDailyAlerts, setEnableDailyAlerts] = useState(true);
             const restoreInputRef = useRef(null);
+
+            useEffect(() => {
+                if (highlightedTxId) {
+                    const timer = setTimeout(() => {
+                        const el = document.getElementById(`tx-card-${highlightedTxId}`);
+                        if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 200);
+
+                    const clearTimer = setTimeout(() => {
+                        setHighlightedTxId(null);
+                    }, 2600);
+
+                    return () => {
+                        clearTimeout(timer);
+                        clearTimeout(clearTimer);
+                    };
+                }
+            }, [highlightedTxId]);
+
+            const handleTransactionClick = (tx) => {
+                if (!tx) return;
+                
+                // Set highlighted transaction ID for blinking effect
+                setHighlightedTxId(tx.id);
+
+                // 1. If transaction belongs to a Loan
+                if (tx.loanId) {
+                    const targetLoan = loans.find(l => l.id === tx.loanId);
+                    if (targetLoan) {
+                        setLoanTabFilter('paid');
+                        openLoanDetail(targetLoan, currentTab);
+                        return;
+                    }
+                }
+
+                // 2. If transaction belongs to an Archived Period
+                if (tx.periodId) {
+                    let targetPeriod = completedPeriods.find(p => p.id === tx.periodId);
+                    if (!targetPeriod && tx.contactId) {
+                        const contactObj = contacts.find(c => c.id === tx.contactId);
+                        const periodTxs = transactions.filter(t => t.periodId === tx.periodId);
+                        if (contactObj) {
+                            targetPeriod = {
+                                id: tx.periodId,
+                                contactId: contactObj.id,
+                                contactName: `${contactObj.firstName || ''} ${contactObj.lastName || ''}`.trim(),
+                                type: tx.type === 'debt' || tx.type === 'debt_repayment' ? 'debt' : 'demand',
+                                title: `دوره تسویه‌شده ${contactObj.firstName || ''} ${contactObj.lastName || ''}`,
+                                totalAmount: periodTxs.reduce((acc, curr) => acc + Math.abs(curr.amount || 0), 0),
+                                transactions: periodTxs
+                            };
+                        }
+                    }
+                    if (targetPeriod) {
+                        openArchivedPeriodDetail(targetPeriod, currentTab);
+                        return;
+                    }
+                }
+
+                // 3. If transaction belongs to a Contact
+                if (tx.contactId) {
+                    const targetContact = contacts.find(c => c.id === tx.contactId);
+                    if (targetContact) {
+                        let filter = 'all';
+                        if (tx.type === 'debt' || tx.type === 'debt_repayment') {
+                            filter = 'debts';
+                            setContactDebtsSubFilter(tx.periodId ? 'archived' : 'active');
+                        } else if (tx.type === 'demand' || tx.type === 'demand_repayment') {
+                            filter = 'demands';
+                            setContactDemandsSubFilter(tx.periodId ? 'archived' : 'active');
+                        } else if (tx.type === 'repayment' || tx.type === 'creation' || tx.type === 'loan') {
+                            filter = 'loans';
+                            setContactLoansSubFilter('active');
+                        }
+                        openContactDetail(targetContact, filter, currentTab);
+                        return;
+                    }
+                }
+
+                // 4. Fallback: Search loans by title
+                if (tx.title) {
+                    const matchedLoan = loans.find(l => l.title && (tx.title.includes(l.title) || l.title.includes(tx.title)));
+                    if (matchedLoan) {
+                        setLoanTabFilter('paid');
+                        openLoanDetail(matchedLoan, currentTab);
+                        return;
+                    }
+                }
+            };
 
             const closePlusMenu = (callback) => {
                 setShowPlusMenu(false);
@@ -4681,6 +4797,18 @@
                     }
                 }
             }, [theme]);
+
+            // Status bar meta color synchronization when Stack Wizard or Sticky Cards are open
+            useEffect(() => {
+                const metaTheme = document.querySelector('meta[name="theme-color"]');
+                if (metaTheme) {
+                    if (showStackWizard) {
+                        metaTheme.setAttribute('content', isDark ? '#0f172a' : '#f8fafc');
+                    } else {
+                        metaTheme.setAttribute('content', isDark ? '#020617' : '#f8fafc');
+                    }
+                }
+            }, [showStackWizard, isDark]);
 
             const handleExportBackup = () => {
                 try {
@@ -5299,7 +5427,7 @@
                     setCurrentCardIdx(prevIdx);
                     setTimeout(() => {
                         setAnimatingPrevCard(false);
-                    }, 450);
+                    }, 750);
 
                     requestAnimationFrame(() => {
                         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
@@ -5504,7 +5632,7 @@
                     setCurrentCardIdx(nextIdx);
                     setTimeout(() => {
                         setAnimatingCard(false);
-                    }, 450);
+                    }, 850);
 
                     requestAnimationFrame(() => {
                         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
@@ -7729,7 +7857,14 @@
 
                                     <div className="space-y-2.5">
                                         {transactions.slice(0, 4).map((tx) => (
-                                            <div key={tx.id} className="flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40 last:border-0">
+                                            <div 
+                                                key={tx.id} 
+                                                id={`tx-card-${tx.id}`}
+                                                onClick={() => handleTransactionClick(tx)}
+                                                className={`flex items-center justify-between py-2 border-b border-slate-50 dark:border-slate-700/40 last:border-0 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all rounded-xl px-2 -mx-2 active:scale-[0.98] ${
+                                                    tx.id === highlightedTxId ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-md' : ''
+                                                }`}
+                                            >
                                                 <div className="flex items-center space-x-2.5 space-x-reverse">
                                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.isPositive ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'}`}>
                                                         <Icon name={tx.isPositive ? 'arrow-down-left' : 'arrow-up-right'} className="w-4 h-4" />
@@ -8550,6 +8685,7 @@
                                                                             key={tx.id}
                                                                             tx={tx}
                                                                             colorType="rose"
+                                                                            isHighlighted={tx.id === highlightedTxId}
                                                                             onEdit={(txItem) => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem)}
                                                                             onDelete={(txItem) => requestDeleteTx(txItem, 'debt')}
                                                                         />
@@ -8676,6 +8812,7 @@
                                                                             key={tx.id}
                                                                             tx={tx}
                                                                             colorType="emerald"
+                                                                            isHighlighted={tx.id === highlightedTxId}
                                                                             onEdit={(txItem) => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem)}
                                                                             onDelete={(txItem) => requestDeleteTx(txItem, 'demand')}
                                                                         />
@@ -9142,6 +9279,7 @@
                                                                 index={idx}
                                                                 totalCount={repaymentTxs.length}
                                                                 colorType="indigo"
+                                                                isHighlighted={tx.id === highlightedTxId}
                                                                 onEdit={(txItem) => openStackWizard('installment', 'edit', txItem)}
                                                                 onDelete={(txItem) => requestDeleteTx(txItem, 'loan_installment')}
                                                             />
@@ -9429,6 +9567,7 @@
                                                         colorType={isDebt ? "rose" : "emerald"}
                                                         contactName={contactDisplayName}
                                                         contacts={contacts}
+                                                        isHighlighted={tx.id === highlightedTxId}
                                                         onEdit={(txItem) => openStackWizard(isDebt ? (isRepay ? "debt_repayment" : "debt") : (isRepay ? "demand_repayment" : "demand"), "edit", txItem)}
                                                         onDelete={(txItem) => requestDeleteTx(txItem, isDebt ? "debt" : "demand")}
                                                     />
@@ -9480,7 +9619,14 @@
                                 <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-3">
                                     <div className="space-y-2.5">
                                         {transactions.slice((allTxsPage - 1) * 20, allTxsPage * 20).map((tx) => (
-                                            <div key={tx.id} className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700/40 last:border-0">
+                                            <div 
+                                                key={tx.id} 
+                                                id={`tx-card-${tx.id}`}
+                                                onClick={() => handleTransactionClick(tx)}
+                                                className={`flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700/40 last:border-0 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all rounded-xl px-2 -mx-2 active:scale-[0.98] ${
+                                                    tx.id === highlightedTxId ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-md' : ''
+                                                }`}
+                                            >
                                                 <div className="flex items-center space-x-2.5 space-x-reverse">
                                                     <div className={`w-9 h-9 rounded-full flex items-center justify-center ${tx.isPositive ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60' : 'bg-red-50 text-red-500 dark:bg-red-950/60'}`}>
                                                         <Icon name={tx.isPositive ? 'arrow-down-left' : 'arrow-up-right'} className="w-4.5 h-4.5" />
@@ -10329,7 +10475,7 @@
                                                                 top: `${12 + index * 8}px`,
                                                                 zIndex: isEditingThis ? 40 : 10 + index
                                                             }}
-                                                            className={`sticky rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 min-h-[410px] flex flex-col justify-between w-[96%] max-w-md mx-auto ${
+                                                            className={`sticky rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between w-[96%] max-w-md mx-auto ${
                                                                 isEditingThis 
                                                                     ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' 
                                                                     : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
@@ -10477,16 +10623,7 @@
                                     ) : (
                                         /* Step-by-Step Stack Card Mode */
                                         <div className="w-full flex flex-col items-center">
-                                            {/* Header with View Toggle */}
-                                            <div className="w-full px-2 py-1 flex items-center justify-end mb-1">
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => setWizardViewStyle('stacked')}
-                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 transition-all cursor-pointer flex items-center gap-1">
-                                                    <Icon name="layers" className="w-3 h-3" />
-                                                    <span>نمای یکجای کارت‌ها</span>
-                                                </button>
-                                            </div>
+
 
                                             <div className={`card-stack-container w-full ${isFinalSubmitting ? 'card-stack-fall-submit' : ''}`}>
                                                 {activeCards.map((card, index) => (

@@ -3411,12 +3411,13 @@ function StackCardItem({
 }) {
   const cardRef = useRef(null);
   const depth = index - currentCardIdx;
-  const isPrevReturningCard = animatingPrevCard && index === currentCardIdx - 1;
+  const isExitingNextCard = animatingCard && index === currentCardIdx - 1;
+  const isReturningPrevCard = animatingPrevCard && index === currentCardIdx;
   const isShaking = shakeCardId === card.id;
 
   // Focus input smoothly and immediately when changing card step or opening stack wizard
   useEffect(() => {
-    if (depth === 0 && showStackWizard && cardRef.current && wizardViewStyle === 'step') {
+    if (depth === 0 && showStackWizard && cardRef.current) {
       const focusActiveInput = () => {
         if (!cardRef.current) return;
         const targetInput = cardRef.current.querySelector('input[autofocus]') || cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
@@ -3442,17 +3443,17 @@ function StackCardItem({
       };
     }
   }, [depth, currentCardIdx, showStackWizard]);
-  if (depth < 0 && !isPrevReturningCard) return null;
+  if (depth < 0 && !isExitingNextCard) return null;
   let depthAttr = 'hidden';
-  if (isPrevReturningCard || depth === 0) depthAttr = '0';else if (depth === 1) depthAttr = '1';else if (depth === 2) depthAttr = '2';
-  const isExitNext = depth === 0 && animatingCard;
-  const isEnterPrev = isPrevReturningCard;
+  if (isReturningPrevCard || isExitingNextCard || depth === 0) depthAttr = '0';else if (depth === 1) depthAttr = '1';else if (depth === 2) depthAttr = '2';
+  const isExitNext = isExitingNextCard;
+  const isEnterPrev = isReturningPrevCard;
   const isFirstCard = currentCardIdx === 0;
   return /*#__PURE__*/React.createElement("div", {
     ref: cardRef,
     key: card.id,
     "data-depth": depthAttr,
-    className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${depth !== 0 ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'card-exit-to-back animating-next' : ''} ${isEnterPrev ? 'card-enter-from-back animating-prev' : ''}`
+    className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y",
     onClick: e => {
@@ -3940,15 +3941,23 @@ function App() {
   const defaultVersionData = {
     appName: "Amir Finance",
     appLogo: "apple-touch-icon.png",
-    installedVersion: localStorage.getItem('amir_installed_version') || "2.1.3",
-    buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '204', 10),
+    installedVersion: localStorage.getItem('amir_installed_version') || "2.1.5",
+    buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '206', 10),
     releaseDate: "2026-08-07",
     releaseChannel: "Stable",
     channelLabel: "نسخه پایدار",
-    latestVersion: "2.1.3",
-    latestBuild: 204,
+    latestVersion: "2.1.5",
+    latestBuild: 206,
     isUpdateAvailable: false,
     history: [{
+      version: "2.1.5",
+      buildNumber: 206,
+      releaseDate: "2026-08-08",
+      releaseChannel: "Stable",
+      commitHash: "v215stackFix",
+      commitMessage: "release: v2.1.5 - optimized stack cards height, removed overview button, status bar matching theme, exact rewind animation on prev step",
+      changes: ["حذف دکمه «نمای یکجای کارت‌ها» از بالای مدال استک کارت‌ها", "تطبیق و یکسان‌سازی دقیق ارتفاع تمامی کارت‌های استک و استیکی جهت حذف فضای خالی اضافه در پایین کارت‌ها", "هم‌رنگ شدن هوشمند status bar با پس‌زمینه برنامه در زمان باز بودن مدال استک کارت و کارت‌های استیکی", "اعمال انیمیشن دقیق بازگشت (Rewind) عینا معکوس انیمیشن خروج کارت در زمان کلیک روی دکمه «مرحله قبلی»", "انتشار رسمی نسخه 2.1.5 (بیلد 206)"]
+    }, {
       version: "2.1.3",
       buildNumber: 204,
       releaseDate: "2026-08-07",
@@ -4448,8 +4457,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 204;
-    const EMBEDDED_VERSION = "2.1.3";
+    const EMBEDDED_BUILD = 206;
+    const EMBEDDED_VERSION = "2.1.5";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -4927,6 +4936,18 @@ function App() {
       }
     }
   }, [theme]);
+
+  // Status bar meta color synchronization when Stack Wizard or Sticky Cards are open
+  useEffect(() => {
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      if (showStackWizard) {
+        metaTheme.setAttribute('content', isDark ? '#0f172a' : '#f8fafc');
+      } else {
+        metaTheme.setAttribute('content', isDark ? '#020617' : '#f8fafc');
+      }
+    }
+  }, [showStackWizard, isDark]);
   const handleExportBackup = () => {
     try {
       const data = {
@@ -5496,7 +5517,7 @@ function App() {
       setCurrentCardIdx(prevIdx);
       setTimeout(() => {
         setAnimatingPrevCard(false);
-      }, 450);
+      }, 420);
       requestAnimationFrame(() => {
         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
         if (activeCardNode) {
@@ -5711,7 +5732,7 @@ function App() {
       setCurrentCardIdx(nextIdx);
       setTimeout(() => {
         setAnimatingCard(false);
-      }, 450);
+      }, 420);
       requestAnimationFrame(() => {
         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
         if (activeCardNode) {
@@ -10489,7 +10510,7 @@ function App() {
         top: `${12 + index * 8}px`,
         zIndex: isEditingThis ? 40 : 10 + index
       },
-      className: `sticky rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 min-h-[410px] flex flex-col justify-between w-[96%] max-w-md mx-auto ${isEditingThis ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'} ${isOtherCardBlur ? 'blur-[1.5px] pointer-events-none select-none' : ''} ${shakeCardId === card.id ? 'animate-shake' : ''}`,
+      className: `sticky rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between w-[96%] max-w-md mx-auto ${isEditingThis ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'} ${isOtherCardBlur ? 'blur-[1.5px] pointer-events-none select-none' : ''} ${shakeCardId === card.id ? 'animate-shake' : ''}`,
       onClick: e => {
         if (!isEditingThis && editingCardId === null) {
           handleStartEditingCard(card);
@@ -10632,15 +10653,6 @@ function App() {
   React.createElement("div", {
     className: "w-full flex flex-col items-center"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "w-full px-2 py-1 flex items-center justify-end mb-1"
-  }, /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    onClick: () => setWizardViewStyle('stacked'),
-    className: "text-[10px] font-bold px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 transition-all cursor-pointer flex items-center gap-1"
-  }, /*#__PURE__*/React.createElement(Icon, {
-    name: "layers",
-    className: "w-3 h-3"
-  }), /*#__PURE__*/React.createElement("span", null, "\u0646\u0645\u0627\u06CC \u06CC\u06A9\u062C\u0627\u06CC \u06A9\u0627\u0631\u062A\u200C\u0647\u0627"))), /*#__PURE__*/React.createElement("div", {
     className: `card-stack-container w-full ${isFinalSubmitting ? 'card-stack-fall-submit' : ''}`
   }, activeCards.map((card, index) => /*#__PURE__*/React.createElement(StackCardItem, {
     key: card.id,

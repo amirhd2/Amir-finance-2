@@ -1,15 +1,30 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "2.1.3",
-  "buildNumber": 204,
-  "releaseDate": "2026-08-07",
+  "installedVersion": "2.1.5",
+  "buildNumber": 206,
+  "releaseDate": "2026-08-08",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "2.1.3",
-  "latestBuild": 204,
+  "latestVersion": "2.1.5",
+  "latestBuild": 206,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "2.1.5",
+      "buildNumber": 206,
+      "releaseDate": "2026-08-08",
+      "releaseChannel": "Stable",
+      "commitHash": "v215stackFix",
+      "commitMessage": "release: v2.1.5 - optimized stack cards height, removed overview button, status bar matching theme, exact rewind animation on prev step",
+      "changes": [
+        "حذف دکمه «نمای یکجای کارت‌ها» از بالای مدال استک کارت‌ها",
+        "تطبیق و یکسان‌سازی دقیق ارتفاع تمامی کارت‌های استک و استیکی جهت حذف فضای خالی اضافه در پایین کارت‌ها",
+        "هم‌رنگ شدن هوشمند status bar با پس‌زمینه برنامه در زمان باز بودن مدال استک کارت و کارت‌های استیکی",
+        "اعمال انیمیشن دقیق بازگشت (Rewind) عینا معکوس انیمیشن خروج کارت در زمان کلیک روی دکمه «مرحله قبلی»",
+        "انتشار رسمی نسخه 2.1.5 (بیلد 206)"
+      ]
+    },
     {
       "version": "2.1.3",
       "buildNumber": 204,
