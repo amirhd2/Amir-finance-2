@@ -2702,7 +2702,7 @@
 
             // Focus input smoothly and immediately when changing card step or opening stack wizard
             useEffect(() => {
-                if (depth === 0 && showStackWizard && cardRef.current) {
+                if (depth === 0 && showStackWizard && cardRef.current && wizardViewStyle === 'step') {
                     const focusActiveInput = () => {
                         if (!cardRef.current) return;
                         const targetInput = cardRef.current.querySelector('input[autofocus]') ||
@@ -2866,7 +2866,6 @@
                     <div className="relative">
                         <Icon name="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
                         <input 
-                            autoFocus
                             type="text"
                             placeholder="جستجوی مخاطب (نام یا شماره تلفن)..."
                             value={searchQuery}
@@ -6072,6 +6071,39 @@
                 });
             };
 
+            const handleStartEditingCard = (card) => {
+                if (editingCardId !== null) return;
+
+                const container = editCardsContainerRef.current;
+                const cardElem = document.getElementById(`sticky-card-${card.id}`);
+
+                if (container && cardElem) {
+                    const containerRect = container.getBoundingClientRect();
+                    const cardRect = cardElem.getBoundingClientRect();
+                    const offsetTop = cardRect.top - containerRect.top;
+                    const targetScrollTop = container.scrollTop + offsetTop - 12;
+
+                    container.scrollTo({
+                        top: Math.max(0, targetScrollTop),
+                        behavior: 'smooth'
+                    });
+
+                    setTimeout(() => {
+                        startEditingCard(card);
+                        setTimeout(() => {
+                            const targetInput = cardElem.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly]), select');
+                            if (targetInput) {
+                                try {
+                                    targetInput.focus({ preventScroll: true });
+                                } catch (e) {}
+                            }
+                        }, 60);
+                    }, 260);
+                } else {
+                    startEditingCard(card);
+                }
+            };
+
             const cancelEditingCard = () => {
                 if (cardFormBackup) {
                     setLoanForm(cardFormBackup.loanForm);
@@ -6379,7 +6411,6 @@
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">عنوان وام</label>
                                 <input 
-                                    autoFocus
                                     type="text"
                                     placeholder="مثلاً: وام خرید خودرو، وام مسکن"
                                     value={loanForm.title}
@@ -6449,7 +6480,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ اصل وامی که دریافت کرده‌اید (تومان):</label>
                             <input 
-                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلا: ۵۰۰,۰۰۰,۰۰۰"
@@ -6493,7 +6523,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مجموع کل مبلغ بازپرداخت شامل اصل و کارمزد:</label>
                             <input 
-                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلا: ۵۵۰,۰۰۰,۰۰۰"
@@ -6537,7 +6566,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ هر قسط ماهانه (تومان):</label>
                             <input 
-                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلا: ۲۸,۰۰۰,۰۰۰"
@@ -6830,7 +6858,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ طلب (تومان):</label>
                             <input 
-                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلاً: ۵,۰۰۰,۰۰۰"
@@ -6890,7 +6917,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات و بابت طلب:</label>
                             <textarea 
-                                autoFocus
                                 rows="3"
                                 placeholder="توضیحات مربوط به طلب..."
                                 value={demandDebtForm.notes}
@@ -6927,7 +6953,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ قرض (تومان):</label>
                             <input 
-                                autoFocus
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="مثلاً: ۲,۰۰۰,۰۰۰"
@@ -6987,7 +7012,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات تکمیلی:</label>
                             <textarea 
-                                autoFocus
                                 rows="3"
                                 placeholder="توضیحات بابت قرض..."
                                 value={demandDebtForm.notes}
@@ -7058,7 +7082,6 @@
                             <div className="space-y-3">
                                 <label className="block text-xs text-slate-500 font-bold">مبلغ پرداخت قسط (بارگذاری شده از وام - قابل ویرایش):</label>
                                 <input 
-                                    autoFocus
                                     type="text"
                                     inputMode="numeric"
                                     value={formatWithCommas(installmentForm.amount)}
@@ -7119,7 +7142,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات یا شماره پیگیری پرداخت:</label>
                             <textarea 
-                                autoFocus
                                 rows="3"
                                 placeholder="شماره ارجاع، کد پیگیری و..."
                                 value={installmentForm.notes}
@@ -7166,7 +7188,6 @@
                                     مبلغ پرداختی جهت کسر از بدهی به {targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب'} (تومان):
                                 </label>
                                 <input 
-                                    autoFocus
                                     type="text"
                                     inputMode="numeric"
                                     placeholder="مثلاً: ۵۰۰,۰۰۰"
@@ -7242,7 +7263,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات و بابت بازپرداخت:</label>
                             <textarea 
-                                autoFocus
                                 rows="3"
                                 placeholder="شماره پیگیری، فیش و توضیحات..."
                                 value={repaymentForm.notes}
@@ -7289,7 +7309,6 @@
                                     مبلغ دریافتی جهت کسر از طلب از {targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب'} (تومان):
                                 </label>
                                 <input 
-                                    autoFocus
                                     type="text"
                                     inputMode="numeric"
                                     placeholder="مثلاً: ۱,۰۰۰,۰۰۰"
@@ -7365,7 +7384,6 @@
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات بابت دریافتی:</label>
                             <textarea 
-                                autoFocus
                                 rows="3"
                                 placeholder="شماره پیگیری، فیش و توضیحات..."
                                 value={repaymentForm.notes}
@@ -7407,7 +7425,6 @@
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">نام</label>
                                 <input 
-                                    autoFocus
                                     type="text"
                                     placeholder="نام مخاطب را وارد کنید"
                                     value={contactWizardForm.firstName}
@@ -7456,7 +7473,6 @@
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره تماس</label>
                                 <input 
-                                    autoFocus
                                     type="text"
                                     inputMode="numeric"
                                     placeholder="مثلاً: 09121234567"
@@ -10290,7 +10306,7 @@
                                             {/* Scrollable Floating Cards Area */}
                                             <div 
                                                 ref={editCardsContainerRef}
-                                                className="w-full flex-1 overflow-y-auto hide-scrollbar py-2 px-1 space-y-5 relative pb-44"
+                                                className={`w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto"}`}
                                             >
                                                 {activeCards.map((card, index) => {
                                                     const isEditingThis = editingCardId === card.id;
@@ -10324,7 +10340,7 @@
                                                             }`}
                                                             onClick={(e) => {
                                                                 if (!isEditingThis && editingCardId === null) {
-                                                                    startEditingCard(card);
+                                                                    handleStartEditingCard(card);
                                                                 }
                                                             }}
                                                         >
@@ -10394,7 +10410,7 @@
                                                                                 type="button"
                                                                                 onClick={(e) => {
                                                                                     e.stopPropagation();
-                                                                                    startEditingCard(card);
+                                                                                    handleStartEditingCard(card);
                                                                                 }}
                                                                                 className="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all cursor-pointer flex items-center space-x-1 space-x-reverse"
                                                                             >

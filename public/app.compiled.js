@@ -3416,7 +3416,7 @@ function StackCardItem({
 
   // Focus input smoothly and immediately when changing card step or opening stack wizard
   useEffect(() => {
-    if (depth === 0 && showStackWizard && cardRef.current) {
+    if (depth === 0 && showStackWizard && cardRef.current && wizardViewStyle === 'step') {
       const focusActiveInput = () => {
         if (!cardRef.current) return;
         const targetInput = cardRef.current.querySelector('input[autofocus]') || cardRef.current.querySelector('input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
@@ -3539,7 +3539,6 @@ function ContactSelectorCard({
     name: "search",
     className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
   }), /*#__PURE__*/React.createElement("input", {
-    autoFocus: true,
     type: "text",
     placeholder: "\u062C\u0633\u062A\u062C\u0648\u06CC \u0645\u062E\u0627\u0637\u0628 (\u0646\u0627\u0645 \u06CC\u0627 \u0634\u0645\u0627\u0631\u0647 \u062A\u0644\u0641\u0646)...",
     value: searchQuery,
@@ -6347,6 +6346,36 @@ function App() {
       pickerYear
     });
   };
+  const handleStartEditingCard = card => {
+    if (editingCardId !== null) return;
+    const container = editCardsContainerRef.current;
+    const cardElem = document.getElementById(`sticky-card-${card.id}`);
+    if (container && cardElem) {
+      const containerRect = container.getBoundingClientRect();
+      const cardRect = cardElem.getBoundingClientRect();
+      const offsetTop = cardRect.top - containerRect.top;
+      const targetScrollTop = container.scrollTop + offsetTop - 12;
+      container.scrollTo({
+        top: Math.max(0, targetScrollTop),
+        behavior: 'smooth'
+      });
+      setTimeout(() => {
+        startEditingCard(card);
+        setTimeout(() => {
+          const targetInput = cardElem.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly]), select');
+          if (targetInput) {
+            try {
+              targetInput.focus({
+                preventScroll: true
+              });
+            } catch (e) {}
+          }
+        }, 60);
+      }, 260);
+    } else {
+      startEditingCard(card);
+    }
+  };
   const cancelEditingCard = () => {
     if (cardFormBackup) {
       setLoanForm(cardFormBackup.loanForm);
@@ -6636,7 +6665,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
     }, "\u0639\u0646\u0648\u0627\u0646 \u0648\u0627\u0645"), /*#__PURE__*/React.createElement("input", {
-      autoFocus: true,
       type: "text",
       placeholder: "\u0645\u062B\u0644\u0627\u064B: \u0648\u0627\u0645 \u062E\u0631\u06CC\u062F \u062E\u0648\u062F\u0631\u0648\u060C \u0648\u0627\u0645 \u0645\u0633\u06A9\u0646",
       value: loanForm.title,
@@ -6716,7 +6744,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u0645\u0628\u0644\u063A \u0627\u0635\u0644 \u0648\u0627\u0645\u06CC \u06A9\u0647 \u062F\u0631\u06CC\u0627\u0641\u062A \u06A9\u0631\u062F\u0647\u200C\u0627\u06CC\u062F (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/React.createElement("input", {
-      autoFocus: true,
       type: "text",
       inputMode: "numeric",
       placeholder: "\u0645\u062B\u0644\u0627: \u06F5\u06F0\u06F0,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0",
@@ -6758,7 +6785,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u0645\u062C\u0645\u0648\u0639 \u06A9\u0644 \u0645\u0628\u0644\u063A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0634\u0627\u0645\u0644 \u0627\u0635\u0644 \u0648 \u06A9\u0627\u0631\u0645\u0632\u062F:"), /*#__PURE__*/React.createElement("input", {
-      autoFocus: true,
       type: "text",
       inputMode: "numeric",
       placeholder: "\u0645\u062B\u0644\u0627: \u06F5\u06F5\u06F0,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0",
@@ -6800,7 +6826,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u0645\u0628\u0644\u063A \u0647\u0631 \u0642\u0633\u0637 \u0645\u0627\u0647\u0627\u0646\u0647 (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/React.createElement("input", {
-      autoFocus: true,
       type: "text",
       inputMode: "numeric",
       placeholder: "\u0645\u062B\u0644\u0627: \u06F2\u06F8,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0",
@@ -7075,7 +7100,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u0645\u0628\u0644\u063A \u0637\u0644\u0628 (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/React.createElement("input", {
-      autoFocus: true,
       type: "text",
       inputMode: "numeric",
       placeholder: "\u0645\u062B\u0644\u0627\u064B: \u06F5,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0",
@@ -7134,7 +7158,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648 \u0628\u0627\u0628\u062A \u0637\u0644\u0628:"), /*#__PURE__*/React.createElement("textarea", {
-      autoFocus: true,
       rows: "3",
       placeholder: "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0645\u0631\u0628\u0648\u0637 \u0628\u0647 \u0637\u0644\u0628...",
       value: demandDebtForm.notes,
@@ -7176,7 +7199,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u0645\u0628\u0644\u063A \u0642\u0631\u0636 (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/React.createElement("input", {
-      autoFocus: true,
       type: "text",
       inputMode: "numeric",
       placeholder: "\u0645\u062B\u0644\u0627\u064B: \u06F2,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0",
@@ -7235,7 +7257,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u062A\u06A9\u0645\u06CC\u0644\u06CC:"), /*#__PURE__*/React.createElement("textarea", {
-      autoFocus: true,
       rows: "3",
       placeholder: "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0628\u0627\u0628\u062A \u0642\u0631\u0636...",
       value: demandDebtForm.notes,
@@ -7310,7 +7331,6 @@ function App() {
       }, /*#__PURE__*/React.createElement("label", {
         className: "block text-xs text-slate-500 font-bold"
       }, "\u0645\u0628\u0644\u063A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 (\u0628\u0627\u0631\u06AF\u0630\u0627\u0631\u06CC \u0634\u062F\u0647 \u0627\u0632 \u0648\u0627\u0645 - \u0642\u0627\u0628\u0644 \u0648\u06CC\u0631\u0627\u06CC\u0634):"), /*#__PURE__*/React.createElement("input", {
-        autoFocus: true,
         type: "text",
         inputMode: "numeric",
         value: formatWithCommas(installmentForm.amount),
@@ -7365,7 +7385,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u06CC\u0627 \u0634\u0645\u0627\u0631\u0647 \u067E\u06CC\u06AF\u06CC\u0631\u06CC \u067E\u0631\u062F\u0627\u062E\u062A:"), /*#__PURE__*/React.createElement("textarea", {
-      autoFocus: true,
       rows: "3",
       placeholder: "\u0634\u0645\u0627\u0631\u0647 \u0627\u0631\u062C\u0627\u0639\u060C \u06A9\u062F \u067E\u06CC\u06AF\u06CC\u0631\u06CC \u0648...",
       value: installmentForm.notes,
@@ -7414,7 +7433,6 @@ function App() {
       }, /*#__PURE__*/React.createElement("label", {
         className: "block text-xs text-slate-500 font-bold"
       }, "\u0645\u0628\u0644\u063A \u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u062C\u0647\u062A \u06A9\u0633\u0631 \u0627\u0632 \u0628\u062F\u0647\u06CC \u0628\u0647 ", targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب', " (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/React.createElement("input", {
-        autoFocus: true,
         type: "text",
         inputMode: "numeric",
         placeholder: "\u0645\u062B\u0644\u0627\u064B: \u06F5\u06F0\u06F0,\u06F0\u06F0\u06F0",
@@ -7487,7 +7505,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648 \u0628\u0627\u0628\u062A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A:"), /*#__PURE__*/React.createElement("textarea", {
-      autoFocus: true,
       rows: "3",
       placeholder: "\u0634\u0645\u0627\u0631\u0647 \u067E\u06CC\u06AF\u06CC\u0631\u06CC\u060C \u0641\u06CC\u0634 \u0648 \u062A\u0648\u0636\u06CC\u062D\u0627\u062A...",
       value: repaymentForm.notes,
@@ -7536,7 +7553,6 @@ function App() {
       }, /*#__PURE__*/React.createElement("label", {
         className: "block text-xs text-slate-500 font-bold"
       }, "\u0645\u0628\u0644\u063A \u062F\u0631\u06CC\u0627\u0641\u062A\u06CC \u062C\u0647\u062A \u06A9\u0633\u0631 \u0627\u0632 \u0637\u0644\u0628 \u0627\u0632 ", targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب', " (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/React.createElement("input", {
-        autoFocus: true,
         type: "text",
         inputMode: "numeric",
         placeholder: "\u0645\u062B\u0644\u0627\u064B: \u06F1,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0",
@@ -7609,7 +7625,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0628\u0627\u0628\u062A \u062F\u0631\u06CC\u0627\u0641\u062A\u06CC:"), /*#__PURE__*/React.createElement("textarea", {
-      autoFocus: true,
       rows: "3",
       placeholder: "\u0634\u0645\u0627\u0631\u0647 \u067E\u06CC\u06AF\u06CC\u0631\u06CC\u060C \u0641\u06CC\u0634 \u0648 \u062A\u0648\u0636\u06CC\u062D\u0627\u062A...",
       value: repaymentForm.notes,
@@ -7644,7 +7659,6 @@ function App() {
     }, contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? `${contactWizardForm.firstName.trim()} ${contactWizardForm.lastName.trim()}`.trim() : 'اطلاعات مخاطب جدید')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
     }, "\u0646\u0627\u0645"), /*#__PURE__*/React.createElement("input", {
-      autoFocus: true,
       type: "text",
       placeholder: "\u0646\u0627\u0645 \u0645\u062E\u0627\u0637\u0628 \u0631\u0627 \u0648\u0627\u0631\u062F \u06A9\u0646\u06CC\u062F",
       value: contactWizardForm.firstName,
@@ -7693,7 +7707,6 @@ function App() {
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
     }, "\u0634\u0645\u0627\u0631\u0647 \u062A\u0645\u0627\u0633"), /*#__PURE__*/React.createElement("input", {
-      autoFocus: true,
       type: "text",
       inputMode: "numeric",
       placeholder: "\u0645\u062B\u0644\u0627\u064B: 09121234567",
@@ -10449,7 +10462,7 @@ function App() {
     className: "w-full flex flex-col items-center h-full max-h-[92vh] relative"
   }, /*#__PURE__*/React.createElement("div", {
     ref: editCardsContainerRef,
-    className: "w-full flex-1 overflow-y-auto hide-scrollbar py-2 px-1 space-y-5 relative pb-44"
+    className: `w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto"}`
   }, activeCards.map((card, index) => {
     const isEditingThis = editingCardId === card.id;
     const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
@@ -10479,7 +10492,7 @@ function App() {
       className: `sticky rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 min-h-[410px] flex flex-col justify-between w-[96%] max-w-md mx-auto ${isEditingThis ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'} ${isOtherCardBlur ? 'blur-[1.5px] pointer-events-none select-none' : ''} ${shakeCardId === card.id ? 'animate-shake' : ''}`,
       onClick: e => {
         if (!isEditingThis && editingCardId === null) {
-          startEditingCard(card);
+          handleStartEditingCard(card);
         }
       }
     }, /*#__PURE__*/React.createElement("div", {
@@ -10557,7 +10570,7 @@ function App() {
       type: "button",
       onClick: e => {
         e.stopPropagation();
-        startEditingCard(card);
+        handleStartEditingCard(card);
       },
       className: "px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all cursor-pointer flex items-center space-x-1 space-x-reverse"
     }, /*#__PURE__*/React.createElement(Icon, {
