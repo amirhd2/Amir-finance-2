@@ -1371,28 +1371,21 @@
 
         // variants انیمیشن iOS برای پاپ‌آپ‌ها (Pop Out بانس سریع 1.05 و کوچک‌شدن ملموس به 0.45 با فیدآوت نرم)
         const iosModalVariants = {
-            initial: { opacity: 0, scale: 0.75 },
+            initial: { opacity: 0, scale: 0.95 },
             animate: { 
-                opacity: [0, 1, 1, 1], 
-                scale: [0.75, 1.05, 0.97, 1],
+                opacity: 1, 
+                scale: 1,
                 transition: { 
-                    duration: 0.45, 
-                    times: [0, 0.65, 0.85, 1],
-                    ease: [
-                        [0.175, 0.885, 0.32, 1.275],
-                        [0.175, 0.885, 0.32, 1.275],
-                        [0.175, 0.885, 0.32, 1.275]
-                    ]
-                }
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
+                    opacity: { duration: 0.15 }
+                } 
             },
             exit: { 
-                scale: [1, 1.05, 0.45], 
-                opacity: [1, 0.95, 0], 
-                transition: { 
-                    duration: 0.38, 
-                    times: [0, 0.18, 1],
-                    ease: ["easeOut", "easeInOut"] 
-                } 
+                opacity: 0, 
+                scale: 0.95, 
+                transition: { duration: 0.2, ease: "easeIn" } 
             }
         };
 
@@ -4305,6 +4298,21 @@
             const [cardFormBackup, setCardFormBackup] = useState(null);
             const [showUnsavedConfirmDialog, setShowUnsavedConfirmDialog] = useState(false);
             const [wizardViewStyle, setWizardViewStyle] = useState('auto'); // 'auto', 'stacked', 'step'
+            const [peekAnim, setPeekAnim] = useState(false);
+
+            React.useEffect(() => {
+                if (showStackWizard && (wizardMode === 'edit' || wizardViewStyle === 'stacked')) {
+                    const t1 = setTimeout(() => setPeekAnim(true), 600);
+                    const t2 = setTimeout(() => setPeekAnim(false), 1300);
+                    return () => {
+                        clearTimeout(t1);
+                        clearTimeout(t2);
+                    };
+                } else {
+                    setPeekAnim(false);
+                }
+            }, [showStackWizard, wizardMode, wizardViewStyle]);
+
             const editCardsContainerRef = useRef(null);
 
             useEffect(() => {
@@ -10460,36 +10468,40 @@
                                                     const isModified = modifiedCardIds.includes(card.id);
 
                                                     return (
-                                                        <motion.div 
+                                                        <div 
                                                             key={card.id}
                                                             id={`sticky-card-${card.id}`}
-                                                            initial={{ opacity: 0, y: 20 }}
-                                                            animate={{ 
-                                                                opacity: isOtherCardBlur ? 0.35 : 1, 
-                                                                scale: isEditingThis ? 1.0 : (isOtherCardBlur ? 0.95 : 0.98),
-                                                                y: 0,
-                                                                z: isEditingThis ? 10 : 0
-                                                            }}
-                                                            transition={{ type: "spring", stiffness: 380, damping: 26 }}
+                                                            className={`sticky w-[96%] max-w-md mx-auto isolate ${isEditingThis ? 'z-[100]' : 'z-0'}`}
                                                             style={{
                                                                 top: `${12 + index * 8}px`,
-                                                                zIndex: isEditingThis ? 50 : (isOtherCardBlur ? index : 10 + index)
-                                                            }}
-                                                            className={`sticky rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between w-[96%] max-w-md mx-auto ${
-                                                                isEditingThis 
-                                                                    ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' 
-                                                                    : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
-                                                            } ${
-                                                                isOtherCardBlur ? 'pointer-events-none select-none' : ''
-                                                            } ${
-                                                                shakeCardId === card.id ? 'animate-shake' : ''
-                                                            }`}
-                                                            onClick={(e) => {
-                                                                if (!isEditingThis && editingCardId === null) {
-                                                                    handleStartEditingCard(card);
-                                                                }
+                                                                zIndex: isEditingThis ? 100 : index,
+                                                                transform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)',
+                                                                WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)'
                                                             }}
                                                         >
+                                                            <motion.div 
+                                                                initial={{ y: 20 }}
+                                                                animate={{ 
+                                                                    opacity: isOtherCardBlur ? 0.6 : 1, 
+                                                                    scale: isEditingThis ? 1.0 : (isOtherCardBlur ? 0.95 : 0.98),
+                                                                    y: (peekAnim && index > 0) ? -80 : 0
+                                                                }}
+                                                                transition={{ type: "spring", stiffness: 380, damping: 26 }}
+                                                                className={`w-full rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between ${
+                                                                    isEditingThis 
+                                                                        ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400' 
+                                                                        : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
+                                                                } ${
+                                                                    isOtherCardBlur ? 'pointer-events-none select-none' : ''
+                                                                } ${
+                                                                    shakeCardId === card.id ? 'animate-shake' : ''
+                                                                }`}
+                                                                onClick={(e) => {
+                                                                    if (!isEditingThis && editingCardId === null) {
+                                                                        handleStartEditingCard(card);
+                                                                    }
+                                                                }}
+                                                            >
                                                             {/* Card Editable Inputs Body - Exact match to stack card appearance */}
                                                             <div className={`flex-1 py-1 transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-95' : ''}`}>
                                                                 {card.render()}
@@ -10567,7 +10579,8 @@
                                                                     )}
                                                                 </AnimatePresence>
                                                             </div>
-                                                        </motion.div>
+                                                            </motion.div>
+                                                        </div>
                                                     );
                                                 })}
                                             </div>
