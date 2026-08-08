@@ -10463,24 +10463,24 @@
                                                         <motion.div 
                                                             key={card.id}
                                                             id={`sticky-card-${card.id}`}
-                                                            layout
                                                             initial={{ opacity: 0, y: 20 }}
                                                             animate={{ 
                                                                 opacity: isOtherCardBlur ? 0.35 : 1, 
                                                                 scale: isEditingThis ? 1.0 : (isOtherCardBlur ? 0.95 : 0.98),
-                                                                y: 0 
+                                                                y: 0,
+                                                                z: isEditingThis ? 10 : 0
                                                             }}
                                                             transition={{ type: "spring", stiffness: 380, damping: 26 }}
                                                             style={{
                                                                 top: `${12 + index * 8}px`,
-                                                                zIndex: isEditingThis ? 40 : 10 + index
+                                                                zIndex: isEditingThis ? 50 : (isOtherCardBlur ? index : 10 + index)
                                                             }}
                                                             className={`sticky rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between w-[96%] max-w-md mx-auto ${
                                                                 isEditingThis 
                                                                     ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' 
                                                                     : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
                                                             } ${
-                                                                isOtherCardBlur ? 'blur-[1.5px] pointer-events-none select-none' : ''
+                                                                isOtherCardBlur ? 'pointer-events-none select-none' : ''
                                                             } ${
                                                                 shakeCardId === card.id ? 'animate-shake' : ''
                                                             }`}
