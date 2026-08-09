@@ -1,15 +1,27 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "2.1.5",
-  "buildNumber": 206,
-  "releaseDate": "2026-08-08",
+  "installedVersion": "2.1.8",
+  "buildNumber": 207,
+  "releaseDate": "2026-08-09",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "2.1.5",
+  "latestVersion": "2.1.8",
   "latestBuild": 206,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "2.1.8",
+      "buildNumber": 207,
+      "releaseDate": "2026-08-09",
+      "releaseChannel": "Stable",
+      "commitHash": "ny6qan9",
+      "commitMessage": "Fix slide background in all-transactions and fix back navigation blink",
+      "changes": [
+        "اصلاح مشکل فلش در پس‌زمینه در زمان بازگشت از جزئیات تراکنش به صفحه همه تراکنش‌ها",
+        "اصلاح پرش افقی (Bounce) انیمیشن در هنگام اسکرول خودکار به تراکنش انتخاب شده و اصلاح انیمیشن دوگانه"
+      ]
+    },
     {
       "version": "2.1.5",
       "buildNumber": 206,

@@ -319,7 +319,7 @@
                 '504172': 'قرض‌الحسنه رسالت',
                 '505416': 'بانک گردشگری',
                 '606373': 'قرض‌الحسنه مهر ایران',
-                '622106': 'بانک پارسیان',
+                '62.1.7': 'بانک پارسیان',
                 '639194': 'بانک پارسیان',
                 '505785': 'بانک ایران زمین',
                 '636949': 'بانک حکمت ایرانیان',
@@ -3246,7 +3246,7 @@
                 } else if (currentTab !== 'loan-detail') {
                     setLoanReturnTab(currentTab);
                 }
-                setNavDirection('forward');
+                setNavDirection('none');
                 setCurrentTab('loan-detail');
             };
 
@@ -3257,7 +3257,7 @@
                 } else if (currentTab !== 'archived-period-detail') {
                     setLoanReturnTab(currentTab);
                 }
-                setNavDirection('forward');
+                setNavDirection('none');
                 setCurrentTab('archived-period-detail');
             };
             
@@ -3265,7 +3265,7 @@
                 setSelectedContact(contact);
                 if (filter) setProfileFilter(filter);
                 setLoanReturnTab(returnTab);
-                setNavDirection('forward');
+                setNavDirection('none');
                 setCurrentTab('contact-detail');
             };
             
@@ -3275,23 +3275,23 @@
             // Page Slide Transition Animation Variants
             const pageSlideVariants = {
                 initial: (direction) => ({
-                    x: direction === 'none' ? '0%' : (direction === 'back' ? '-28%' : '100%'),
+                    x: direction === 'none' ? '0vw' : (direction === 'back' ? '-30vw' : '100vw'),
                     opacity: 1,
                 }),
                 animate: (direction) => ({
-                    x: '0%',
+                    x: '0vw',
                     opacity: 1,
                     transition: direction === 'none' ? { duration: 0 } : {
-                        duration: 0.36,
-                        ease: [0.22, 1, 0.36, 1]
+                        duration: 0.4,
+                        ease: [0.32, 0.72, 0, 1]
                     }
                 }),
                 exit: (direction) => ({
-                    x: direction === 'none' ? '0%' : (direction === 'back' ? '100%' : '-28%'),
-                    opacity: 1,
+                    x: direction === 'none' ? '0vw' : (direction === 'back' ? '100vw' : '-30vw'),
+                    opacity: direction === 'none' ? 0 : (direction === 'back' ? 1 : 0.8),
                     transition: direction === 'none' ? { duration: 0 } : {
-                        duration: 0.36,
-                        ease: [0.22, 1, 0.36, 1]
+                        duration: 0.4,
+                        ease: [0.32, 0.72, 0, 1]
                     }
                 })
             };
@@ -4667,15 +4667,16 @@
             useEffect(() => {
                 if (highlightedTxId) {
                     const timer = setTimeout(() => {
-                        const el = document.getElementById(`tx-card-${highlightedTxId}`);
-                        if (el) {
+                        const els = document.querySelectorAll(`[id="tx-card-${highlightedTxId}"]`);
+                        if (els.length > 0) {
+                            const el = els[els.length - 1]; // Always pick the one in the foreground/active page
                             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
-                    }, 200);
+                    }, 450);
 
                     const clearTimer = setTimeout(() => {
                         setHighlightedTxId(null);
-                    }, 2600);
+                    }, 3000);
 
                     return () => {
                         clearTimeout(timer);
@@ -5054,7 +5055,7 @@
                         updatedTxs = updatedTxs.map(t => t.periodId === periodId ? { ...t, periodId: undefined } : t);
                         if (selectedPeriod && selectedPeriod.id === periodId) {
                             setSelectedPeriod(null);
-                            setCurrentTab(loanReturnTab || 'contact-detail');
+                            navigateToTab(loanReturnTab || 'contact-detail', 'back');
                         }
                     }
                     setTransactions(updatedTxs);
@@ -5089,7 +5090,7 @@
                         updatedTxs = updatedTxs.map(t => t.periodId === periodId ? { ...t, periodId: undefined } : t);
                         if (selectedPeriod && selectedPeriod.id === periodId) {
                             setSelectedPeriod(null);
-                            setCurrentTab(loanReturnTab || 'contact-detail');
+                            navigateToTab(loanReturnTab || 'contact-detail', 'back');
                         }
                     }
                     setTransactions(updatedTxs);
@@ -6429,7 +6430,7 @@
                         setShowEditContactModal(false);
                         if (selectedContact && selectedContact.id === targetContactId) {
                             setSelectedContact(null);
-                            setCurrentTab('contacts');
+                            navigateToTab('contacts', 'back');
                         }
                         setConfirmConfig(null);
                         showToast('مخاطب با موفقیت حذف گردید');
@@ -6463,7 +6464,7 @@
                         setLoans(prev => prev.filter(l => l.id !== loanIdToDelete));
                         setTransactions(prev => prev.filter(t => t.loanId !== loanIdToDelete));
                         setSelectedLoan(null);
-                        setCurrentTab(loanReturnTab || 'accounts');
+                        navigateToTab(loanReturnTab || 'accounts', 'back');
                         setConfirmConfig(null);
                         showToast('پرونده وام با موفقیت حذف گردید');
                     },
@@ -6499,7 +6500,7 @@
                         setCompletedPeriods(prev => prev.filter(p => p.id !== periodIdToDelete));
                         setTransactions(prev => prev.filter(t => t.periodId !== periodIdToDelete));
                         setSelectedPeriod(null);
-                        setCurrentTab(loanReturnTab || 'contact-detail');
+                        navigateToTab(loanReturnTab || 'contact-detail', 'back');
                         setConfirmConfig(null);
                         showToast('تسویه‌حساب آرشیو شده با موفقیت حذف گردید');
                     },
@@ -7671,15 +7672,20 @@
             const getUnderlyingTabForSubpage = (subpageTab) => {
                 if (subpageTab === 'contact-detail') {
                     if (loanReturnTab === 'accounts') return 'accounts';
+                    if (loanReturnTab === 'dashboard') return 'dashboard';
+                    if (loanReturnTab === 'all-transactions') return 'all-transactions';
                     return 'contacts';
                 }
                 if (subpageTab === 'loan-detail') {
                     if (loanReturnTab === 'contact-detail' && selectedContact) return 'contact-detail';
                     if (loanReturnTab === 'dashboard') return 'dashboard';
+                    if (loanReturnTab === 'all-transactions') return 'all-transactions';
                     return 'accounts';
                 }
                 if (subpageTab === 'archived-period-detail') {
                     if ((loanReturnTab || 'contact-detail') === 'contact-detail' && selectedContact) return 'contact-detail';
+                    if (loanReturnTab === 'dashboard') return 'dashboard';
+                    if (loanReturnTab === 'all-transactions') return 'all-transactions';
                     return 'accounts';
                 }
                 if (subpageTab === 'all-transactions') return 'dashboard';
@@ -7819,7 +7825,7 @@
                                 {/* Summary Grid Cards */}
                                 <div className="grid grid-cols-3 gap-2.5">
                                     <div 
-                                        onClick={() => { setAccountsSubTab('loans'); setCurrentTab('accounts'); }}
+                                        onClick={() => { setAccountsSubTab('loans'); navigateToTab('accounts', 'forward'); }}
                                         className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center">
                                         <div className="w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm">
                                             <Icon name="landmark" className="w-4 h-4" />
@@ -7829,7 +7835,7 @@
                                     </div>
 
                                     <div 
-                                        onClick={() => { setAccountsSubTab('debts'); setCurrentTab('accounts'); }}
+                                        onClick={() => { setAccountsSubTab('debts'); navigateToTab('accounts', 'forward'); }}
                                         className="bg-gradient-to-br from-rose-500 to-red-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center">
                                         <div className="w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm">
                                             <Icon name="arrow-down-left" className="w-4 h-4" />
@@ -7840,7 +7846,7 @@
                                     </div>
 
                                     <div 
-                                        onClick={() => { setAccountsSubTab('demands'); setCurrentTab('accounts'); }}
+                                        onClick={() => { setAccountsSubTab('demands'); navigateToTab('accounts', 'forward'); }}
                                         className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center">
                                         <div className="w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm">
                                             <Icon name="arrow-up-right" className="w-4 h-4" />
@@ -7858,7 +7864,7 @@
                                             <Icon name="history" className="w-4 h-4 text-indigo-600" />
                                             <span>آخرین تراکنش‌ها</span>
                                         </h3>
-                                        <button onClick={() => { setAllTxsPage(1); setCurrentTab('all-transactions'); }} className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                                        <button onClick={() => { setAllTxsPage(1); navigateToTab('all-transactions', 'none'); }} className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
                                             مشاهده همه
                                         </button>
                                     </div>
@@ -10190,7 +10196,7 @@
 
                     {/* App Content Body */}
                     <div className="flex-1 relative w-full h-full overflow-hidden">
-                        <AnimatePresence mode="popLayout" custom={navDirection} initial={false}>
+                        <AnimatePresence custom={navDirection} initial={false}>
                             <motion.div
                                 key={currentTab + (currentTab === 'contact-detail' ? `-${selectedContact?.id}` : currentTab === 'loan-detail' ? `-${selectedLoan?.id}` : currentTab === 'archived-period-detail' ? `-${selectedPeriod?.id}` : '')}
                                 custom={navDirection}
@@ -10205,7 +10211,7 @@
                                     <div className="flex-1 relative w-full h-full">
                                         {currentTab === 'contact-detail' && selectedContact && (
                                             <SwipeBackWrapper 
-                                                onBack={() => navigateToTab(loanReturnTab === 'accounts' ? 'accounts' : 'contacts', 'none')}
+                                                onBack={() => navigateToTab(loanReturnTab || 'contacts', 'none')}
                                                 onRefresh={() => handleRefreshData('contact-detail')}
                                                 underlyingContent={renderTab(getUnderlyingTabForSubpage('contact-detail'))}
                                             >

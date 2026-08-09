@@ -346,7 +346,7 @@ const getBankNameFromCard = cardNo => {
     '504172': 'قرض‌الحسنه رسالت',
     '505416': 'بانک گردشگری',
     '606373': 'قرض‌الحسنه مهر ایران',
-    '622106': 'بانک پارسیان',
+    '62.1.7': 'بانک پارسیان',
     '639194': 'بانک پارسیان',
     '505785': 'بانک ایران زمین',
     '636949': 'بانک حکمت ایرانیان',
@@ -2180,24 +2180,26 @@ const initialReminders = [{
 const iosModalVariants = {
   initial: {
     opacity: 0,
-    scale: 0.75
+    scale: 0.95
   },
   animate: {
-    opacity: [0, 1, 1, 1],
-    scale: [0.75, 1.05, 0.97, 1],
+    opacity: 1,
+    scale: 1,
     transition: {
-      duration: 0.45,
-      times: [0, 0.65, 0.85, 1],
-      ease: [[0.175, 0.885, 0.32, 1.275], [0.175, 0.885, 0.32, 1.275], [0.175, 0.885, 0.32, 1.275]]
+      type: "spring",
+      stiffness: 400,
+      damping: 30,
+      opacity: {
+        duration: 0.15
+      }
     }
   },
   exit: {
-    scale: [1, 1.05, 0.45],
-    opacity: [1, 0.95, 0],
+    opacity: 0,
+    scale: 0.95,
     transition: {
-      duration: 0.38,
-      times: [0, 0.18, 1],
-      ease: ["easeOut", "easeInOut"]
+      duration: 0.2,
+      ease: "easeIn"
     }
   }
 };
@@ -3310,7 +3312,8 @@ function SwipeableTxCard({
   onDelete,
   colorType = 'indigo',
   contactName,
-  contacts = []
+  contacts = [],
+  isHighlighted = false
 }) {
   const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
   const {
@@ -3366,7 +3369,8 @@ function SwipeableTxCard({
     onDelete: confirmCb => onDelete && onDelete(tx, confirmCb),
     onCardClick: () => onEdit && onEdit(tx)
   }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
+    id: `tx-card-${tx.id}`,
+    className: `bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
   }, /*#__PURE__*/React.createElement("div", {
@@ -3886,7 +3890,7 @@ function App() {
     } else if (currentTab !== 'loan-detail') {
       setLoanReturnTab(currentTab);
     }
-    setNavDirection('forward');
+    setNavDirection('none');
     setCurrentTab('loan-detail');
   };
   const openArchivedPeriodDetail = (period, overrideReturnTab) => {
@@ -3896,14 +3900,14 @@ function App() {
     } else if (currentTab !== 'archived-period-detail') {
       setLoanReturnTab(currentTab);
     }
-    setNavDirection('forward');
+    setNavDirection('none');
     setCurrentTab('archived-period-detail');
   };
   const openContactDetail = (contact, filter = 'all', returnTab = 'contacts') => {
     setSelectedContact(contact);
     if (filter) setProfileFilter(filter);
     setLoanReturnTab(returnTab);
-    setNavDirection('forward');
+    setNavDirection('none');
     setCurrentTab('contact-detail');
   };
   const [toastMessage, setToastMessage] = useState('');
@@ -3912,27 +3916,27 @@ function App() {
   // Page Slide Transition Animation Variants
   const pageSlideVariants = {
     initial: direction => ({
-      x: direction === 'none' ? '0%' : direction === 'back' ? '-28%' : '100%',
+      x: direction === 'none' ? '0vw' : direction === 'back' ? '-30vw' : '100vw',
       opacity: 1
     }),
     animate: direction => ({
-      x: '0%',
+      x: '0vw',
       opacity: 1,
       transition: direction === 'none' ? {
         duration: 0
       } : {
-        duration: 0.36,
-        ease: [0.22, 1, 0.36, 1]
+        duration: 0.4,
+        ease: [0.32, 0.72, 0, 1]
       }
     }),
     exit: direction => ({
-      x: direction === 'none' ? '0%' : direction === 'back' ? '100%' : '-28%',
-      opacity: 1,
+      x: direction === 'none' ? '0vw' : direction === 'back' ? '100vw' : '-30vw',
+      opacity: direction === 'none' ? 0 : direction === 'back' ? 1 : 0.8,
       transition: direction === 'none' ? {
         duration: 0
       } : {
-        duration: 0.36,
-        ease: [0.22, 1, 0.36, 1]
+        duration: 0.4,
+        ease: [0.32, 0.72, 0, 1]
       }
     })
   };
@@ -4594,6 +4598,19 @@ function App() {
   const [cardFormBackup, setCardFormBackup] = useState(null);
   const [showUnsavedConfirmDialog, setShowUnsavedConfirmDialog] = useState(false);
   const [wizardViewStyle, setWizardViewStyle] = useState('auto'); // 'auto', 'stacked', 'step'
+  const [peekAnim, setPeekAnim] = useState(false);
+  React.useEffect(() => {
+    if (showStackWizard && (wizardMode === 'edit' || wizardViewStyle === 'stacked')) {
+      const t1 = setTimeout(() => setPeekAnim(true), 600);
+      const t2 = setTimeout(() => setPeekAnim(false), 1300);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    } else {
+      setPeekAnim(false);
+    }
+  }, [showStackWizard, wizardMode, wizardViewStyle]);
   const editCardsContainerRef = useRef(null);
   useEffect(() => {
     if (showStackWizard) {
@@ -4884,6 +4901,7 @@ function App() {
   });
   const [openSettingsSection, setOpenSettingsSection] = useState(null);
   const [allTxsPage, setAllTxsPage] = useState(1);
+  const [highlightedTxId, setHighlightedTxId] = useState(null);
   const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
   const [showRestoreConfirmModal, setShowRestoreConfirmModal] = useState(false);
   const [showDeleteLoanModal, setShowDeleteLoanModal] = useState(false);
@@ -4892,6 +4910,97 @@ function App() {
   const [enableReminders, setEnableReminders] = useState(true);
   const [enableDailyAlerts, setEnableDailyAlerts] = useState(true);
   const restoreInputRef = useRef(null);
+  useEffect(() => {
+    if (highlightedTxId) {
+      const timer = setTimeout(() => {
+        const els = document.querySelectorAll(`[id="tx-card-${highlightedTxId}"]`);
+        if (els.length > 0) {
+          const el = els[els.length - 1]; // Always pick the one in the foreground/active page
+          el.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
+      }, 450);
+      const clearTimer = setTimeout(() => {
+        setHighlightedTxId(null);
+      }, 3000);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(clearTimer);
+      };
+    }
+  }, [highlightedTxId]);
+  const handleTransactionClick = tx => {
+    if (!tx) return;
+
+    // Set highlighted transaction ID for blinking effect
+    setHighlightedTxId(tx.id);
+
+    // 1. If transaction belongs to a Loan
+    if (tx.loanId) {
+      const targetLoan = loans.find(l => l.id === tx.loanId);
+      if (targetLoan) {
+        setLoanTabFilter('paid');
+        openLoanDetail(targetLoan, currentTab);
+        return;
+      }
+    }
+
+    // 2. If transaction belongs to an Archived Period
+    if (tx.periodId) {
+      let targetPeriod = completedPeriods.find(p => p.id === tx.periodId);
+      if (!targetPeriod && tx.contactId) {
+        const contactObj = contacts.find(c => c.id === tx.contactId);
+        const periodTxs = transactions.filter(t => t.periodId === tx.periodId);
+        if (contactObj) {
+          targetPeriod = {
+            id: tx.periodId,
+            contactId: contactObj.id,
+            contactName: `${contactObj.firstName || ''} ${contactObj.lastName || ''}`.trim(),
+            type: tx.type === 'debt' || tx.type === 'debt_repayment' ? 'debt' : 'demand',
+            title: `دوره تسویه‌شده ${contactObj.firstName || ''} ${contactObj.lastName || ''}`,
+            totalAmount: periodTxs.reduce((acc, curr) => acc + Math.abs(curr.amount || 0), 0),
+            transactions: periodTxs
+          };
+        }
+      }
+      if (targetPeriod) {
+        openArchivedPeriodDetail(targetPeriod, currentTab);
+        return;
+      }
+    }
+
+    // 3. If transaction belongs to a Contact
+    if (tx.contactId) {
+      const targetContact = contacts.find(c => c.id === tx.contactId);
+      if (targetContact) {
+        let filter = 'all';
+        if (tx.type === 'debt' || tx.type === 'debt_repayment') {
+          filter = 'debts';
+          setContactDebtsSubFilter(tx.periodId ? 'archived' : 'active');
+        } else if (tx.type === 'demand' || tx.type === 'demand_repayment') {
+          filter = 'demands';
+          setContactDemandsSubFilter(tx.periodId ? 'archived' : 'active');
+        } else if (tx.type === 'repayment' || tx.type === 'creation' || tx.type === 'loan') {
+          filter = 'loans';
+          setContactLoansSubFilter('active');
+        }
+        openContactDetail(targetContact, filter, currentTab);
+        return;
+      }
+    }
+
+    // 4. Fallback: Search loans by title
+    if (tx.title) {
+      const matchedLoan = loans.find(l => l.title && (tx.title.includes(l.title) || l.title.includes(tx.title)));
+      if (matchedLoan) {
+        setLoanTabFilter('paid');
+        openLoanDetail(matchedLoan, currentTab);
+        return;
+      }
+    }
+  };
   const closePlusMenu = callback => {
     setShowPlusMenu(false);
     setIsPlusMenuClosing(false);
@@ -5162,7 +5271,7 @@ function App() {
         } : t);
         if (selectedPeriod && selectedPeriod.id === periodId) {
           setSelectedPeriod(null);
-          setCurrentTab(loanReturnTab || 'contact-detail');
+          navigateToTab(loanReturnTab || 'contact-detail', 'back');
         }
       }
       setTransactions(updatedTxs);
@@ -5203,7 +5312,7 @@ function App() {
         } : t);
         if (selectedPeriod && selectedPeriod.id === periodId) {
           setSelectedPeriod(null);
-          setCurrentTab(loanReturnTab || 'contact-detail');
+          navigateToTab(loanReturnTab || 'contact-detail', 'back');
         }
       }
       setTransactions(updatedTxs);
@@ -5517,7 +5626,7 @@ function App() {
       setCurrentCardIdx(prevIdx);
       setTimeout(() => {
         setAnimatingPrevCard(false);
-      }, 420);
+      }, 750);
       requestAnimationFrame(() => {
         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
         if (activeCardNode) {
@@ -5732,7 +5841,7 @@ function App() {
       setCurrentCardIdx(nextIdx);
       setTimeout(() => {
         setAnimatingCard(false);
-      }, 420);
+      }, 850);
       requestAnimationFrame(() => {
         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
         if (activeCardNode) {
@@ -6585,7 +6694,7 @@ function App() {
         setShowEditContactModal(false);
         if (selectedContact && selectedContact.id === targetContactId) {
           setSelectedContact(null);
-          setCurrentTab('contacts');
+          navigateToTab('contacts', 'back');
         }
         setConfirmConfig(null);
         showToast('مخاطب با موفقیت حذف گردید');
@@ -6613,7 +6722,7 @@ function App() {
         setLoans(prev => prev.filter(l => l.id !== loanIdToDelete));
         setTransactions(prev => prev.filter(t => t.loanId !== loanIdToDelete));
         setSelectedLoan(null);
-        setCurrentTab(loanReturnTab || 'accounts');
+        navigateToTab(loanReturnTab || 'accounts', 'back');
         setConfirmConfig(null);
         showToast('پرونده وام با موفقیت حذف گردید');
       },
@@ -6643,7 +6752,7 @@ function App() {
         setCompletedPeriods(prev => prev.filter(p => p.id !== periodIdToDelete));
         setTransactions(prev => prev.filter(t => t.periodId !== periodIdToDelete));
         setSelectedPeriod(null);
-        setCurrentTab(loanReturnTab || 'contact-detail');
+        navigateToTab(loanReturnTab || 'contact-detail', 'back');
         setConfirmConfig(null);
         showToast('تسویه‌حساب آرشیو شده با موفقیت حذف گردید');
       },
@@ -7785,15 +7894,20 @@ function App() {
   const getUnderlyingTabForSubpage = subpageTab => {
     if (subpageTab === 'contact-detail') {
       if (loanReturnTab === 'accounts') return 'accounts';
+      if (loanReturnTab === 'dashboard') return 'dashboard';
+      if (loanReturnTab === 'all-transactions') return 'all-transactions';
       return 'contacts';
     }
     if (subpageTab === 'loan-detail') {
       if (loanReturnTab === 'contact-detail' && selectedContact) return 'contact-detail';
       if (loanReturnTab === 'dashboard') return 'dashboard';
+      if (loanReturnTab === 'all-transactions') return 'all-transactions';
       return 'accounts';
     }
     if (subpageTab === 'archived-period-detail') {
       if ((loanReturnTab || 'contact-detail') === 'contact-detail' && selectedContact) return 'contact-detail';
+      if (loanReturnTab === 'dashboard') return 'dashboard';
+      if (loanReturnTab === 'all-transactions') return 'all-transactions';
       return 'accounts';
     }
     if (subpageTab === 'all-transactions') return 'dashboard';
@@ -7932,7 +8046,7 @@ function App() {
         }, /*#__PURE__*/React.createElement("div", {
           onClick: () => {
             setAccountsSubTab('loans');
-            setCurrentTab('accounts');
+            navigateToTab('accounts', 'forward');
           },
           className: "bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center"
         }, /*#__PURE__*/React.createElement("div", {
@@ -7947,7 +8061,7 @@ function App() {
         }, loans.length, " \u067E\u0631\u0648\u0646\u062F\u0647")), /*#__PURE__*/React.createElement("div", {
           onClick: () => {
             setAccountsSubTab('debts');
-            setCurrentTab('accounts');
+            navigateToTab('accounts', 'forward');
           },
           className: "bg-gradient-to-br from-rose-500 to-red-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center"
         }, /*#__PURE__*/React.createElement("div", {
@@ -7964,7 +8078,7 @@ function App() {
         }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/React.createElement("div", {
           onClick: () => {
             setAccountsSubTab('demands');
-            setCurrentTab('accounts');
+            navigateToTab('accounts', 'forward');
           },
           className: "bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center"
         }, /*#__PURE__*/React.createElement("div", {
@@ -7990,14 +8104,16 @@ function App() {
         }), /*#__PURE__*/React.createElement("span", null, "\u0622\u062E\u0631\u06CC\u0646 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("button", {
           onClick: () => {
             setAllTxsPage(1);
-            setCurrentTab('all-transactions');
+            navigateToTab('all-transactions', 'none');
           },
           className: "text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
         }, "\u0645\u0634\u0627\u0647\u062F\u0647 \u0647\u0645\u0647")), /*#__PURE__*/React.createElement("div", {
           className: "space-y-2.5"
         }, transactions.slice(0, 4).map(tx => /*#__PURE__*/React.createElement("div", {
           key: tx.id,
-          className: "flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40 last:border-0"
+          id: `tx-card-${tx.id}`,
+          onClick: () => handleTransactionClick(tx),
+          className: `flex items-center justify-between py-2 border-b border-slate-50 dark:border-slate-700/40 last:border-0 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all rounded-xl px-2 -mx-2 active:scale-[0.98] ${tx.id === highlightedTxId ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-md' : ''}`
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center space-x-2.5 space-x-reverse"
         }, /*#__PURE__*/React.createElement("div", {
@@ -8725,6 +8841,7 @@ function App() {
               key: tx.id,
               tx: tx,
               colorType: "rose",
+              isHighlighted: tx.id === highlightedTxId,
               onEdit: txItem => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem),
               onDelete: txItem => requestDeleteTx(txItem, 'debt')
             });
@@ -8827,6 +8944,7 @@ function App() {
               key: tx.id,
               tx: tx,
               colorType: "emerald",
+              isHighlighted: tx.id === highlightedTxId,
               onEdit: txItem => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem),
               onDelete: txItem => requestDeleteTx(txItem, 'demand')
             });
@@ -9369,6 +9487,7 @@ function App() {
           index: idx,
           totalCount: repaymentTxs.length,
           colorType: "indigo",
+          isHighlighted: tx.id === highlightedTxId,
           onEdit: txItem => openStackWizard('installment', 'edit', txItem),
           onDelete: txItem => requestDeleteTx(txItem, 'loan_installment')
         })))) : /*#__PURE__*/React.createElement(motion.div, {
@@ -9653,6 +9772,7 @@ function App() {
             colorType: isDebt ? "rose" : "emerald",
             contactName: contactDisplayName,
             contacts: contacts,
+            isHighlighted: tx.id === highlightedTxId,
             onEdit: txItem => openStackWizard(isDebt ? isRepay ? "debt_repayment" : "debt" : isRepay ? "demand_repayment" : "demand", "edit", txItem),
             onDelete: txItem => requestDeleteTx(txItem, isDebt ? "debt" : "demand")
           });
@@ -9694,7 +9814,9 @@ function App() {
           className: "space-y-2.5"
         }, transactions.slice((allTxsPage - 1) * 20, allTxsPage * 20).map(tx => /*#__PURE__*/React.createElement("div", {
           key: tx.id,
-          className: "flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700/40 last:border-0"
+          id: `tx-card-${tx.id}`,
+          onClick: () => handleTransactionClick(tx),
+          className: `flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700/40 last:border-0 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all rounded-xl px-2 -mx-2 active:scale-[0.98] ${tx.id === highlightedTxId ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-md' : ''}`
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center space-x-2.5 space-x-reverse"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10212,7 +10334,6 @@ function App() {
   }, toastMessage), /*#__PURE__*/React.createElement("div", {
     className: "flex-1 relative w-full h-full overflow-hidden"
   }, /*#__PURE__*/React.createElement(AnimatePresence, {
-    mode: "popLayout",
     custom: navDirection,
     initial: false
   }, /*#__PURE__*/React.createElement(motion.div, {
@@ -10231,7 +10352,7 @@ function App() {
   }, ['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? /*#__PURE__*/React.createElement("div", {
     className: "flex-1 relative w-full h-full"
   }, currentTab === 'contact-detail' && selectedContact && /*#__PURE__*/React.createElement(SwipeBackWrapper, {
-    onBack: () => navigateToTab(loanReturnTab === 'accounts' ? 'accounts' : 'contacts', 'none'),
+    onBack: () => navigateToTab(loanReturnTab || 'contacts', 'none'),
     onRefresh: () => handleRefreshData('contact-detail'),
     underlyingContent: renderTab(getUnderlyingTabForSubpage('contact-detail'))
   }, ({
@@ -10488,29 +10609,31 @@ function App() {
     const isEditingThis = editingCardId === card.id;
     const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
     const isModified = modifiedCardIds.includes(card.id);
-    return /*#__PURE__*/React.createElement(motion.div, {
+    return /*#__PURE__*/React.createElement("div", {
       key: card.id,
       id: `sticky-card-${card.id}`,
-      layout: true,
+      className: `sticky w-[96%] max-w-md mx-auto isolate ${isEditingThis ? 'z-[100]' : 'z-0'}`,
+      style: {
+        top: `${12 + index * 8}px`,
+        zIndex: isEditingThis ? 100 : index,
+        transform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)',
+        WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)'
+      }
+    }, /*#__PURE__*/React.createElement(motion.div, {
       initial: {
-        opacity: 0,
         y: 20
       },
       animate: {
-        opacity: isOtherCardBlur ? 0.35 : 1,
+        opacity: isOtherCardBlur ? 0.6 : 1,
         scale: isEditingThis ? 1.0 : isOtherCardBlur ? 0.95 : 0.98,
-        y: 0
+        y: peekAnim && index > 0 ? -80 : 0
       },
       transition: {
         type: "spring",
         stiffness: 380,
         damping: 26
       },
-      style: {
-        top: `${12 + index * 8}px`,
-        zIndex: isEditingThis ? 40 : 10 + index
-      },
-      className: `sticky rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between w-[96%] max-w-md mx-auto ${isEditingThis ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400 z-40' : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'} ${isOtherCardBlur ? 'blur-[1.5px] pointer-events-none select-none' : ''} ${shakeCardId === card.id ? 'animate-shake' : ''}`,
+      className: `w-full rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between ${isEditingThis ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400' : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'} ${isOtherCardBlur ? 'pointer-events-none select-none' : ''} ${shakeCardId === card.id ? 'animate-shake' : ''}`,
       onClick: e => {
         if (!isEditingThis && editingCardId === null) {
           handleStartEditingCard(card);
@@ -10597,7 +10720,7 @@ function App() {
     }, /*#__PURE__*/React.createElement(Icon, {
       name: "edit-2",
       className: "w-3.5 h-3.5 shrink-0"
-    }), /*#__PURE__*/React.createElement("span", null, "\u0648\u06CC\u0631\u0627\u06CC\u0634"))))));
+    }), /*#__PURE__*/React.createElement("span", null, "\u0648\u06CC\u0631\u0627\u06CC\u0634")))))));
   })), /*#__PURE__*/React.createElement(AnimatePresence, null, modifiedCardIds.length > 0 && /*#__PURE__*/React.createElement(motion.div, {
     initial: {
       opacity: 0,
