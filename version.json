@@ -1,15 +1,27 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "2.1.8",
-  "buildNumber": 207,
+  "installedVersion": "2.1.9",
+  "buildNumber": 208,
   "releaseDate": "2026-08-09",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "2.1.8",
-  "latestBuild": 206,
+  "latestVersion": "2.1.9",
+  "latestBuild": 208,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "2.1.9",
+      "buildNumber": 208,
+      "releaseDate": "2026-08-09",
+      "releaseChannel": "Stable",
+      "commitHash": "v219rel",
+      "commitMessage": "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
+      "changes": [
+        "حل ریشه‌ای مشکل اسکیپ شدن انیمیشن راست به چپ هنگام باز کردن صفحات داخلی (مانند جزئیات مخاطب و تراکنش‌ها)",
+        "همگام‌سازی رنگ status bar در دستگاه‌های موبایل هنگام باز بودن پنجره‌های کارت استک و کارت‌های استیکی با پس‌زمینه تیره آن‌ها"
+      ]
+    },
     {
       "version": "2.1.8",
       "buildNumber": 207,

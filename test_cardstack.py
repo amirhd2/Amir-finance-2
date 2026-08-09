@@ -3,9 +3,9 @@ with open('src/App.jsx', 'r', encoding='utf-8') as f:
 
 start = -1
 for i, line in enumerate(lines):
-    if "if (window._isSwipeBackNav) {" in line:
+    if "function CardStackWizard(" in line:
         start = i
         break
 
 if start != -1:
-    print("".join(lines[start:start+30]))
+    print("".join(lines[start:start+40]))

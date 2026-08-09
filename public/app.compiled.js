@@ -2494,7 +2494,7 @@ function SwipeBackWrapper({
       page1.style.transform = 'translate3d(0%, 0, 0)';
       overlay.style.opacity = '0';
       void page2.offsetHeight;
-      openPage();
+      requestAnimationFrame(() => requestAnimationFrame(() => openPage()));
     }
   }, []);
   useEffect(() => {
@@ -3959,7 +3959,7 @@ function App() {
       releaseDate: "2026-08-08",
       releaseChannel: "Stable",
       commitHash: "v215stackFix",
-      commitMessage: "release: v2.1.5 - optimized stack cards height, removed overview button, status bar matching theme, exact rewind animation on prev step",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["حذف دکمه «نمای یکجای کارت‌ها» از بالای مدال استک کارت‌ها", "تطبیق و یکسان‌سازی دقیق ارتفاع تمامی کارت‌های استک و استیکی جهت حذف فضای خالی اضافه در پایین کارت‌ها", "هم‌رنگ شدن هوشمند status bar با پس‌زمینه برنامه در زمان باز بودن مدال استک کارت و کارت‌های استیکی", "اعمال انیمیشن دقیق بازگشت (Rewind) عینا معکوس انیمیشن خروج کارت در زمان کلیک روی دکمه «مرحله قبلی»", "انتشار رسمی نسخه 2.1.5 (بیلد 206)"]
     }, {
       version: "2.1.3",
@@ -3967,7 +3967,7 @@ function App() {
       releaseDate: "2026-08-07",
       releaseChannel: "Stable",
       commitHash: "v213mouseFix",
-      commitMessage: "release: v2.1.3 - fixed edit card layout & side margins, smooth desktop mouse scrolling (removed snap locking), auto-scroll to first card on wizard launch",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["حفظ فاصله کناری و ظاهر اصلی کارت‌ها در زمان ویرایش بدون زوم شدگی یا بهم‌ریختگی (Preserved Card Margins & Unzoomed Appearance)", "نمایش همیشگی اولین کارت در ابتدای باز شدن حالت ویرایش (Auto-scroll to First Card on Launch)", "رفع کامل قفل شدن و پرش اسکرول موس روی دسکتاپ (Fixed Desktop Mouse Scroll & Snap Locking Issue)", "بهبود روان‌تر شدن حرکت استیکی کارت‌ها در دسکتاپ و موبایل"]
     }, {
       version: "2.1.2",
@@ -3975,7 +3975,7 @@ function App() {
       releaseDate: "2026-08-07",
       releaseChannel: "Stable",
       commitHash: "v212cardFix",
-      commitMessage: "release: v2.1.2 - uniform card height, top shadow sticky overlap, floating bottom close button & unsaved changes overlay fix",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["هم‌اندازه شدن کامل ارتفاع تمامی کارت‌ها در حالت استک عمودی موبایل (Uniform Card Height)", "افزودن سایه برجسته بالای کارت‌ها هنگام حرکت استیکی و قرارگیری روی کارت قبلی (Top Overlapping Shadow)", "حذف کامل منوی بالای صفحه در حالت ویرایش کارت‌ها جهت نمایش خالص کارت‌ها در صفحه", "افزودن دکمه شناور ضربدر (X) در پایین کارت‌ها جهت خروج سریع و آسان", "اصلاح موقعیت و لایه منوی تغییرات ذخیره‌نشده در پایین صفحه بدون ایجاد مزاحمت برای ویرایش سایر کارت‌ها"]
     }, {
       version: "2.1.0",
@@ -3983,7 +3983,7 @@ function App() {
       releaseDate: "2026-08-07",
       releaseChannel: "Stable",
       commitHash: "v210mobileEdit",
-      commitMessage: "release: v2.1.0 - premium mobile editing experience with vertical sticky stacked cards, iOS scroll snap, inline card editing & unsaved changes sticky bottom bar",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["طراحی و پیاده‌سازی تجربه جدید و اختصاصی ویرایش کارت‌های استک (Sticky Stacked Cards) در نسخه موبایل PWA", "پشتیبانی از اسکرول عمودی روان، چسبندگی کارت‌ها در بالای صفحه به سبک iOS (Sticky Headers) و لغزش نرم کارت بعدی روی کارت قبلی با Scroll Snap", "نمایش کارت‌ها به‌صورت شناور با عرض اولیه ۹۲٪، گوشه‌های گرد، فواصل بهینه و حذف کامل دکمه‌های قبلی/بعدی در حالت ویرایش", "قابلیت ویرایش درون‌خطی کارت فعال با لمس، بزرگ‌نمایی نرم (از ۰.۹۲ به ۱.۰) و انیمیشن مات و کم‌رنگ شدن سایر کارت‌ها (Blur & Dimming)", "افزودن دکمه‌های «ثبت تغییرات» و «انصراف» به همراه نشانگر سبز «اصلاح‌شده» برای شناسایی کارت‌های تغییریافته", "افزودن نوار شناور پایین صفحه با شمارنده تغییرات ذخیره‌نشده و دکمه «ثبت همه تغییرات» جهت ذخیره یکجای داده‌ها", "نمایش پنجره هشدار تایید هوشمند هنگام تمایل کاربر به خروج از ویرایشگر در صورت وجود تغییرات ذخیره‌نشده"]
     }, {
       version: "2.0.1",
@@ -3991,7 +3991,7 @@ function App() {
       releaseDate: "2026-08-07",
       releaseChannel: "Stable",
       commitHash: "v201rel",
-      commitMessage: "release: v2.0.1 - contact wizard card improvements, virtual keyboard focus fix, centered accounts headers & profile page sub-filter buttons",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["حذف دکمه «حذف مخاطب» از بالای کارت ویرایش مخاطب در استک کارت جهت جلوگیری از نیاز به اسکرول کارت", "اصلاح و روان‌سازی کامل عملکرد کلیک روی کادرهای ورودی در کارت‌های استک جهت باز شدن آنی کیبورد و فوکوس بدون مشکل روی موبایل و آیفون", "بازطراحی عناوین بخش‌های وام‌ها، طلب‌ها و بدهی‌ها در صفحه حساب‌ها به صورت مرکزچین و حاشیه‌دار در تمام عرض صفحه", "افزودن دکمه‌های فیلتر دوگانه (اصلی و بایگانی به همراه شمارنده تعداد) در صفحه پروفایل مخاطب برای هر ۳ بخش وام‌ها، بدهی‌ها و طلب‌ها"]
     }, {
       version: "2.0.0",
@@ -3999,7 +3999,7 @@ function App() {
       releaseDate: "2026-08-07",
       releaseChannel: "Stable",
       commitHash: "v200major",
-      commitMessage: "release: v2.0.0 major update - preview viewport & root height fix, prevent mobile keyboard zoom, verified PWA icons & iOS touch support, stack wizard card animation & responsive auto-focus",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["حل ساختاری و کامل مشکل نمایش ناقص صفحه برنامه در حالت Preview و iFrame با تنظیم ارتفاع ۱۰۰٪ روی html، body و root#", "جلوگیری کامل از زوم ناخواسته صفحه‌نمایش هنگام باز شدن کیبورد مجازی در تمامی فیلدهای ورودی (موبایل و آیفون) با تنظیم اندازه فونت استاندارد ۱۶پیکسل و viewport-fit=cover", "بررسی دقیق و تطبیق ۱۰۰٪ مسیر تمامی فایل‌های Favicon، Apple Touch Icon، Web Manifest و تصاویر Splash Screen در index.html و public/index.html جهت نمایش دقیق آیکون در آیفون و PWA", "بهینه‌سازی انیمیشن‌های ورود و خروج (AnimatePresence) و سیستم فوکوس خودکار (autoFocus) در فرم‌ها و کارت‌های استک لایه‌ای (Stack Wizard)", "به‌روزرسانی سرویس ورکر (Service Worker v2.0.0-b200) جهت کش آفلاین و به‌روزرسانی آنی نسخه جدید"]
     }, {
       version: "1.9.1",
@@ -4007,7 +4007,7 @@ function App() {
       releaseDate: "2026-08-05",
       releaseChannel: "Stable",
       commitHash: "v191rel",
-      commitMessage: "feat: remove reminder card from loan wizard, restore 31-day selector grid in due date card without top text, and implement Card Stack Wizard for adding and editing contacts",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["حذف کامل کارت انتخاب سررسید/ریمایندر از کارت استک ثبت وام", "بازگرداندن جدول انتخاب روزهای ۱ تا ۳۱ ماه به کارت سررسید اولین قسط وام با حذف عنوان بالای جدول", "پیاده‌سازی کارت استک برای ثبت مخاطب جدید (کارت اول: نام و نام خانوادگی در ۲ کادر مجزا، کارت دوم: شماره تماس، شماره کارت و شماره شبا)", "استفاده از کارت استک جدید برای ویرایش مخاطب به همراه دکمه حذف مخاطب", "ثبت رسمی بیلد 175 و انتشار نسخه 1.9.1"]
     }, {
       version: "1.9.0",
@@ -4015,7 +4015,7 @@ function App() {
       releaseDate: "2026-08-05",
       releaseChannel: "Stable",
       commitHash: "v190rel",
-      commitMessage: "feat: loan detail installment payment filter tabs (paid/unpaid), loan wizard due date UI optimization, and complete standardized mock data reset",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["ایجاد دو زبانه فیلتر «پرداخت شده» و «پرداخت نشده» تحت دکمه ثبت قسط در صفحه جزئیات وام با طراحی و رنگ‌بندی متناسب", "حذف متون اضافه «تراکنش ها» و «قسط ثبت شده» از صفحه جزئیات وام", "بازطراحی کارت تعیین تاریخ اولین قسط وام در فرم ثبت وام جدید (حذف کادر انتخاب روز، اصلاح جهت دکمه‌های ماه قبلی و بعدی و تنظیم پیش‌فرض سال بر اساس تاریخ دریافت وام)", "بازنشانی دیتابیس برنامه و بارگذاری دیتای ثابت پایه شامل ۲۰ مخاطب با شماره تماس، کارت و شبای کامل، ۱۰ وام (۷ فعال و ۳ تسویه‌شده)، ۱۵ بدهی (۱۰ فعال و ۵ تسویه‌شده) و ۱۵ طلب (۱۰ فعال و ۵ تسویه‌شده)", "ثبت رسمی بیلد 174 و انتشار نسخه 1.9.0"]
     }, {
       version: "1.8.9",
@@ -4023,7 +4023,7 @@ function App() {
       releaseDate: "2026-08-04",
       releaseChannel: "Stable",
       commitHash: "v189rel",
-      commitMessage: "fix & perf: english date digits, identical header search & filters for accounts & contacts, fix back navigation return to accounts, ultra smooth iOS slide transitions",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["نمایش یکدست اعداد تاریخ‌ها با رقوم انگلیسی در کلیه کارت‌ها و صفحات وام، طلب و بدهی", "تطبیق و یکسان‌سازی دقیق ابعاد، ارتفاع و فواصل کادر سرچ و فیلترها بین دو صفحه حساب‌ها و مخاطبین جهت جابجایی بدون پرش", "اصلاح مسیر بازگشت به صفحه حساب‌ها هنگام ورود به طلب‌ها و بدهی‌ها از زبانه مدیریت حساب‌ها", "ارتقای روان‌سازی انیمیشن اسلاید iOS با فریم‌ریت بالا، عدم لغو انیمیشن در ورود و رفع کامل فریم شفاف/سفید لحظه‌ای", "ثبت رسمی بیلد 173 و انتشار نسخه 1.8.9"]
     }, {
       version: "1.8.8",
@@ -4031,7 +4031,7 @@ function App() {
       releaseDate: "2026-08-03",
       releaseChannel: "Stable",
       commitHash: "v188rel",
-      commitMessage: "fix: restore hero summary card with watermarks & 3-column quick stats grid in settled debt and demand pages",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بازگردانی کامل کارت اصلی (کارت هدر با گرادیانت، واتر‌مارک اختصاصی و نشان تسویه‌شده) در صفحات طلب و بدهی تسویه‌شده", "بازگردانی باکس آمار سریع سه ستونه (تعداد تراکنش‌ها، تاریخ افتتاح پرونده و تاریخ تسویه) در زیر کارت اصلی", "حفظ نمایش نام مخاطب در خط دوم تمامی کارت‌های تراکنش", "ثبت رسمی بیلد 172 و انتشار نسخه 1.8.8"]
     }, {
       version: "1.8.7",
@@ -4039,7 +4039,7 @@ function App() {
       releaseDate: "2026-08-03",
       releaseChannel: "Stable",
       commitHash: "v187rel",
-      commitMessage: "fix: resolve blank white screen issue when entering loan detail or settled debt/demand screens, restore archived period case, apply solid blue loan export button & colored settled export button, fix line 2 contact name display",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["رفع کامل مشکل صفحه سفید هنگام ورود به صفحات جزئیات وام، طلب تسویه‌شده و بدهی تسویه‌شده", "استفاده از رنگ آبی یکدست و رسمی برای دکمه «خروجی گرفتن از گزارش وام» عینا هم‌رنگ دکمه ثبت پرداخت قسط", "استفاده از رنگ متناسب با کارت بالای صفحه (قرمز برای بدهی تسویه‌شده و سبز برای طلب تسویه‌شده) برای دکمه «خروجی پرونده تسویه‌حساب»", "اصلاح و نمایش حتمی نام مخاطب در خط دوم تمام کارت‌های تراکنش در صفحات تسویه‌شده بدهی و طلب", "ثبت رسمی بیلد 171 و انتشار نسخه 1.8.7"]
     }, {
       version: "1.8.6",
@@ -4047,7 +4047,7 @@ function App() {
       releaseDate: "2026-08-03",
       releaseChannel: "Stable",
       commitHash: "v186rel",
-      commitMessage: "feat: blue export button for loan details, matching color export button for settled debt/demand periods, fix missing contact name in line 2 of transaction cards, release v1.8.6 (build 170)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["استفاده از رنگ آبی اختصاصی برای دکمه «خروجی پرونده وام» عینا هم‌رنگ دکمه ثبت پرداخت قسط", "استفاده از رنگ متناسب با کارت بالای صفحه (قرمز برای بدهی تسویه‌شده و سبز برای طلب تسویه‌شده) برای دکمه «خروجی پرونده تسویه‌حساب»", "اصلاح و نمایش دقیق نام مخاطب در خط دوم تمامی کارت‌های تراکنش در صفحات بدهی و طلب تسویه‌شده", "ثبت رسمی بیلد 170 و انتشار نسخه 1.8.6"]
     }, {
       version: "1.8.5",
@@ -4055,7 +4055,7 @@ function App() {
       releaseDate: "2026-08-03",
       releaseChannel: "Stable",
       commitHash: "v185rel",
-      commitMessage: "feat: strictly restrict transaction line 2 to contact name in settled screens, redesign top summary cards in settled debt and demand pages to match loan summary hero style with red/green gradients and 3-box quick stats grid, release v1.8.5 (build 169)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["محدودسازی دقیق خط دوم کارت‌های تراکنش در صفحات طلب و بدهی تسویه‌شده به فقط «نام مخاطب»", "بازطراحی هدر بالای صفحات پرونده طلب و بدهی تسویه‌شده به سبک کارت خلاصه وام (کارت هیپ گرادیانت قرمز برای بدهی و سبز برای طلب به همراه واترمارک اختصاصی)", "طراحی باکس دوم صفحات تسویه‌شده به سبک باکس ۳ ستونه آمار سریع وام (تعداد تراکنش‌ها، تاریخ شروع پرونده و تاریخ تسویه)", "ثبت رسمی بیلد 169 و انتشار نسخه 1.8.5"]
     }, {
       version: "1.8.4",
@@ -4063,7 +4063,7 @@ function App() {
       releaseDate: "2026-08-03",
       releaseChannel: "Stable",
       commitHash: "v184rel",
-      commitMessage: "feat: format loan and settled transactions into 3 structured lines with auto-expanding box height, restore contact card watermark to left position, release v1.8.4 (build 168)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["تنظیم کارت تراکنش‌های وام به ۳ خط مجزا: خط اول شماره قسط (پرداخت قسط ۲)، خط دوم نام وام، خط سوم توضیحات بدون محدودیت ارتفاع", "تنظیم کارت تراکنش‌های طلب (تسویه‌شده و فعال) به ۳ خط: خط اول نوع عملیات (ثبت طلب جدید / بازپرداخت طلب)، خط دوم نام مخاطب، خط سوم توضیحات با قابلیت افزایش ارتفاع باکس", "تنظیم کارت تراکنش‌های بدهی (تسویه‌شده و فعال) به ۳ خط: خط اول نوع عملیات (ثبت بدهی جدید / بازپرداخت بدهی)، خط دوم نام مخاطب، خط سوم توضیحات با قابلیت افزایش ارتفاع باکس", "بازگردانی واتر‌مارک کارت مخاطب در صفحه پروفایل به موقعیت اولیه در سمت چپ", "ثبت رسمی بیلد 168 و انتشار نسخه 1.8.4"]
     }, {
       version: "1.8.3",
@@ -4071,7 +4071,7 @@ function App() {
       releaseDate: "2026-08-03",
       releaseChannel: "Stable",
       commitHash: "v183rel",
-      commitMessage: "feat: restore circular contact action buttons, align copy icon size, optimize contact watermark & phone icon, blue gradient loan card, release v1.8.3 (build 167)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بازگردانی دکمه‌های گرد ویرایش (با آیکون مداد)، علاقه‌مندی و حذف به نوار بالای صفحه پروفایل مخاطب", "یکسان‌سازی دقیق اندازه آیکون کپی در شماره کارت با شماره شبا (اندازه یکسان text-lg)", "تنظیم موقعیت واتر‌مارک پشت کارت مخاطب به سمت راست و انتقال آیکون تماس به سمت راست شماره موبایل", "تغییر رنگ کارت خلاصه وام در صفحه وام‌ها به گرادیانت آبی اختصاصی و جابه‌جایی آیکون بانک به بالا و راست", "ثبت رسمی بیلد 167 و انتشار نسخه 1.8.3"]
     }, {
       version: "1.8.2",
@@ -4079,7 +4079,7 @@ function App() {
       releaseDate: "2026-08-03",
       releaseChannel: "Stable",
       commitHash: "v182rel",
-      commitMessage: "feat: remove show completed loans button, isolate settled loans to archived tab, contact profile pill titles and exact 3-line card styling, release v1.8.2 (build 166)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["حذف کامل دکمه «نمایش تسویه‌شده‌ها» از بخش وام‌های صفحه مدیریت حساب‌ها و انتقال وام‌های تسویه‌شده به تب بایگانی", "تطبیق کامل و یکسان‌سازی ظاهر، اندازه، آیکون و نوع نمایش ۳ خطی کارت‌های طلب، بدهی و وام در صفحه پروفایل مخاطبین", "حذف عناوین اضافی و دکمه «نمایش همه» از پروفایل مخاطبین و استفاده از نشان‌های بیضوی (Pill) «طلب‌ها»، «بدهی‌ها» و «وام‌ها» با رنگ و حاشیه اختصاصی", "تغییر متون بخش بایگانی به «دوره‌های بایگانی شده» (با رنگ سبز/قرمز) و «بایگانی وام‌ها» (با رنگ آبی)", "ثبت رسمی بیلد 166 و انتشار نسخه 1.8.2"]
     }, {
       version: "1.8.0",
@@ -4087,7 +4087,7 @@ function App() {
       releaseDate: "2026-08-03",
       releaseChannel: "Stable",
       commitHash: "v180rel",
-      commitMessage: "feat: exact revamp of accounts management view matching specification, release v1.8.0 (build 164)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بازطراحی کامل و دقیق صفحه مدیریت حساب‌ها عینا مطابق با الگوی درخواستی", "ثبت بیلد 164 و انتشار نسخه 1.8.0"]
     }, {
       version: "1.7.0",
@@ -4095,7 +4095,7 @@ function App() {
       releaseDate: "2026-08-02",
       releaseChannel: "Stable",
       commitHash: "v170rel",
-      commitMessage: "feat: full responsive web & desktop support across all views, release v1.7.0 (build 163)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["پشتیبانی کامل و هوشمند از چیدمان واکنش‌گرا (Responsive) در تمام صفحات و بخش‌های برنامه ویژه تبلت‌ها و دسکتاپ (Grid layout multi-column)", "ارتقای کانتینر اصلی برنامه جهت نمایش عریض و روان در صفحه‌نمایش‌های بزرگ بدون تغییر در حالت موبایل", "بهینه‌سازی شبکه کارت‌های مخاطبین، پرونده‌های وام، طلب‌ها و بدهی‌ها برای نمایش چند ستونه در نمایشگرهای عریض", "تنظیم و بهینه‌سازی دقیق ارتفاع کارت مخاطبین جهت جانمایی ایده‌آل آواتار و نام مخاطب", "انتشار رسمی نسخه 1.7.0 و ارتقا به بیلد 163"]
     }, {
       version: "1.6.1",
@@ -4103,7 +4103,7 @@ function App() {
       releaseDate: "2026-08-02",
       releaseChannel: "Stable",
       commitHash: "v161rel",
-      commitMessage: "fix & perf: ultra-smooth iOS push/pop page transitions, fix back button direction in settled loans/debts/demands, fix version update check in iOS installed PWA standalone mode, release v1.6.1 (build 162)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["ارتقا و روان‌سازی کامل انیمیشن‌های ورود و بازگشت صفحات (Push & Pop Transitions) با استاندارد iOS و فریم‌ریت بالا (Hardware-Accelerated Translate3D)", "اصلاح جهت انیمیشن بازگشت (از چپ به راست) هنگام کلیک روی دکمه بازگشت بالای صفحات وام، طلب و بدهی تسویه‌شده", "رفع مشکل دکمه بررسی بروزرسانی در نسخه وب‌اپ آیفون (PWA Standalone) با به‌روزرسانی هوشمند شماره بیلد محلی و فال‌بک خودکار (بیلد 162)", "بهینه‌سازی و تنظیم دقیق ارتفاع کارت‌های مخاطبین جهت جاگیری ایده‌آل آیکون آواتار و نام مخاطب", "همگام‌سازی کامل شماره بیلد 162 و نسخه 1.6.1 در کلیه فایل‌های برنامه"]
     }, {
       version: "1.6.0",
@@ -4111,7 +4111,7 @@ function App() {
       releaseDate: "2026-08-02",
       releaseChannel: "Stable",
       commitHash: "v160rel",
-      commitMessage: "feat: revamp settings appearance (bento mode style) and backup section UI matching attached spec, release v1.6.0 (build 161)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بازطراحی کامل بخش «ظاهر» (Appearance) در تنظیمات به سبک شبکه Bento Grid کاملاً مطابق با الگوی درخواستی", "بازطراحی کامل بخش «پشتیبان‌گیری» (Backup & Restore) در تنظیمات با کارت ردیفی و طراحی دقیق منطبق بر ساختار جدید", "ثبت بیلد جدید شماره 161 و انتشار رسمی نسخه 1.6.0"]
     }, {
       version: "1.5.1",
@@ -4119,7 +4119,7 @@ function App() {
       releaseDate: "2026-08-02",
       releaseChannel: "Stable",
       commitHash: "v151rel2",
-      commitMessage: "fix & release: eliminate swipe back multi-frame repeat glitch, remove slide animation for bottom navigation, fix return animation direction for completed loan/demand/debt pages, release v1.5.1 (build 160)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["رفع کامل انیمیشن تکراری و تداخل چند فریمی در لحظه پایانی حرکت سوایپ بک (Swipe Back)", "حذف انیمیشن اسلاید افقی هنگام جابجایی بین زبانه‌های اصلی نوار پایین (خانه، حساب‌ها، مخاطبین، تنظیمات)", "اصلاح انیمیشن بازگشت از چپ به راست هنگام کلیک روی دکمه بازگشت بالای صفحه در جزئیات وام‌های انجام شده، طلب‌های انجام شده و بدهی‌های انجام شده", "ثبت بیلد جدید شماره 160 و انتشار نهایی نسخه 1.5.1"]
     }, {
       version: "1.5.0",
@@ -4127,7 +4127,7 @@ function App() {
       releaseDate: "2026-08-02",
       releaseChannel: "Stable",
       commitHash: "v150rel",
-      commitMessage: "ui & feat: contact page filter active colors, conditional colored badges and settled tick icon indicators, release v1.5.0 (build 158)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["تغییر عناوین و فعال‌سازی رنگ‌های اختصاصی دکمه‌های فیلتر در صفحه مخاطبین (همه، طلب، بدهی، وام، بایگانی) در حالت انتخاب", "نمایش رنگی دکمه‌های نشان وضعیت (طلب، بدهی، وام) در باکس مخاطبین فقط در صورت وجود رکورد فعال و بی‌رنگ شدن در غیر این صورت", "نمایش آیکون تیک برای رکوردهای تسویه‌شده در زیر دکمه هر نشان در باکس مخاطب", "انتشار رسمی نسخه 1.5.0 (بیلد 158)"]
     }, {
       version: "1.4.0",
@@ -4135,7 +4135,7 @@ function App() {
       releaseDate: "2026-08-01",
       releaseChannel: "Stable",
       commitHash: "v140rel",
-      commitMessage: "feat & fix: multi-line dynamic card heights, numeric Jalali date in installment cards, shortened stack card height with scroll, and PWA WebApp update fix & release v1.4.0 (build 157)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["امکان رشد عمودی و انعطاف‌پذیری ارتفاع کارت‌های تراکنش (وام، طلب و بدهی) هنگام وجود عناوین یا توضیحات طولانی", "اصلاح و نمایش تاریخ پرداخت این قسط به صورت عددی خالص جلالی به ترتیب سال/ماه/روز (مثلاً 1405/05/12) در کارت اول پرداخت قسط", "کوتاه‌تر کردن ارتفاع کارت استک (Stack Card Wizard) به میزان ۱.۵ سانتی‌متر و فعال‌سازی اسکرول روان داخلی در صورت نیاز به فضای بیشتر", "رفع کامل مشکل دکمه بررسی و اعمال بروزرسانی در حالت وب‌اپ نصب‌شده (PWA Standalone) با اصلاح منطق Fetch سرویس ورکر و نمایش شماره بیلد واقعی", "انتشار رسمی نسخه 1.4.0 (بیلد 157)"]
     }, {
       version: "1.3.8",
@@ -4143,7 +4143,7 @@ function App() {
       releaseDate: "2026-08-01",
       releaseChannel: "Stable",
       commitHash: "v138rel",
-      commitMessage: "fix & perf: fix swipe back micro-jitter, eliminate double slide jump on returning from subpages to contact profile, release v1.3.8 (build 156)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["رفع کامل پرش و لرزش لحظه پایانی انیمیشن حرکت سوایپ بازگشت (Swipe Back)", "رفع حرکت اضافه و پرش افقی (از راست به چپ) هنگام بازگشت از جزئیات وام، بدهی یا طلب تسویه‌شده به پروفایل مخاطب", "نمایش برجسته و کامل تاریخ دقیق پرداخت قسط با فرمت YYYY/MM/DD در کارت اطلاعات پرداخت قسط", "افزودن انیمیشن باز و بسته شدن (ورود و خروج) روان آکاردیون «یادآوری‌های مهم» صفحه اصلی مطابق با AGENTS.md", "تغییر فیلتر «علاقه‌مندی‌ها» در صفحه مخاطبین به آیکون ستاره (خاموش/زرد روشن در حالت فعال)", "افزودن فیلتر جدید «تسویه‌شده» به صفحه مخاطبین برای نمایش مخاطبین دارای پرونده وام، طلب یا بدهی تسویه‌شده", "حذف چسبندگی (sticky) بخش بالای صفحه مخاطبین جهت ناپدید شدن روان هنگام اسکرول به بالا", "انتشار رسمی نسخه 1.3.8 (بیلد 156)"]
     }, {
       version: "1.3.7",
@@ -4151,7 +4151,7 @@ function App() {
       releaseDate: "2026-08-01",
       releaseChannel: "Stable",
       commitHash: "v137rel",
-      commitMessage: "fix & feat: full date display in installment card, smooth enter/exit accordion animation, star icon favorites filter, settled contacts filter, scrollable top header & release v1.3.7 (build 155)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["نمایش برجسته و کامل تاریخ دقیق پرداخت قسط با فرمت YYYY/MM/DD در کارت اطلاعات پرداخت قسط", "افزودن انیمیشن باز و بسته شدن (ورود و خروج) روان آکاردیون «یادآوری‌های مهم» صفحه اصلی مطابق با قانون جدید انیمیشن‌های پروژه در AGENTS.md", "تغییر فیلتر «علاقه‌مندی‌ها» در صفحه مخاطبین به آیکون ستاره (خاموش/زرد روشن در حالت فعال)", "افزودن فیلتر جدید «تسویه‌شده» به صفحه مخاطبین برای نمایش مخاطبین دارای پرونده وام، طلب یا بدهی تسویه‌شده", "حذف چسبندگی (sticky) بخش بالای صفحه مخاطبین (جستجو، فیلترها و عنوان) جهت ناپدید شدن روان هنگام اسکرول به بالا", "رفع مشکل عدم دانلود تصویر گرافیکی (PNG) خروجی پرونده وام", "اصلاح منطق اعتبارسنجی مانده کل وام هنگام ویرایش تراکنش و پرداخت قسط", "برجسته‌سازی و دو برابر کردن سایز باکس شماره قسط («قسط شماره X از Y») در کارت آبی رنگ اول پرداخت قسط", "انتشار رسمی نسخه 1.3.7 (بیلد 155)"]
     }, {
       version: "1.3.6",
@@ -4159,7 +4159,7 @@ function App() {
       releaseDate: "2026-07-31",
       releaseChannel: "Stable",
       commitHash: "v136rel",
-      commitMessage: "perf & anim: enhance iOS Pop Out closing animation with visible shrink scale to 0.45, gradual opacity fadeout and quick 1.05 bounce peak, release v1.3.6 (build 154)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بهینه‌سازی انیمیشن بستن پاپ‌آپ‌ها و مدال‌ها به سبک iOS: ایجاد بانس بسیار سریع 1.05 در ابتدا و کوچک‌شدن ملموس و کاملاً مشهود به scale(0.45)", "تنظیم دقیق منحنی فیدآوت opacity جهت جلوگیری از غیب‌شدن ناگهانی و نمایش واضح روند کوچک‌شدن مدال پیش از محو شدن کاملاً روان", "انتشار نسخه جدید 1.3.6 (بیلد 154)"]
     }, {
       version: "1.3.5",
@@ -4167,7 +4167,7 @@ function App() {
       releaseDate: "2026-07-31",
       releaseChannel: "Stable",
       commitHash: "v135rel",
-      commitMessage: "feat: custom iOS-style Pop Out modal closing animation with 30% bounce, 0.35s cubic-bezier duration & 0.3s backdrop fade-out, release v1.3.5 (build 153)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["طراحی و اعمال انیمیشن خروج پاپ‌آپ/مدال به سبک iOS (Pop Out) با ویژگی بانس خفیف scale(1.06) در فریم ۳۰٪ و جمع‌شدن سریع به scale(0.7) و fade-out در فریم ۱۰۰٪", "تنظیم دقیق مدت زمان 0.35 ثانیه و تابع زمان‌بندی cubic-bezier(0.6, -0.28, 0.735, 0.045) به همراه Fade Out پس‌زمینه در 0.3 ثانیه", "اعمال انیمیشن بستن جدید برای پنجره کارت استک (Card Stack Wizard)، پنجره‌های افزودن و ویرایش مخاطب، پنجره‌های خروجی وام/قسط/بدهی و دیالوگ‌های تایید حذف", "انتشار نسخه رسمی 1.3.5 (بیلد 153)"]
     }, {
       version: "1.3.4",
@@ -4175,7 +4175,7 @@ function App() {
       releaseDate: "2026-07-31",
       releaseChannel: "Stable",
       commitHash: "v134rel",
-      commitMessage: "feat & fix: continuous swipe-to-delete expansion, centered trash icon, add swipe-to-refresh to all-transactions and subpages, release v1.3.4 (build 152)",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بهینه‌سازی انیمیشن Swipe to Delete و کشیده‌شدن و گسترش مداوم دکمه قرمز حذف به سمت چپ همزمان با ادامه کشیدن کارت", "تمرکز و تراز دقیق آیکون سطل زباله در مرکز دکمه حذف و حذف متون اضافی جهت افزایش زیبایی بصری", "افزودن و فعال‌سازی قابلیت کشیدن به پایین برای بروزرسانی (Swipe to Refresh) در صفحه «همه تراکنش‌ها» و سایر صفحات تفصیلی", "بهینه‌سازی سیستم بررسی و بروزرسانی PWA در نسخه نصب‌شده و انتشار نسخه رسمی 1.3.4 (بیلد 152)"]
     }, {
       version: "1.3.3",
@@ -4183,7 +4183,7 @@ function App() {
       releaseDate: "2026-07-31",
       releaseChannel: "Stable",
       commitHash: "v133rel",
-      commitMessage: "perf & fix: smooth swipe-to-delete frame rate & morphing animation, fix swipe-to-back 1-frame release flicker",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بهینه‌سازی کامل انیمیشن Swipe to Delete و اجرای ۶۰ فریم بر ثانیه بدون افت فریم هنگام کشیدن کالاها", "روان‌سازی کامل انیمیشن مورف تغییر شکل دایره به مستطیل در دکمه حذف کشویی بدون پرش‌های ناگهانی", "رفع کامل پرش ۱ فریمی (1-Frame Jump/Flicker) انیمیشن Swipe to Back در لحظه رهاسازی و پایان اسلاید صفحه", "تغییر و یکپارچه‌سازی عناوین «دریافت / تسویه طلب» به «بازپرداخت طلب» در عنوان تراکنش‌ها، هشدارها و فرم‌ها"]
     }, {
       version: "1.3.2",
@@ -4191,7 +4191,7 @@ function App() {
       releaseDate: "2026-07-31",
       releaseChannel: "Stable",
       commitHash: "v132rel",
-      commitMessage: "fix: update debt/demand button and title labels, contact active loan filter logic, and un-archiving on tx delete",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["تغییر عبارت «ثبت قرض / بدهی» به «ثبت بدهی» و فرمت «ثبت بدهی/ نام مخاطب» در عنوان تراکنش‌ها و دکمه‌های پروفایل", "تغییر عبارت «دریافت / تسویه طلب» به «بازپرداخت طلب» و فرمت «بازپرداخت طلب/ نام مخاطب» در عنوان تراکنش‌ها و فرم‌ها", "عدم نمایش مخاطبینی که تنها دارای وام تسویه‌شده هستند در صورت اعمال فیلتر «دارای وام» در صفحه مخاطبین", "خروج خودکار پرونده‌های وام، طلب و بدهی تسویه‌شده از حالت بایگانی در صورت حذف تراکنش از آنها و بازگشت به حالت در جریان تا ثبت تراکنش تسویه‌کننده مجدد"]
     }, {
       version: "1.3.1",
@@ -4199,7 +4199,7 @@ function App() {
       releaseDate: "2026-07-31",
       releaseChannel: "Stable",
       commitHash: "v131rel",
-      commitMessage: "fix: loan first installment date display, top bar icon flicker, contact debt/demand labels, and fixed position badge grid",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["اصلاح تاریخ نمایش داده شده در بخش «تاریخ شروع اقساط» کارت وام به تاریخ دقیق اولین قسط", "رفع کامل چشمک زدن (Flicker) آیکون بالای سمت چپ داشبورد و آیکون بالای سمت راست تنظیمات هنگام کلیک", "تغییر عناوین نشان‌های مخاطبین از «طلبکار» به «طلب» و از «بدهکار» به «بدهی»", "نمایش آیکون بایگانی به تنهایی در صورت وجود حساب تسویه‌شده بدون مانده جدید، و نمایش همزمان آیکون و نوشته در صورت وجود مانده active", "ایجاد جایگاه‌های ثابت، مستقل و تفکیک‌شده برای سه نشان «طلب»، «بدهی» و «وام» و آیکون‌های بایگانی آنها جهت جلوگیری از جا‌به‌جایی عمودی و افقی سایر عناصر"]
     }, {
       version: "1.2.1",
@@ -4207,7 +4207,7 @@ function App() {
       releaseDate: "2026-07-29",
       releaseChannel: "Stable",
       commitHash: "v121rel",
-      commitMessage: "feat: FAB icon alignment & red toggle, remove pull refresh toast, fix contact profile trash button, left-align multi-line cards, standard debt/demand titles, modal AnimatePresence",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["حذف پیام توست اضافه پس از انجام کشیدن برای بروزرسانی (Pull to Refresh) جهت نمایش شفاف انیمیشن چرخشی", "تنظیم مرکزیت دقیق آیکون + روی دکمه شناور FAB هنگام چرخش و تغییر رنگ آن به قرمز هنگام فعال‌سازی", "فعال‌سازی دکمه سطل زباله بالای صفحه پروفایل مخاطب جهت حذف مخاطب و پرونده‌های وابسته با مودال تایید", "چپ‌چین‌سازی دقیق مبالغ و اطلاعات تراکنش‌ها و دوره‌های بایگانی در صورت دو خطی شدن متون", "استانداردسازی فرمت عناوین تب بدهی (قرض جدید/ نام مخاطب و بازپرداخت بدهی/ نام مخاطب)", "استانداردسازی فرمت عناوین تب طلب (طلب جدید/ نام مخاطب و بازپرداخت طلب/ نام مخاطب) به همراه رنگ قرمز اختصاصی برای بازپرداخت طلب", "اضافه شدن انیمیشن کامل باز شدن و بسته شدن (AnimatePresence) برای مودال‌های افزودن مخاطب، ویرایش مخاطب، حذف و خروجی‌ها"]
     }, {
       version: "1.2.0",
@@ -4216,7 +4216,7 @@ function App() {
       releaseDate: "2026-07-29",
       releaseChannel: "Stable",
       commitHash: "c120rel",
-      commitMessage: "feat: smart loan installment calculation, color-coded financial balance, compact stack card layout, and validation haptics",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["سیستم خودکار محاسبه تعداد اقساط وام بر اساس فرمول اصل/مبلغ کل و مبلغ هر قسط", "کدگذاری رنگی هوشمند تراز مالی (آبی: باقیمانده مثبت/اضافه، قرمز: کسری، سبز: تراز دقیق)", "اولویت‌دهی به تعداد قسط تعیین‌شده توسط کاربر (تایپ یا دکمه‌های +- ) با امکان بازنشانی توسط دکمه مربع سبز ریفرش", "فشرده‌سازی لایوت کارت تعداد اقساط و انطباق کامل کنترل‌ها در کنار عنوان جهت صرفه‌جویی در ارتفاع", "سیستم انیمیشن انقباض و انباشت کارتهای استک (Stack Cards Stacked Animation) با لرزش هپتیک خطا و فوکوس خودکار"]
     }, {
       version: "1.1.16",
@@ -4224,7 +4224,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "b144pwa",
-      commitMessage: "fix: resolve logo rendering fallbacks, standalone manifest headers, and immediate PWA update mechanism",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["حل کامل مشکل عدم نمایش آیکون برنامه در دسکتاپ و آیفون با سیستم هوشمند Multi-Fallback", "تنظیم هدرهای استاندارد application/manifest+json و Service-Worker-Allowed در سرور", "بهینه‌سازی ثبت و بروزرسانی خودکار سرویس ورکر PWA جهت بارگذاری فوری آیکون‌ها و اسپلش اسکرین"]
     }, {
       version: "1.1.15",
@@ -4232,7 +4232,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "a91f82c",
-      commitMessage: "feat: full PWA auto-update pipeline, official brand assets, and detailed changelog history",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["تنظیم و یکپارچه‌سازی کامل آیکون‌های رسمی، فاوآیکون‌ها و اسپلش اسکرین PWA", "پشتیبانی کامل از آیکون‌های Maskable و Any در Web App Manifest", "افزودن اسپلش اسکرین‌های اختصاصی پرتره و لنداسکیپ برای iOS و اندروید", "بهینه‌سازی فرآیند کشینگ سرویس ورکر و دریافت بروزرسانی‌های آنی (Auto-Update Fix)"]
     }, {
       version: "1.1.14",
@@ -4240,7 +4240,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "m3r268z",
-      commitMessage: "feat: add global accounts search, settled filter, and archiving indicators",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["افزودن قابلیت جستجوی پیشرفته متنی در تمامی کارت‌های وام، طلب، بدهی و اقساط", "نمایش وضعیت تسویه‌شده بودن گروه‌ها و دوره‌های تسویه در کارت مخاطبین", "اضافه شدن فیلتر هوشمند پرونده‌های وام تسویه‌شده با قابلیت مخفی‌سازی و نمایش در تنظیمات"]
     }, {
       version: "1.1.13",
@@ -4248,7 +4248,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "lxolw03",
-      commitMessage: "fix: refine installment wizard modal and dark mode styling",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بهبود فرم‌های جدید افزودن قسط و ویرایش تراکنش‌ها", "تصحیح محاسبات مانده وام و بدهی پس از ثبت یا حذف تراکنش", "ارتقاء ظاهر رابط کاربری کارت‌های مالی در حالت تم تاریک (Dark Mode)"]
     }, {
       version: "1.1.12",
@@ -4256,7 +4256,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "m4ybsj7",
-      commitMessage: "feat: add personal demand/debt detail breakdown and contact IBAN formatting",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["ارتقاء بخش حساب‌ها و افزودن سربرگ اختصاصی مدیریت طلب‌ها و بدهی‌ها", "محاسبه دقیق اقساط باقی‌مانده و تاریخ دقیق سررسید بعدی وام‌ها", "بهینه‌سازی فرمت‌دهی شماره کارت و شماره شبا در پروفایل مخاطبین"]
     }, {
       version: "1.1.11",
@@ -4264,7 +4264,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "lysox1p",
-      commitMessage: "feat: add transaction deletion with balance rollback and confirmation modal",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["افزودن قابلیت حذف تراکنش‌ها و اقساط ثبت‌شده با بازگشت آنی مانده حساب", "اضافه شدن مودال تایید حذف ایمن برای جلوگیری از حذف اتفاقی اطلاعات", "بهبود انیمیشن و روانی نمایش لیست تراکنش‌ها"]
     }, {
       version: "1.1.10",
@@ -4272,7 +4272,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "otn6ayw",
-      commitMessage: "perf: optimize service worker caching and offline PWA reliability",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بهینه‌سازی عملکرد کشینگ سرویس ورکر (Service Worker) جهت کارکرد کامل آفلاین", "پشتیبانی از PWA Standalone با تجربه مشابه اپلیکیشن نیتیو iOS و اندروید", "بهبود ثبت اطلاعات در حافظه محلی LocalStorage با بالاترین سرعت"]
     }, {
       version: "1.1.9",
@@ -4280,7 +4280,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "ikh6g3p",
-      commitMessage: "ui: refine loan cards UI and quick actions layout",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بهینه‌سازی رابط کاربری کارت‌های وام و نمایش وضعیت پرداخت هر قسط", "افزودن دکمه‌های اقدام سریع (Quick Actions) در لایوت اصلی", "بهبود فونت وزیرمتن و خوانایی اعداد فارسی و تومان"]
     }, {
       version: "1.1.8",
@@ -4288,7 +4288,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "8f1vi7c",
-      commitMessage: "feat: add loan registration with smart installment table",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["افزودن امکان ثبت وام با جدول اقساط هوشمند و سررسید خودکار", "قابلیت تعیین تعداد اقساط و مبلغ هر قسط همراه با یادداشت", "بهبود فرم افزودن مخاطب جدید و اعتبارسنجی ورودی‌ها"]
     }, {
       version: "1.1.7",
@@ -4296,7 +4296,7 @@ function App() {
       releaseDate: "2026-07-28",
       releaseChannel: "Stable",
       commitHash: "83o0e33",
-      commitMessage: "feat: add personal debt and demand filters and step-by-step repayments",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["ارتقاء کارت‌های طلب و بدهی شخصی با فیلتر ماهانه و سالانه", "امکان ثبت پرداخت بدهی و دریافت طلب به صورت مرحله‌ای", "افزودن گزارش خلاصه وضعیت مالی کل در بالای صفحه اصلی"]
     }, {
       version: "1.1.6",
@@ -4304,7 +4304,7 @@ function App() {
       releaseDate: "2026-07-27",
       releaseChannel: "Stable",
       commitHash: "yajtlm8",
-      commitMessage: "feat: implement full account settlement and archiving system",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["افزودن قابلیت تسویه کامل حساب و آرشیو دوره‌های قبلی طلب و بدهی", "نمایش نشان تسویه‌شده (Settled Badge) روی کارت مخاطبین", "بهبود عملکرد کش و بارگذاری سریع در اولین ورود"]
     }, {
       version: "1.1.5",
@@ -4312,7 +4312,7 @@ function App() {
       releaseDate: "2026-07-27",
       releaseChannel: "Stable",
       commitHash: "bnivdgt",
-      commitMessage: "ui: add quick transaction type filter and floating action menu",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["افزودن فیلتر سریع بر اساس نوع تراکنش (وام، طلب، بدهی، قسط)", "بهبود دکمه شناور ثبت سریع (FAB) با دسترسی آسان", "اصلاح استایل متون و حاشیه‌ها در تم تاریک"]
     }, {
       version: "1.1.4",
@@ -4320,7 +4320,7 @@ function App() {
       releaseDate: "2026-07-27",
       releaseChannel: "Stable",
       commitHash: "mhxrn39",
-      commitMessage: "feat: add automatic and manual dark mode theme switching",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["افزودن پشتیبانی کامل از تم تاریک (Dark Mode) خودکار و دستی", "بهینه‌سازی مصرف باتری و رنگ‌های استاندارد چشمی", "بهبود رابط کاربری در تبلت‌ها و نمایشگرهای عریض"]
     }, {
       version: "1.1.3",
@@ -4328,7 +4328,7 @@ function App() {
       releaseDate: "2026-07-27",
       releaseChannel: "Stable",
       commitHash: "k8xay25",
-      commitMessage: "feat: refine settings accordion navigation and changelog list",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["ارتقاء سیستم مدیریت نسخه و بخش چنج‌لاگ آکاردئونی در تنظیمات", "افزودن قابلیت بررسی آنلاین بروزرسانی‌ها با یک کلیک", "بهبود سرعت پاسخگویی دکمه‌ها و فرم‌ها"]
     }, {
       version: "1.1.2",
@@ -4336,7 +4336,7 @@ function App() {
       releaseDate: "2026-07-27",
       releaseChannel: "Stable",
       commitHash: "gvupahf",
-      commitMessage: "ux: improve iOS-style swipe back gesture and transition animations",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["تصحیح ژست حرکتی بازگشت (Swipe Back) به سبک iOS", "بهبود انیمیشن‌های ورود و خروج صفحات و مودال‌ها", "رفع ایرادات جزیی در نمایش اعلان‌ها و توست‌ها"]
     }, {
       version: "1.1.1",
@@ -4344,7 +4344,7 @@ function App() {
       releaseDate: "2026-07-27",
       releaseChannel: "Stable",
       commitHash: "mem7mxl",
-      commitMessage: "feat: add JSON data backup and restore capabilities",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["بهبود رابط کاربری بخش تنظیمات و اطلاعات برنامه", "قابلیت پشتیبان‌گیری (Backup) و بازیابی داده‌ها به صورت فایل JSON", "افزایش پایداری و رفع خطاهای ناخواسته"]
     }, {
       version: "1.1.0",
@@ -4352,7 +4352,7 @@ function App() {
       releaseDate: "2026-07-27",
       releaseChannel: "Stable",
       commitHash: "a3f89e2",
-      commitMessage: "feat: add application version management system and gesture navigation",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["افزودن سیستم هوشمند مدیریت نسخه برنامه و تاریخچه بروزرسانی‌ها (Version Management)", "ارتقاء روانی ژست حرکتی بازگشت (Swipe Back) به سبک سیستم‌عامل iOS", "امکان بررسی بروزرسانی آنلاین و آفلاین همراه با جزئیات کامل چنج‌لاگ"]
     }, {
       version: "1.0.3",
@@ -4360,7 +4360,7 @@ function App() {
       releaseDate: "2026-07-27",
       releaseChannel: "Stable",
       commitHash: "e92c4b1",
-      commitMessage: "perf: improve floating action button animation and frame rate",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["افزایش روانی و نرخ فریم انیمیشن‌های برنامه (FAB & Motion)", "همگام‌سازی شفافیت، مقیاس و موقعیت مکانی منوی شناور به سبک iOS"]
     }, {
       version: "1.0.2",
@@ -4368,7 +4368,7 @@ function App() {
       releaseDate: "2026-07-25",
       releaseChannel: "Stable",
       commitHash: "c4d12a9",
-      commitMessage: "fix: improve wheel picker scrolling and gesture recognition",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["ارتقاء روانی اسکرول انتخابی تاریخ و اعداد در ویل‌پیکر iOS", "رفع مشکلات پایداری رویدادهای لمسی و ژست‌های حرکتی"]
     }, {
       version: "1.0.1",
@@ -4376,7 +4376,7 @@ function App() {
       releaseDate: "2026-07-20",
       releaseChannel: "Stable",
       commitHash: "f8911c4",
-      commitMessage: "fix: update loan repayment recalculation and keyboard dismiss behavior",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["تصحیح محاسبه مجدد اقساط وام هنگام ویرایش اطلاعات", "بهبود تجربه کاربری کیبورد در فرم‌های ثبت وام و حساب"]
     }, {
       version: "1.0.0",
@@ -4384,7 +4384,7 @@ function App() {
       releaseDate: "2026-07-15",
       releaseChannel: "Stable",
       commitHash: "e02b3f1",
-      commitMessage: "feat: initial release of Amir Finance personal finance tracker",
+      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
       changes: ["انتشار اولیه سیستم مدیریت مالی شخصی امیر فایننس", "مدیریت کامل وام‌ها، اقساط، طلب‌ها و بدهی‌ها با پشتیبانی آفلاین", "گزارشات کاربردی و تم تاریک و روشن اختصاصی"]
     }]
   };
@@ -5051,7 +5051,7 @@ function App() {
     const metaTheme = document.querySelector('meta[name="theme-color"]');
     if (metaTheme) {
       if (showStackWizard) {
-        metaTheme.setAttribute('content', isDark ? '#0f172a' : '#f8fafc');
+        metaTheme.setAttribute('content', isDark ? '#0f172a' : '#0f172a'); // Keep dark for both modes to match the wizard backdrop
       } else {
         metaTheme.setAttribute('content', isDark ? '#020617' : '#f8fafc');
       }
