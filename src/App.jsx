@@ -2507,9 +2507,9 @@
             return (
                 <div 
                     ref={containerRef}
-                    className={`relative overflow-hidden transition-all duration-300 ${
+                    className={`relative transition-all duration-300 ${
                         isDeleting 
-                            ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' 
+                            ? 'overflow-hidden max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' 
                             : 'max-h-[500px] opacity-100 my-1'
                     } ${className}`}
                 >
@@ -8275,7 +8275,7 @@
                                                     openContactDetail(contact, f, 'contacts');
                                                 }}
                                             >
-                                                <div className="bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-[rgba(70,80,120,0.06)] dark:border-slate-700/60 p-4 shadow-[0_2px_8px_rgba(28,35,60,0.05),0_12px_28px_rgba(28,35,60,0.07)] hover:border-indigo-300 transition-all cursor-pointer">
+                                                <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-slate-200/80 dark:border-slate-700/60 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm hover:border-indigo-400 transition-all cursor-pointer ring-1 ring-slate-900/5 dark:ring-0">
                                                     <div className="flex flex-col gap-3">
                                                         {/* Row 1: Avatar + Name (Right), Phone (Left) */}
                                                         <div className="flex flex-row items-center justify-between">
@@ -10505,7 +10505,7 @@
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                className="absolute inset-0 bg-[#0b101d]/90 backdrop-blur-md z-50 flex flex-col justify-start items-center p-3 pt-2.5 overflow-hidden"
+                                className="absolute inset-0 bg-[#0b101d]/90 backdrop-blur-md z-50 flex flex-col justify-start items-center p-3 pt-[calc(max(env(safe-area-inset-top,0px),24px)+10px)] overflow-hidden"
                             >
                                 {/* PWA Status Bar Safe Area Cover */}
                                 <div className="fixed top-0 inset-x-0 h-[max(env(safe-area-inset-top,0px),24px)] bg-[#0b101d] backdrop-blur-md z-[60]"></div>
