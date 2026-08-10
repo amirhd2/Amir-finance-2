@@ -1,15 +1,28 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "2.1.9",
-  "buildNumber": 208,
-  "releaseDate": "2026-08-09",
+  "installedVersion": "2.2.0",
+  "buildNumber": 210,
+  "releaseDate": "2026-08-10",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "2.1.9",
-  "latestBuild": 208,
+  "latestVersion": "2.2.0",
+  "latestBuild": 210,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "2.2.0",
+      "buildNumber": 210,
+      "releaseDate": "2026-08-10",
+      "releaseChannel": "Stable",
+      "commitHash": "v220rel",
+      "commitMessage": "fix & release: resolve GitHub Pages 404 on update reload, restore swipe-to-delete morph animation, release v2.2.0 (build 210)",
+      "changes": [
+        "رفع کامل خطای 404 در گیتهاب پیجز هنگام زدن دکمه بروزرسانی با اصلاح مسیر بازخوانی صفحه (Navigation URL Path)",
+        "بازگردانی و تنظیم دقیق انیمیشن مورفینگ سوایپ برای پاک کردن (تبدیل آیکون دایره به مستطیل با کشیده شدن کارت)",
+        "ثبت رسمی و انتشار نسخه جدید 2.2.0 (بیلد 210)"
+      ]
+    },
     {
       "version": "2.1.9",
       "buildNumber": 208,

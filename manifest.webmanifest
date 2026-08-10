@@ -58,7 +58,7 @@
   "background_color": "#0b101d",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "start_url": "/",
-  "scope": "/",
-  "id": "/"
+  "start_url": "./",
+  "scope": "./",
+  "id": "./"
 }

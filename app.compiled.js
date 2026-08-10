@@ -3104,10 +3104,27 @@ function SwipeToDeleteItem({
     const cardEl = cardRef.current;
     const btnEl = btnRef.current;
     if (!cardEl || !btnEl) return;
+    const gap = 8;
+    const rawBtnWidth = Math.max(0, currentOffset - gap);
+
+    // Appearance (Fade in & Scale)
+    const appearanceProgress = Math.min(1, Math.max(0, (currentOffset - 4) / 36));
+    const btnOpacity = appearanceProgress;
+    const btnScale = 0.5 + 0.5 * appearanceProgress;
+
+    // Circle (52px wide, 26px radius) -> Rounded Rect (expands with swipe, 16px radius)
+    const btnWidthPx = Math.max(52, rawBtnWidth);
+    const morphProgress = Math.min(1, Math.max(0, (btnWidthPx - 52) / 30));
+    const borderRadiusPx = 26 - (26 - 16) * morphProgress;
+    const transitionStr = dragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s linear';
     cardEl.style.transition = dragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
     cardEl.style.transform = `translate3d(${-currentOffset}px, 0, 0)`;
-    btnEl.style.transition = dragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
-    btnEl.style.transform = `translate3d(${Math.max(0, 72 - currentOffset)}px, -50%, 0)`;
+    btnEl.style.transition = transitionStr;
+    btnEl.style.width = `${btnWidthPx}px`;
+    btnEl.style.height = '52px';
+    btnEl.style.borderRadius = `${borderRadiusPx}px`;
+    btnEl.style.opacity = `${btnOpacity}`;
+    btnEl.style.transform = `translate3d(0, -50%, 0) scale(${btnScale})`;
     btnEl.style.visibility = currentOffset > 2 ? 'visible' : 'hidden';
   };
   const snapTo = (targetOffset, dragging = false) => {
@@ -3252,13 +3269,16 @@ function SwipeToDeleteItem({
     className: `relative overflow-hidden transition-all duration-300 ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' : 'max-h-[500px] opacity-100 my-1'} ${className}`
   }, /*#__PURE__*/React.createElement("div", {
     ref: btnRef,
-    className: "absolute right-0 top-1/2 z-0 flex items-center justify-center bg-red-500 hover:bg-red-600 active:bg-red-700 text-white cursor-pointer shadow-sm select-none rounded-2xl",
+    className: "absolute right-1 top-1/2 z-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white cursor-pointer shadow-md select-none transition-colors",
     style: {
-      width: '72px',
-      height: '100%',
-      transform: 'translate3d(72px, -50%, 0)',
-      willChange: 'transform',
-      visibility: 'hidden'
+      width: '52px',
+      height: '52px',
+      borderRadius: '26px',
+      opacity: 0,
+      transform: 'translate3d(0, -50%, 0) scale(0.5)',
+      transformOrigin: 'right center',
+      visibility: 'hidden',
+      willChange: 'transform, width, border-radius'
     },
     onClick: e => {
       e.stopPropagation();
@@ -3872,7 +3892,7 @@ function App() {
     } else if (currentTab !== 'loan-detail') {
       setLoanReturnTab(currentTab);
     }
-    setNavDirection('none');
+    setNavDirection('forward');
     setCurrentTab('loan-detail');
   };
   const openArchivedPeriodDetail = (period, overrideReturnTab) => {
@@ -3882,14 +3902,14 @@ function App() {
     } else if (currentTab !== 'archived-period-detail') {
       setLoanReturnTab(currentTab);
     }
-    setNavDirection('none');
+    setNavDirection('forward');
     setCurrentTab('archived-period-detail');
   };
   const openContactDetail = (contact, filter = 'all', returnTab = 'contacts') => {
     setSelectedContact(contact);
     if (filter) setProfileFilter(filter);
     setLoanReturnTab(returnTab);
-    setNavDirection('none');
+    setNavDirection('forward');
     setCurrentTab('contact-detail');
   };
   const [toastMessage, setToastMessage] = useState('');
@@ -3898,7 +3918,7 @@ function App() {
   // Page Slide Transition Animation Variants
   const pageSlideVariants = {
     initial: direction => ({
-      x: direction === 'none' ? '0vw' : direction === 'back' ? '-100vw' : '100vw',
+      x: direction === 'none' ? '0vw' : direction === 'back' ? '-30vw' : '100vw',
       opacity: 1
     }),
     animate: direction => ({
@@ -3907,18 +3927,18 @@ function App() {
       transition: direction === 'none' ? {
         duration: 0
       } : {
-        duration: 0.5,
-        ease: [0.22, 1, 0.36, 1]
+        duration: 0.6,
+        ease: [0.25, 1, 0.5, 1]
       }
     }),
     exit: direction => ({
-      x: direction === 'none' ? '0vw' : direction === 'back' ? '100vw' : '-100vw',
+      x: direction === 'none' ? '0vw' : direction === 'back' ? '100vw' : '-30vw',
       opacity: direction === 'none' ? 0 : 1,
       transition: direction === 'none' ? {
         duration: 0
       } : {
-        duration: 0.5,
-        ease: [0.22, 1, 0.36, 1]
+        duration: 0.6,
+        ease: [0.25, 1, 0.5, 1]
       }
     })
   };
@@ -3927,13 +3947,13 @@ function App() {
   const defaultVersionData = {
     appName: "Amir Finance",
     appLogo: "apple-touch-icon.png",
-    installedVersion: localStorage.getItem('amir_installed_version') || "2.1.5",
-    buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '206', 10),
+    installedVersion: localStorage.getItem('amir_installed_version') || "2.2.0",
+    buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '210', 10),
     releaseDate: "2026-08-07",
     releaseChannel: "Stable",
     channelLabel: "نسخه پایدار",
-    latestVersion: "2.1.5",
-    latestBuild: 206,
+    latestVersion: "2.2.0",
+    latestBuild: 210,
     isUpdateAvailable: false,
     history: [{
       version: "2.1.5",
@@ -4443,8 +4463,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 206;
-    const EMBEDDED_VERSION = "2.1.5";
+    const EMBEDDED_BUILD = 210;
+    const EMBEDDED_VERSION = "2.2.0";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -4554,7 +4574,9 @@ function App() {
 
       // 4. Force hard reload with cache-busting parameter
       setTimeout(() => {
-        window.location.href = '/?v=' + Date.now();
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('v', Date.now().toString());
+        window.location.replace(currentUrl.toString());
       }, 600);
     } catch (err) {
       console.error('Apply update failed:', err);
