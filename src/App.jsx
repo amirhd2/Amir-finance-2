@@ -4264,6 +4264,25 @@
             };
             
             // Stack Wizard Modals
+                        const [showSplashScreen, setShowSplashScreen] = useState(true);
+
+            useEffect(() => {
+                // Hide static HTML splash overlay if present
+                const staticSplash = document.getElementById('app-static-splash');
+                if (staticSplash) {
+                    staticSplash.style.opacity = '0';
+                    staticSplash.style.pointerEvents = 'none';
+                    setTimeout(() => {
+                        if (staticSplash && staticSplash.parentNode) {
+                            staticSplash.parentNode.removeChild(staticSplash);
+                        }
+                    }, 550);
+                }
+                const timer = setTimeout(() => {
+                    setShowSplashScreen(false);
+                }, 1800);
+                return () => clearTimeout(timer);
+            }, []);
             const [showStackWizard, setShowStackWizard] = useState(false);
             const [wizardType, setWizardType] = useState('loan');
             const [wizardMode, setWizardMode] = useState('add');
@@ -4789,18 +4808,34 @@
                 }
             }, [theme]);
 
-            // Status bar meta color synchronization when Stack Wizard or Sticky Cards are open
+            // Status bar meta color and body/documentElement background synchronization
+            const isAnyModalOpen = showStackWizard || 
+                showAddContactModal || 
+                showEditContactModal || 
+                showDeleteConfirmModal || 
+                showExportModal || 
+                (showCompletedExportModal && showCompletedExportModal.show) || 
+                showResetConfirmModal || 
+                showRestoreConfirmModal || 
+                showDeleteLoanModal || 
+                (deleteTxModal && deleteTxModal.show) || 
+                showUnsavedConfirmDialog;
+
             useEffect(() => {
                 const metaTheme = document.querySelector('meta[name="theme-color"]');
-                if (metaTheme) {
-                    if (showStackWizard) {
-                        // Mix of #0f172a (65%) and #F4F7FC (35%) -> ~ #5E697C
-                        metaTheme.setAttribute('content', isDark ? '#0f172a' : '#5E697C');
-                    } else {
-                        metaTheme.setAttribute('content', isDark ? '#020617' : '#F4F7FC');
-                    }
+                const darkBackdropColor = '#0b101d';
+
+                if (isAnyModalOpen) {
+                    if (metaTheme) metaTheme.setAttribute('content', darkBackdropColor);
+                    if (document.body) document.body.style.backgroundColor = darkBackdropColor;
+                    if (document.documentElement) document.documentElement.style.backgroundColor = darkBackdropColor;
+                } else {
+                    const activeColor = isDark ? '#020617' : '#F4F7FC';
+                    if (metaTheme) metaTheme.setAttribute('content', activeColor);
+                    if (document.body) document.body.style.backgroundColor = activeColor;
+                    if (document.documentElement) document.documentElement.style.backgroundColor = activeColor;
                 }
-            }, [showStackWizard, isDark]);
+            }, [isAnyModalOpen, isDark]);
 
             const handleExportBackup = () => {
                 try {
@@ -10181,6 +10216,31 @@
 
             return (
                 <div className={`w-full h-full flex flex-col justify-between ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#F4F7FC] text-slate-800'}`}>
+                    {/* Startup Splash Screen Overlay */}
+                    <AnimatePresence>
+                        {showSplashScreen && (
+                            <motion.div
+                                key="app-splash-screen"
+                                initial={{ opacity: 1, scale: 1 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.04, filter: 'blur(6px)' }}
+                                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                                className="fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
+                            >
+                                <picture className="w-full h-full flex items-center justify-center">
+                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png" />
+                                    <img 
+                                        src="./splash-portrait.png" 
+                                        alt="Amir Finance Splash Screen" 
+                                        className="w-full h-full object-cover object-center" 
+                                    />
+                                </picture>
+                                <div className="absolute bottom-10 inset-x-0 flex flex-col items-center justify-center space-y-2 pointer-events-none">
+                                    <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Notification Toast */}
                     {toastMessage && (
@@ -10444,10 +10504,10 @@
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                className="absolute inset-0 bg-slate-900/65 backdrop-blur-md z-50 flex flex-col justify-start items-center p-3 pt-2.5 overflow-hidden"
+                                className="absolute inset-0 bg-[#0b101d]/90 backdrop-blur-md z-50 flex flex-col justify-start items-center p-3 pt-2.5 overflow-hidden"
                             >
                                 {/* PWA Status Bar Safe Area Cover */}
-                                <div className="fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] bg-slate-900/65 backdrop-blur-md z-[60]"></div>
+                                <div className="fixed top-0 inset-x-0 h-[max(env(safe-area-inset-top,0px),24px)] bg-[#0b101d] backdrop-blur-md z-[60]"></div>
                                 <motion.div
                                     key="stack-wizard-panel"
                                     variants={iosModalVariants}
