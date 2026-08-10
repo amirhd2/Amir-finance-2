@@ -10228,10 +10228,11 @@
                                 className="fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
                             >
                                 <picture className="w-full h-full flex items-center justify-center">
-                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png" />
+                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.0-b220" />
                                     <img 
-                                        src="./splash-portrait.png" 
+                                        src="./splash-portrait.png?v=2.2.0-b220" 
                                         alt="Amir Finance Splash Screen" 
+                                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                         className="w-full h-full object-cover object-center" 
                                     />
                                 </picture>

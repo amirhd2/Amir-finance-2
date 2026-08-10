@@ -10389,10 +10389,13 @@ function App() {
     className: "w-full h-full flex items-center justify-center"
   }, /*#__PURE__*/React.createElement("source", {
     media: "(orientation: landscape)",
-    srcSet: "./splash-landscape.png"
+    srcSet: "./splash-landscape.png?v=2.2.0-b220"
   }), /*#__PURE__*/React.createElement("img", {
-    src: "./splash-portrait.png",
+    src: "./splash-portrait.png?v=2.2.0-b220",
     alt: "Amir Finance Splash Screen",
+    onError: e => {
+      e.currentTarget.style.display = 'none';
+    },
     className: "w-full h-full object-cover object-center"
   })), /*#__PURE__*/React.createElement("div", {
     className: "absolute bottom-10 inset-x-0 flex flex-col items-center justify-center space-y-2 pointer-events-none"
