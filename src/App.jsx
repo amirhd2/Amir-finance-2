@@ -1552,7 +1552,7 @@
             return (
                 <div 
                     ref={containerRef}
-                    className={`relative overflow-y-auto hide-scrollbar ${className}`}
+                    className={`relative overflow-y-auto overflow-x-hidden hide-scrollbar ${className}`}
                     style={{ 
                         WebkitOverflowScrolling: 'touch',
                         overscrollBehaviorY: 'contain'
@@ -1709,6 +1709,12 @@
                     if (isClosingRef.current) return;
                     if (e.button !== undefined && e.button !== 0) return;
 
+                    if (e.target && e.target.closest && e.target.closest('[data-swipe-item]')) {
+                        gestureRef.current.isEdgeCandidate = false;
+                        gestureRef.current.isDragging = false;
+                        return;
+                    }
+
                     const { x, y } = getCoords(e);
                     const rect = page2Ref.current ? page2Ref.current.getBoundingClientRect() : null;
                     const relX = rect ? x - rect.left : x;
@@ -1728,6 +1734,12 @@
                     const g = gestureRef.current;
                     if (isClosingRef.current) return;
                     if (!g.isEdgeCandidate && !g.isDragging) return;
+
+                    if (e.target && e.target.closest && e.target.closest('[data-swipe-item]')) {
+                        g.isEdgeCandidate = false;
+                        g.isDragging = false;
+                        return;
+                    }
 
                     const { x, y } = getCoords(e);
                     g.currentX = x;
@@ -1831,7 +1843,7 @@
                     {/* Page 1 (Underlying Page) */}
                     <div 
                         ref={page1Ref}
-                        className="page-view z-10 bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto w-full h-full"
+                        className="page-view z-10 bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-hidden w-full h-full"
                     >
                         <div className="px-4 pt-4 pb-24 min-h-full">
                             {underlyingContent}
@@ -1854,7 +1866,7 @@
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </PullToRefresh>
                         ) : (
-                            <div className="w-full h-full overflow-y-auto px-4 pt-4 pb-24">
+                            <div className="w-full h-full overflow-y-auto overflow-x-hidden px-4 pt-4 pb-24">
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </div>
                         )}
@@ -2315,15 +2327,18 @@
             const [isDragging, setIsDragging] = useState(false);
             const [swipedOpen, setSwipedOpen] = useState(false);
             const [isDeleting, setIsDeleting] = useState(false);
+            
+            const isDeletingRef = useRef(false);
+            useEffect(() => {
+                isDeletingRef.current = isDeleting;
+            }, [isDeleting]);
 
             const containerRef = useRef(null);
             const cardRef = useRef(null);
             const btnRef = useRef(null);
-
             const offsetRef = useRef(0);
             const rafIdRef = useRef(null);
-            const isDraggingRef = useRef(false);
-
+            
             const gestureRef = useRef({
                 startX: 0,
                 startY: 0,
@@ -2352,9 +2367,9 @@
 
                 const transitionStr = dragging 
                     ? 'none' 
-                    : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s linear';
-
-                cardEl.style.transition = dragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+                    : 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+                
+                cardEl.style.transition = dragging ? 'none' : 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
                 cardEl.style.transform = `translate3d(${-currentOffset}px, 0, 0)`;
 
                 btnEl.style.transition = transitionStr;
@@ -2363,7 +2378,19 @@
                 btnEl.style.borderRadius = `${borderRadiusPx}px`;
                 btnEl.style.opacity = `${btnOpacity}`;
                 btnEl.style.transform = `translate3d(0, -50%, 0) scale(${btnScale})`;
-                btnEl.style.visibility = currentOffset > 2 ? 'visible' : 'hidden';
+                
+                if (currentOffset > 2) {
+                    btnEl.style.visibility = 'visible';
+                } else if (!dragging) {
+                    btnEl.style.visibility = 'visible';
+                    setTimeout(() => {
+                        if (offsetRef.current === 0 && btnRef.current) {
+                            btnRef.current.style.visibility = 'hidden';
+                        }
+                    }, 300);
+                } else {
+                    btnEl.style.visibility = 'hidden';
+                }
             };
 
             const snapTo = (targetOffset, dragging = false) => {
@@ -2379,83 +2406,17 @@
                         setSwipedOpen(false);
                     }
                 };
-                window.addEventListener('touchstart', handleGlobalClick, { passive: true });
-                window.addEventListener('mousedown', handleGlobalClick);
+                window.addEventListener('pointerdown', handleGlobalClick, { capture: true });
+                window.addEventListener('touchstart', handleGlobalClick, { capture: true, passive: true });
+                window.addEventListener('mousedown', handleGlobalClick, { capture: true });
                 return () => {
-                    window.removeEventListener('touchstart', handleGlobalClick);
-                    window.removeEventListener('mousedown', handleGlobalClick);
+                    window.removeEventListener('pointerdown', handleGlobalClick, { capture: true });
+                    window.removeEventListener('touchstart', handleGlobalClick, { capture: true });
+                    window.removeEventListener('mousedown', handleGlobalClick, { capture: true });
                 };
             }, [swipedOpen]);
 
-            const getCoords = (e) => {
-                if (e.touches && e.touches.length > 0) {
-                    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-                }
-                if (e.changedTouches && e.changedTouches.length > 0) {
-                    return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-                }
-                return { x: e.clientX || 0, y: e.clientY || 0 };
-            };
-
-            const handleStart = (e) => {
-                if (isDeleting) return;
-                if (e.button !== undefined && e.button !== 0) return;
-
-                const { x, y } = getCoords(e);
-                gestureRef.current = {
-                    startX: x,
-                    startY: y,
-                    startOffset: offsetRef.current,
-                    isSlopPassed: false,
-                    isHorizontalDrag: false
-                };
-            };
-
-            const handleMove = (e) => {
-                const g = gestureRef.current;
-                if (isDeleting || !g.startX) return;
-
-                const { x, y } = getCoords(e);
-                const deltaX = g.startX - x; // Positive when dragging left in RTL
-                const deltaY = y - g.startY;
-
-                if (!g.isSlopPassed) {
-                    const absX = Math.abs(deltaX);
-                    const absY = Math.abs(deltaY);
-                    if (absX > 4 || absY > 4) { // Slop Threshold = 4px
-                        g.isSlopPassed = true;
-                        if (absX > absY * 0.8) {
-                            g.isHorizontalDrag = true;
-                            isDraggingRef.current = true;
-                            setIsDragging(true);
-                        } else {
-                            g.startX = 0; // abort horizontal drag, let page scroll vertically
-                            return;
-                        }
-                    }
-                }
-
-                if (g.isHorizontalDrag) {
-                    if (e.cancelable) e.preventDefault();
-
-                    let newOffset = g.startOffset + deltaX;
-                    const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
-
-                    if (newOffset < 0) newOffset = 0;
-                    if (newOffset > containerWidth) newOffset = containerWidth;
-
-                    offsetRef.current = newOffset;
-
-                    if (!rafIdRef.current) {
-                        rafIdRef.current = requestAnimationFrame(() => {
-                            rafIdRef.current = null;
-                            updateVisuals(offsetRef.current, true);
-                        });
-                    }
-                }
-            };
-
-            const triggerDeleteModal = () => {
+            const triggerDeleteModal = useCallback(() => {
                 if (onDelete) {
                     onDelete(() => {
                         setIsDeleting(true);
@@ -2463,53 +2424,142 @@
                 }
                 snapTo(0, false);
                 setSwipedOpen(false);
-            };
+            }, [onDelete]);
 
-            const handleEnd = (e) => {
-                const g = gestureRef.current;
-                if (!g.startX) return;
+            useEffect(() => {
+                const cardEl = cardRef.current;
+                if (!cardEl) return;
 
-                const isDrag = g.isHorizontalDrag;
-                g.startX = 0;
-                g.isSlopPassed = false;
-                g.isHorizontalDrag = false;
-                isDraggingRef.current = false;
-                setIsDragging(false);
+                const getCoords = (e) => {
+                    if (e.touches && e.touches.length > 0) {
+                        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    }
+                    if (e.changedTouches && e.changedTouches.length > 0) {
+                        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+                    }
+                    return { x: e.clientX || 0, y: e.clientY || 0 };
+                };
 
-                if (rafIdRef.current) {
-                    cancelAnimationFrame(rafIdRef.current);
-                    rafIdRef.current = null;
-                }
+                const handleStart = (e) => {
+                    if (isDeletingRef.current) return;
+                    if (e.type === 'mousedown' && e.button !== 0) return;
+                    if (e.stopPropagation) e.stopPropagation();
+                    
+                    const { x, y } = getCoords(e);
+                    gestureRef.current = {
+                        startX: x,
+                        startY: y,
+                        startOffset: offsetRef.current,
+                        isSlopPassed: false,
+                        isHorizontalDrag: false
+                    };
+                };
 
-                if (isDrag) {
-                    const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
-                    const ratio = offsetRef.current / containerWidth;
+                const handleMove = (e) => {
+                    const g = gestureRef.current;
+                    if (isDeletingRef.current || !g.startX) return;
+                    
+                    const { x, y } = getCoords(e);
+                    const deltaX = g.startX - x; 
+                    const deltaY = y - g.startY;
 
-                    if (ratio >= 0.7) {
-                        triggerDeleteModal();
-                    } else if (offsetRef.current > 50) {
-                        snapTo(84, false);
-                        setSwipedOpen(true);
+                    if (!g.isSlopPassed) {
+                        const absX = Math.abs(deltaX);
+                        const absY = Math.abs(deltaY);
+                        if (absX > 4 || absY > 4) {
+                            g.isSlopPassed = true;
+                            if (absX > absY * 0.8) {
+                                g.isHorizontalDrag = true;
+                                setIsDragging(true);
+                            } else {
+                                g.startX = 0; 
+                                return;
+                            }
+                        }
+                    }
+
+                    if (g.isHorizontalDrag) {
+                        if (e.cancelable) e.preventDefault();
+                        if (e.stopPropagation) e.stopPropagation();
+                        let newOffset = g.startOffset + deltaX;
+                        const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
+                        if (newOffset < 0) newOffset = 0;
+                        if (newOffset > containerWidth) newOffset = containerWidth;
+                        
+                        offsetRef.current = newOffset;
+                        
+                        if (!rafIdRef.current) {
+                            rafIdRef.current = requestAnimationFrame(() => {
+                                rafIdRef.current = null;
+                                updateVisuals(offsetRef.current, true);
+                            });
+                        }
+                    }
+                };
+
+                const handleEnd = (e) => {
+                    const g = gestureRef.current;
+                    if (!g.startX) return;
+
+                    const isDrag = g.isHorizontalDrag;
+                    g.startX = 0;
+                    g.isSlopPassed = false;
+                    g.isHorizontalDrag = false;
+                    setIsDragging(false);
+
+                    if (rafIdRef.current) {
+                        cancelAnimationFrame(rafIdRef.current);
+                        rafIdRef.current = null;
+                    }
+
+                    if (isDrag) {
+                        const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
+                        const ratio = offsetRef.current / containerWidth;
+                        if (ratio >= 0.7) {
+                            triggerDeleteModal();
+                        } else if (offsetRef.current > 50) {
+                            snapTo(84, false);
+                            setSwipedOpen(true);
+                        } else {
+                            snapTo(0, false);
+                            setSwipedOpen(false);
+                        }
                     } else {
-                        snapTo(0, false);
-                        setSwipedOpen(false);
+                        if (swipedOpen) {
+                            snapTo(0, false);
+                            setSwipedOpen(false);
+                        } else if (onCardClick) {
+                            onCardClick(e);
+                        }
                     }
-                } else {
-                    if (swipedOpen) {
-                        snapTo(0, false);
-                        setSwipedOpen(false);
-                    } else if (onCardClick) {
-                        onCardClick(e);
-                    }
-                }
-            };
+                };
+
+                cardEl.addEventListener('touchstart', handleStart, { passive: false });
+                cardEl.addEventListener('touchmove', handleMove, { passive: false });
+                cardEl.addEventListener('touchend', handleEnd);
+                cardEl.addEventListener('touchcancel', handleEnd);
+                cardEl.addEventListener('mousedown', handleStart);
+                window.addEventListener('mousemove', handleMove, { passive: false });
+                window.addEventListener('mouseup', handleEnd);
+
+                return () => {
+                    cardEl.removeEventListener('touchstart', handleStart);
+                    cardEl.removeEventListener('touchmove', handleMove);
+                    cardEl.removeEventListener('touchend', handleEnd);
+                    cardEl.removeEventListener('touchcancel', handleEnd);
+                    cardEl.removeEventListener('mousedown', handleStart);
+                    window.removeEventListener('mousemove', handleMove);
+                    window.removeEventListener('mouseup', handleEnd);
+                };
+            }, [triggerDeleteModal, onCardClick, swipedOpen]);
 
             return (
                 <div 
                     ref={containerRef}
-                    className={`relative transition-all duration-300 ${
+                    data-swipe-item="true"
+                    className={`relative overflow-hidden transition-all duration-300 ${
                         isDeleting 
-                            ? 'overflow-hidden max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' 
+                            ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' 
                             : 'max-h-[500px] opacity-100 my-1'
                     } ${className}`}
                 >
@@ -2540,14 +2590,7 @@
                     {/* Swiping Card */}
                     <div
                         ref={cardRef}
-                        onTouchStart={handleStart}
-                        onTouchMove={handleMove}
-                        onTouchEnd={handleEnd}
-                        onTouchCancel={handleEnd}
-                        onMouseDown={handleStart}
-                        onMouseMove={handleMove}
-                        onMouseUp={handleEnd}
-                        onMouseLeave={handleEnd}
+                        data-swipe-item="true"
                         style={{
                             transform: 'translate3d(0, 0, 0)',
                             willChange: 'transform',
@@ -2739,7 +2782,7 @@
                     }`}
                 >
                     <div 
-                        className="flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y"
+                        className="flex-1 py-2 overflow-y-auto overflow-x-hidden hide-scrollbar touch-pan-y"
                         onClick={(e) => {
                             if (e.target.closest('input, textarea, select, button, label, a')) return;
                             if (cardRef.current) {
@@ -2857,7 +2900,7 @@
                         />
                     </div>
 
-                    <div className={`max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
+                    <div className={`max-h-52 overflow-y-auto overflow-x-hidden space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
                         error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'
                     }`}>
                         {filtered.length > 0 ? (
@@ -3023,7 +3066,7 @@
                                         className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none"
                                     />
                                 </div>
-                                <div className="max-h-44 overflow-y-auto space-y-1.5 hide-scrollbar p-1">
+                                <div className="max-h-44 overflow-y-auto overflow-x-hidden space-y-1.5 hide-scrollbar p-1">
                                     {filtered.length > 0 ? (
                                         filtered.map(l => (
                                             <div 
@@ -3070,7 +3113,7 @@
                             className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
-                    <div className={`max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
+                    <div className={`max-h-52 overflow-y-auto overflow-x-hidden space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
                         error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'
                     }`}>
                         {filtered.length > 0 ? (
@@ -10238,21 +10281,39 @@
                                 key="app-splash-screen"
                                 initial={{ opacity: 1, scale: 1 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 1.04, filter: 'blur(6px)' }}
-                                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                                className="fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
+                                exit={{ opacity: 0, scale: 1.05, filter: 'blur(8px)' }}
+                                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                                className="fixed inset-0 z-[100000] bg-[#0b101d] flex flex-col items-center justify-center overflow-hidden pointer-events-auto text-white dir-rtl"
                             >
-                                <picture className="w-full h-full flex items-center justify-center">
-                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.1-b220" />
+                                {/* Background Image Layer if present */}
+                                <picture className="absolute inset-0 w-full h-full opacity-30 pointer-events-none">
+                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png" />
                                     <img 
-                                        src="./splash-portrait.png?v=2.2.1-b220" 
-                                        alt="Amir Finance Splash Screen" 
+                                        src="./splash-portrait.png" 
+                                        alt="" 
                                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                         className="w-full h-full object-cover object-center" 
                                     />
                                 </picture>
-                                <div className="absolute bottom-10 inset-x-0 flex flex-col items-center justify-center space-y-2 pointer-events-none">
-                                    <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+
+                                {/* Rich Central Splash Content */}
+                                <div className="relative z-10 flex flex-col items-center justify-center text-center p-6 space-y-4">
+                                    <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center shadow-2xl shadow-indigo-500/30 ring-1 ring-white/20 animate-pulse">
+                                        <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="2" y="5" width="20" height="14" rx="3" />
+                                            <line x1="2" y1="10" x2="22" y2="10" />
+                                        </svg>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h1 className="text-2xl font-black tracking-tight text-white font-vazir">امیر فایننس</h1>
+                                        <p className="text-xs font-semibold text-indigo-300/80 font-vazir">مدیریت هوشمند مالی، وام‌ها و اقساط</p>
+                                    </div>
+                                </div>
+
+                                {/* Bottom Spinner */}
+                                <div className="absolute bottom-12 inset-x-0 flex flex-col items-center justify-center space-y-3 pointer-events-none z-10">
+                                    <div className="w-7 h-7 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+                                    <span className="text-[10px] font-medium text-slate-400 tracking-wider">نسخه ۲.۲.۱</span>
                                 </div>
                             </motion.div>
                         )}
@@ -10276,7 +10337,7 @@
                                 animate="animate"
                                 exit="exit"
                                 style={{ willChange: 'transform', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}
-                                className="w-full h-full absolute inset-0 overflow-y-auto bg-[#F4F7FC] dark:bg-slate-950 z-10"
+                                className="w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden bg-[#F4F7FC] dark:bg-slate-950 z-10"
                             >
                                 {['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? (
                                     <div className="flex-1 relative w-full h-full">
@@ -10321,7 +10382,7 @@
                                         )}
                                     </div>
                                 ) : (
-                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24 h-full overflow-y-auto">
+                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24 h-full overflow-y-auto overflow-x-hidden">
                                         {currentTab === 'dashboard' && renderTab('dashboard')}
                                         {currentTab === 'accounts' && renderTab('accounts')}
                                         {currentTab === 'contacts' && renderTab('contacts')}
@@ -10539,7 +10600,7 @@
                                             {/* Scrollable Floating Cards Area */}
                                             <div 
                                                 ref={editCardsContainerRef}
-                                                className={`w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto"}`}
+                                                className={`w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-hidden"}`}
                                             >
                                                 {activeCards.map((card, index) => {
                                                     const isEditingThis = editingCardId === card.id;
@@ -10924,7 +10985,7 @@
                                     animate="animate"
                                     exit="exit"
                                     style={{ transformOrigin: "center center" }}
-                                    className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto"
+                                    className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto overflow-x-hidden"
                                 >
                                     <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"></div>
                                     <div className="text-center">
@@ -11069,7 +11130,7 @@
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto"
+                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden"
                             >
                                 <motion.div 
                                     key="add-contact-panel"
@@ -11141,7 +11202,7 @@
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto"
+                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden"
                             >
                                 <motion.div 
                                     key="edit-contact-panel"

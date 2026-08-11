@@ -2372,7 +2372,7 @@ function PullToRefresh({
   const rotation = progress * 360;
   return /*#__PURE__*/React.createElement("div", {
     ref: containerRef,
-    className: `relative overflow-y-auto hide-scrollbar ${className}`,
+    className: `relative overflow-y-auto overflow-x-hidden hide-scrollbar ${className}`,
     style: {
       WebkitOverflowScrolling: 'touch',
       overscrollBehaviorY: 'contain'
@@ -2508,6 +2508,11 @@ function SwipeBackWrapper({
     const handleStart = e => {
       if (isClosingRef.current) return;
       if (e.button !== undefined && e.button !== 0) return;
+      if (e.target && e.target.closest && e.target.closest('[data-swipe-item]')) {
+        gestureRef.current.isEdgeCandidate = false;
+        gestureRef.current.isDragging = false;
+        return;
+      }
       const {
         x,
         y
@@ -2528,6 +2533,11 @@ function SwipeBackWrapper({
       const g = gestureRef.current;
       if (isClosingRef.current) return;
       if (!g.isEdgeCandidate && !g.isDragging) return;
+      if (e.target && e.target.closest && e.target.closest('[data-swipe-item]')) {
+        g.isEdgeCandidate = false;
+        g.isDragging = false;
+        return;
+      }
       const {
         x,
         y
@@ -2623,7 +2633,7 @@ function SwipeBackWrapper({
     className: `app-viewport fixed inset-0 w-full h-full overflow-hidden bg-[#F4F7FC] dark:bg-slate-950 z-30 ${className}`
   }, /*#__PURE__*/React.createElement("div", {
     ref: page1Ref,
-    className: "page-view z-10 bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto w-full h-full"
+    className: "page-view z-10 bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-hidden w-full h-full"
   }, /*#__PURE__*/React.createElement("div", {
     className: "px-4 pt-4 pb-24 min-h-full"
   }, underlyingContent)), /*#__PURE__*/React.createElement("div", {
@@ -2638,7 +2648,7 @@ function SwipeBackWrapper({
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children) : /*#__PURE__*/React.createElement("div", {
-    className: "w-full h-full overflow-y-auto px-4 pt-4 pb-24"
+    className: "w-full h-full overflow-y-auto overflow-x-hidden px-4 pt-4 pb-24"
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children)));
@@ -3087,12 +3097,15 @@ function SwipeToDeleteItem({
   const [isDragging, setIsDragging] = useState(false);
   const [swipedOpen, setSwipedOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const isDeletingRef = useRef(false);
+  useEffect(() => {
+    isDeletingRef.current = isDeleting;
+  }, [isDeleting]);
   const containerRef = useRef(null);
   const cardRef = useRef(null);
   const btnRef = useRef(null);
   const offsetRef = useRef(0);
   const rafIdRef = useRef(null);
-  const isDraggingRef = useRef(false);
   const gestureRef = useRef({
     startX: 0,
     startY: 0,
@@ -3116,8 +3129,8 @@ function SwipeToDeleteItem({
     const btnWidthPx = Math.max(52, rawBtnWidth);
     const morphProgress = Math.min(1, Math.max(0, (btnWidthPx - 52) / 30));
     const borderRadiusPx = 26 - (26 - 16) * morphProgress;
-    const transitionStr = dragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s linear';
-    cardEl.style.transition = dragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+    const transitionStr = dragging ? 'none' : 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+    cardEl.style.transition = dragging ? 'none' : 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
     cardEl.style.transform = `translate3d(${-currentOffset}px, 0, 0)`;
     btnEl.style.transition = transitionStr;
     btnEl.style.width = `${btnWidthPx}px`;
@@ -3125,7 +3138,18 @@ function SwipeToDeleteItem({
     btnEl.style.borderRadius = `${borderRadiusPx}px`;
     btnEl.style.opacity = `${btnOpacity}`;
     btnEl.style.transform = `translate3d(0, -50%, 0) scale(${btnScale})`;
-    btnEl.style.visibility = currentOffset > 2 ? 'visible' : 'hidden';
+    if (currentOffset > 2) {
+      btnEl.style.visibility = 'visible';
+    } else if (!dragging) {
+      btnEl.style.visibility = 'visible';
+      setTimeout(() => {
+        if (offsetRef.current === 0 && btnRef.current) {
+          btnRef.current.style.visibility = 'hidden';
+        }
+      }, 300);
+    } else {
+      btnEl.style.visibility = 'hidden';
+    }
   };
   const snapTo = (targetOffset, dragging = false) => {
     offsetRef.current = targetOffset;
@@ -3139,89 +3163,29 @@ function SwipeToDeleteItem({
         setSwipedOpen(false);
       }
     };
+    window.addEventListener('pointerdown', handleGlobalClick, {
+      capture: true
+    });
     window.addEventListener('touchstart', handleGlobalClick, {
+      capture: true,
       passive: true
     });
-    window.addEventListener('mousedown', handleGlobalClick);
+    window.addEventListener('mousedown', handleGlobalClick, {
+      capture: true
+    });
     return () => {
-      window.removeEventListener('touchstart', handleGlobalClick);
-      window.removeEventListener('mousedown', handleGlobalClick);
+      window.removeEventListener('pointerdown', handleGlobalClick, {
+        capture: true
+      });
+      window.removeEventListener('touchstart', handleGlobalClick, {
+        capture: true
+      });
+      window.removeEventListener('mousedown', handleGlobalClick, {
+        capture: true
+      });
     };
   }, [swipedOpen]);
-  const getCoords = e => {
-    if (e.touches && e.touches.length > 0) {
-      return {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-      };
-    }
-    if (e.changedTouches && e.changedTouches.length > 0) {
-      return {
-        x: e.changedTouches[0].clientX,
-        y: e.changedTouches[0].clientY
-      };
-    }
-    return {
-      x: e.clientX || 0,
-      y: e.clientY || 0
-    };
-  };
-  const handleStart = e => {
-    if (isDeleting) return;
-    if (e.button !== undefined && e.button !== 0) return;
-    const {
-      x,
-      y
-    } = getCoords(e);
-    gestureRef.current = {
-      startX: x,
-      startY: y,
-      startOffset: offsetRef.current,
-      isSlopPassed: false,
-      isHorizontalDrag: false
-    };
-  };
-  const handleMove = e => {
-    const g = gestureRef.current;
-    if (isDeleting || !g.startX) return;
-    const {
-      x,
-      y
-    } = getCoords(e);
-    const deltaX = g.startX - x; // Positive when dragging left in RTL
-    const deltaY = y - g.startY;
-    if (!g.isSlopPassed) {
-      const absX = Math.abs(deltaX);
-      const absY = Math.abs(deltaY);
-      if (absX > 4 || absY > 4) {
-        // Slop Threshold = 4px
-        g.isSlopPassed = true;
-        if (absX > absY * 0.8) {
-          g.isHorizontalDrag = true;
-          isDraggingRef.current = true;
-          setIsDragging(true);
-        } else {
-          g.startX = 0; // abort horizontal drag, let page scroll vertically
-          return;
-        }
-      }
-    }
-    if (g.isHorizontalDrag) {
-      if (e.cancelable) e.preventDefault();
-      let newOffset = g.startOffset + deltaX;
-      const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
-      if (newOffset < 0) newOffset = 0;
-      if (newOffset > containerWidth) newOffset = containerWidth;
-      offsetRef.current = newOffset;
-      if (!rafIdRef.current) {
-        rafIdRef.current = requestAnimationFrame(() => {
-          rafIdRef.current = null;
-          updateVisuals(offsetRef.current, true);
-        });
-      }
-    }
-  };
-  const triggerDeleteModal = () => {
+  const triggerDeleteModal = useCallback(() => {
     if (onDelete) {
       onDelete(() => {
         setIsDeleting(true);
@@ -3229,44 +3193,143 @@ function SwipeToDeleteItem({
     }
     snapTo(0, false);
     setSwipedOpen(false);
-  };
-  const handleEnd = e => {
-    const g = gestureRef.current;
-    if (!g.startX) return;
-    const isDrag = g.isHorizontalDrag;
-    g.startX = 0;
-    g.isSlopPassed = false;
-    g.isHorizontalDrag = false;
-    isDraggingRef.current = false;
-    setIsDragging(false);
-    if (rafIdRef.current) {
-      cancelAnimationFrame(rafIdRef.current);
-      rafIdRef.current = null;
-    }
-    if (isDrag) {
-      const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
-      const ratio = offsetRef.current / containerWidth;
-      if (ratio >= 0.7) {
-        triggerDeleteModal();
-      } else if (offsetRef.current > 50) {
-        snapTo(84, false);
-        setSwipedOpen(true);
+  }, [onDelete]);
+  useEffect(() => {
+    const cardEl = cardRef.current;
+    if (!cardEl) return;
+    const getCoords = e => {
+      if (e.touches && e.touches.length > 0) {
+        return {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY
+        };
+      }
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        return {
+          x: e.changedTouches[0].clientX,
+          y: e.changedTouches[0].clientY
+        };
+      }
+      return {
+        x: e.clientX || 0,
+        y: e.clientY || 0
+      };
+    };
+    const handleStart = e => {
+      if (isDeletingRef.current) return;
+      if (e.type === 'mousedown' && e.button !== 0) return;
+      if (e.stopPropagation) e.stopPropagation();
+      const {
+        x,
+        y
+      } = getCoords(e);
+      gestureRef.current = {
+        startX: x,
+        startY: y,
+        startOffset: offsetRef.current,
+        isSlopPassed: false,
+        isHorizontalDrag: false
+      };
+    };
+    const handleMove = e => {
+      const g = gestureRef.current;
+      if (isDeletingRef.current || !g.startX) return;
+      const {
+        x,
+        y
+      } = getCoords(e);
+      const deltaX = g.startX - x;
+      const deltaY = y - g.startY;
+      if (!g.isSlopPassed) {
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+        if (absX > 4 || absY > 4) {
+          g.isSlopPassed = true;
+          if (absX > absY * 0.8) {
+            g.isHorizontalDrag = true;
+            setIsDragging(true);
+          } else {
+            g.startX = 0;
+            return;
+          }
+        }
+      }
+      if (g.isHorizontalDrag) {
+        if (e.cancelable) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+        let newOffset = g.startOffset + deltaX;
+        const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
+        if (newOffset < 0) newOffset = 0;
+        if (newOffset > containerWidth) newOffset = containerWidth;
+        offsetRef.current = newOffset;
+        if (!rafIdRef.current) {
+          rafIdRef.current = requestAnimationFrame(() => {
+            rafIdRef.current = null;
+            updateVisuals(offsetRef.current, true);
+          });
+        }
+      }
+    };
+    const handleEnd = e => {
+      const g = gestureRef.current;
+      if (!g.startX) return;
+      const isDrag = g.isHorizontalDrag;
+      g.startX = 0;
+      g.isSlopPassed = false;
+      g.isHorizontalDrag = false;
+      setIsDragging(false);
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+      if (isDrag) {
+        const containerWidth = containerRef.current ? containerRef.current.offsetWidth : 320;
+        const ratio = offsetRef.current / containerWidth;
+        if (ratio >= 0.7) {
+          triggerDeleteModal();
+        } else if (offsetRef.current > 50) {
+          snapTo(84, false);
+          setSwipedOpen(true);
+        } else {
+          snapTo(0, false);
+          setSwipedOpen(false);
+        }
       } else {
-        snapTo(0, false);
-        setSwipedOpen(false);
+        if (swipedOpen) {
+          snapTo(0, false);
+          setSwipedOpen(false);
+        } else if (onCardClick) {
+          onCardClick(e);
+        }
       }
-    } else {
-      if (swipedOpen) {
-        snapTo(0, false);
-        setSwipedOpen(false);
-      } else if (onCardClick) {
-        onCardClick(e);
-      }
-    }
-  };
+    };
+    cardEl.addEventListener('touchstart', handleStart, {
+      passive: false
+    });
+    cardEl.addEventListener('touchmove', handleMove, {
+      passive: false
+    });
+    cardEl.addEventListener('touchend', handleEnd);
+    cardEl.addEventListener('touchcancel', handleEnd);
+    cardEl.addEventListener('mousedown', handleStart);
+    window.addEventListener('mousemove', handleMove, {
+      passive: false
+    });
+    window.addEventListener('mouseup', handleEnd);
+    return () => {
+      cardEl.removeEventListener('touchstart', handleStart);
+      cardEl.removeEventListener('touchmove', handleMove);
+      cardEl.removeEventListener('touchend', handleEnd);
+      cardEl.removeEventListener('touchcancel', handleEnd);
+      cardEl.removeEventListener('mousedown', handleStart);
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleEnd);
+    };
+  }, [triggerDeleteModal, onCardClick, swipedOpen]);
   return /*#__PURE__*/React.createElement("div", {
     ref: containerRef,
-    className: `relative transition-all duration-300 ${isDeleting ? 'overflow-hidden max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' : 'max-h-[500px] opacity-100 my-1'} ${className}`
+    "data-swipe-item": "true",
+    className: `relative overflow-hidden transition-all duration-300 ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' : 'max-h-[500px] opacity-100 my-1'} ${className}`
   }, /*#__PURE__*/React.createElement("div", {
     ref: btnRef,
     className: "absolute right-1 top-1/2 z-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white cursor-pointer shadow-md select-none transition-colors",
@@ -3291,14 +3354,7 @@ function SwipeToDeleteItem({
     className: "w-5 h-5 text-white shrink-0"
   }))), /*#__PURE__*/React.createElement("div", {
     ref: cardRef,
-    onTouchStart: handleStart,
-    onTouchMove: handleMove,
-    onTouchEnd: handleEnd,
-    onTouchCancel: handleEnd,
-    onMouseDown: handleStart,
-    onMouseMove: handleMove,
-    onMouseUp: handleEnd,
-    onMouseLeave: handleEnd,
+    "data-swipe-item": "true",
     style: {
       transform: 'translate3d(0, 0, 0)',
       willChange: 'transform',
@@ -3462,7 +3518,7 @@ function StackCardItem({
     "data-depth": depthAttr,
     className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y",
+    className: "flex-1 py-2 overflow-y-auto overflow-x-hidden hide-scrollbar touch-pan-y",
     onClick: e => {
       if (e.target.closest('input, textarea, select, button, label, a')) return;
       if (cardRef.current) {
@@ -3553,7 +3609,7 @@ function ContactSelectorCard({
     onChange: e => setSearchQuery(e.target.value),
     className: `w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 ${error ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:ring-indigo-500'}`
   })), /*#__PURE__*/React.createElement("div", {
-    className: `max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
+    className: `max-h-52 overflow-y-auto overflow-x-hidden space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
   }, filtered.length > 0 ? filtered.map(c => {
     const isSelected = Number(selectedContactId) === c.id;
     return /*#__PURE__*/React.createElement("div", {
@@ -3704,7 +3760,7 @@ function LoanSelectorCard({
       onChange: e => setSearchQuery(e.target.value),
       className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none"
     })), /*#__PURE__*/React.createElement("div", {
-      className: "max-h-44 overflow-y-auto space-y-1.5 hide-scrollbar p-1"
+      className: "max-h-44 overflow-y-auto overflow-x-hidden space-y-1.5 hide-scrollbar p-1"
     }, filtered.length > 0 ? filtered.map(l => /*#__PURE__*/React.createElement("div", {
       key: l.id,
       onClick: () => handleSelect(l),
@@ -3743,7 +3799,7 @@ function LoanSelectorCard({
     onChange: e => setSearchQuery(e.target.value),
     className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
   })), /*#__PURE__*/React.createElement("div", {
-    className: `max-h-52 overflow-y-auto space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
+    className: `max-h-52 overflow-y-auto overflow-x-hidden space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
   }, filtered.length > 0 ? filtered.map(l => {
     const contact = contacts.find(c => c.id === l.contactId);
     const cName = contact ? `${contact.firstName} ${contact.lastName}` : l.contactName || 'بانک/سازمان';
@@ -10399,31 +10455,62 @@ function App() {
     },
     exit: {
       opacity: 0,
-      scale: 1.04,
-      filter: 'blur(6px)'
+      scale: 1.05,
+      filter: 'blur(8px)'
     },
     transition: {
-      duration: 0.55,
+      duration: 0.5,
       ease: [0.16, 1, 0.3, 1]
     },
-    className: "fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
+    className: "fixed inset-0 z-[100000] bg-[#0b101d] flex flex-col items-center justify-center overflow-hidden pointer-events-auto text-white dir-rtl"
   }, /*#__PURE__*/React.createElement("picture", {
-    className: "w-full h-full flex items-center justify-center"
+    className: "absolute inset-0 w-full h-full opacity-30 pointer-events-none"
   }, /*#__PURE__*/React.createElement("source", {
     media: "(orientation: landscape)",
-    srcSet: "./splash-landscape.png?v=2.2.1-b220"
+    srcSet: "./splash-landscape.png"
   }), /*#__PURE__*/React.createElement("img", {
-    src: "./splash-portrait.png?v=2.2.1-b220",
-    alt: "Amir Finance Splash Screen",
+    src: "./splash-portrait.png",
+    alt: "",
     onError: e => {
       e.currentTarget.style.display = 'none';
     },
     className: "w-full h-full object-cover object-center"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "absolute bottom-10 inset-x-0 flex flex-col items-center justify-center space-y-2 pointer-events-none"
+    className: "relative z-10 flex flex-col items-center justify-center text-center p-6 space-y-4"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"
-  })))), toastMessage && /*#__PURE__*/React.createElement("div", {
+    className: "w-24 h-24 rounded-3xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center shadow-2xl shadow-indigo-500/30 ring-1 ring-white/20 animate-pulse"
+  }, /*#__PURE__*/React.createElement("svg", {
+    className: "w-12 h-12 text-white",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "2",
+    y: "5",
+    width: "20",
+    height: "14",
+    rx: "3"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "2",
+    y1: "10",
+    x2: "22",
+    y2: "10"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1"
+  }, /*#__PURE__*/React.createElement("h1", {
+    className: "text-2xl font-black tracking-tight text-white font-vazir"
+  }, "\u0627\u0645\u06CC\u0631 \u0641\u0627\u06CC\u0646\u0646\u0633"), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs font-semibold text-indigo-300/80 font-vazir"
+  }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u0647\u0648\u0634\u0645\u0646\u062F \u0645\u0627\u0644\u06CC\u060C \u0648\u0627\u0645\u200C\u0647\u0627 \u0648 \u0627\u0642\u0633\u0627\u0637"))), /*#__PURE__*/React.createElement("div", {
+    className: "absolute bottom-12 inset-x-0 flex flex-col items-center justify-center space-y-3 pointer-events-none z-10"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-7 h-7 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px] font-medium text-slate-400 tracking-wider"
+  }, "\u0646\u0633\u062E\u0647 \u06F2.\u06F2.\u06F1")))), toastMessage && /*#__PURE__*/React.createElement("div", {
     className: "absolute top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white dark:bg-slate-100 dark:text-slate-900 text-xs py-2 px-4 rounded-full shadow-lg border border-slate-700/50 transition-all duration-300"
   }, toastMessage), /*#__PURE__*/React.createElement("div", {
     className: "flex-1 relative w-full h-full overflow-hidden"
@@ -10442,7 +10529,7 @@ function App() {
       WebkitBackfaceVisibility: 'hidden',
       backfaceVisibility: 'hidden'
     },
-    className: "w-full h-full absolute inset-0 overflow-y-auto bg-[#F4F7FC] dark:bg-slate-950 z-10"
+    className: "w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden bg-[#F4F7FC] dark:bg-slate-950 z-10"
   }, ['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? /*#__PURE__*/React.createElement("div", {
     className: "flex-1 relative w-full h-full"
   }, currentTab === 'contact-detail' && selectedContact && /*#__PURE__*/React.createElement(SwipeBackWrapper, {
@@ -10471,7 +10558,7 @@ function App() {
     onBack
   }) => renderTab('all-transactions', onBack))) : /*#__PURE__*/React.createElement(PullToRefresh, {
     onRefresh: () => handleRefreshData(currentTab),
-    className: "flex-1 px-4 pt-4 pb-24 h-full overflow-y-auto"
+    className: "flex-1 px-4 pt-4 pb-24 h-full overflow-y-auto overflow-x-hidden"
   }, currentTab === 'dashboard' && renderTab('dashboard'), currentTab === 'accounts' && renderTab('accounts'), currentTab === 'contacts' && renderTab('contacts'), currentTab === 'settings' && renderTab('settings'))))), /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "fab-backdrop",
     initial: {
@@ -10700,7 +10787,7 @@ function App() {
     className: "w-full flex flex-col items-center h-full max-h-[92vh] relative"
   }, /*#__PURE__*/React.createElement("div", {
     ref: editCardsContainerRef,
-    className: `w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto"}`
+    className: `w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-hidden"}`
   }, activeCards.map((card, index) => {
     const isEditingThis = editingCardId === card.id;
     const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
@@ -11058,7 +11145,7 @@ function App() {
     style: {
       transformOrigin: "center center"
     },
-    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto"
+    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto overflow-x-hidden"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
   }), /*#__PURE__*/React.createElement("div", {
@@ -11194,7 +11281,7 @@ function App() {
     initial: "initial",
     animate: "animate",
     exit: "exit",
-    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto"
+    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden"
   }, /*#__PURE__*/React.createElement(motion.div, {
     key: "add-contact-panel",
     variants: iosModalVariants,
@@ -11275,7 +11362,7 @@ function App() {
     initial: "initial",
     animate: "animate",
     exit: "exit",
-    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto"
+    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden"
   }, /*#__PURE__*/React.createElement(motion.div, {
     key: "edit-contact-panel",
     variants: iosModalVariants,
