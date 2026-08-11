@@ -3301,7 +3301,8 @@ function SwipeToDeleteItem({
     onMouseLeave: handleEnd,
     style: {
       transform: 'translate3d(0, 0, 0)',
-      willChange: 'transform'
+      willChange: 'transform',
+      touchAction: 'pan-y'
     },
     className: `relative z-10 transition-shadow duration-200 ${isDragging || swipedOpen ? 'rounded-2xl shadow-xl' : ''}`
   }, children));
@@ -3372,7 +3373,7 @@ function SwipeableTxCard({
     onCardClick: () => onEdit && onEdit(tx)
   }, /*#__PURE__*/React.createElement("div", {
     id: `tx-card-${tx.id}`,
-    className: `bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
+    className: `bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
   }, /*#__PURE__*/React.createElement("div", {
@@ -3459,7 +3460,7 @@ function StackCardItem({
     ref: cardRef,
     key: card.id,
     "data-depth": depthAttr,
-    className: `stack-card bg-[#FDFDFE] dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`
+    className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex-1 py-2 overflow-y-auto hide-scrollbar touch-pan-y",
     onClick: e => {
@@ -3947,12 +3948,12 @@ function App() {
   const defaultVersionData = {
     appName: "Amir Finance",
     appLogo: "apple-touch-icon.png",
-    installedVersion: localStorage.getItem('amir_installed_version') || "2.2.0",
-    buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '210', 10),
-    releaseDate: "2026-08-07",
+    installedVersion: localStorage.getItem('amir_installed_version') || "2.2.1",
+    buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '211', 10),
+    releaseDate: "2026-08-11",
     releaseChannel: "Stable",
     channelLabel: "نسخه پایدار",
-    latestVersion: "2.2.0",
+    latestVersion: "2.2.1",
     latestBuild: 210,
     isUpdateAvailable: false,
     history: [{
@@ -4463,8 +4464,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 210;
-    const EMBEDDED_VERSION = "2.2.0";
+    const EMBEDDED_BUILD = 211;
+    const EMBEDDED_VERSION = "2.2.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -8185,7 +8186,7 @@ function App() {
           value: accountsSearchQuery,
           onChange: e => setAccountsSearchQuery(e.target.value),
           placeholder: "\u062C\u0633\u062A\u062C\u0648...",
-          className: "w-full h-12 pr-10 pl-4 bg-slate-100 dark:bg-slate-800 border-none rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs"
+          className: "w-full h-12 pr-10 pl-4 bg-slate-100/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-inner"
         }), /*#__PURE__*/React.createElement(Icon, {
           name: "search",
           className: "w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -8193,7 +8194,10 @@ function App() {
           onClick: () => setAccountsSearchQuery(''),
           className: "w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform",
           title: "\u067E\u0627\u06A9\u200C\u0633\u0627\u0632\u06CC \u062C\u0633\u062A\u062C\u0648"
-        }, "C")), /*#__PURE__*/React.createElement("div", {
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "x",
+          className: "w-6 h-6"
+        }))), /*#__PURE__*/React.createElement("div", {
           className: "bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs"
         }, [{
           id: 'all',
@@ -8276,37 +8280,52 @@ function App() {
               name: "check",
               className: "w-6 h-6 stroke-[3]"
             }))) : /*#__PURE__*/React.createElement("div", {
-              className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm p-4 sm:p-5 transition-all cursor-pointer hover:border-indigo-300"
+              className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 p-3 sm:p-4 transition-all cursor-pointer hover:border-indigo-400"
             }, /*#__PURE__*/React.createElement("div", {
-              className: "w-full flex flex-col gap-2"
+              className: "w-full flex flex-col gap-3"
             }, /*#__PURE__*/React.createElement("div", {
               className: "flex items-center justify-between w-full"
             }, /*#__PURE__*/React.createElement("div", {
-              className: "w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0"
+              className: "w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 shadow-inner"
             }, /*#__PURE__*/React.createElement(Icon, {
               name: "landmark",
               className: "w-6 h-6"
             })), /*#__PURE__*/React.createElement("div", {
-              className: "flex-1 text-right flex flex-col gap-1 pl-4 pr-2"
+              className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
             }, /*#__PURE__*/React.createElement("h3", {
-              className: "font-bold text-slate-800 dark:text-white text-sm"
+              className: "font-bold text-slate-800 dark:text-white text-sm leading-tight"
             }, loan.title), /*#__PURE__*/React.createElement("p", {
-              className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
+              className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal line-clamp-1"
             }, loan.contactName || "بانک")), /*#__PURE__*/React.createElement("div", {
               className: "text-left shrink-0 flex flex-col items-center"
             }, /*#__PURE__*/React.createElement("div", {
               className: "text-indigo-600 dark:text-indigo-400 font-bold text-base leading-none"
             }, loan.principalAmount.toLocaleString()), /*#__PURE__*/React.createElement("div", {
-              className: "text-indigo-600 dark:text-indigo-400 text-xs"
+              className: "text-indigo-600 dark:text-indigo-400 text-[10px] mt-1 font-medium"
             }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
-              className: "flex justify-center"
+              className: "flex flex-col gap-2"
+            }, /*#__PURE__*/React.createElement("div", {
+              className: "flex items-center justify-between w-full bg-[#F4F7FC] dark:bg-slate-900/50 rounded-xl px-3 py-1.5 border border-slate-200/50 dark:border-slate-700/50"
             }, /*#__PURE__*/React.createElement("span", {
-              className: "text-slate-500 dark:text-slate-400 font-bold text-xs"
-            }, "\u0622\u062E\u0631\u06CC\u0646 \u0642\u0633\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647 : ", nextDueInfo.lastPaidDateStr || "هنوز پرداختی ثبت نشده")), /*#__PURE__*/React.createElement("div", {
-              className: "bg-indigo-50/50 dark:bg-indigo-950/40 rounded-lg py-2 px-4 text-center"
+              className: "text-slate-500 dark:text-slate-400 font-medium text-xs"
+            }, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 ", nextDueInfo.paidInst + 1), /*#__PURE__*/React.createElement("span", {
+              className: "text-indigo-600 dark:text-indigo-400 font-bold text-xs"
+            }, nextDueInfo.nextDueDateStr)), /*#__PURE__*/React.createElement("div", {
+              className: "w-full flex flex-col gap-1.5 px-1 mt-1"
+            }, /*#__PURE__*/React.createElement("div", {
+              className: "flex justify-between items-center text-[10px] font-bold"
             }, /*#__PURE__*/React.createElement("span", {
-              className: "text-slate-600 dark:text-slate-300 font-bold text-sm"
-            }, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 ", nextDueInfo.paidInst + 1, ": ", nextDueInfo.nextDueDateStr)))));
+              className: "text-emerald-600 dark:text-emerald-400"
+            }, nextDueInfo.paidInst, " \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/React.createElement("span", {
+              className: "text-slate-400 dark:text-slate-500"
+            }, "\u0645\u0627\u0646\u062F\u0647 ", nextDueInfo.remainingInst)), /*#__PURE__*/React.createElement("div", {
+              className: "w-full h-2.5 bg-slate-100 dark:bg-slate-800/80 rounded-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-700/80 flex"
+            }, /*#__PURE__*/React.createElement("div", {
+              className: "h-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 rounded-full transition-all duration-500",
+              style: {
+                width: `${Math.min(100, nextDueInfo.totalInst > 0 ? nextDueInfo.paidInst / nextDueInfo.totalInst * 100 : 0)}%`
+              }
+            })))))));
           })));
         })(), (accountsSubTab === 'all' || accountsSubTab === 'demands' || accountsSubTab === 'archived') && filteredAccountsDemands.length > 0 && /*#__PURE__*/React.createElement("div", {
           className: "space-y-3"
@@ -8324,7 +8343,7 @@ function App() {
             onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
             onCardClick: () => openContactDetail(contact, 'demands', 'accounts')
           }, /*#__PURE__*/React.createElement("div", {
-            className: "bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8369,7 +8388,7 @@ function App() {
             onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
             onCardClick: () => openContactDetail(contact, 'debts', 'accounts')
           }, /*#__PURE__*/React.createElement("div", {
-            className: "bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8437,7 +8456,7 @@ function App() {
           value: searchQuery,
           onChange: e => setSearchQuery(e.target.value),
           placeholder: "\u062C\u0633\u062A\u062C\u0648...",
-          className: "w-full h-12 pr-10 pl-4 bg-slate-100 dark:bg-slate-800 border-none rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs"
+          className: "w-full h-12 pr-10 pl-4 bg-slate-100/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-inner"
         }), /*#__PURE__*/React.createElement(Icon, {
           name: "search",
           className: "w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -8445,7 +8464,10 @@ function App() {
           onClick: () => setSearchQuery(''),
           className: "w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform",
           title: "\u067E\u0627\u06A9\u200C\u0633\u0627\u0632\u06CC \u062C\u0633\u062A\u062C\u0648"
-        }, "C")), /*#__PURE__*/React.createElement("div", {
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "x",
+          className: "w-6 h-6"
+        }))), /*#__PURE__*/React.createElement("div", {
           className: "bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs"
         }, /*#__PURE__*/React.createElement("button", {
           onClick: () => setContactFilter(contactFilter === 'favorite' ? 'all' : 'favorite'),
@@ -8787,7 +8809,7 @@ function App() {
           }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC (", closedLoans.length, ")")), contactLoansSubFilter === 'active' ? activeLoans.length > 0 ? activeLoans.map(loan => /*#__PURE__*/React.createElement("div", {
             key: loan.id,
             onClick: () => openLoanDetail(loan),
-            className: "bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
           }, /*#__PURE__*/React.createElement("div", {
             className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8812,7 +8834,7 @@ function App() {
           }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : closedLoans.length > 0 ? closedLoans.map(loan => /*#__PURE__*/React.createElement("div", {
             key: loan.id,
             onClick: () => openLoanDetail(loan),
-            className: "bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
           }, /*#__PURE__*/React.createElement("div", {
             className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8886,7 +8908,7 @@ function App() {
               contactId: selectedContact.id,
               amount: selectedContact.totalDebt
             }),
-            className: "bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8913,7 +8935,7 @@ function App() {
           }, "\u0647\u06CC\u0686 \u0628\u062F\u0647\u06CC \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDebtPeriods.length > 0 ? archivedDebtPeriods.map(period => /*#__PURE__*/React.createElement("div", {
             key: period.id,
             onClick: () => openArchivedPeriodDetail(period),
-            className: "bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8989,7 +9011,7 @@ function App() {
               contactId: selectedContact.id,
               amount: selectedContact.totalDemand
             }),
-            className: "bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -9016,7 +9038,7 @@ function App() {
           }, "\u0647\u06CC\u0686 \u0637\u0644\u0628\u06CC \u0627\u0632 \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDemandPeriods.length > 0 ? archivedDemandPeriods.map(period => /*#__PURE__*/React.createElement("div", {
             key: period.id,
             onClick: () => openArchivedPeriodDetail(period),
-            className: "bg-[#FDFDFE] dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -10065,7 +10087,7 @@ function App() {
           className: "space-y-3.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start"
         }, /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('appearance'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10127,7 +10149,7 @@ function App() {
           className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
         })))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('backup'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10219,7 +10241,7 @@ function App() {
           className: "w-4 h-4 text-rose-400/60 scale-90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors shrink-0"
         })))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('notifications'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10265,7 +10287,7 @@ function App() {
           className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableDailyAlerts ? '-translate-x-5' : 'translate-x-0'}`
         })))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('security'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10291,7 +10313,7 @@ function App() {
           className: "text-xs text-slate-500 dark:text-slate-400 leading-relaxed"
         }, "\u062A\u0645\u0627\u0645\u06CC \u062F\u0627\u062F\u0647\u200C\u0647\u0627 \u0648 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0634\u0645\u0627 \u0635\u0631\u0641\u0627\u064B \u0631\u0648\u06CC \u062D\u0627\u0641\u0638\u0647 \u062F\u0633\u062A\u06AF\u0627\u0647 \u0630\u062E\u06CC\u0631\u0647 \u0645\u06CC\u200C\u0634\u0648\u0646\u062F \u0648 \u062F\u0627\u0631\u0627\u06CC \u0628\u0627\u0644\u0627\u062A\u0631\u06CC\u0646 \u0633\u0637\u062D \u062D\u0631\u06CC\u0645 \u062E\u0635\u0648\u0635\u06CC \u0645\u06CC\u200C\u0628\u0627\u0634\u0646\u062F.")))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('data'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10333,7 +10355,7 @@ function App() {
           className: "font-bold"
         }, transactions.length, " \u0645\u0648\u0631\u062F"))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('about'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10389,9 +10411,9 @@ function App() {
     className: "w-full h-full flex items-center justify-center"
   }, /*#__PURE__*/React.createElement("source", {
     media: "(orientation: landscape)",
-    srcSet: "./splash-landscape.png?v=2.2.0-b220"
+    srcSet: "./splash-landscape.png?v=2.2.1-b220"
   }), /*#__PURE__*/React.createElement("img", {
-    src: "./splash-portrait.png?v=2.2.0-b220",
+    src: "./splash-portrait.png?v=2.2.1-b220",
     alt: "Amir Finance Splash Screen",
     onError: e => {
       e.currentTarget.style.display = 'none';
