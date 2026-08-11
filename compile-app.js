@@ -45,6 +45,7 @@ function syncPublicFiles() {
     'apple-touch-icon-180x180.png', 'icon-192x192.png', 'icon-512x512.png',
     'web-app-manifest-192x192.png', 'web-app-manifest-512x512.png',
     'maskable-icon-512x512.png', 'splash-portrait.png', 'splash-landscape.png',
+    'splash-portrait.jpg', 'splash-landscape.jpg',
     'app.compiled.js'
   ];
 

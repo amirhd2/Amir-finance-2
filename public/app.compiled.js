@@ -4004,15 +4004,31 @@ function App() {
   const defaultVersionData = {
     appName: "Amir Finance",
     appLogo: "apple-touch-icon.png",
-    installedVersion: localStorage.getItem('amir_installed_version') || "2.2.1",
-    buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '211', 10),
+    installedVersion: localStorage.getItem('amir_installed_version') || "2.2.2",
+    buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '212', 10),
     releaseDate: "2026-08-11",
     releaseChannel: "Stable",
     channelLabel: "نسخه پایدار",
-    latestVersion: "2.2.1",
-    latestBuild: 210,
+    latestVersion: "2.2.2",
+    latestBuild: 212,
     isUpdateAvailable: false,
     history: [{
+      version: "2.2.2",
+      buildNumber: 212,
+      releaseDate: "2026-08-11",
+      releaseChannel: "Stable",
+      commitHash: "v222rel",
+      commitMessage: "feat: official release 2.2.2 with app icons, leather wallet splash screen, and card gestures",
+      changes: ["ارتقاء و پیاده‌سازی آیکون رسمی برنامه برای اندروید و iOS (طرح ۳بعدی سکه طلایی با نماد A و نمودار رشد)", "بازسازی کامل اسپلش اسکرین با تصویر باکیفیت کیف چرمی و کارت‌های اعتباری و رفع مشکل صفحه سیاه", "بهبود انیمیشن بازگشت و لمس بیرون کارت‌ها (بستن خودکار کارت‌های بازشده با لمس خارج از کارت)", "بازگردانی و بهبود بخش تاریخچه تغییرات و نسخه‌ها (Changelog) در تنظیمات"]
+    }, {
+      version: "2.2.1",
+      buildNumber: 211,
+      releaseDate: "2026-08-11",
+      releaseChannel: "Stable",
+      commitHash: "v221rel",
+      commitMessage: "fix & feat: fix black splash screen with leather wallet theme and improve card back animations",
+      changes: ["بازسازی کامل اسپلش اسکرین با تصویر باکیفیت کیف چرمی و کارت‌های اعتباری و رفع مشکل صفحه سیاه", "بهبود انیمیشن بازگشت و لمس بیرون کارت‌ها (بستن خودکار کارت‌های بازشده با لمس خارج از کارت)", "رفع مشکل عدم نمایش کامل گزینه‌ها در برخی بخش‌ها"]
+    }, {
       version: "2.1.5",
       buildNumber: 206,
       releaseDate: "2026-08-08",
@@ -4520,8 +4536,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 211;
-    const EMBEDDED_VERSION = "2.2.1";
+    const EMBEDDED_BUILD = 212;
+    const EMBEDDED_VERSION = "2.2.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -4546,14 +4562,15 @@ function App() {
       const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || '163', 10);
       const serverVersion = serverData.installedVersion || serverData.latestVersion || '1.7.0';
       const isUpdateAvailable = serverBuild > localBuild || hasSWUpdate || swFoundUpdate;
-      setVersionData({
+      setVersionData(prev => ({
         ...serverData,
         installedVersion: localVersion || EMBEDDED_VERSION,
         buildNumber: localBuild,
         latestVersion: serverVersion,
         latestBuild: serverBuild,
-        isUpdateAvailable: isUpdateAvailable
-      });
+        isUpdateAvailable: isUpdateAvailable,
+        history: serverData && serverData.history && serverData.history.length > 0 ? serverData.history : prev.history && prev.history.length > 0 ? prev.history : defaultVersionData.history
+      }));
       if (isManual) {
         setIsCheckingUpdate(false);
         if (isUpdateAvailable) {
@@ -10462,55 +10479,30 @@ function App() {
       duration: 0.5,
       ease: [0.16, 1, 0.3, 1]
     },
-    className: "fixed inset-0 z-[100000] bg-[#0b101d] flex flex-col items-center justify-center overflow-hidden pointer-events-auto text-white dir-rtl"
+    className: "fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
   }, /*#__PURE__*/React.createElement("picture", {
-    className: "absolute inset-0 w-full h-full opacity-30 pointer-events-none"
+    className: "w-full h-full flex items-center justify-center"
   }, /*#__PURE__*/React.createElement("source", {
     media: "(orientation: landscape)",
-    srcSet: "./splash-landscape.png"
+    srcSet: "./splash-landscape.png?v=2.2.2, ./splash-landscape.jpg?v=2.2.2"
+  }), /*#__PURE__*/React.createElement("source", {
+    media: "(orientation: portrait)",
+    srcSet: "./splash-portrait.png?v=2.2.2, ./splash-portrait.jpg?v=2.2.2"
   }), /*#__PURE__*/React.createElement("img", {
-    src: "./splash-portrait.png",
-    alt: "",
+    src: "./splash-portrait.png?v=2.2.2",
+    alt: "Amir Finance Splash Screen",
     onError: e => {
-      e.currentTarget.style.display = 'none';
+      if (!e.currentTarget.dataset.retry) {
+        e.currentTarget.dataset.retry = '1';
+        e.currentTarget.src = './splash-portrait.jpg';
+      }
     },
     className: "w-full h-full object-cover object-center"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "relative z-10 flex flex-col items-center justify-center text-center p-6 space-y-4"
+    className: "absolute bottom-10 inset-x-0 flex flex-col items-center justify-center space-y-2 pointer-events-none z-10"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "w-24 h-24 rounded-3xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center shadow-2xl shadow-indigo-500/30 ring-1 ring-white/20 animate-pulse"
-  }, /*#__PURE__*/React.createElement("svg", {
-    className: "w-12 h-12 text-white",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React.createElement("rect", {
-    x: "2",
-    y: "5",
-    width: "20",
-    height: "14",
-    rx: "3"
-  }), /*#__PURE__*/React.createElement("line", {
-    x1: "2",
-    y1: "10",
-    x2: "22",
-    y2: "10"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "space-y-1"
-  }, /*#__PURE__*/React.createElement("h1", {
-    className: "text-2xl font-black tracking-tight text-white font-vazir"
-  }, "\u0627\u0645\u06CC\u0631 \u0641\u0627\u06CC\u0646\u0646\u0633"), /*#__PURE__*/React.createElement("p", {
-    className: "text-xs font-semibold text-indigo-300/80 font-vazir"
-  }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u0647\u0648\u0634\u0645\u0646\u062F \u0645\u0627\u0644\u06CC\u060C \u0648\u0627\u0645\u200C\u0647\u0627 \u0648 \u0627\u0642\u0633\u0627\u0637"))), /*#__PURE__*/React.createElement("div", {
-    className: "absolute bottom-12 inset-x-0 flex flex-col items-center justify-center space-y-3 pointer-events-none z-10"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "w-7 h-7 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "text-[10px] font-medium text-slate-400 tracking-wider"
-  }, "\u0646\u0633\u062E\u0647 \u06F2.\u06F2.\u06F1")))), toastMessage && /*#__PURE__*/React.createElement("div", {
+    className: "w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"
+  })))), toastMessage && /*#__PURE__*/React.createElement("div", {
     className: "absolute top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white dark:bg-slate-100 dark:text-slate-900 text-xs py-2 px-4 rounded-full shadow-lg border border-slate-700/50 transition-all duration-300"
   }, toastMessage), /*#__PURE__*/React.createElement("div", {
     className: "flex-1 relative w-full h-full overflow-hidden"

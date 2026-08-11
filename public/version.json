@@ -1,12 +1,41 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "2.2.1",
-  "buildNumber": 211,
+  "installedVersion": "2.2.2",
+  "buildNumber": 212,
   "releaseDate": "2026-08-11",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "2.2.1",
-  "latestBuild": 211,
-  "isUpdateAvailable": false
+  "latestVersion": "2.2.2",
+  "latestBuild": 212,
+  "isUpdateAvailable": false,
+  "history": [
+    {
+      "version": "2.2.2",
+      "buildNumber": 212,
+      "releaseDate": "2026-08-11",
+      "releaseChannel": "Stable",
+      "commitHash": "v222rel",
+      "commitMessage": "feat: official release 2.2.2 with app icons, leather wallet splash screen, and card gestures",
+      "changes": [
+        "ارتقاء و پیاده‌سازی آیکون رسمی برنامه برای اندروید و iOS (طرح ۳بعدی سکه طلایی با نماد A و نمودار رشد)",
+        "بازسازی کامل اسپلش اسکرین با تصویر باکیفیت کیف چرمی و کارت‌های اعتباری و رفع مشکل صفحه سیاه",
+        "بهبود انیمیشن بازگشت و لمس بیرون کارت‌ها (بستن خودکار کارت‌های بازشده با لمس خارج از کارت)",
+        "بازگردانی و بهبود بخش تاریخچه تغییرات و نسخه‌ها (Changelog) در تنظیمات"
+      ]
+    },
+    {
+      "version": "2.2.1",
+      "buildNumber": 211,
+      "releaseDate": "2026-08-11",
+      "releaseChannel": "Stable",
+      "commitHash": "v221rel",
+      "commitMessage": "fix & feat: fix black splash screen with leather wallet theme and improve card back animations",
+      "changes": [
+        "بازسازی کامل اسپلش اسکرین با تصویر باکیفیت کیف چرمی و کارت‌های اعتباری و رفع مشکل صفحه سیاه",
+        "بهبود انیمیشن بازگشت و لمس بیرون کارت‌ها (بستن خودکار کارت‌های بازشده با لمس خارج از کارت)",
+        "رفع مشکل عدم نمایش کامل گزینه‌ها در برخی بخش‌ها"
+      ]
+    }
+  ]
 }
