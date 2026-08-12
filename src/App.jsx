@@ -370,6 +370,13 @@
             return `${y}/${m}/${d}`;
         };
 
+        const toEnglishDigits = (str) => {
+            if (!str) return '';
+            return String(str)
+                .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+                .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+        };
+
         const parseRawNumber = (val) => {
             if (val === null || val === undefined) return '';
             return String(val).replace(/\D/g, '');
@@ -2606,6 +2613,27 @@
             );
         }
 
+        function getInstallmentNumberForTx(tx, repaymentTxs, totalCount, index) {
+            if (!tx) return 1;
+            if (tx.installmentNum) return tx.installmentNum;
+            if (tx.title) {
+                const match = tx.title.match(/قسط\s*(?:شماره\s*)?(\d+)/);
+                if (match && match[1]) {
+                    return parseInt(match[1], 10);
+                }
+            }
+            if (totalCount !== undefined && index !== undefined) {
+                return totalCount - index;
+            }
+            if (Array.isArray(repaymentTxs) && repaymentTxs.length > 0) {
+                const idx = repaymentTxs.findIndex(t => t.id === tx.id);
+                if (idx !== -1) {
+                    return repaymentTxs.length - idx;
+                }
+            }
+            return 1;
+        }
+
         function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [], isHighlighted = false }) {
             const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
 
@@ -2621,7 +2649,7 @@
                 let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : (tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده');
 
                 if (tx.type === 'repayment') {
-                    const instNum = (totalCount !== undefined && index !== undefined) ? (totalCount - index) : (tx.installmentNum || 1);
+                    const instNum = getInstallmentNumberForTx(tx, undefined, totalCount, index);
                     l1 = `پرداخت قسط ${instNum}`;
 
                     let loanName = tx.loanTitle || (tx.loan ? tx.loan.title : '');
@@ -2947,7 +2975,7 @@
             );
         }
 
-        function LoanSelectorCard({ loans = [], transactions = [], contacts = [], selectedLoanId, onSelectLoan = () => {}, error }) {
+        function LoanSelectorCard({ loans = [], transactions = [], contacts = [], selectedLoanId, editingTxId, wizardMode, onSelectLoan = () => {}, error }) {
             const [searchQuery, setSearchQuery] = useState('');
             const [isExpanded, setIsExpanded] = useState(!selectedLoanId);
 
@@ -3005,6 +3033,19 @@
                 const nextDueDateFormatted = nextDueDate ? `${nextDueDate.year}/${String(monthNum).padStart(2, '0')}/${String(nextDueDate.day).padStart(2, '0')}` : '-';
                 const instAmountFormatted = Number(selectedLoanObj.installmentAmount || 0).toLocaleString();
 
+                const editingTx = editingTxId ? transactions.find(t => t.id === editingTxId) : null;
+                const isEditingMode = wizardMode === 'edit' || !!editingTx;
+
+                let displayInstNum = nextInstNum;
+                let displayDateStr = nextDueDateFormatted;
+                let displayAmount = instAmountFormatted;
+
+                if (isEditingMode && editingTx) {
+                    displayInstNum = getInstallmentNumberForTx(editingTx, repaymentTxs);
+                    displayDateStr = formatDateToNumericJalali(editingTx.dateStr) || editingTx.dateStr;
+                    displayAmount = Number(editingTx.amount || 0).toLocaleString();
+                }
+
                 return (
                     <div className="space-y-3">
                         <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-900 text-white rounded-2xl p-4 shadow-lg border border-indigo-500/30 space-y-3.5">
@@ -3012,7 +3053,7 @@
                                 <div className="space-y-1">
                                     <div className="text-[11px] text-indigo-200 font-bold flex items-center space-x-1 space-x-reverse">
                                         <Icon name="landmark" className="w-4 h-4 text-indigo-300" />
-                                        <span>پرونده وام انتخاب‌شده:</span>
+                                        <span>{isEditingMode ? 'ویرایش قسط پرونده:' : 'پرونده وام انتخاب‌شده:'}</span>
                                     </div>
                                     <div className="text-sm font-extrabold text-white">
                                         {selectedLoanObj.title}
@@ -3023,23 +3064,23 @@
                                 </div>
 
                                 <div className="flex flex-col items-center justify-center bg-white/20 backdrop-blur-md border border-white/40 rounded-2xl px-4 py-3 shadow-inner text-white dir-rtl shrink-0 min-w-[100px]">
-                                    <span className="text-[10px] text-indigo-100 font-bold">قسط شماره</span>
-                                    <span className="text-3xl font-black tracking-tight leading-none my-1 text-white">{nextInstNum}</span>
+                                    <span className="text-[10px] text-indigo-100 font-bold">{isEditingMode ? 'ویرایش قسط' : 'قسط شماره'}</span>
+                                    <span className="text-3xl font-black tracking-tight leading-none my-1 text-white">{displayInstNum}</span>
                                     <span className="text-[11px] text-indigo-200 font-bold">از {totalInst}</span>
                                 </div>
                             </div>
 
                             <div className="pt-3 border-t border-indigo-400/30 space-y-2 dir-rtl">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs text-indigo-200 font-medium">تاریخ پرداخت این قسط:</span>
+                                    <span className="text-xs text-indigo-200 font-medium">{isEditingMode ? 'تاریخ ثبت‌شده این قسط:' : 'تاریخ پرداخت این قسط:'}</span>
                                     <span className="text-sm font-extrabold text-white bg-white/15 px-3 py-1 rounded-xl border border-white/20 font-mono tracking-wider whitespace-nowrap" dir="ltr">
-                                        {nextDueDateFormatted}
+                                        {displayDateStr}
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs text-indigo-200 font-medium">مبلغ قسط:</span>
                                     <span className="text-base font-black text-amber-300">
-                                        {instAmountFormatted} تومان
+                                        {displayAmount} تومان
                                     </span>
                                 </div>
                             </div>
@@ -6945,21 +6986,24 @@
                     render: () => {
                         const activeDueDay = loanForm.firstInstallmentDay || loanForm.dueDayOfMonth || pickerDay;
                         const curMonthName = loanForm.firstInstallmentMonth || pickerMonth;
-                        const curYear = loanForm.firstInstallmentYear || pickerYear;
+                        const curYear = loanForm.firstInstallmentYear !== undefined && loanForm.firstInstallmentYear !== null && loanForm.firstInstallmentYear !== '' ? loanForm.firstInstallmentYear : pickerYear;
+
+                        const rawYearNum = parseInt(toEnglishDigits(String(curYear)).replace(/\D/g, ''), 10);
+                        const activeYear = (!isNaN(rawYearNum) && rawYearNum > 1300 && rawYearNum < 1500) ? rawYearNum : (pickerYear || 1403);
 
                         const monthIdx = jalaliMonths.indexOf(curMonthName) + 1;
                         const monthStr = String(monthIdx > 0 ? monthIdx : 1).padStart(2, '0');
                         const dayStr = String(activeDueDay).padStart(2, '0');
-                        const yearStr = String(curYear);
+                        const yearStr = String(activeYear);
                         const formattedDueDateStr = `${yearStr}/${monthStr}/${dayStr}`;
 
                         const handleNextMonth = () => {
                             const curIdx = jalaliMonths.indexOf(curMonthName);
                             let nextIdx = curIdx + 1;
-                            let nextYear = curYear;
+                            let nextYear = activeYear;
                             if (nextIdx >= 12) {
                                 nextIdx = 0;
-                                nextYear = curYear + 1;
+                                nextYear = activeYear + 1;
                             }
                             setLoanForm(prev => ({
                                 ...prev,
@@ -6971,10 +7015,10 @@
                         const handlePrevMonth = () => {
                             const curIdx = jalaliMonths.indexOf(curMonthName);
                             let prevIdx = curIdx - 1;
-                            let prevYear = curYear;
+                            let prevYear = activeYear;
                             if (prevIdx < 0) {
                                 prevIdx = 11;
-                                prevYear = curYear - 1;
+                                prevYear = activeYear - 1;
                             }
                             setLoanForm(prev => ({
                                 ...prev,
@@ -7000,10 +7044,37 @@
                                         </button>
 
                                         {/* Month & Year Display Box */}
-                                        <div className="text-center min-w-0 px-2">
-                                            <div className="text-[10px] text-indigo-700/80 dark:text-indigo-300/80 font-bold">ماه اولین قسط</div>
-                                            <div className="text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100 mt-0.5">
-                                                {curMonthName} {curYear}
+                                        <div className="text-center min-w-0 px-2 flex flex-col items-center">
+                                            <div className="text-[10px] text-indigo-700/80 dark:text-indigo-300/80 font-bold mb-1">ماه و سال اولین قسط</div>
+                                            <div className="flex items-center justify-center gap-2">
+                                                <span className="text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100">{curMonthName}</span>
+                                                <input 
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    pattern="[0-9]*"
+                                                    dir="ltr"
+                                                    value={curYear}
+                                                    onFocus={(e) => e.target.select()}
+                                                    onClick={(e) => e.target.select()}
+                                                    onChange={(e) => {
+                                                        const raw = toEnglishDigits(e.target.value).replace(/\D/g, '');
+                                                        const clean = raw.slice(0, 4);
+                                                        setLoanForm(prev => ({
+                                                            ...prev,
+                                                            firstInstallmentYear: clean ? (clean.length === 4 ? parseInt(clean, 10) : clean) : ''
+                                                        }));
+                                                    }}
+                                                    onBlur={() => {
+                                                        const num = parseInt(toEnglishDigits(String(loanForm.firstInstallmentYear)).replace(/\D/g, ''), 10);
+                                                        if (isNaN(num) || num < 1300 || num > 1500) {
+                                                            setLoanForm(prev => ({ ...prev, firstInstallmentYear: activeYear }));
+                                                        } else {
+                                                            setLoanForm(prev => ({ ...prev, firstInstallmentYear: num }));
+                                                        }
+                                                    }}
+                                                    className="w-16 h-7 text-center font-extrabold text-xs sm:text-sm text-indigo-900 dark:text-indigo-100 bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded-lg shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono transition-all cursor-pointer"
+                                                    title="جهت تغییر سال کلیک کنید"
+                                                />
                                             </div>
                                         </div>
 
@@ -7262,6 +7333,7 @@
                             transactions={transactions}
                             contacts={contacts}
                             selectedLoanId={installmentForm.selectedLoanId}
+                            editingTxId={installmentForm.id}
                             onSelectLoan={(l) => {
                                 const nextD = getInstallmentNextDueDate(l, transactions);
                                 setPickerDay(nextD.day);
@@ -9016,6 +9088,8 @@
                         );
                     case 'loan-detail':
                         if (!selectedLoan) return null;
+                        const loanContactObj = contacts.find(c => c.id === selectedLoan.contactId);
+                        const loanContactDisplayName = loanContactObj ? `${loanContactObj.firstName || ''} ${loanContactObj.lastName || ''}`.trim() : (selectedLoan.contactName || '');
                         const isClosed = selectedLoan.remainingAmount <= 0 || getLoanNextDueInfo(selectedLoan, transactions).isCompleted;
                         const totalInst = selectedLoan.totalInstallments || (selectedLoan.installmentAmount > 0 ? Math.ceil(selectedLoan.totalRepayment / selectedLoan.installmentAmount) : 12);
                         const repaymentTxs = transactions.filter(t => t.loanId === selectedLoan.id && t.type === 'repayment');
@@ -9072,7 +9146,11 @@
                                                     <h2 className="text-base sm:text-lg font-bold text-white break-words leading-snug">{selectedLoan.title}</h2>
                                                     <div className="flex items-center gap-1.5 text-xs opacity-90 mt-1">
                                                         <span className={`w-2 h-2 rounded-full ${isClosed ? 'bg-emerald-400' : 'bg-emerald-400 animate-pulse'}`}></span>
-                                                        <span className="text-indigo-200 font-medium">{isClosed ? 'پرونده تسویه‌شده' : 'پرونده فعال'}</span>
+                                                        <span className="text-indigo-200 font-medium">
+                                                            {isClosed 
+                                                                ? `پرونده تسویه‌شده${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}` 
+                                                                : `پرونده فعال${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}`}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
