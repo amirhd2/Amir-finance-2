@@ -390,6 +390,10 @@ const formatDateToNumericJalali = dateStr => {
   const d = String(parsed.day).padStart(2, '0');
   return `${y}/${m}/${d}`;
 };
+const toEnglishDigits = str => {
+  if (!str) return '';
+  return String(str).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+};
 const parseRawNumber = val => {
   if (val === null || val === undefined) return '';
   return String(val).replace(/\D/g, '');
@@ -2372,7 +2376,7 @@ function PullToRefresh({
   const rotation = progress * 360;
   return /*#__PURE__*/React.createElement("div", {
     ref: containerRef,
-    className: `relative overflow-y-auto overflow-x-hidden hide-scrollbar ${className}`,
+    className: `relative overflow-y-auto overflow-x-clip overscroll-x-none hide-scrollbar ${className}`,
     style: {
       WebkitOverflowScrolling: 'touch',
       overscrollBehaviorY: 'contain'
@@ -2633,7 +2637,7 @@ function SwipeBackWrapper({
     className: `app-viewport fixed inset-0 w-full h-full overflow-hidden bg-[#F4F7FC] dark:bg-slate-950 z-30 ${className}`
   }, /*#__PURE__*/React.createElement("div", {
     ref: page1Ref,
-    className: "page-view z-10 bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-hidden w-full h-full"
+    className: "page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-clip overscroll-x-none w-full h-full"
   }, /*#__PURE__*/React.createElement("div", {
     className: "px-4 pt-4 pb-24 min-h-full"
   }, underlyingContent)), /*#__PURE__*/React.createElement("div", {
@@ -2641,14 +2645,14 @@ function SwipeBackWrapper({
     className: "backdrop-overlay"
   }), /*#__PURE__*/React.createElement("div", {
     ref: page2Ref,
-    className: "page-view z-20 bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden"
+    className: "page-view z-20 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden"
   }, onRefresh ? /*#__PURE__*/React.createElement(PullToRefresh, {
     onRefresh: onRefresh,
     className: "w-full h-full px-4 pt-4 pb-24"
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children) : /*#__PURE__*/React.createElement("div", {
-    className: "w-full h-full overflow-y-auto overflow-x-hidden px-4 pt-4 pb-24"
+    className: "w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-4 pb-24"
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children)));
@@ -3329,7 +3333,10 @@ function SwipeToDeleteItem({
   return /*#__PURE__*/React.createElement("div", {
     ref: containerRef,
     "data-swipe-item": "true",
-    className: `relative overflow-hidden transition-all duration-300 ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' : 'max-h-[500px] opacity-100 my-1'} ${className}`
+    style: {
+      touchAction: 'pan-y'
+    },
+    className: `relative transition-all duration-300 ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none overflow-hidden' : 'max-h-[500px] opacity-100 my-1 swipe-container-safe'} ${className}`
   }, /*#__PURE__*/React.createElement("div", {
     ref: btnRef,
     className: "absolute right-1 top-1/2 z-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white cursor-pointer shadow-md select-none transition-colors",
@@ -3356,12 +3363,35 @@ function SwipeToDeleteItem({
     ref: cardRef,
     "data-swipe-item": "true",
     style: {
+      touchAction: 'pan-y'
+    },
+    style: {
       transform: 'translate3d(0, 0, 0)',
       willChange: 'transform',
       touchAction: 'pan-y'
     },
     className: `relative z-10 transition-shadow duration-200 ${isDragging || swipedOpen ? 'rounded-2xl shadow-xl' : ''}`
   }, children));
+}
+function getInstallmentNumberForTx(tx, repaymentTxs, totalCount, index) {
+  if (!tx) return 1;
+  if (tx.installmentNum) return tx.installmentNum;
+  if (tx.title) {
+    const match = tx.title.match(/قسط\s*(?:شماره\s*)?(\d+)/);
+    if (match && match[1]) {
+      return parseInt(match[1], 10);
+    }
+  }
+  if (totalCount !== undefined && index !== undefined) {
+    return totalCount - index;
+  }
+  if (Array.isArray(repaymentTxs) && repaymentTxs.length > 0) {
+    const idx = repaymentTxs.findIndex(t => t.id === tx.id);
+    if (idx !== -1) {
+      return repaymentTxs.length - idx;
+    }
+  }
+  return 1;
 }
 function SwipeableTxCard({
   tx,
@@ -3389,7 +3419,7 @@ function SwipeableTxCard({
     let l2 = '';
     let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده';
     if (tx.type === 'repayment') {
-      const instNum = totalCount !== undefined && index !== undefined ? totalCount - index : tx.installmentNum || 1;
+      const instNum = getInstallmentNumberForTx(tx, undefined, totalCount, index);
       l1 = `پرداخت قسط ${instNum}`;
       let loanName = tx.loanTitle || (tx.loan ? tx.loan.title : '');
       if (!loanName && tx.title && tx.title.includes('-')) {
@@ -3429,7 +3459,7 @@ function SwipeableTxCard({
     onCardClick: () => onEdit && onEdit(tx)
   }, /*#__PURE__*/React.createElement("div", {
     id: `tx-card-${tx.id}`,
-    className: `bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
+    className: `bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
   }, /*#__PURE__*/React.createElement("div", {
@@ -3516,9 +3546,9 @@ function StackCardItem({
     ref: cardRef,
     key: card.id,
     "data-depth": depthAttr,
-    className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`
+    className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex-1 py-2 overflow-y-auto overflow-x-hidden hide-scrollbar touch-pan-y",
+    className: "flex-1 py-2 overflow-y-auto overflow-x-clip overscroll-x-none hide-scrollbar touch-pan-y",
     onClick: e => {
       if (e.target.closest('input, textarea, select, button, label, a')) return;
       if (cardRef.current) {
@@ -3609,7 +3639,7 @@ function ContactSelectorCard({
     onChange: e => setSearchQuery(e.target.value),
     className: `w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 ${error ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:ring-indigo-500'}`
   })), /*#__PURE__*/React.createElement("div", {
-    className: `max-h-52 overflow-y-auto overflow-x-hidden space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
+    className: `max-h-52 overflow-y-auto overflow-x-clip overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
   }, filtered.length > 0 ? filtered.map(c => {
     const isSelected = Number(selectedContactId) === c.id;
     return /*#__PURE__*/React.createElement("div", {
@@ -3645,6 +3675,8 @@ function LoanSelectorCard({
   transactions = [],
   contacts = [],
   selectedLoanId,
+  editingTxId,
+  wizardMode,
   onSelectLoan = () => {},
   error
 }) {
@@ -3698,6 +3730,16 @@ function LoanSelectorCard({
     }
     const nextDueDateFormatted = nextDueDate ? `${nextDueDate.year}/${String(monthNum).padStart(2, '0')}/${String(nextDueDate.day).padStart(2, '0')}` : '-';
     const instAmountFormatted = Number(selectedLoanObj.installmentAmount || 0).toLocaleString();
+    const editingTx = editingTxId ? transactions.find(t => t.id === editingTxId) : null;
+    const isEditingMode = wizardMode === 'edit' || !!editingTx;
+    let displayInstNum = nextInstNum;
+    let displayDateStr = nextDueDateFormatted;
+    let displayAmount = instAmountFormatted;
+    if (isEditingMode && editingTx) {
+      displayInstNum = getInstallmentNumberForTx(editingTx, repaymentTxs);
+      displayDateStr = formatDateToNumericJalali(editingTx.dateStr) || editingTx.dateStr;
+      displayAmount = Number(editingTx.amount || 0).toLocaleString();
+    }
     return /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("div", {
@@ -3711,7 +3753,7 @@ function LoanSelectorCard({
     }, /*#__PURE__*/React.createElement(Icon, {
       name: "landmark",
       className: "w-4 h-4 text-indigo-300"
-    }), /*#__PURE__*/React.createElement("span", null, "\u067E\u0631\u0648\u0646\u062F\u0647 \u0648\u0627\u0645 \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647:")), /*#__PURE__*/React.createElement("div", {
+    }), /*#__PURE__*/React.createElement("span", null, isEditingMode ? 'ویرایش قسط پرونده:' : 'پرونده وام انتخاب‌شده:')), /*#__PURE__*/React.createElement("div", {
       className: "text-sm font-extrabold text-white"
     }, selectedLoanObj.title), /*#__PURE__*/React.createElement("div", {
       className: "text-xs text-indigo-100 font-medium"
@@ -3719,9 +3761,9 @@ function LoanSelectorCard({
       className: "flex flex-col items-center justify-center bg-white/20 backdrop-blur-md border border-white/40 rounded-2xl px-4 py-3 shadow-inner text-white dir-rtl shrink-0 min-w-[100px]"
     }, /*#__PURE__*/React.createElement("span", {
       className: "text-[10px] text-indigo-100 font-bold"
-    }, "\u0642\u0633\u0637 \u0634\u0645\u0627\u0631\u0647"), /*#__PURE__*/React.createElement("span", {
+    }, isEditingMode ? 'ویرایش قسط' : 'قسط شماره'), /*#__PURE__*/React.createElement("span", {
       className: "text-3xl font-black tracking-tight leading-none my-1 text-white"
-    }, nextInstNum), /*#__PURE__*/React.createElement("span", {
+    }, displayInstNum), /*#__PURE__*/React.createElement("span", {
       className: "text-[11px] text-indigo-200 font-bold"
     }, "\u0627\u0632 ", totalInst))), /*#__PURE__*/React.createElement("div", {
       className: "pt-3 border-t border-indigo-400/30 space-y-2 dir-rtl"
@@ -3729,16 +3771,16 @@ function LoanSelectorCard({
       className: "flex items-center justify-between"
     }, /*#__PURE__*/React.createElement("span", {
       className: "text-xs text-indigo-200 font-medium"
-    }, "\u062A\u0627\u0631\u06CC\u062E \u067E\u0631\u062F\u0627\u062E\u062A \u0627\u06CC\u0646 \u0642\u0633\u0637:"), /*#__PURE__*/React.createElement("span", {
+    }, isEditingMode ? 'تاریخ ثبت‌شده این قسط:' : 'تاریخ پرداخت این قسط:'), /*#__PURE__*/React.createElement("span", {
       className: "text-sm font-extrabold text-white bg-white/15 px-3 py-1 rounded-xl border border-white/20 font-mono tracking-wider whitespace-nowrap",
       dir: "ltr"
-    }, nextDueDateFormatted)), /*#__PURE__*/React.createElement("div", {
+    }, displayDateStr)), /*#__PURE__*/React.createElement("div", {
       className: "flex items-center justify-between"
     }, /*#__PURE__*/React.createElement("span", {
       className: "text-xs text-indigo-200 font-medium"
     }, "\u0645\u0628\u0644\u063A \u0642\u0633\u0637:"), /*#__PURE__*/React.createElement("span", {
       className: "text-base font-black text-amber-300"
-    }, instAmountFormatted, " \u062A\u0648\u0645\u0627\u0646")))), isExpanded ? /*#__PURE__*/React.createElement("div", {
+    }, displayAmount, " \u062A\u0648\u0645\u0627\u0646")))), isExpanded ? /*#__PURE__*/React.createElement("div", {
       className: "space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800"
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex justify-between items-center"
@@ -3760,7 +3802,7 @@ function LoanSelectorCard({
       onChange: e => setSearchQuery(e.target.value),
       className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none"
     })), /*#__PURE__*/React.createElement("div", {
-      className: "max-h-44 overflow-y-auto overflow-x-hidden space-y-1.5 hide-scrollbar p-1"
+      className: "max-h-44 overflow-y-auto overflow-x-clip overscroll-x-none space-y-1.5 hide-scrollbar p-1"
     }, filtered.length > 0 ? filtered.map(l => /*#__PURE__*/React.createElement("div", {
       key: l.id,
       onClick: () => handleSelect(l),
@@ -3799,7 +3841,7 @@ function LoanSelectorCard({
     onChange: e => setSearchQuery(e.target.value),
     className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
   })), /*#__PURE__*/React.createElement("div", {
-    className: `max-h-52 overflow-y-auto overflow-x-hidden space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
+    className: `max-h-52 overflow-y-auto overflow-x-clip overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
   }, filtered.length > 0 ? filtered.map(l => {
     const contact = contacts.find(c => c.id === l.contactId);
     const cName = contact ? `${contact.firstName} ${contact.lastName}` : l.contactName || 'بانک/سازمان';
@@ -4002,471 +4044,95 @@ function App() {
 
   // Application Version Management State
   const defaultVersionData = {
-    appName: "Amir Finance",
-    appLogo: "apple-touch-icon.png",
-    installedVersion: localStorage.getItem('amir_installed_version') || "2.2.2",
-    buildNumber: parseInt(localStorage.getItem('amir_installed_build') || '212', 10),
-    releaseDate: "2026-08-11",
-    releaseChannel: "Stable",
-    channelLabel: "نسخه پایدار",
-    latestVersion: "2.2.2",
-    latestBuild: 212,
-    isUpdateAvailable: false,
-    history: [{
-      version: "2.2.2",
-      buildNumber: 212,
-      releaseDate: "2026-08-11",
-      releaseChannel: "Stable",
-      commitHash: "v222rel",
-      commitMessage: "feat: official release 2.2.2 with app icons, leather wallet splash screen, and card gestures",
-      changes: ["ارتقاء و پیاده‌سازی آیکون رسمی برنامه برای اندروید و iOS (طرح ۳بعدی سکه طلایی با نماد A و نمودار رشد)", "بازسازی کامل اسپلش اسکرین با تصویر باکیفیت کیف چرمی و کارت‌های اعتباری و رفع مشکل صفحه سیاه", "بهبود انیمیشن بازگشت و لمس بیرون کارت‌ها (بستن خودکار کارت‌های بازشده با لمس خارج از کارت)", "بازگردانی و بهبود بخش تاریخچه تغییرات و نسخه‌ها (Changelog) در تنظیمات"]
+    "appName": "Amir Finance",
+    "appLogo": "apple-touch-icon.png",
+    "installedVersion": "2.2.3",
+    "buildNumber": 213,
+    "releaseDate": "2026-08-11",
+    "releaseChannel": "Stable",
+    "channelLabel": "نسخه پایدار",
+    "latestVersion": "2.2.3",
+    "latestBuild": 213,
+    "isUpdateAvailable": false,
+    "history": [{
+      "version": "2.2.3",
+      "buildNumber": 213,
+      "releaseDate": "2026-08-12",
+      "releaseChannel": "Stable",
+      "commitHash": "v223rel",
+      "commitMessage": "fix: restore full changelog history and fix splash screen bugs",
+      "changes": ["بازگردانی تاریخچه کامل نسخه‌ها در صفحه تغییرات", "حل مشکل همیشگی نمایش صفحه سیاه یا شکسته در زمان بارگذاری اولیه اسپلش اسکرین در حالت وب و Preview", "بهبود عملکرد و ظاهر کارت تاریخچه تغییرات در صفحه تنظیمات"]
     }, {
-      version: "2.2.1",
-      buildNumber: 211,
-      releaseDate: "2026-08-11",
-      releaseChannel: "Stable",
-      commitHash: "v221rel",
-      commitMessage: "fix & feat: fix black splash screen with leather wallet theme and improve card back animations",
-      changes: ["بازسازی کامل اسپلش اسکرین با تصویر باکیفیت کیف چرمی و کارت‌های اعتباری و رفع مشکل صفحه سیاه", "بهبود انیمیشن بازگشت و لمس بیرون کارت‌ها (بستن خودکار کارت‌های بازشده با لمس خارج از کارت)", "رفع مشکل عدم نمایش کامل گزینه‌ها در برخی بخش‌ها"]
+      "version": "2.2.2",
+      "buildNumber": 212,
+      "releaseDate": "2026-08-11",
+      "releaseChannel": "Stable",
+      "commitHash": "v222rel",
+      "commitMessage": "feat: official release 2.2.2 with app icons, leather wallet splash screen, and card gestures",
+      "changes": ["ارتقاء و پیاده‌سازی آیکون رسمی برنامه برای اندروید و iOS (طرح ۳بعدی سکه طلایی با نماد A و نمودار رشد)", "بازسازی کامل اسپلش اسکرین با تصویر باکیفیت کیف چرمی و کارت‌های اعتباری و رفع مشکل صفحه سیاه", "بهبود انیمیشن بازگشت و لمس بیرون کارت‌ها (بستن خودکار کارت‌های بازشده با لمس خارج از کارت)", "بازگردانی و بهبود بخش تاریخچه تغییرات و نسخه‌ها (Changelog) در تنظیمات"]
     }, {
-      version: "2.1.5",
-      buildNumber: 206,
-      releaseDate: "2026-08-08",
-      releaseChannel: "Stable",
-      commitHash: "v215stackFix",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["حذف دکمه «نمای یکجای کارت‌ها» از بالای مدال استک کارت‌ها", "تطبیق و یکسان‌سازی دقیق ارتفاع تمامی کارت‌های استک و استیکی جهت حذف فضای خالی اضافه در پایین کارت‌ها", "هم‌رنگ شدن هوشمند status bar با پس‌زمینه برنامه در زمان باز بودن مدال استک کارت و کارت‌های استیکی", "اعمال انیمیشن دقیق بازگشت (Rewind) عینا معکوس انیمیشن خروج کارت در زمان کلیک روی دکمه «مرحله قبلی»", "انتشار رسمی نسخه 2.1.5 (بیلد 206)"]
+      "version": "2.2.1",
+      "buildNumber": 211,
+      "releaseDate": "2026-08-11",
+      "releaseChannel": "Stable",
+      "commitHash": "v221rel",
+      "commitMessage": "fix & feat: fix black splash screen with leather wallet theme and improve card back animations",
+      "changes": ["بازسازی کامل اسپلش اسکرین با تصویر باکیفیت کیف چرمی و کارت‌های اعتباری و رفع مشکل صفحه سیاه", "بهبود انیمیشن بازگشت و لمس بیرون کارت‌ها (بستن خودکار کارت‌های بازشده با لمس خارج از کارت)", "رفع مشکل عدم نمایش کامل گزینه‌ها در برخی بخش‌ها"]
     }, {
-      version: "2.1.3",
-      buildNumber: 204,
-      releaseDate: "2026-08-07",
-      releaseChannel: "Stable",
-      commitHash: "v213mouseFix",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["حفظ فاصله کناری و ظاهر اصلی کارت‌ها در زمان ویرایش بدون زوم شدگی یا بهم‌ریختگی (Preserved Card Margins & Unzoomed Appearance)", "نمایش همیشگی اولین کارت در ابتدای باز شدن حالت ویرایش (Auto-scroll to First Card on Launch)", "رفع کامل قفل شدن و پرش اسکرول موس روی دسکتاپ (Fixed Desktop Mouse Scroll & Snap Locking Issue)", "بهبود روان‌تر شدن حرکت استیکی کارت‌ها در دسکتاپ و موبایل"]
+      "version": "2.1.5",
+      "buildNumber": 206,
+      "releaseDate": "2026-08-08",
+      "releaseChannel": "Stable",
+      "commitHash": "v215stackFix",
+      "commitMessage": "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
+      "changes": ["حذف دکمه «نمای یکجای کارت‌ها» از بالای مدال استک کارت‌ها", "تطبیق و یکسان‌سازی دقیق ارتفاع تمامی کارت‌های استک و استیکی جهت حذف فضای خالی اضافه در پایین کارت‌ها", "هم‌رنگ شدن هوشمند status bar با پس‌زمینه برنامه در زمان باز بودن مدال استک کارت و کارت‌های استیکی", "اعمال انیمیشن دقیق بازگشت (Rewind) عینا معکوس انیمیشن خروج کارت در زمان کلیک روی دکمه «مرحله قبلی»", "رفع مشکل پرش و عدم اجرای انیمیشن در صفحات دارای اسکرول عمودی موبایل (Uniform Card Height)", "افزودن سایه برجسته بالای کارت‌ها هنگام حرکت استیکی و قرارگیری روی کارت قبلی (Top Overlapping Shadow)", "حذف کامل منوی بالای صفحه در حالت ویرایش کارت‌ها جهت نمایش خالص کارت‌ها در صفحه", "افزودن دکمه شناور ضربدر (X) در پایین کارت‌ها جهت خروج سریع و آسان", "اصلاح موقعیت و لایه منوی تغییرات ذخیره‌نشده در پایین صفحه بدون ایجاد مزاحمت برای ویرایش سایر کارت‌ها"]
     }, {
-      version: "2.1.2",
-      buildNumber: 203,
-      releaseDate: "2026-08-07",
-      releaseChannel: "Stable",
-      commitHash: "v212cardFix",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["هم‌اندازه شدن کامل ارتفاع تمامی کارت‌ها در حالت استک عمودی موبایل (Uniform Card Height)", "افزودن سایه برجسته بالای کارت‌ها هنگام حرکت استیکی و قرارگیری روی کارت قبلی (Top Overlapping Shadow)", "حذف کامل منوی بالای صفحه در حالت ویرایش کارت‌ها جهت نمایش خالص کارت‌ها در صفحه", "افزودن دکمه شناور ضربدر (X) در پایین کارت‌ها جهت خروج سریع و آسان", "اصلاح موقعیت و لایه منوی تغییرات ذخیره‌نشده در پایین صفحه بدون ایجاد مزاحمت برای ویرایش سایر کارت‌ها"]
+      "version": "2.1.0",
+      "buildNumber": 202,
+      "releaseDate": "2026-08-07",
+      "releaseChannel": "Stable",
+      "commitHash": "v210mobileEdit",
+      "commitMessage": "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
+      "changes": ["طراحی و پیاده‌سازی تجربه جدید و اختصاصی ویرایش کارت‌های استک (Sticky Stacked Cards) در نسخه موبایل PWA", "پشتیبانی از اسکرول عمودی روان، چسبندگی کارت‌ها در بالای صفحه به سبک iOS (Sticky Headers) و لغزش نرم کارت بعدی روی کارت قبلی با Scroll Snap", "نمایش کارت‌ها به‌صورت شناور با عرض اولیه ۹۲٪، گوشه‌های گرد، فواصل بهینه و حذف کامل دکمه‌های قبلی/بعدی در حالت ویرایش", "قابلیت ویرایش درون‌خطی کارت فعال با لمس، بزرگ‌نمایی نرم (از ۰.۹۲ به ۱.۰) و انیمیشن مات و کم‌رنگ شدن سایر کارت‌ها (Blur & Dimming)", "افزودن دکمه‌های «ثبت تغییرات» و «انصراف» به همراه نشانگر سبز «اصلاح‌شده» برای شناسایی کارت‌های تغییریافته", "افزودن نوار شناور پایین صفحه با شمارنده تغییرات ذخیره‌نشده و دکمه «ثبت همه تغییرات» جهت ذخیره یکجای داده‌ها", "نمایش پنجره هشدار تایید هوشمند هنگام تمایل کاربر به خروج از ویرایشگر در صورت وجود تغییرات ذخیره‌نشده"]
     }, {
-      version: "2.1.0",
-      buildNumber: 202,
-      releaseDate: "2026-08-07",
-      releaseChannel: "Stable",
-      commitHash: "v210mobileEdit",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["طراحی و پیاده‌سازی تجربه جدید و اختصاصی ویرایش کارت‌های استک (Sticky Stacked Cards) در نسخه موبایل PWA", "پشتیبانی از اسکرول عمودی روان، چسبندگی کارت‌ها در بالای صفحه به سبک iOS (Sticky Headers) و لغزش نرم کارت بعدی روی کارت قبلی با Scroll Snap", "نمایش کارت‌ها به‌صورت شناور با عرض اولیه ۹۲٪، گوشه‌های گرد، فواصل بهینه و حذف کامل دکمه‌های قبلی/بعدی در حالت ویرایش", "قابلیت ویرایش درون‌خطی کارت فعال با لمس، بزرگ‌نمایی نرم (از ۰.۹۲ به ۱.۰) و انیمیشن مات و کم‌رنگ شدن سایر کارت‌ها (Blur & Dimming)", "افزودن دکمه‌های «ثبت تغییرات» و «انصراف» به همراه نشانگر سبز «اصلاح‌شده» برای شناسایی کارت‌های تغییریافته", "افزودن نوار شناور پایین صفحه با شمارنده تغییرات ذخیره‌نشده و دکمه «ثبت همه تغییرات» جهت ذخیره یکجای داده‌ها", "نمایش پنجره هشدار تایید هوشمند هنگام تمایل کاربر به خروج از ویرایشگر در صورت وجود تغییرات ذخیره‌نشده"]
+      "version": "2.0.1",
+      "buildNumber": 201,
+      "releaseDate": "2026-08-07",
+      "releaseChannel": "Stable",
+      "commitHash": "v201rel",
+      "commitMessage": "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
+      "changes": ["حذف دکمه «حذف مخاطب» از بالای کارت ویرایش مخاطب در استک کارت جهت جلوگیری از نیاز به اسکرول کارت", "اصلاح و روان‌سازی کامل عملکرد کلیک روی کادرهای ورودی در کارت‌های استک جهت باز شدن آنی کیبورد و فوکوس بدون مشکل روی موبایل و آیفون", "بازطراحی عناوین بخش‌های وام‌ها، طلب‌ها و بدهی‌ها در صفحه حساب‌ها به صورت مرکزچین و حاشیه‌دار در تمام عرض صفحه", "افزودن دکمه‌های فیلتر دوگانه (اصلی و بایگانی به همراه شمارنده تعداد) در صفحه پروفایل مخاطب برای هر ۳ بخش وام‌ها، بدهی‌ها و طلب‌ها"]
     }, {
-      version: "2.0.1",
-      buildNumber: 201,
-      releaseDate: "2026-08-07",
-      releaseChannel: "Stable",
-      commitHash: "v201rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["حذف دکمه «حذف مخاطب» از بالای کارت ویرایش مخاطب در استک کارت جهت جلوگیری از نیاز به اسکرول کارت", "اصلاح و روان‌سازی کامل عملکرد کلیک روی کادرهای ورودی در کارت‌های استک جهت باز شدن آنی کیبورد و فوکوس بدون مشکل روی موبایل و آیفون", "بازطراحی عناوین بخش‌های وام‌ها، طلب‌ها و بدهی‌ها در صفحه حساب‌ها به صورت مرکزچین و حاشیه‌دار در تمام عرض صفحه", "افزودن دکمه‌های فیلتر دوگانه (اصلی و بایگانی به همراه شمارنده تعداد) در صفحه پروفایل مخاطب برای هر ۳ بخش وام‌ها، بدهی‌ها و طلب‌ها"]
+      "version": "2.0.0",
+      "buildNumber": 200,
+      "releaseDate": "2026-08-07",
+      "releaseChannel": "Stable",
+      "commitHash": "v200major",
+      "commitMessage": "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
+      "changes": ["حل ساختاری و کامل مشکل نمایش ناقص صفحه برنامه در حالت Preview و iFrame با تنظیم ارتفاع ۱۰۰٪ روی html، body و root#", "جلوگیری کامل از زوم ناخواسته صفحه‌نمایش هنگام باز شدن کیبورد مجازی در تمامی فیلدهای ورودی (موبایل و آیفون) با تنظیم اندازه فونت استاندارد ۱۶پیکسل و viewport-fit=cover", "بررسی دقیق و تطبیق ۱۰۰٪ مسیر تمامی فایل‌های Favicon، Apple Touch Icon، Web Manifest و تصاویر Splash Screen در index.html و public/index.html جهت نمایش دقیق آیکون در آیفون و PWA", "بهینه‌سازی انیمیشن‌های ورود و خروج (AnimatePresence) و سیستم فوکوس خودکار (autoFocus) در فرم‌ها و کارت‌های استک لایه‌ای (Stack Wizard)", "به‌روزرسانی سرویس ورکر (Service Worker v2.0.0-b200) جهت کش آفلاین و به‌روزرسانی آنی نسخه جدید"]
     }, {
-      version: "2.0.0",
-      buildNumber: 200,
-      releaseDate: "2026-08-07",
-      releaseChannel: "Stable",
-      commitHash: "v200major",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["حل ساختاری و کامل مشکل نمایش ناقص صفحه برنامه در حالت Preview و iFrame با تنظیم ارتفاع ۱۰۰٪ روی html، body و root#", "جلوگیری کامل از زوم ناخواسته صفحه‌نمایش هنگام باز شدن کیبورد مجازی در تمامی فیلدهای ورودی (موبایل و آیفون) با تنظیم اندازه فونت استاندارد ۱۶پیکسل و viewport-fit=cover", "بررسی دقیق و تطبیق ۱۰۰٪ مسیر تمامی فایل‌های Favicon، Apple Touch Icon، Web Manifest و تصاویر Splash Screen در index.html و public/index.html جهت نمایش دقیق آیکون در آیفون و PWA", "بهینه‌سازی انیمیشن‌های ورود و خروج (AnimatePresence) و سیستم فوکوس خودکار (autoFocus) در فرم‌ها و کارت‌های استک لایه‌ای (Stack Wizard)", "به‌روزرسانی سرویس ورکر (Service Worker v2.0.0-b200) جهت کش آفلاین و به‌روزرسانی آنی نسخه جدید"]
+      "version": "1.9.1",
+      "buildNumber": 175,
+      "releaseDate": "2026-08-05",
+      "releaseChannel": "Stable",
+      "commitHash": "v191rel",
+      "commitMessage": "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
+      "changes": ["حذف کامل کارت انتخاب سررسید/ریمایندر از کارت استک ثبت وام", "بازگرداندن جدول انتخاب روزهای ۱ تا ۳۱ ماه به کارت سررسید اولین قسط وام با حذف عنوان بالای جدول", "پیاده‌سازی کارت استک برای ثبت مخاطب جدید (کارت اول: نام و نام خانوادگی در ۲ کادر مجزا، کارت دوم: شماره تماس، شماره کارت و شماره شبا)", "استفاده از کارت استک جدید برای ویرایش مخاطب به همراه دکمه حذف مخاطب", "ثبت رسمی بیلد 175 و انتشار نسخه 1.9.1"]
     }, {
-      version: "1.9.1",
-      buildNumber: 175,
-      releaseDate: "2026-08-05",
-      releaseChannel: "Stable",
-      commitHash: "v191rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["حذف کامل کارت انتخاب سررسید/ریمایندر از کارت استک ثبت وام", "بازگرداندن جدول انتخاب روزهای ۱ تا ۳۱ ماه به کارت سررسید اولین قسط وام با حذف عنوان بالای جدول", "پیاده‌سازی کارت استک برای ثبت مخاطب جدید (کارت اول: نام و نام خانوادگی در ۲ کادر مجزا، کارت دوم: شماره تماس، شماره کارت و شماره شبا)", "استفاده از کارت استک جدید برای ویرایش مخاطب به همراه دکمه حذف مخاطب", "ثبت رسمی بیلد 175 و انتشار نسخه 1.9.1"]
-    }, {
-      version: "1.9.0",
-      buildNumber: 174,
-      releaseDate: "2026-08-05",
-      releaseChannel: "Stable",
-      commitHash: "v190rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["ایجاد دو زبانه فیلتر «پرداخت شده» و «پرداخت نشده» تحت دکمه ثبت قسط در صفحه جزئیات وام با طراحی و رنگ‌بندی متناسب", "حذف متون اضافه «تراکنش ها» و «قسط ثبت شده» از صفحه جزئیات وام", "بازطراحی کارت تعیین تاریخ اولین قسط وام در فرم ثبت وام جدید (حذف کادر انتخاب روز، اصلاح جهت دکمه‌های ماه قبلی و بعدی و تنظیم پیش‌فرض سال بر اساس تاریخ دریافت وام)", "بازنشانی دیتابیس برنامه و بارگذاری دیتای ثابت پایه شامل ۲۰ مخاطب با شماره تماس، کارت و شبای کامل، ۱۰ وام (۷ فعال و ۳ تسویه‌شده)، ۱۵ بدهی (۱۰ فعال و ۵ تسویه‌شده) و ۱۵ طلب (۱۰ فعال و ۵ تسویه‌شده)", "ثبت رسمی بیلد 174 و انتشار نسخه 1.9.0"]
-    }, {
-      version: "1.8.9",
-      buildNumber: 173,
-      releaseDate: "2026-08-04",
-      releaseChannel: "Stable",
-      commitHash: "v189rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["نمایش یکدست اعداد تاریخ‌ها با رقوم انگلیسی در کلیه کارت‌ها و صفحات وام، طلب و بدهی", "تطبیق و یکسان‌سازی دقیق ابعاد، ارتفاع و فواصل کادر سرچ و فیلترها بین دو صفحه حساب‌ها و مخاطبین جهت جابجایی بدون پرش", "اصلاح مسیر بازگشت به صفحه حساب‌ها هنگام ورود به طلب‌ها و بدهی‌ها از زبانه مدیریت حساب‌ها", "ارتقای روان‌سازی انیمیشن اسلاید iOS با فریم‌ریت بالا، عدم لغو انیمیشن در ورود و رفع کامل فریم شفاف/سفید لحظه‌ای", "ثبت رسمی بیلد 173 و انتشار نسخه 1.8.9"]
-    }, {
-      version: "1.8.8",
-      buildNumber: 172,
-      releaseDate: "2026-08-03",
-      releaseChannel: "Stable",
-      commitHash: "v188rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بازگردانی کامل کارت اصلی (کارت هدر با گرادیانت، واتر‌مارک اختصاصی و نشان تسویه‌شده) در صفحات طلب و بدهی تسویه‌شده", "بازگردانی باکس آمار سریع سه ستونه (تعداد تراکنش‌ها، تاریخ افتتاح پرونده و تاریخ تسویه) در زیر کارت اصلی", "حفظ نمایش نام مخاطب در خط دوم تمامی کارت‌های تراکنش", "ثبت رسمی بیلد 172 و انتشار نسخه 1.8.8"]
-    }, {
-      version: "1.8.7",
-      buildNumber: 171,
-      releaseDate: "2026-08-03",
-      releaseChannel: "Stable",
-      commitHash: "v187rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["رفع کامل مشکل صفحه سفید هنگام ورود به صفحات جزئیات وام، طلب تسویه‌شده و بدهی تسویه‌شده", "استفاده از رنگ آبی یکدست و رسمی برای دکمه «خروجی گرفتن از گزارش وام» عینا هم‌رنگ دکمه ثبت پرداخت قسط", "استفاده از رنگ متناسب با کارت بالای صفحه (قرمز برای بدهی تسویه‌شده و سبز برای طلب تسویه‌شده) برای دکمه «خروجی پرونده تسویه‌حساب»", "اصلاح و نمایش حتمی نام مخاطب در خط دوم تمام کارت‌های تراکنش در صفحات تسویه‌شده بدهی و طلب", "ثبت رسمی بیلد 171 و انتشار نسخه 1.8.7"]
-    }, {
-      version: "1.8.6",
-      buildNumber: 170,
-      releaseDate: "2026-08-03",
-      releaseChannel: "Stable",
-      commitHash: "v186rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["استفاده از رنگ آبی اختصاصی برای دکمه «خروجی پرونده وام» عینا هم‌رنگ دکمه ثبت پرداخت قسط", "استفاده از رنگ متناسب با کارت بالای صفحه (قرمز برای بدهی تسویه‌شده و سبز برای طلب تسویه‌شده) برای دکمه «خروجی پرونده تسویه‌حساب»", "اصلاح و نمایش دقیق نام مخاطب در خط دوم تمامی کارت‌های تراکنش در صفحات بدهی و طلب تسویه‌شده", "ثبت رسمی بیلد 170 و انتشار نسخه 1.8.6"]
-    }, {
-      version: "1.8.5",
-      buildNumber: 169,
-      releaseDate: "2026-08-03",
-      releaseChannel: "Stable",
-      commitHash: "v185rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["محدودسازی دقیق خط دوم کارت‌های تراکنش در صفحات طلب و بدهی تسویه‌شده به فقط «نام مخاطب»", "بازطراحی هدر بالای صفحات پرونده طلب و بدهی تسویه‌شده به سبک کارت خلاصه وام (کارت هیپ گرادیانت قرمز برای بدهی و سبز برای طلب به همراه واترمارک اختصاصی)", "طراحی باکس دوم صفحات تسویه‌شده به سبک باکس ۳ ستونه آمار سریع وام (تعداد تراکنش‌ها، تاریخ شروع پرونده و تاریخ تسویه)", "ثبت رسمی بیلد 169 و انتشار نسخه 1.8.5"]
-    }, {
-      version: "1.8.4",
-      buildNumber: 168,
-      releaseDate: "2026-08-03",
-      releaseChannel: "Stable",
-      commitHash: "v184rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["تنظیم کارت تراکنش‌های وام به ۳ خط مجزا: خط اول شماره قسط (پرداخت قسط ۲)، خط دوم نام وام، خط سوم توضیحات بدون محدودیت ارتفاع", "تنظیم کارت تراکنش‌های طلب (تسویه‌شده و فعال) به ۳ خط: خط اول نوع عملیات (ثبت طلب جدید / بازپرداخت طلب)، خط دوم نام مخاطب، خط سوم توضیحات با قابلیت افزایش ارتفاع باکس", "تنظیم کارت تراکنش‌های بدهی (تسویه‌شده و فعال) به ۳ خط: خط اول نوع عملیات (ثبت بدهی جدید / بازپرداخت بدهی)، خط دوم نام مخاطب، خط سوم توضیحات با قابلیت افزایش ارتفاع باکس", "بازگردانی واتر‌مارک کارت مخاطب در صفحه پروفایل به موقعیت اولیه در سمت چپ", "ثبت رسمی بیلد 168 و انتشار نسخه 1.8.4"]
-    }, {
-      version: "1.8.3",
-      buildNumber: 167,
-      releaseDate: "2026-08-03",
-      releaseChannel: "Stable",
-      commitHash: "v183rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بازگردانی دکمه‌های گرد ویرایش (با آیکون مداد)، علاقه‌مندی و حذف به نوار بالای صفحه پروفایل مخاطب", "یکسان‌سازی دقیق اندازه آیکون کپی در شماره کارت با شماره شبا (اندازه یکسان text-lg)", "تنظیم موقعیت واتر‌مارک پشت کارت مخاطب به سمت راست و انتقال آیکون تماس به سمت راست شماره موبایل", "تغییر رنگ کارت خلاصه وام در صفحه وام‌ها به گرادیانت آبی اختصاصی و جابه‌جایی آیکون بانک به بالا و راست", "ثبت رسمی بیلد 167 و انتشار نسخه 1.8.3"]
-    }, {
-      version: "1.8.2",
-      buildNumber: 166,
-      releaseDate: "2026-08-03",
-      releaseChannel: "Stable",
-      commitHash: "v182rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["حذف کامل دکمه «نمایش تسویه‌شده‌ها» از بخش وام‌های صفحه مدیریت حساب‌ها و انتقال وام‌های تسویه‌شده به تب بایگانی", "تطبیق کامل و یکسان‌سازی ظاهر، اندازه، آیکون و نوع نمایش ۳ خطی کارت‌های طلب، بدهی و وام در صفحه پروفایل مخاطبین", "حذف عناوین اضافی و دکمه «نمایش همه» از پروفایل مخاطبین و استفاده از نشان‌های بیضوی (Pill) «طلب‌ها»، «بدهی‌ها» و «وام‌ها» با رنگ و حاشیه اختصاصی", "تغییر متون بخش بایگانی به «دوره‌های بایگانی شده» (با رنگ سبز/قرمز) و «بایگانی وام‌ها» (با رنگ آبی)", "ثبت رسمی بیلد 166 و انتشار نسخه 1.8.2"]
-    }, {
-      version: "1.8.0",
-      buildNumber: 164,
-      releaseDate: "2026-08-03",
-      releaseChannel: "Stable",
-      commitHash: "v180rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بازطراحی کامل و دقیق صفحه مدیریت حساب‌ها عینا مطابق با الگوی درخواستی", "ثبت بیلد 164 و انتشار نسخه 1.8.0"]
-    }, {
-      version: "1.7.0",
-      buildNumber: 163,
-      releaseDate: "2026-08-02",
-      releaseChannel: "Stable",
-      commitHash: "v170rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["پشتیبانی کامل و هوشمند از چیدمان واکنش‌گرا (Responsive) در تمام صفحات و بخش‌های برنامه ویژه تبلت‌ها و دسکتاپ (Grid layout multi-column)", "ارتقای کانتینر اصلی برنامه جهت نمایش عریض و روان در صفحه‌نمایش‌های بزرگ بدون تغییر در حالت موبایل", "بهینه‌سازی شبکه کارت‌های مخاطبین، پرونده‌های وام، طلب‌ها و بدهی‌ها برای نمایش چند ستونه در نمایشگرهای عریض", "تنظیم و بهینه‌سازی دقیق ارتفاع کارت مخاطبین جهت جانمایی ایده‌آل آواتار و نام مخاطب", "انتشار رسمی نسخه 1.7.0 و ارتقا به بیلد 163"]
-    }, {
-      version: "1.6.1",
-      buildNumber: 162,
-      releaseDate: "2026-08-02",
-      releaseChannel: "Stable",
-      commitHash: "v161rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["ارتقا و روان‌سازی کامل انیمیشن‌های ورود و بازگشت صفحات (Push & Pop Transitions) با استاندارد iOS و فریم‌ریت بالا (Hardware-Accelerated Translate3D)", "اصلاح جهت انیمیشن بازگشت (از چپ به راست) هنگام کلیک روی دکمه بازگشت بالای صفحات وام، طلب و بدهی تسویه‌شده", "رفع مشکل دکمه بررسی بروزرسانی در نسخه وب‌اپ آیفون (PWA Standalone) با به‌روزرسانی هوشمند شماره بیلد محلی و فال‌بک خودکار (بیلد 162)", "بهینه‌سازی و تنظیم دقیق ارتفاع کارت‌های مخاطبین جهت جاگیری ایده‌آل آیکون آواتار و نام مخاطب", "همگام‌سازی کامل شماره بیلد 162 و نسخه 1.6.1 در کلیه فایل‌های برنامه"]
-    }, {
-      version: "1.6.0",
-      buildNumber: 161,
-      releaseDate: "2026-08-02",
-      releaseChannel: "Stable",
-      commitHash: "v160rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بازطراحی کامل بخش «ظاهر» (Appearance) در تنظیمات به سبک شبکه Bento Grid کاملاً مطابق با الگوی درخواستی", "بازطراحی کامل بخش «پشتیبان‌گیری» (Backup & Restore) در تنظیمات با کارت ردیفی و طراحی دقیق منطبق بر ساختار جدید", "ثبت بیلد جدید شماره 161 و انتشار رسمی نسخه 1.6.0"]
-    }, {
-      version: "1.5.1",
-      buildNumber: 160,
-      releaseDate: "2026-08-02",
-      releaseChannel: "Stable",
-      commitHash: "v151rel2",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["رفع کامل انیمیشن تکراری و تداخل چند فریمی در لحظه پایانی حرکت سوایپ بک (Swipe Back)", "حذف انیمیشن اسلاید افقی هنگام جابجایی بین زبانه‌های اصلی نوار پایین (خانه، حساب‌ها، مخاطبین، تنظیمات)", "اصلاح انیمیشن بازگشت از چپ به راست هنگام کلیک روی دکمه بازگشت بالای صفحه در جزئیات وام‌های انجام شده، طلب‌های انجام شده و بدهی‌های انجام شده", "ثبت بیلد جدید شماره 160 و انتشار نهایی نسخه 1.5.1"]
-    }, {
-      version: "1.5.0",
-      buildNumber: 158,
-      releaseDate: "2026-08-02",
-      releaseChannel: "Stable",
-      commitHash: "v150rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["تغییر عناوین و فعال‌سازی رنگ‌های اختصاصی دکمه‌های فیلتر در صفحه مخاطبین (همه، طلب، بدهی، وام، بایگانی) در حالت انتخاب", "نمایش رنگی دکمه‌های نشان وضعیت (طلب، بدهی، وام) در باکس مخاطبین فقط در صورت وجود رکورد فعال و بی‌رنگ شدن در غیر این صورت", "نمایش آیکون تیک برای رکوردهای تسویه‌شده در زیر دکمه هر نشان در باکس مخاطب", "انتشار رسمی نسخه 1.5.0 (بیلد 158)"]
-    }, {
-      version: "1.4.0",
-      buildNumber: 157,
-      releaseDate: "2026-08-01",
-      releaseChannel: "Stable",
-      commitHash: "v140rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["امکان رشد عمودی و انعطاف‌پذیری ارتفاع کارت‌های تراکنش (وام، طلب و بدهی) هنگام وجود عناوین یا توضیحات طولانی", "اصلاح و نمایش تاریخ پرداخت این قسط به صورت عددی خالص جلالی به ترتیب سال/ماه/روز (مثلاً 1405/05/12) در کارت اول پرداخت قسط", "کوتاه‌تر کردن ارتفاع کارت استک (Stack Card Wizard) به میزان ۱.۵ سانتی‌متر و فعال‌سازی اسکرول روان داخلی در صورت نیاز به فضای بیشتر", "رفع کامل مشکل دکمه بررسی و اعمال بروزرسانی در حالت وب‌اپ نصب‌شده (PWA Standalone) با اصلاح منطق Fetch سرویس ورکر و نمایش شماره بیلد واقعی", "انتشار رسمی نسخه 1.4.0 (بیلد 157)"]
-    }, {
-      version: "1.3.8",
-      buildNumber: 156,
-      releaseDate: "2026-08-01",
-      releaseChannel: "Stable",
-      commitHash: "v138rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["رفع کامل پرش و لرزش لحظه پایانی انیمیشن حرکت سوایپ بازگشت (Swipe Back)", "رفع حرکت اضافه و پرش افقی (از راست به چپ) هنگام بازگشت از جزئیات وام، بدهی یا طلب تسویه‌شده به پروفایل مخاطب", "نمایش برجسته و کامل تاریخ دقیق پرداخت قسط با فرمت YYYY/MM/DD در کارت اطلاعات پرداخت قسط", "افزودن انیمیشن باز و بسته شدن (ورود و خروج) روان آکاردیون «یادآوری‌های مهم» صفحه اصلی مطابق با AGENTS.md", "تغییر فیلتر «علاقه‌مندی‌ها» در صفحه مخاطبین به آیکون ستاره (خاموش/زرد روشن در حالت فعال)", "افزودن فیلتر جدید «تسویه‌شده» به صفحه مخاطبین برای نمایش مخاطبین دارای پرونده وام، طلب یا بدهی تسویه‌شده", "حذف چسبندگی (sticky) بخش بالای صفحه مخاطبین جهت ناپدید شدن روان هنگام اسکرول به بالا", "انتشار رسمی نسخه 1.3.8 (بیلد 156)"]
-    }, {
-      version: "1.3.7",
-      buildNumber: 155,
-      releaseDate: "2026-08-01",
-      releaseChannel: "Stable",
-      commitHash: "v137rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["نمایش برجسته و کامل تاریخ دقیق پرداخت قسط با فرمت YYYY/MM/DD در کارت اطلاعات پرداخت قسط", "افزودن انیمیشن باز و بسته شدن (ورود و خروج) روان آکاردیون «یادآوری‌های مهم» صفحه اصلی مطابق با قانون جدید انیمیشن‌های پروژه در AGENTS.md", "تغییر فیلتر «علاقه‌مندی‌ها» در صفحه مخاطبین به آیکون ستاره (خاموش/زرد روشن در حالت فعال)", "افزودن فیلتر جدید «تسویه‌شده» به صفحه مخاطبین برای نمایش مخاطبین دارای پرونده وام، طلب یا بدهی تسویه‌شده", "حذف چسبندگی (sticky) بخش بالای صفحه مخاطبین (جستجو، فیلترها و عنوان) جهت ناپدید شدن روان هنگام اسکرول به بالا", "رفع مشکل عدم دانلود تصویر گرافیکی (PNG) خروجی پرونده وام", "اصلاح منطق اعتبارسنجی مانده کل وام هنگام ویرایش تراکنش و پرداخت قسط", "برجسته‌سازی و دو برابر کردن سایز باکس شماره قسط («قسط شماره X از Y») در کارت آبی رنگ اول پرداخت قسط", "انتشار رسمی نسخه 1.3.7 (بیلد 155)"]
-    }, {
-      version: "1.3.6",
-      buildNumber: 154,
-      releaseDate: "2026-07-31",
-      releaseChannel: "Stable",
-      commitHash: "v136rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بهینه‌سازی انیمیشن بستن پاپ‌آپ‌ها و مدال‌ها به سبک iOS: ایجاد بانس بسیار سریع 1.05 در ابتدا و کوچک‌شدن ملموس و کاملاً مشهود به scale(0.45)", "تنظیم دقیق منحنی فیدآوت opacity جهت جلوگیری از غیب‌شدن ناگهانی و نمایش واضح روند کوچک‌شدن مدال پیش از محو شدن کاملاً روان", "انتشار نسخه جدید 1.3.6 (بیلد 154)"]
-    }, {
-      version: "1.3.5",
-      buildNumber: 153,
-      releaseDate: "2026-07-31",
-      releaseChannel: "Stable",
-      commitHash: "v135rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["طراحی و اعمال انیمیشن خروج پاپ‌آپ/مدال به سبک iOS (Pop Out) با ویژگی بانس خفیف scale(1.06) در فریم ۳۰٪ و جمع‌شدن سریع به scale(0.7) و fade-out در فریم ۱۰۰٪", "تنظیم دقیق مدت زمان 0.35 ثانیه و تابع زمان‌بندی cubic-bezier(0.6, -0.28, 0.735, 0.045) به همراه Fade Out پس‌زمینه در 0.3 ثانیه", "اعمال انیمیشن بستن جدید برای پنجره کارت استک (Card Stack Wizard)، پنجره‌های افزودن و ویرایش مخاطب، پنجره‌های خروجی وام/قسط/بدهی و دیالوگ‌های تایید حذف", "انتشار نسخه رسمی 1.3.5 (بیلد 153)"]
-    }, {
-      version: "1.3.4",
-      buildNumber: 152,
-      releaseDate: "2026-07-31",
-      releaseChannel: "Stable",
-      commitHash: "v134rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بهینه‌سازی انیمیشن Swipe to Delete و کشیده‌شدن و گسترش مداوم دکمه قرمز حذف به سمت چپ همزمان با ادامه کشیدن کارت", "تمرکز و تراز دقیق آیکون سطل زباله در مرکز دکمه حذف و حذف متون اضافی جهت افزایش زیبایی بصری", "افزودن و فعال‌سازی قابلیت کشیدن به پایین برای بروزرسانی (Swipe to Refresh) در صفحه «همه تراکنش‌ها» و سایر صفحات تفصیلی", "بهینه‌سازی سیستم بررسی و بروزرسانی PWA در نسخه نصب‌شده و انتشار نسخه رسمی 1.3.4 (بیلد 152)"]
-    }, {
-      version: "1.3.3",
-      buildNumber: 151,
-      releaseDate: "2026-07-31",
-      releaseChannel: "Stable",
-      commitHash: "v133rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بهینه‌سازی کامل انیمیشن Swipe to Delete و اجرای ۶۰ فریم بر ثانیه بدون افت فریم هنگام کشیدن کالاها", "روان‌سازی کامل انیمیشن مورف تغییر شکل دایره به مستطیل در دکمه حذف کشویی بدون پرش‌های ناگهانی", "رفع کامل پرش ۱ فریمی (1-Frame Jump/Flicker) انیمیشن Swipe to Back در لحظه رهاسازی و پایان اسلاید صفحه", "تغییر و یکپارچه‌سازی عناوین «دریافت / تسویه طلب» به «بازپرداخت طلب» در عنوان تراکنش‌ها، هشدارها و فرم‌ها"]
-    }, {
-      version: "1.3.2",
-      buildNumber: 150,
-      releaseDate: "2026-07-31",
-      releaseChannel: "Stable",
-      commitHash: "v132rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["تغییر عبارت «ثبت قرض / بدهی» به «ثبت بدهی» و فرمت «ثبت بدهی/ نام مخاطب» در عنوان تراکنش‌ها و دکمه‌های پروفایل", "تغییر عبارت «دریافت / تسویه طلب» به «بازپرداخت طلب» و فرمت «بازپرداخت طلب/ نام مخاطب» در عنوان تراکنش‌ها و فرم‌ها", "عدم نمایش مخاطبینی که تنها دارای وام تسویه‌شده هستند در صورت اعمال فیلتر «دارای وام» در صفحه مخاطبین", "خروج خودکار پرونده‌های وام، طلب و بدهی تسویه‌شده از حالت بایگانی در صورت حذف تراکنش از آنها و بازگشت به حالت در جریان تا ثبت تراکنش تسویه‌کننده مجدد"]
-    }, {
-      version: "1.3.1",
-      buildNumber: 149,
-      releaseDate: "2026-07-31",
-      releaseChannel: "Stable",
-      commitHash: "v131rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["اصلاح تاریخ نمایش داده شده در بخش «تاریخ شروع اقساط» کارت وام به تاریخ دقیق اولین قسط", "رفع کامل چشمک زدن (Flicker) آیکون بالای سمت چپ داشبورد و آیکون بالای سمت راست تنظیمات هنگام کلیک", "تغییر عناوین نشان‌های مخاطبین از «طلبکار» به «طلب» و از «بدهکار» به «بدهی»", "نمایش آیکون بایگانی به تنهایی در صورت وجود حساب تسویه‌شده بدون مانده جدید، و نمایش همزمان آیکون و نوشته در صورت وجود مانده active", "ایجاد جایگاه‌های ثابت، مستقل و تفکیک‌شده برای سه نشان «طلب»، «بدهی» و «وام» و آیکون‌های بایگانی آنها جهت جلوگیری از جا‌به‌جایی عمودی و افقی سایر عناصر"]
-    }, {
-      version: "1.2.1",
-      buildNumber: 147,
-      releaseDate: "2026-07-29",
-      releaseChannel: "Stable",
-      commitHash: "v121rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["حذف پیام توست اضافه پس از انجام کشیدن برای بروزرسانی (Pull to Refresh) جهت نمایش شفاف انیمیشن چرخشی", "تنظیم مرکزیت دقیق آیکون + روی دکمه شناور FAB هنگام چرخش و تغییر رنگ آن به قرمز هنگام فعال‌سازی", "فعال‌سازی دکمه سطل زباله بالای صفحه پروفایل مخاطب جهت حذف مخاطب و پرونده‌های وابسته با مودال تایید", "چپ‌چین‌سازی دقیق مبالغ و اطلاعات تراکنش‌ها و دوره‌های بایگانی در صورت دو خطی شدن متون", "استانداردسازی فرمت عناوین تب بدهی (قرض جدید/ نام مخاطب و بازپرداخت بدهی/ نام مخاطب)", "استانداردسازی فرمت عناوین تب طلب (طلب جدید/ نام مخاطب و بازپرداخت طلب/ نام مخاطب) به همراه رنگ قرمز اختصاصی برای بازپرداخت طلب", "اضافه شدن انیمیشن کامل باز شدن و بسته شدن (AnimatePresence) برای مودال‌های افزودن مخاطب، ویرایش مخاطب، حذف و خروجی‌ها"]
-    }, {
-      version: "1.2.0",
-      buildNumber: 146,
-      releaseDate: "2026-07-29",
-      releaseDate: "2026-07-29",
-      releaseChannel: "Stable",
-      commitHash: "c120rel",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["سیستم خودکار محاسبه تعداد اقساط وام بر اساس فرمول اصل/مبلغ کل و مبلغ هر قسط", "کدگذاری رنگی هوشمند تراز مالی (آبی: باقیمانده مثبت/اضافه، قرمز: کسری، سبز: تراز دقیق)", "اولویت‌دهی به تعداد قسط تعیین‌شده توسط کاربر (تایپ یا دکمه‌های +- ) با امکان بازنشانی توسط دکمه مربع سبز ریفرش", "فشرده‌سازی لایوت کارت تعداد اقساط و انطباق کامل کنترل‌ها در کنار عنوان جهت صرفه‌جویی در ارتفاع", "سیستم انیمیشن انقباض و انباشت کارتهای استک (Stack Cards Stacked Animation) با لرزش هپتیک خطا و فوکوس خودکار"]
-    }, {
-      version: "1.1.16",
-      buildNumber: 144,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "b144pwa",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["حل کامل مشکل عدم نمایش آیکون برنامه در دسکتاپ و آیفون با سیستم هوشمند Multi-Fallback", "تنظیم هدرهای استاندارد application/manifest+json و Service-Worker-Allowed در سرور", "بهینه‌سازی ثبت و بروزرسانی خودکار سرویس ورکر PWA جهت بارگذاری فوری آیکون‌ها و اسپلش اسکرین"]
-    }, {
-      version: "1.1.15",
-      buildNumber: 143,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "a91f82c",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["تنظیم و یکپارچه‌سازی کامل آیکون‌های رسمی، فاوآیکون‌ها و اسپلش اسکرین PWA", "پشتیبانی کامل از آیکون‌های Maskable و Any در Web App Manifest", "افزودن اسپلش اسکرین‌های اختصاصی پرتره و لنداسکیپ برای iOS و اندروید", "بهینه‌سازی فرآیند کشینگ سرویس ورکر و دریافت بروزرسانی‌های آنی (Auto-Update Fix)"]
-    }, {
-      version: "1.1.14",
-      buildNumber: 142,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "m3r268z",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["افزودن قابلیت جستجوی پیشرفته متنی در تمامی کارت‌های وام، طلب، بدهی و اقساط", "نمایش وضعیت تسویه‌شده بودن گروه‌ها و دوره‌های تسویه در کارت مخاطبین", "اضافه شدن فیلتر هوشمند پرونده‌های وام تسویه‌شده با قابلیت مخفی‌سازی و نمایش در تنظیمات"]
-    }, {
-      version: "1.1.13",
-      buildNumber: 141,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "lxolw03",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بهبود فرم‌های جدید افزودن قسط و ویرایش تراکنش‌ها", "تصحیح محاسبات مانده وام و بدهی پس از ثبت یا حذف تراکنش", "ارتقاء ظاهر رابط کاربری کارت‌های مالی در حالت تم تاریک (Dark Mode)"]
-    }, {
-      version: "1.1.12",
-      buildNumber: 140,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "m4ybsj7",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["ارتقاء بخش حساب‌ها و افزودن سربرگ اختصاصی مدیریت طلب‌ها و بدهی‌ها", "محاسبه دقیق اقساط باقی‌مانده و تاریخ دقیق سررسید بعدی وام‌ها", "بهینه‌سازی فرمت‌دهی شماره کارت و شماره شبا در پروفایل مخاطبین"]
-    }, {
-      version: "1.1.11",
-      buildNumber: 139,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "lysox1p",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["افزودن قابلیت حذف تراکنش‌ها و اقساط ثبت‌شده با بازگشت آنی مانده حساب", "اضافه شدن مودال تایید حذف ایمن برای جلوگیری از حذف اتفاقی اطلاعات", "بهبود انیمیشن و روانی نمایش لیست تراکنش‌ها"]
-    }, {
-      version: "1.1.10",
-      buildNumber: 138,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "otn6ayw",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بهینه‌سازی عملکرد کشینگ سرویس ورکر (Service Worker) جهت کارکرد کامل آفلاین", "پشتیبانی از PWA Standalone با تجربه مشابه اپلیکیشن نیتیو iOS و اندروید", "بهبود ثبت اطلاعات در حافظه محلی LocalStorage با بالاترین سرعت"]
-    }, {
-      version: "1.1.9",
-      buildNumber: 137,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "ikh6g3p",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بهینه‌سازی رابط کاربری کارت‌های وام و نمایش وضعیت پرداخت هر قسط", "افزودن دکمه‌های اقدام سریع (Quick Actions) در لایوت اصلی", "بهبود فونت وزیرمتن و خوانایی اعداد فارسی و تومان"]
-    }, {
-      version: "1.1.8",
-      buildNumber: 136,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "8f1vi7c",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["افزودن امکان ثبت وام با جدول اقساط هوشمند و سررسید خودکار", "قابلیت تعیین تعداد اقساط و مبلغ هر قسط همراه با یادداشت", "بهبود فرم افزودن مخاطب جدید و اعتبارسنجی ورودی‌ها"]
-    }, {
-      version: "1.1.7",
-      buildNumber: 135,
-      releaseDate: "2026-07-28",
-      releaseChannel: "Stable",
-      commitHash: "83o0e33",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["ارتقاء کارت‌های طلب و بدهی شخصی با فیلتر ماهانه و سالانه", "امکان ثبت پرداخت بدهی و دریافت طلب به صورت مرحله‌ای", "افزودن گزارش خلاصه وضعیت مالی کل در بالای صفحه اصلی"]
-    }, {
-      version: "1.1.6",
-      buildNumber: 134,
-      releaseDate: "2026-07-27",
-      releaseChannel: "Stable",
-      commitHash: "yajtlm8",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["افزودن قابلیت تسویه کامل حساب و آرشیو دوره‌های قبلی طلب و بدهی", "نمایش نشان تسویه‌شده (Settled Badge) روی کارت مخاطبین", "بهبود عملکرد کش و بارگذاری سریع در اولین ورود"]
-    }, {
-      version: "1.1.5",
-      buildNumber: 133,
-      releaseDate: "2026-07-27",
-      releaseChannel: "Stable",
-      commitHash: "bnivdgt",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["افزودن فیلتر سریع بر اساس نوع تراکنش (وام، طلب، بدهی، قسط)", "بهبود دکمه شناور ثبت سریع (FAB) با دسترسی آسان", "اصلاح استایل متون و حاشیه‌ها در تم تاریک"]
-    }, {
-      version: "1.1.4",
-      buildNumber: 132,
-      releaseDate: "2026-07-27",
-      releaseChannel: "Stable",
-      commitHash: "mhxrn39",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["افزودن پشتیبانی کامل از تم تاریک (Dark Mode) خودکار و دستی", "بهینه‌سازی مصرف باتری و رنگ‌های استاندارد چشمی", "بهبود رابط کاربری در تبلت‌ها و نمایشگرهای عریض"]
-    }, {
-      version: "1.1.3",
-      buildNumber: 131,
-      releaseDate: "2026-07-27",
-      releaseChannel: "Stable",
-      commitHash: "k8xay25",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["ارتقاء سیستم مدیریت نسخه و بخش چنج‌لاگ آکاردئونی در تنظیمات", "افزودن قابلیت بررسی آنلاین بروزرسانی‌ها با یک کلیک", "بهبود سرعت پاسخگویی دکمه‌ها و فرم‌ها"]
-    }, {
-      version: "1.1.2",
-      buildNumber: 130,
-      releaseDate: "2026-07-27",
-      releaseChannel: "Stable",
-      commitHash: "gvupahf",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["تصحیح ژست حرکتی بازگشت (Swipe Back) به سبک iOS", "بهبود انیمیشن‌های ورود و خروج صفحات و مودال‌ها", "رفع ایرادات جزیی در نمایش اعلان‌ها و توست‌ها"]
-    }, {
-      version: "1.1.1",
-      buildNumber: 129,
-      releaseDate: "2026-07-27",
-      releaseChannel: "Stable",
-      commitHash: "mem7mxl",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["بهبود رابط کاربری بخش تنظیمات و اطلاعات برنامه", "قابلیت پشتیبان‌گیری (Backup) و بازیابی داده‌ها به صورت فایل JSON", "افزایش پایداری و رفع خطاهای ناخواسته"]
-    }, {
-      version: "1.1.0",
-      buildNumber: 128,
-      releaseDate: "2026-07-27",
-      releaseChannel: "Stable",
-      commitHash: "a3f89e2",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["افزودن سیستم هوشمند مدیریت نسخه برنامه و تاریخچه بروزرسانی‌ها (Version Management)", "ارتقاء روانی ژست حرکتی بازگشت (Swipe Back) به سبک سیستم‌عامل iOS", "امکان بررسی بروزرسانی آنلاین و آفلاین همراه با جزئیات کامل چنج‌لاگ"]
-    }, {
-      version: "1.0.3",
-      buildNumber: 127,
-      releaseDate: "2026-07-27",
-      releaseChannel: "Stable",
-      commitHash: "e92c4b1",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["افزایش روانی و نرخ فریم انیمیشن‌های برنامه (FAB & Motion)", "همگام‌سازی شفافیت، مقیاس و موقعیت مکانی منوی شناور به سبک iOS"]
-    }, {
-      version: "1.0.2",
-      buildNumber: 126,
-      releaseDate: "2026-07-25",
-      releaseChannel: "Stable",
-      commitHash: "c4d12a9",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["ارتقاء روانی اسکرول انتخابی تاریخ و اعداد در ویل‌پیکر iOS", "رفع مشکلات پایداری رویدادهای لمسی و ژست‌های حرکتی"]
-    }, {
-      version: "1.0.1",
-      buildNumber: 125,
-      releaseDate: "2026-07-20",
-      releaseChannel: "Stable",
-      commitHash: "f8911c4",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["تصحیح محاسبه مجدد اقساط وام هنگام ویرایش اطلاعات", "بهبود تجربه کاربری کیبورد در فرم‌های ثبت وام و حساب"]
-    }, {
-      version: "1.0.0",
-      buildNumber: 124,
-      releaseDate: "2026-07-15",
-      releaseChannel: "Stable",
-      commitHash: "e02b3f1",
-      commitMessage: "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
-      changes: ["انتشار اولیه سیستم مدیریت مالی شخصی امیر فایننس", "مدیریت کامل وام‌ها، اقساط، طلب‌ها و بدهی‌ها با پشتیبانی آفلاین", "گزارشات کاربردی و تم تاریک و روشن اختصاصی"]
+      "version": "1.9.0",
+      "buildNumber": 174,
+      "releaseDate": "2026-08-05",
+      "releaseChannel": "Stable",
+      "commitHash": "v190rel",
+      "commitMessage": "feat & fix: resolve animation skip on swipe pages, sync status bar color for wizard modals, release v2.1.9",
+      "changes": ["معرفی سیستم جدید ویزارد لایه‌ای (Stack Wizard) برای ثبت وام جدید به جای مودال‌های تو در تو و پیچیده", "امکان حرکت نرم و انیمیشن‌دار بین مراحل ثبت وام (مشخصات، مخاطب، زمان‌بندی، کارمزد) به صورت کارت‌های روی هم افتاده (Stacked)", "بهبود چشمگیر تجربه کاربری و بصری در ثبت اطلاعات پیچیده و چندمرحله‌ای"]
     }]
   };
   const [versionData, setVersionData] = useState(defaultVersionData);
   const [isVersionCardExpanded, setIsVersionCardExpanded] = useState(false);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
   const [expandedChangelogVersion, setExpandedChangelogVersion] = useState(null);
+  const [isChangelogModalOpen, setIsChangelogModalOpen] = useState(false);
   const [showAllVersions, setShowAllVersions] = useState(false);
   const [swRegistration, setSwRegistration] = useState(null);
   const [hasSWUpdate, setHasSWUpdate] = useState(false);
@@ -7199,19 +6865,21 @@ function App() {
     render: () => {
       const activeDueDay = loanForm.firstInstallmentDay || loanForm.dueDayOfMonth || pickerDay;
       const curMonthName = loanForm.firstInstallmentMonth || pickerMonth;
-      const curYear = loanForm.firstInstallmentYear || pickerYear;
+      const curYear = loanForm.firstInstallmentYear !== undefined && loanForm.firstInstallmentYear !== null && loanForm.firstInstallmentYear !== '' ? loanForm.firstInstallmentYear : pickerYear;
+      const rawYearNum = parseInt(toEnglishDigits(String(curYear)).replace(/\D/g, ''), 10);
+      const activeYear = !isNaN(rawYearNum) && rawYearNum > 1300 && rawYearNum < 1500 ? rawYearNum : pickerYear || 1403;
       const monthIdx = jalaliMonths.indexOf(curMonthName) + 1;
       const monthStr = String(monthIdx > 0 ? monthIdx : 1).padStart(2, '0');
       const dayStr = String(activeDueDay).padStart(2, '0');
-      const yearStr = String(curYear);
+      const yearStr = String(activeYear);
       const formattedDueDateStr = `${yearStr}/${monthStr}/${dayStr}`;
       const handleNextMonth = () => {
         const curIdx = jalaliMonths.indexOf(curMonthName);
         let nextIdx = curIdx + 1;
-        let nextYear = curYear;
+        let nextYear = activeYear;
         if (nextIdx >= 12) {
           nextIdx = 0;
-          nextYear = curYear + 1;
+          nextYear = activeYear + 1;
         }
         setLoanForm(prev => ({
           ...prev,
@@ -7222,10 +6890,10 @@ function App() {
       const handlePrevMonth = () => {
         const curIdx = jalaliMonths.indexOf(curMonthName);
         let prevIdx = curIdx - 1;
-        let prevYear = curYear;
+        let prevYear = activeYear;
         if (prevIdx < 0) {
           prevIdx = 11;
-          prevYear = curYear - 1;
+          prevYear = activeYear - 1;
         }
         setLoanForm(prev => ({
           ...prev,
@@ -7250,12 +6918,46 @@ function App() {
         name: "chevron-right",
         className: "w-5 h-5"
       })), /*#__PURE__*/React.createElement("div", {
-        className: "text-center min-w-0 px-2"
+        className: "text-center min-w-0 px-2 flex flex-col items-center"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "text-[10px] text-indigo-700/80 dark:text-indigo-300/80 font-bold"
-      }, "\u0645\u0627\u0647 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637"), /*#__PURE__*/React.createElement("div", {
-        className: "text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100 mt-0.5"
-      }, curMonthName, " ", curYear)), /*#__PURE__*/React.createElement("button", {
+        className: "text-[10px] text-indigo-700/80 dark:text-indigo-300/80 font-bold mb-1"
+      }, "\u0645\u0627\u0647 \u0648 \u0633\u0627\u0644 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637"), /*#__PURE__*/React.createElement("div", {
+        className: "flex items-center justify-center gap-2"
+      }, /*#__PURE__*/React.createElement("span", {
+        className: "text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100"
+      }, curMonthName), /*#__PURE__*/React.createElement("input", {
+        type: "text",
+        inputMode: "numeric",
+        pattern: "[0-9]*",
+        dir: "ltr",
+        value: curYear,
+        onFocus: e => e.target.select(),
+        onClick: e => e.target.select(),
+        onChange: e => {
+          const raw = toEnglishDigits(e.target.value).replace(/\D/g, '');
+          const clean = raw.slice(0, 4);
+          setLoanForm(prev => ({
+            ...prev,
+            firstInstallmentYear: clean ? clean.length === 4 ? parseInt(clean, 10) : clean : ''
+          }));
+        },
+        onBlur: () => {
+          const num = parseInt(toEnglishDigits(String(loanForm.firstInstallmentYear)).replace(/\D/g, ''), 10);
+          if (isNaN(num) || num < 1300 || num > 1500) {
+            setLoanForm(prev => ({
+              ...prev,
+              firstInstallmentYear: activeYear
+            }));
+          } else {
+            setLoanForm(prev => ({
+              ...prev,
+              firstInstallmentYear: num
+            }));
+          }
+        },
+        className: "w-16 h-7 text-center font-extrabold text-xs sm:text-sm text-indigo-900 dark:text-indigo-100 bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded-lg shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono transition-all cursor-pointer",
+        title: "\u062C\u0647\u062A \u062A\u063A\u06CC\u06CC\u0631 \u0633\u0627\u0644 \u06A9\u0644\u06CC\u06A9 \u06A9\u0646\u06CC\u062F"
+      }))), /*#__PURE__*/React.createElement("button", {
         type: "button",
         onClick: handleNextMonth,
         title: "\u0645\u0627\u0647 \u0628\u0639\u062F",
@@ -7506,6 +7208,7 @@ function App() {
       transactions: transactions,
       contacts: contacts,
       selectedLoanId: installmentForm.selectedLoanId,
+      editingTxId: installmentForm.id,
       onSelectLoan: l => {
         const nextD = getInstallmentNextDueDate(l, transactions);
         setPickerDay(nextD.day);
@@ -8353,7 +8056,7 @@ function App() {
               name: "check",
               className: "w-6 h-6 stroke-[3]"
             }))) : /*#__PURE__*/React.createElement("div", {
-              className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 p-3 sm:p-4 transition-all cursor-pointer hover:border-indigo-400"
+              className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  p-3 sm:p-4 transition-all cursor-pointer hover:border-indigo-400"
             }, /*#__PURE__*/React.createElement("div", {
               className: "w-full flex flex-col gap-3"
             }, /*#__PURE__*/React.createElement("div", {
@@ -8416,7 +8119,7 @@ function App() {
             onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
             onCardClick: () => openContactDetail(contact, 'demands', 'accounts')
           }, /*#__PURE__*/React.createElement("div", {
-            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8461,7 +8164,7 @@ function App() {
             onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
             onCardClick: () => openContactDetail(contact, 'debts', 'accounts')
           }, /*#__PURE__*/React.createElement("div", {
-            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8592,7 +8295,7 @@ function App() {
               openContactDetail(contact, f, 'contacts');
             }
           }, /*#__PURE__*/React.createElement("div", {
-            className: "bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-slate-200/80 dark:border-slate-700/60 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm hover:border-indigo-400 transition-all cursor-pointer ring-1 ring-slate-900/5 dark:ring-0"
+            className: "bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-slate-200/80 dark:border-slate-700/60 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm hover:border-indigo-400 transition-all cursor-pointer "
           }, /*#__PURE__*/React.createElement("div", {
             className: "flex flex-col gap-3"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8882,7 +8585,7 @@ function App() {
           }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC (", closedLoans.length, ")")), contactLoansSubFilter === 'active' ? activeLoans.length > 0 ? activeLoans.map(loan => /*#__PURE__*/React.createElement("div", {
             key: loan.id,
             onClick: () => openLoanDetail(loan),
-            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
           }, /*#__PURE__*/React.createElement("div", {
             className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8907,7 +8610,7 @@ function App() {
           }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : closedLoans.length > 0 ? closedLoans.map(loan => /*#__PURE__*/React.createElement("div", {
             key: loan.id,
             onClick: () => openLoanDetail(loan),
-            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
           }, /*#__PURE__*/React.createElement("div", {
             className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -8981,7 +8684,7 @@ function App() {
               contactId: selectedContact.id,
               amount: selectedContact.totalDebt
             }),
-            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -9008,7 +8711,7 @@ function App() {
           }, "\u0647\u06CC\u0686 \u0628\u062F\u0647\u06CC \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDebtPeriods.length > 0 ? archivedDebtPeriods.map(period => /*#__PURE__*/React.createElement("div", {
             key: period.id,
             onClick: () => openArchivedPeriodDetail(period),
-            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -9084,7 +8787,7 @@ function App() {
               contactId: selectedContact.id,
               amount: selectedContact.totalDemand
             }),
-            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -9111,7 +8814,7 @@ function App() {
           }, "\u0647\u06CC\u0686 \u0637\u0644\u0628\u06CC \u0627\u0632 \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDemandPeriods.length > 0 ? archivedDemandPeriods.map(period => /*#__PURE__*/React.createElement("div", {
             key: period.id,
             onClick: () => openArchivedPeriodDetail(period),
-            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-full flex flex-col gap-1"
           }, /*#__PURE__*/React.createElement("div", {
@@ -9141,6 +8844,8 @@ function App() {
         }));
       case 'loan-detail':
         if (!selectedLoan) return null;
+        const loanContactObj = contacts.find(c => c.id === selectedLoan.contactId);
+        const loanContactDisplayName = loanContactObj ? `${loanContactObj.firstName || ''} ${loanContactObj.lastName || ''}`.trim() : selectedLoan.contactName || '';
         const isClosed = selectedLoan.remainingAmount <= 0 || getLoanNextDueInfo(selectedLoan, transactions).isCompleted;
         const totalInst = selectedLoan.totalInstallments || (selectedLoan.installmentAmount > 0 ? Math.ceil(selectedLoan.totalRepayment / selectedLoan.installmentAmount) : 12);
         const repaymentTxs = transactions.filter(t => t.loanId === selectedLoan.id && t.type === 'repayment');
@@ -9222,7 +8927,7 @@ function App() {
           className: `w-2 h-2 rounded-full ${isClosed ? 'bg-emerald-400' : 'bg-emerald-400 animate-pulse'}`
         }), /*#__PURE__*/React.createElement("span", {
           className: "text-indigo-200 font-medium"
-        }, isClosed ? 'پرونده تسویه‌شده' : 'پرونده فعال'))))), /*#__PURE__*/React.createElement("div", {
+        }, isClosed ? `پرونده تسویه‌شده${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}` : `پرونده فعال${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}`))))), /*#__PURE__*/React.createElement("div", {
           className: "bg-white/10 backdrop-blur-md rounded-2xl px-3.5 py-2 border border-white/10 flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-xs text-indigo-200 font-medium"
@@ -10081,86 +9786,32 @@ function App() {
         }, /*#__PURE__*/React.createElement(Icon, {
           name: "download",
           className: "w-3.5 h-3.5"
-        }), /*#__PURE__*/React.createElement("span", null, "\u0628\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC")))), versionData.history && versionData.history.length > 0 && (() => {
-          const historyList = versionData.history;
-          const visibleHistory = showAllVersions ? historyList : historyList.slice(0, 5);
-          const hasMoreVersions = historyList.length > 5;
-          return /*#__PURE__*/React.createElement("div", {
-            className: "space-y-2 pt-1"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "flex items-center justify-between px-1"
-          }, /*#__PURE__*/React.createElement("span", {
-            className: "text-xs font-bold text-slate-800 dark:text-slate-200"
-          }, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647 (Changelog)"), /*#__PURE__*/React.createElement("span", {
-            className: "text-[10px] text-slate-400 font-mono"
-          }, historyList.length, " \u0627\u0646\u062A\u0634\u0627\u0631")), /*#__PURE__*/React.createElement("div", {
-            className: "space-y-2"
-          }, visibleHistory.map((ver, idx) => {
-            const isExpanded = expandedChangelogVersion === ver.version;
-            const isCurrent = ver.version === versionData.installedVersion;
-            return /*#__PURE__*/React.createElement("div", {
-              key: ver.version || idx,
-              className: "bg-[#F4F7FC] dark:bg-slate-900/50 rounded-2xl border border-slate-200/70 dark:border-slate-800 overflow-hidden transition-all"
-            }, /*#__PURE__*/React.createElement("button", {
-              onClick: e => {
-                e.stopPropagation();
-                setExpandedChangelogVersion(isExpanded ? null : ver.version);
-              },
-              className: "w-full p-3 flex items-center justify-between text-right hover:bg-slate-100/60 dark:hover:bg-slate-800/40 transition-colors"
-            }, /*#__PURE__*/React.createElement("div", {
-              className: "flex items-center space-x-2.5 space-x-reverse min-w-0"
-            }, /*#__PURE__*/React.createElement("div", {
-              className: `w-2 h-2 rounded-full shrink-0 ${isCurrent ? 'bg-emerald-500 shadow-xs' : 'bg-slate-300 dark:bg-slate-600'}`
-            }), /*#__PURE__*/React.createElement("div", {
-              className: "min-w-0"
-            }, /*#__PURE__*/React.createElement("div", {
-              className: "flex items-center space-x-2 space-x-reverse flex-wrap gap-1"
-            }, /*#__PURE__*/React.createElement("span", {
-              className: "text-xs font-bold text-slate-800 dark:text-slate-100 font-mono"
-            }, "\u0646\u0633\u062E\u0647 ", ver.version), /*#__PURE__*/React.createElement("span", {
-              className: "text-[9px] font-mono text-slate-400"
-            }, "(\u0628\u06CC\u0644\u062F ", ver.buildNumber, ")"), isCurrent && /*#__PURE__*/React.createElement("span", {
-              className: "text-[9px] bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 font-bold px-1.5 py-0.2 rounded-full"
-            }, "\u0646\u0635\u0628\u200C\u0634\u062F\u0647")), /*#__PURE__*/React.createElement("div", {
-              className: "text-[10px] text-slate-400 mt-0.5"
-            }, "\u062A\u0627\u0631\u06CC\u062E \u0627\u0646\u062A\u0634\u0627\u0631: ", ver.releaseDate))), /*#__PURE__*/React.createElement(Icon, {
-              name: "chevron-down",
-              className: `w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 ease-in-out ${isExpanded ? 'rotate-180' : ''}`
-            })), /*#__PURE__*/React.createElement("div", {
-              className: `grid transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`
-            }, /*#__PURE__*/React.createElement("div", {
-              className: "overflow-hidden"
-            }, /*#__PURE__*/React.createElement("div", {
-              className: "px-3.5 pb-3 pt-1 border-t border-slate-200/50 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-300 space-y-1.5"
-            }, ver.commitMessage && /*#__PURE__*/React.createElement("div", {
-              className: "text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-lg border border-slate-200/40 dark:border-slate-700/40 dir-ltr text-left overflow-x-auto truncate"
-            }, "git: ", ver.commitMessage), /*#__PURE__*/React.createElement("div", {
-              className: "space-y-1 mt-1.5"
-            }, ver.changes && ver.changes.map((change, cIdx) => /*#__PURE__*/React.createElement("div", {
-              key: cIdx,
-              className: "flex items-start space-x-2 space-x-reverse"
-            }, /*#__PURE__*/React.createElement(Icon, {
-              name: "check",
-              className: "w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5"
-            }), /*#__PURE__*/React.createElement("span", {
-              className: "text-[11px] leading-relaxed"
-            }, change))))))));
-          }), hasMoreVersions && /*#__PURE__*/React.createElement("button", {
-            type: "button",
-            onClick: e => {
-              e.stopPropagation();
-              setShowAllVersions(!showAllVersions);
-            },
-            className: "w-full mt-2 py-2.5 px-3 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700/80 text-indigo-600 dark:text-indigo-400 rounded-2xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 space-x-reverse border border-slate-200/60 dark:border-slate-700/60 active:scale-98 shadow-xs"
-          }, /*#__PURE__*/React.createElement("span", null, showAllVersions ? 'بستن نسخه‌های قدیمی‌تر' : `نمایش نسخه‌های قدیمی‌تر (${historyList.length - 5} نسخه دیگر)`), /*#__PURE__*/React.createElement(Icon, {
-            name: "chevron-down",
-            className: `w-4 h-4 transition-transform duration-300 ${showAllVersions ? 'rotate-180' : ''}`
-          }))));
-        })()))), /*#__PURE__*/React.createElement("div", {
+        }), /*#__PURE__*/React.createElement("span", null, "\u0628\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC")))), /*#__PURE__*/React.createElement("button", {
+          type: "button",
+          onClick: () => {
+            setIsChangelogModalOpen(true);
+            setExpandedChangelogVersion(null);
+          },
+          className: "w-full py-3 px-4 bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 rounded-2xl text-xs font-bold transition-all flex items-center justify-between border border-emerald-200/80 dark:border-emerald-800/60 active:scale-98 shadow-2xs font-vazir"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center space-x-2.5 space-x-reverse"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "w-7 h-7 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "history",
+          className: "w-4 h-4"
+        })), /*#__PURE__*/React.createElement("span", null, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647\u200C\u0647\u0627 (Changelog)")), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center space-x-1 space-x-reverse text-emerald-700 dark:text-emerald-300"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-[11px] font-bold"
+        }, "\u0645\u0634\u0627\u0647\u062F\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A"), /*#__PURE__*/React.createElement(Icon, {
+          name: "chevron-left",
+          className: "w-4 h-4"
+        })))))), /*#__PURE__*/React.createElement("div", {
           className: "space-y-3.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start"
         }, /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('appearance'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10222,7 +9873,7 @@ function App() {
           className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
         })))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('backup'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10314,7 +9965,7 @@ function App() {
           className: "w-4 h-4 text-rose-400/60 scale-90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors shrink-0"
         })))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('notifications'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10360,7 +10011,7 @@ function App() {
           className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableDailyAlerts ? '-translate-x-5' : 'translate-x-0'}`
         })))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('security'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10386,7 +10037,7 @@ function App() {
           className: "text-xs text-slate-500 dark:text-slate-400 leading-relaxed"
         }, "\u062A\u0645\u0627\u0645\u06CC \u062F\u0627\u062F\u0647\u200C\u0647\u0627 \u0648 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0634\u0645\u0627 \u0635\u0631\u0641\u0627\u064B \u0631\u0648\u06CC \u062D\u0627\u0641\u0638\u0647 \u062F\u0633\u062A\u06AF\u0627\u0647 \u0630\u062E\u06CC\u0631\u0647 \u0645\u06CC\u200C\u0634\u0648\u0646\u062F \u0648 \u062F\u0627\u0631\u0627\u06CC \u0628\u0627\u0644\u0627\u062A\u0631\u06CC\u0646 \u0633\u0637\u062D \u062D\u0631\u06CC\u0645 \u062E\u0635\u0648\u0635\u06CC \u0645\u06CC\u200C\u0628\u0627\u0634\u0646\u062F.")))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('data'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10428,7 +10079,7 @@ function App() {
           className: "font-bold"
         }, transactions.length, " \u0645\u0648\u0631\u062F"))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('about'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10452,7 +10103,31 @@ function App() {
           className: "overflow-hidden space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed"
         }, /*#__PURE__*/React.createElement("p", null, "\u0628\u0631\u0646\u0627\u0645\u0647 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0645\u0627\u0644\u06CC Amir Finance \u0627\u0628\u0632\u0627\u0631\u06CC \u062C\u0647\u062A \u062B\u0628\u062A \u0648 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0648\u0627\u0645\u200C\u0647\u0627\u060C \u0627\u0642\u0633\u0627\u0637\u060C \u0637\u0644\u0628\u200C\u0647\u0627 \u0648 \u0628\u062F\u0647\u06CC\u200C\u0647\u0627\u06CC \u0634\u062E\u0635\u06CC."), /*#__PURE__*/React.createElement("p", {
           className: "text-[11px] text-slate-400"
-        }, "\u0637\u0631\u0627\u062D\u06CC \u0648 \u062A\u0648\u0633\u0639\u0647: Amir Finance"))))));
+        }, "\u0637\u0631\u0627\u062D\u06CC \u0648 \u062A\u0648\u0633\u0639\u0647: Amir Finance")))), /*#__PURE__*/React.createElement("div", {
+          onClick: () => {
+            setIsChangelogModalOpen(true);
+            setExpandedChangelogVersion(null);
+          },
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-emerald-400 active:scale-98"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center space-x-3.5 space-x-reverse"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "history",
+          className: "w-5 h-5"
+        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+          className: "text-sm font-bold text-slate-900 dark:text-white font-vazir"
+        }, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A"), /*#__PURE__*/React.createElement("p", {
+          className: "text-xs text-slate-400 mt-0.5 font-vazir"
+        }, "\u0645\u0634\u0627\u0647\u062F\u0647 \u0648 \u0628\u0631\u0631\u0633\u06CC \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647\u200C\u0647\u0627"))), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center space-x-1 space-x-reverse text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/50 px-3 py-1.5 rounded-xl border border-emerald-100 dark:border-emerald-900/40"
+        }, /*#__PURE__*/React.createElement("span", null, "\u0645\u0634\u0627\u0647\u062F\u0647"), /*#__PURE__*/React.createElement(Icon, {
+          name: "chevron-left",
+          className: "w-3.5 h-3.5"
+        }))))));
       default:
         return null;
     }
@@ -10521,7 +10196,7 @@ function App() {
       WebkitBackfaceVisibility: 'hidden',
       backfaceVisibility: 'hidden'
     },
-    className: "w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden bg-[#F4F7FC] dark:bg-slate-950 z-10"
+    className: "w-full h-full absolute inset-0 overflow-y-auto overflow-x-clip overscroll-x-none bg-[#F4F7FC] dark:bg-slate-950 z-10"
   }, ['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? /*#__PURE__*/React.createElement("div", {
     className: "flex-1 relative w-full h-full"
   }, currentTab === 'contact-detail' && selectedContact && /*#__PURE__*/React.createElement(SwipeBackWrapper, {
@@ -10550,7 +10225,7 @@ function App() {
     onBack
   }) => renderTab('all-transactions', onBack))) : /*#__PURE__*/React.createElement(PullToRefresh, {
     onRefresh: () => handleRefreshData(currentTab),
-    className: "flex-1 px-4 pt-4 pb-24 h-full overflow-y-auto overflow-x-hidden"
+    className: "flex-1 px-4 pt-4 pb-24 h-full overflow-y-auto overflow-x-clip overscroll-x-none"
   }, currentTab === 'dashboard' && renderTab('dashboard'), currentTab === 'accounts' && renderTab('accounts'), currentTab === 'contacts' && renderTab('contacts'), currentTab === 'settings' && renderTab('settings'))))), /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "fab-backdrop",
     initial: {
@@ -10779,7 +10454,7 @@ function App() {
     className: "w-full flex flex-col items-center h-full max-h-[92vh] relative"
   }, /*#__PURE__*/React.createElement("div", {
     ref: editCardsContainerRef,
-    className: `w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-hidden"}`
+    className: `w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`
   }, activeCards.map((card, index) => {
     const isEditingThis = editingCardId === card.id;
     const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
@@ -11137,7 +10812,7 @@ function App() {
     style: {
       transformOrigin: "center center"
     },
-    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto overflow-x-hidden"
+    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto overflow-x-clip overscroll-x-none"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
   }), /*#__PURE__*/React.createElement("div", {
@@ -11273,7 +10948,7 @@ function App() {
     initial: "initial",
     animate: "animate",
     exit: "exit",
-    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden"
+    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-clip overscroll-x-none"
   }, /*#__PURE__*/React.createElement(motion.div, {
     key: "add-contact-panel",
     variants: iosModalVariants,
@@ -11354,7 +11029,7 @@ function App() {
     initial: "initial",
     animate: "animate",
     exit: "exit",
-    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden"
+    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-clip overscroll-x-none"
   }, /*#__PURE__*/React.createElement(motion.div, {
     key: "edit-contact-panel",
     variants: iosModalVariants,
@@ -11438,7 +11113,151 @@ function App() {
   }, "\u0628\u0647\u200C\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setShowEditContactModal(false),
     className: "flex-1 bg-slate-100 dark:bg-slate-700 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300"
-  }, "\u0627\u0646\u0635\u0631\u0627\u0641"))))), /*#__PURE__*/React.createElement(GlobalConfirmDialog, _extends({
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641"))))), /*#__PURE__*/React.createElement(AnimatePresence, null, isChangelogModalOpen && /*#__PURE__*/React.createElement(motion.div, {
+    key: "changelog-backdrop",
+    initial: {
+      opacity: 0
+    },
+    animate: {
+      opacity: 1
+    },
+    exit: {
+      opacity: 0
+    },
+    onClick: () => setIsChangelogModalOpen(false),
+    className: "fixed inset-0 bg-black/60 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 sm:p-6"
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    key: "changelog-modal-panel",
+    initial: {
+      scale: 0.92,
+      opacity: 0,
+      y: 10
+    },
+    animate: {
+      scale: 1,
+      opacity: 1,
+      y: 0
+    },
+    exit: {
+      scale: 0.92,
+      opacity: 0,
+      y: 10
+    },
+    transition: {
+      type: "spring",
+      stiffness: 320,
+      damping: 28
+    },
+    onClick: e => e.stopPropagation(),
+    className: "bg-white dark:bg-slate-800 w-full max-w-lg rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border border-slate-100 dark:border-slate-700/80 flex flex-col max-h-[85vh] relative overflow-hidden font-vazir"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between pb-3.5 border-b border-slate-200/80 dark:border-slate-700/80 shrink-0"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setIsChangelogModalOpen(false),
+    className: "p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-500 dark:text-slate-400 transition-colors",
+    "aria-label": "\u0628\u0633\u062A\u0646"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "x",
+    className: "w-5 h-5"
+  })), /*#__PURE__*/React.createElement("h3", {
+    className: "font-extrabold text-lg sm:text-xl text-slate-900 dark:text-white font-vazir"
+  }, "\u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("div", {
+    className: "overflow-y-auto flex-1 my-3.5 py-1 pr-1 space-y-3.5 text-right dir-rtl custom-scrollbar"
+  }, versionData.history && versionData.history.map((ver, idx) => {
+    const isLatest = idx === 0;
+    const isExpanded = expandedChangelogVersion === ver.version || isLatest && expandedChangelogVersion === null;
+    let dateDisplay = '';
+    try {
+      if (ver.releaseDate) {
+        const parts = ver.releaseDate.split('-');
+        if (parts.length === 3) {
+          const y = parseInt(parts[0], 10);
+          const m = parseInt(parts[1], 10);
+          const d = parseInt(parts[2], 10);
+          if (y > 1700) {
+            const {
+              jy,
+              jm
+            } = gregorianToJalali(y, m, d);
+            dateDisplay = `(${jalaliMonths[jm - 1]} ${toPersianDigits(jy)})`;
+          } else {
+            dateDisplay = `(${jalaliMonths[m - 1] || m} ${toPersianDigits(y)})`;
+          }
+        } else {
+          dateDisplay = `(${toPersianDigits(ver.releaseDate)})`;
+        }
+      }
+    } catch (e) {
+      dateDisplay = ver.releaseDate ? `(${toPersianDigits(ver.releaseDate)})` : '';
+    }
+    return /*#__PURE__*/React.createElement("div", {
+      key: ver.version || idx,
+      className: `rounded-[20px] border transition-all duration-300 overflow-hidden ${isExpanded ? 'border-emerald-300 dark:border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 shadow-2xs' : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800'}`
+    }, /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      onClick: () => {
+        if (isExpanded) {
+          setExpandedChangelogVersion('closed_all');
+        } else {
+          setExpandedChangelogVersion(ver.version);
+        }
+      },
+      className: "w-full p-3.5 sm:p-4 flex items-center justify-between text-right cursor-pointer select-none"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: `w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${isExpanded ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300'}`
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: isExpanded ? "chevron-up" : "chevron-down",
+      className: "w-4 h-4"
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "flex items-center space-x-2 space-x-reverse flex-wrap gap-1.5 min-w-0"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "font-bold text-sm sm:text-base text-slate-900 dark:text-white font-vazir"
+    }, "\u0646\u0633\u062E\u0647 ", toPersianDigits(ver.version)), isLatest && /*#__PURE__*/React.createElement("span", {
+      className: "text-[11px] font-bold bg-[#d1fae5] text-[#047857] dark:bg-emerald-900/60 dark:text-emerald-300 px-2.5 py-0.5 rounded-full whitespace-nowrap font-vazir"
+    }, "\u062C\u062F\u06CC\u062F\u062A\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647"), dateDisplay && /*#__PURE__*/React.createElement("span", {
+      className: "text-xs text-slate-400 dark:text-slate-500 font-medium font-vazir"
+    }, dateDisplay))), /*#__PURE__*/React.createElement(AnimatePresence, {
+      initial: false
+    }, isExpanded && /*#__PURE__*/React.createElement(motion.div, {
+      initial: {
+        height: 0,
+        opacity: 0
+      },
+      animate: {
+        height: "auto",
+        opacity: 1
+      },
+      exit: {
+        height: 0,
+        opacity: 0
+      },
+      transition: {
+        duration: 0.22,
+        ease: "easeInOut"
+      },
+      className: "overflow-hidden"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "px-4 pb-4 pt-0"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "border-t border-emerald-200/80 dark:border-emerald-800/60 pt-3 space-y-2.5"
+    }, ver.changes && ver.changes.map((change, cIdx) => /*#__PURE__*/React.createElement("div", {
+      key: cIdx,
+      className: "flex items-start space-x-2.5 space-x-reverse text-right"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-slate-500 dark:text-slate-400 font-bold text-sm shrink-0 mt-0.5"
+    }, "\u2022"), /*#__PURE__*/React.createElement("span", {
+      className: "text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-vazir"
+    }, change))))))));
+  }), (!versionData.history || versionData.history.length === 0) && /*#__PURE__*/React.createElement("div", {
+    className: "text-center py-8 text-slate-400 text-xs font-vazir"
+  }, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647\u200C\u0627\u06CC \u0628\u0631\u0627\u06CC \u0646\u0645\u0627\u06CC\u0634 \u0648\u062C\u0648\u062F \u0646\u062F\u0627\u0631\u062F")), /*#__PURE__*/React.createElement("div", {
+    className: "pt-3.5 border-t border-slate-200/80 dark:border-slate-700/80 shrink-0 flex justify-start"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setIsChangelogModalOpen(false),
+    className: "bg-[#f1f5f9] hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-8 py-2 rounded-full text-sm font-bold active:scale-95 transition-all shadow-2xs font-vazir"
+  }, "\u0628\u0633\u062A\u0646"))))), /*#__PURE__*/React.createElement(GlobalConfirmDialog, _extends({
     isOpen: !!confirmConfig
   }, confirmConfig)));
 }

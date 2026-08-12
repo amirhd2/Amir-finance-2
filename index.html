@@ -104,8 +104,8 @@
     <link rel="apple-touch-startup-image" href="./apple-splash-2048-1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
 
     <!-- Android & Fallback Splash Screens -->
-    <link rel="apple-touch-startup-image" href="./splash-portrait.png" media="(orientation: portrait)" />
-    <link rel="apple-touch-startup-image" href="./splash-landscape.png" media="(orientation: landscape)" />
+    <link rel="apple-touch-startup-image" href="/splash-portrait.jpg" media="(orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-landscape.jpg" media="(orientation: landscape)" />
     <!-- Local Offline Vendor Dependencies -->
     <script src="vendor/tailwindcss.js"></script>
     <link rel="stylesheet" href="vendor/vazirmatn.css" />
@@ -155,12 +155,14 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            overflow-x: hidden !important;
+            overflow-x: clip !important;
             position: relative;
             overscroll-behavior: none;
             overscroll-behavior-x: none;
             touch-action: pan-y;
+            touch-action: pan-y;
         }
+        .swipe-container-safe { overflow-x: clip; overflow-y: visible; }
         body {
             font-family: 'Vazirmatn', sans-serif;
             background-color: #f8fafc;
@@ -504,6 +506,7 @@
             -webkit-user-select: none;
             overscroll-behavior: none;
             overscroll-behavior-x: none;
+            touch-action: pan-y;
             overscroll-behavior-y: none;
         }
         .ios-wheel-container::-webkit-scrollbar {
@@ -646,13 +649,14 @@
 
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-[100dvh] w-full h-full flex flex-col p-0 m-0 overflow-hidden">
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-[100dvh] w-full h-full flex flex-col p-0 m-0 overflow-hidden" style="overscroll-behavior-x: none;
+            touch-action: pan-y;">
     <!-- Instant HTML Splash Screen overlay for zero-delay startup in Preview & PWA -->
     <div id="app-static-splash" style="position:fixed;inset:0;z-index:99999;background:#0b101d;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity 0.5s ease, visibility 0.5s ease;">
         <picture style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
-            <source media="(orientation: landscape)" srcset="./splash-landscape.png?v=2.2.2, ./splash-landscape.jpg?v=2.2.2" />
-            <source media="(orientation: portrait)" srcset="./splash-portrait.png?v=2.2.2, ./splash-portrait.jpg?v=2.2.2" />
-            <img src="./splash-portrait.png?v=2.2.2" alt="Amir Finance Splash" onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src='./splash-portrait.jpg';}" style="width:100%;height:100%;object-fit:cover;object-position:center;" />
+            <source media="(orientation: landscape)" srcset="/splash-landscape.jpg?v=2.2.3" />
+            <source media="(orientation: portrait)" srcset="/splash-portrait.jpg?v=2.2.3" />
+            <img src="/splash-portrait.jpg?v=2.2.3" alt="Amir Finance Splash" style="width:100%;height:100%;object-fit:cover;object-position:center;background-color:#0b101d;" />
         </picture>
         <div style="position:absolute;bottom:2.5rem;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;pointer-events:none;z-index:10;">
             <div style="width:2rem;height:2rem;border:2px solid #818cf8;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>
@@ -662,7 +666,7 @@
     <div id="root" class="w-full h-full min-h-[100dvh] flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=2.2.2-b212"></script>
+    <script src="app.compiled.js?v=2.2.3-b213"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>
