@@ -4168,6 +4168,7 @@
             const [isVersionCardExpanded, setIsVersionCardExpanded] = useState(false);
             const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
             const [expandedChangelogVersion, setExpandedChangelogVersion] = useState(null);
+            const [isChangelogModalOpen, setIsChangelogModalOpen] = useState(false);
             const [showAllVersions, setShowAllVersions] = useState(false);
             const [swRegistration, setSwRegistration] = useState(null);
             const [hasSWUpdate, setHasSWUpdate] = useState(false);
@@ -9993,96 +9994,25 @@
                                                 </div>
                                             </div>
 
-                                            {/* Changelog / History */}
-                                            {versionData.history && versionData.history.length > 0 && (() => {
-                                                const historyList = versionData.history;
-                                                const visibleHistory = showAllVersions ? historyList : historyList.slice(0, 5);
-                                                const hasMoreVersions = historyList.length > 5;
-
-                                                return (
-                                                    <div className="space-y-2 pt-1">
-                                                        <div className="flex items-center justify-between px-1">
-                                                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">تاریخچه تغییرات نسخه (Changelog)</span>
-                                                            <span className="text-[10px] text-slate-400 font-mono">{historyList.length} انتشار</span>
-                                                        </div>
-
-                                                        <div className="space-y-2">
-                                                            {visibleHistory.map((ver, idx) => {
-                                                                const isExpanded = expandedChangelogVersion === ver.version;
-                                                                const isCurrent = ver.version === versionData.installedVersion;
-                                                                return (
-                                                                    <div 
-                                                                        key={ver.version || idx}
-                                                                        className="bg-[#F4F7FC] dark:bg-slate-900/50 rounded-2xl border border-slate-200/70 dark:border-slate-800 overflow-hidden transition-all">
-                                                                        <button
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setExpandedChangelogVersion(isExpanded ? null : ver.version);
-                                                                            }}
-                                                                            className="w-full p-3 flex items-center justify-between text-right hover:bg-slate-100/60 dark:hover:bg-slate-800/40 transition-colors">
-                                                                            <div className="flex items-center space-x-2.5 space-x-reverse min-w-0">
-                                                                                <div className={`w-2 h-2 rounded-full shrink-0 ${isCurrent ? 'bg-emerald-500 shadow-xs' : 'bg-slate-300 dark:bg-slate-600'}`} />
-                                                                                <div className="min-w-0">
-                                                                                    <div className="flex items-center space-x-2 space-x-reverse flex-wrap gap-1">
-                                                                                        <span className="text-xs font-bold text-slate-800 dark:text-slate-100 font-mono">نسخه {ver.version}</span>
-                                                                                        <span className="text-[9px] font-mono text-slate-400">(بیلد {ver.buildNumber})</span>
-                                                                                        {isCurrent && (
-                                                                                            <span className="text-[9px] bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 font-bold px-1.5 py-0.2 rounded-full">نصب‌شده</span>
-                                                                                        )}
-                                                                                    </div>
-                                                                                    <div className="text-[10px] text-slate-400 mt-0.5">تاریخ انتشار: {ver.releaseDate}</div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <Icon name="chevron-down" className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 ease-in-out ${isExpanded ? 'rotate-180' : ''}`} />
-                                                                        </button>
-
-                                                                        <div 
-                                                                            className={`grid transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                                                                                isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-                                                                            }`}
-                                                                        >
-                                                                            <div className="overflow-hidden">
-                                                                                <div className="px-3.5 pb-3 pt-1 border-t border-slate-200/50 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-300 space-y-1.5">
-                                                                                    {ver.commitMessage && (
-                                                                                        <div className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-lg border border-slate-200/40 dark:border-slate-700/40 dir-ltr text-left overflow-x-auto truncate">
-                                                                                            git: {ver.commitMessage}
-                                                                                        </div>
-                                                                                    )}
-                                                                                    <div className="space-y-1 mt-1.5">
-                                                                                        {ver.changes && ver.changes.map((change, cIdx) => (
-                                                                                            <div key={cIdx} className="flex items-start space-x-2 space-x-reverse">
-                                                                                                <Icon name="check" className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
-                                                                                                <span className="text-[11px] leading-relaxed">{change}</span>
-                                                                                            </div>
-                                                                                        ))}
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                );
-                                                            })}
-
-                                                            {hasMoreVersions && (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setShowAllVersions(!showAllVersions);
-                                                                    }}
-                                                                    className="w-full mt-2 py-2.5 px-3 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700/80 text-indigo-600 dark:text-indigo-400 rounded-2xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 space-x-reverse border border-slate-200/60 dark:border-slate-700/60 active:scale-98 shadow-xs">
-                                                                    <span>
-                                                                        {showAllVersions 
-                                                                            ? 'بستن نسخه‌های قدیمی‌تر' 
-                                                                            : `نمایش نسخه‌های قدیمی‌تر (${historyList.length - 5} نسخه دیگر)`}
-                                                                    </span>
-                                                                    <Icon name="chevron-down" className={`w-4 h-4 transition-transform duration-300 ${showAllVersions ? 'rotate-180' : ''}`} />
-                                                                </button>
-                                                            )}
-                                                        </div>
+                                            {/* Changelog Card Button */}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setIsChangelogModalOpen(true);
+                                                    setExpandedChangelogVersion(null);
+                                                }}
+                                                className="w-full py-3 px-4 bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 rounded-2xl text-xs font-bold transition-all flex items-center justify-between border border-emerald-200/80 dark:border-emerald-800/60 active:scale-98 shadow-2xs font-vazir">
+                                                <div className="flex items-center space-x-2.5 space-x-reverse">
+                                                    <div className="w-7 h-7 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                                                        <Icon name="history" className="w-4 h-4" />
                                                     </div>
-                                                );
-                                            })()}
+                                                    <span>تاریخچه تغییرات نسخه‌ها (Changelog)</span>
+                                                </div>
+                                                <div className="flex items-center space-x-1 space-x-reverse text-emerald-700 dark:text-emerald-300">
+                                                    <span className="text-[11px] font-bold">مشاهده تغییرات</span>
+                                                    <Icon name="chevron-left" className="w-4 h-4" />
+                                                </div>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -10367,6 +10297,30 @@
                                             <div className="overflow-hidden space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                                                 <p>برنامه مدیریت مالی Amir Finance ابزاری جهت ثبت و مدیریت وام‌ها، اقساط، طلب‌ها و بدهی‌های شخصی.</p>
                                                 <p className="text-[11px] text-slate-400">طراحی و توسعه: Amir Finance</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* 7. Changelog Card */}
+                                    <div 
+                                        onClick={() => {
+                                            setIsChangelogModalOpen(true);
+                                            setExpandedChangelogVersion(null);
+                                        }}
+                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm ring-1 ring-slate-900/5 dark:ring-0 cursor-pointer transition-all hover:border-emerald-400 active:scale-98">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-3.5 space-x-reverse">
+                                                <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                                    <Icon name="history" className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white font-vazir">تاریخچه تغییرات</h3>
+                                                    <p className="text-xs text-slate-400 mt-0.5 font-vazir">مشاهده و بررسی تغییرات نسخه‌ها</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center space-x-1 space-x-reverse text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/50 px-3 py-1.5 rounded-xl border border-emerald-100 dark:border-emerald-900/40">
+                                                <span>مشاهده</span>
+                                                <Icon name="chevron-left" className="w-3.5 h-3.5" />
                                             </div>
                                         </div>
                                     </div>
@@ -11364,6 +11318,168 @@
                                     <div className="flex space-x-2 space-x-reverse pt-2">
                                         <button onClick={handleUpdateContact} className="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">به‌روزرسانی</button>
                                         <button onClick={() => setShowEditContactModal(false)} className="flex-1 bg-slate-100 dark:bg-slate-700 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">انصراف</button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Modal: Version History / Changelog Popup */}
+                    <AnimatePresence>
+                        {isChangelogModalOpen && (
+                            <motion.div 
+                                key="changelog-backdrop"
+                                initial={{ opacity: 0 }} 
+                                animate={{ opacity: 1 }} 
+                                exit={{ opacity: 0 }}
+                                onClick={() => setIsChangelogModalOpen(false)}
+                                className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 sm:p-6"
+                            >
+                                <motion.div 
+                                    key="changelog-modal-panel"
+                                    initial={{ scale: 0.92, opacity: 0, y: 10 }}
+                                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                                    exit={{ scale: 0.92, opacity: 0, y: 10 }}
+                                    transition={{ type: "spring", stiffness: 320, damping: 28 }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="bg-white dark:bg-slate-800 w-full max-w-lg rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border border-slate-100 dark:border-slate-700/80 flex flex-col max-h-[85vh] relative overflow-hidden font-vazir"
+                                >
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between pb-3.5 border-b border-slate-200/80 dark:border-slate-700/80 shrink-0">
+                                        <button 
+                                            type="button"
+                                            onClick={() => setIsChangelogModalOpen(false)}
+                                            className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-500 dark:text-slate-400 transition-colors"
+                                            aria-label="بستن"
+                                        >
+                                            <Icon name="x" className="w-5 h-5" />
+                                        </button>
+                                        <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 dark:text-white font-vazir">
+                                            تغییرات نسخه‌ها
+                                        </h3>
+                                    </div>
+
+                                    {/* Body: Scrollable Accordion List */}
+                                    <div className="overflow-y-auto flex-1 my-3.5 py-1 pr-1 space-y-3.5 text-right dir-rtl custom-scrollbar">
+                                        {versionData.history && versionData.history.map((ver, idx) => {
+                                            const isLatest = idx === 0;
+                                            const isExpanded = expandedChangelogVersion === ver.version || (isLatest && expandedChangelogVersion === null);
+
+                                            let dateDisplay = '';
+                                            try {
+                                                if (ver.releaseDate) {
+                                                    const parts = ver.releaseDate.split('-');
+                                                    if (parts.length === 3) {
+                                                        const y = parseInt(parts[0], 10);
+                                                        const m = parseInt(parts[1], 10);
+                                                        const d = parseInt(parts[2], 10);
+                                                        if (y > 1700) {
+                                                            const { jy, jm } = gregorianToJalali(y, m, d);
+                                                            dateDisplay = `(${jalaliMonths[jm - 1]} ${toPersianDigits(jy)})`;
+                                                        } else {
+                                                            dateDisplay = `(${jalaliMonths[m - 1] || m} ${toPersianDigits(y)})`;
+                                                        }
+                                                    } else {
+                                                        dateDisplay = `(${toPersianDigits(ver.releaseDate)})`;
+                                                    }
+                                                }
+                                            } catch (e) {
+                                                dateDisplay = ver.releaseDate ? `(${toPersianDigits(ver.releaseDate)})` : '';
+                                            }
+
+                                            return (
+                                                <div 
+                                                    key={ver.version || idx} 
+                                                    className={`rounded-[20px] border transition-all duration-300 overflow-hidden ${
+                                                        isExpanded 
+                                                            ? 'border-emerald-300 dark:border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 shadow-2xs' 
+                                                            : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800'
+                                                    }`}
+                                                >
+                                                    {/* Accordion Header Button */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (isExpanded) {
+                                                                setExpandedChangelogVersion('closed_all');
+                                                            } else {
+                                                                setExpandedChangelogVersion(ver.version);
+                                                            }
+                                                        }}
+                                                        className="w-full p-3.5 sm:p-4 flex items-center justify-between text-right cursor-pointer select-none"
+                                                    >
+                                                        {/* Left side (in RTL layout): Chevron Toggle Icon */}
+                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                                                            isExpanded 
+                                                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300' 
+                                                                : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300'
+                                                        }`}>
+                                                            <Icon name={isExpanded ? "chevron-up" : "chevron-down"} className="w-4 h-4" />
+                                                        </div>
+
+                                                        {/* Right side (in RTL layout): Version Title + Badge + Date */}
+                                                        <div className="flex items-center space-x-2 space-x-reverse flex-wrap gap-1.5 min-w-0">
+                                                            <span className="font-bold text-sm sm:text-base text-slate-900 dark:text-white font-vazir">
+                                                                نسخه {toPersianDigits(ver.version)}
+                                                            </span>
+                                                            {isLatest && (
+                                                                <span className="text-[11px] font-bold bg-[#d1fae5] text-[#047857] dark:bg-emerald-900/60 dark:text-emerald-300 px-2.5 py-0.5 rounded-full whitespace-nowrap font-vazir">
+                                                                    جدیدترین نسخه
+                                                                </span>
+                                                            )}
+                                                            {dateDisplay && (
+                                                                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium font-vazir">
+                                                                    {dateDisplay}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </button>
+
+                                                    {/* Accordion Body */}
+                                                    <AnimatePresence initial={false}>
+                                                        {isExpanded && (
+                                                            <motion.div
+                                                                initial={{ height: 0, opacity: 0 }}
+                                                                animate={{ height: "auto", opacity: 1 }}
+                                                                exit={{ height: 0, opacity: 0 }}
+                                                                transition={{ duration: 0.22, ease: "easeInOut" }}
+                                                                className="overflow-hidden"
+                                                            >
+                                                                <div className="px-4 pb-4 pt-0">
+                                                                    <div className="border-t border-emerald-200/80 dark:border-emerald-800/60 pt-3 space-y-2.5">
+                                                                        {ver.changes && ver.changes.map((change, cIdx) => (
+                                                                            <div key={cIdx} className="flex items-start space-x-2.5 space-x-reverse text-right">
+                                                                                <span className="text-slate-500 dark:text-slate-400 font-bold text-sm shrink-0 mt-0.5">•</span>
+                                                                                <span className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-vazir">
+                                                                                    {change}
+                                                                                </span>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+                                            );
+                                        })}
+
+                                        {(!versionData.history || versionData.history.length === 0) && (
+                                            <div className="text-center py-8 text-slate-400 text-xs font-vazir">
+                                                تاریخچه‌ای برای نمایش وجود ندارد
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="pt-3.5 border-t border-slate-200/80 dark:border-slate-700/80 shrink-0 flex justify-start">
+                                        <button 
+                                            type="button"
+                                            onClick={() => setIsChangelogModalOpen(false)}
+                                            className="bg-[#f1f5f9] hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-8 py-2 rounded-full text-sm font-bold active:scale-95 transition-all shadow-2xs font-vazir"
+                                        >
+                                            بستن
+                                        </button>
                                     </div>
                                 </motion.div>
                             </motion.div>
