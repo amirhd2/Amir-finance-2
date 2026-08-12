@@ -4014,30 +4014,30 @@ function App() {
   const [toastMessage, setToastMessage] = useState('');
   const [showPlusMenu, setShowPlusMenu] = useState(false);
 
-  // Page Slide Transition Animation Variants
+  // Page Slide Transition Animation Variants (Matching reference code smooth slide & fade)
   const pageSlideVariants = {
     initial: direction => ({
-      x: direction === 'none' ? '0vw' : direction === 'back' ? '-30vw' : '100vw',
-      opacity: 1
+      x: direction === 'none' ? '0px' : direction === 'back' ? '-50px' : '50px',
+      opacity: direction === 'none' ? 1 : 0
     }),
     animate: direction => ({
-      x: '0vw',
+      x: '0px',
       opacity: 1,
       transition: direction === 'none' ? {
         duration: 0
       } : {
-        duration: 0.6,
-        ease: [0.25, 1, 0.5, 1]
+        duration: 0.32,
+        ease: [0.16, 1, 0.3, 1]
       }
     }),
     exit: direction => ({
-      x: direction === 'none' ? '0vw' : direction === 'back' ? '100vw' : '-30vw',
-      opacity: direction === 'none' ? 0 : 1,
+      x: direction === 'none' ? '0px' : direction === 'back' ? '50px' : '-50px',
+      opacity: 0,
       transition: direction === 'none' ? {
         duration: 0
       } : {
-        duration: 0.6,
-        ease: [0.25, 1, 0.5, 1]
+        duration: 0.22,
+        ease: [0.7, 0, 0.84, 0]
       }
     })
   };

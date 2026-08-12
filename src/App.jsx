@@ -2646,7 +2646,7 @@
 
                 let l1 = '';
                 let l2 = '';
-                let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : (tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده');
+                let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : (tx.description && tx.description.trim() ? tx.description.trim() : (tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده'));
 
                 if (tx.type === 'repayment') {
                     const instNum = getInstallmentNumberForTx(tx, undefined, totalCount, index);
@@ -2663,26 +2663,32 @@
                     if (!loanName) loanName = 'وام';
                     l2 = loanName;
                 } else if (tx.type === 'demand') {
-                    l1 = 'ثبت طلب جدید';
+                    l1 = tx.title || 'ثبت طلب جدید';
                     l2 = rawContactName.trim();
                 } else if (tx.type === 'demand_repayment') {
-                    l1 = 'بازپرداخت طلب';
+                    l1 = tx.title || 'بازپرداخت طلب';
                     l2 = rawContactName.trim();
                 } else if (tx.type === 'debt') {
-                    l1 = 'ثبت بدهی جدید';
+                    l1 = tx.title || 'ثبت بدهی جدید';
                     l2 = rawContactName.trim();
                 } else if (tx.type === 'debt_repayment') {
-                    l1 = 'بازپرداخت بدهی';
+                    l1 = tx.title || 'بازپرداخت بدهی';
                     l2 = rawContactName.trim();
+                } else if (tx.type === 'income') {
+                    l1 = tx.title || 'درآمد';
+                    l2 = rawContactName.trim() || tx.category || 'درآمد عمومی';
+                } else if (tx.type === 'expense') {
+                    l1 = tx.title || 'هزینه';
+                    l2 = rawContactName.trim() || tx.category || 'هزینه عمومی';
                 } else {
                     l1 = tx.title || 'تراکنش';
-                    l2 = rawContactName.trim();
+                    l2 = rawContactName.trim() || (tx.category ? tx.category : '');
                 }
 
                 return { line1: l1, line2: l2, line3: l3 };
             })();
 
-            const isRedAmount = tx.type === 'debt' || tx.type === 'demand_repayment' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment');
+            const isRedAmount = tx.isPositive !== undefined ? !tx.isPositive : (tx.type === 'debt' || tx.type === 'demand_repayment' || tx.type === 'expense' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment' && tx.type !== 'income'));
 
             return (
                 <SwipeToDeleteItem
@@ -2691,13 +2697,13 @@
                 >
                     <div 
                         id={`tx-card-${tx.id}`}
-                        className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${
+                        className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${
                             isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''
                         }`}
                     >
                         <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
-                            <div className={`w-12 h-12 rounded-2xl ${ (tx.type === 'debt' || tx.type === 'demand_repayment') ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center shrink-0`}>
-                                {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right")} className="w-6 h-6" />}
+                            <div className={`w-12 h-12 rounded-2xl font-bold text-lg ${ isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`}>
+                                {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (isRedAmount ? "arrow-up-right" : "arrow-down-left")} className="w-6 h-6" />}
                             </div>
                             <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
                                 <h3 className="text-sm font-extrabold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{line1}</h3>
@@ -3337,26 +3343,26 @@
             const [toastMessage, setToastMessage] = useState('');
             const [showPlusMenu, setShowPlusMenu] = useState(false);
 
-            // Page Slide Transition Animation Variants
+            // Page Slide Transition Animation Variants (Matching reference code smooth slide & fade)
             const pageSlideVariants = {
                 initial: (direction) => ({
-                    x: direction === 'none' ? '0vw' : (direction === 'back' ? '-30vw' : '100vw'),
-                    opacity: 1,
+                    x: direction === 'none' ? '0px' : (direction === 'back' ? '-50px' : '50px'),
+                    opacity: direction === 'none' ? 1 : 0,
                 }),
                 animate: (direction) => ({
-                    x: '0vw',
+                    x: '0px',
                     opacity: 1,
                     transition: direction === 'none' ? { duration: 0 } : {
-                        duration: 0.6,
-                        ease: [0.25, 1, 0.5, 1]
+                        duration: 0.32,
+                        ease: [0.16, 1, 0.3, 1]
                     }
                 }),
                 exit: (direction) => ({
-                    x: direction === 'none' ? '0vw' : (direction === 'back' ? '100vw' : '-30vw'),
-                    opacity: direction === 'none' ? 0 : 1,
+                    x: direction === 'none' ? '0px' : (direction === 'back' ? '50px' : '-50px'),
+                    opacity: 0,
                     transition: direction === 'none' ? { duration: 0 } : {
-                        duration: 0.6,
-                        ease: [0.25, 1, 0.5, 1]
+                        duration: 0.22,
+                        ease: [0.7, 0, 0.84, 0]
                     }
                 })
             };
@@ -4117,6 +4123,27 @@
 
             const [openSettingsSection, setOpenSettingsSection] = useState(null);
             const [allTxsPage, setAllTxsPage] = useState(1);
+            const [dynamicPageSize, setDynamicPageSize] = useState(() => {
+                if (typeof window === 'undefined') return 8;
+                const h = window.innerHeight;
+                const w = window.innerWidth;
+                if (w >= 1024 || h >= 1000) return 18;
+                if (w >= 768 || h >= 850) return 12;
+                return 8;
+            });
+
+            useEffect(() => {
+                const handleResize = () => {
+                    if (typeof window === 'undefined') return;
+                    const h = window.innerHeight;
+                    const w = window.innerWidth;
+                    if (w >= 1024 || h >= 1000) setDynamicPageSize(18);
+                    else if (w >= 768 || h >= 850) setDynamicPageSize(12);
+                    else setDynamicPageSize(8);
+                };
+                window.addEventListener('resize', handleResize);
+                return () => window.removeEventListener('resize', handleResize);
+            }, []);
             const [highlightedTxId, setHighlightedTxId] = useState(null);
             const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
             const [showRestoreConfirmModal, setShowRestoreConfirmModal] = useState(false);
@@ -7230,35 +7257,96 @@
                                     const loanReminders = loans.map(loan => {
                                         const nextDueInfo = getLoanNextDueInfo(loan, transactions);
                                         if (nextDueInfo.isCompleted) return null;
+
+                                        let iconName = 'landmark';
+                                        let iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+                                        
+                                        const titleLower = (loan.title || '').toLowerCase();
+                                        if (titleLower.includes('خودرو') || titleLower.includes('ماشین') || titleLower.includes('car')) {
+                                            iconName = 'car';
+                                            iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+                                        } else if (titleLower.includes('مسکن') || titleLower.includes('خانه') || titleLower.includes('ملک') || titleLower.includes('آپارتمان')) {
+                                            iconName = 'home';
+                                            iconBgClass = 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-500 dark:text-emerald-400';
+                                        } else if (titleLower.includes('رضایی') || titleLower.includes('شخصی') || titleLower.includes('بازپرداخت') || titleLower.includes('پرداخت')) {
+                                            iconName = 'user';
+                                            iconBgClass = 'bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400';
+                                        } else {
+                                            const hash = String(loan.id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                                            const variants = [
+                                                { bg: 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400', icon: 'car' },
+                                                { bg: 'bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400', icon: 'user' },
+                                                { bg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-500 dark:text-emerald-400', icon: 'home' },
+                                                { bg: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 dark:text-indigo-400', icon: 'credit-card' }
+                                            ];
+                                            const choice = variants[hash % variants.length];
+                                            iconName = choice.icon;
+                                            iconBgClass = choice.bg;
+                                        }
+
                                         return {
                                             id: `loan-${loan.id}`,
                                             loanObj: loan,
-                                            title: `قسط ${nextDueInfo.nextDueNum} - ${loan.title}`,
+                                            title: loan.title,
                                             dateStr: nextDueInfo.nextDueDateStr,
                                             daysLeft: nextDueInfo.daysLeft,
-                                            icon: 'landmark',
-                                            color: nextDueInfo.daysLeft <= 3 ? 'bg-red-50 text-red-500 dark:bg-red-950/40' : 'bg-emerald-50 text-emerald-500 dark:bg-emerald-950/40'
+                                            icon: iconName,
+                                            iconColor: iconBgClass
                                         };
                                     }).filter(Boolean);
 
                                     const activeList = loanReminders.length > 0 ? loanReminders : reminders;
                                     const sortedList = [...activeList].sort((a, b) => a.daysLeft - b.daysLeft);
-                                    const firstTwo = sortedList.slice(0, 2);
-                                    const extraList = sortedList.slice(2);
+                                    const firstThree = sortedList.slice(0, 3);
+                                    const extraList = sortedList.slice(3);
+
+                                    const renderReminderCard = (item) => {
+                                        let iconName = item.icon || 'landmark';
+                                        let iconBgClass = item.iconColor || 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+
+                                        const daysBadgeText = item.daysLeft < 0 
+                                            ? `${Math.abs(item.daysLeft)} روز تأخیر` 
+                                            : item.daysLeft === 0 
+                                                ? 'امروز سررسید' 
+                                                : `${item.daysLeft} روز مانده`;
+
+                                        return (
+                                            <div 
+                                                key={item.id}
+                                                onClick={() => item.loanObj && openLoanDetail(item.loanObj)}
+                                                className={`bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-3 sm:p-3.5 border border-slate-100/90 dark:border-slate-700/50 flex items-center justify-between gap-3 transition-all hover:bg-slate-100/80 dark:hover:bg-slate-700/70 ${item.loanObj ? 'cursor-pointer active:scale-[0.99]' : ''}`}
+                                            >
+                                                <div className="flex items-center space-x-3 space-x-reverse min-w-0">
+                                                    <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center shrink-0 ${iconBgClass}`}>
+                                                        <Icon name={iconName} className="w-5 h-5 sm:w-5.5 sm:h-5.5" />
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <h4 className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white truncate">{item.title}</h4>
+                                                        <p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5 truncate">{item.dateStr}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="shrink-0">
+                                                    <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 inline-block">
+                                                        {daysBadgeText}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    };
 
                                     return (
-                                        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all">
+                                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all space-y-3.5">
                                             <div 
                                                 onClick={() => setExpandedReminders(!expandedReminders)}
-                                                className="flex justify-between items-center cursor-pointer select-none group"
+                                                className="flex justify-between items-center cursor-pointer select-none group px-0.5"
                                             >
-                                                <div className="flex items-center space-x-2 space-x-reverse">
-                                                    <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-950/50 flex items-center justify-center text-red-500 group-hover:scale-105 transition-transform">
-                                                        <Icon name="calendar-clock" className="w-4 h-4" />
+                                                <div className="flex items-center space-x-3 space-x-reverse">
+                                                    <div className="w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-rose-500 dark:text-rose-400 group-hover:scale-105 transition-transform shrink-0">
+                                                        <Icon name="calendar-clock" className="w-5.5 h-5.5" />
                                                     </div>
                                                     <div>
-                                                        <h3 className="text-xs font-bold text-red-600 dark:text-red-400">یادآوری‌های مهم</h3>
-                                                        <p className="text-[10px] text-slate-400">نزدیک‌ترین سررسیدها ({sortedList.length} مورد)</p>
+                                                        <h3 className="text-sm sm:text-base font-extrabold text-rose-600 dark:text-rose-400 leading-tight">یادآوری‌های مهم</h3>
+                                                        <p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5">نزدیک‌ترین سررسیدها</p>
                                                     </div>
                                                 </div>
                                                 <button 
@@ -7267,33 +7355,20 @@
                                                         e.stopPropagation();
                                                         setExpandedReminders(!expandedReminders);
                                                     }} 
-                                                    className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors"
+                                                    className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer"
                                                 >
-                                                    <Icon name="chevron-down" className={`w-4 h-4 transition-transform duration-300 ${expandedReminders ? 'rotate-180' : 'rotate-0'}`} />
+                                                    <Icon name="chevron-down" className={`w-5 h-5 transition-transform duration-300 ${expandedReminders ? 'rotate-180' : 'rotate-0'}`} />
                                                 </button>
                                             </div>
 
-                                            <div className="space-y-2.5 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-700/60">
-                                                {firstTwo.map((item) => (
-                                                    <div 
-                                                        key={item.id}
-                                                        onClick={() => item.loanObj && openLoanDetail(item.loanObj)}
-                                                        className={`flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40 last:border-0 ${item.loanObj ? 'cursor-pointer hover:bg-[#F4F7FC] dark:hover:bg-slate-700/30 px-1 rounded-lg transition-colors' : ''}`}
-                                                    >
-                                                        <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center ${item.color}`}>
-                                                                <Icon name={item.icon || "landmark"} className="w-3.5 h-3.5" />
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-xs font-bold text-slate-800 dark:text-slate-200">{item.title}</div>
-                                                                <div className="text-[10px] text-slate-400">{item.dateStr}</div>
-                                                            </div>
-                                                        </div>
-                                                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${item.daysLeft <= 0 ? 'text-red-600 bg-red-100 dark:bg-red-950/80' : 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40'}`}>
-                                                            {item.daysLeft < 0 ? `${Math.abs(item.daysLeft)} روز تأخیر` : item.daysLeft === 0 ? 'امروز' : `${item.daysLeft} روز مانده`}
-                                                        </span>
+                                            <div className="space-y-2.5">
+                                                {firstThree.map(item => renderReminderCard(item))}
+
+                                                {sortedList.length === 0 && (
+                                                    <div className="text-center py-4 text-xs text-slate-400">
+                                                        سررسیدی نزدیک نیست
                                                     </div>
-                                                ))}
+                                                )}
 
                                                 <AnimatePresence initial={false}>
                                                     {expandedReminders && extraList.length > 0 && (
@@ -7303,28 +7378,9 @@
                                                             animate={{ opacity: 1, height: 'auto' }}
                                                             exit={{ opacity: 0, height: 0 }}
                                                             transition={{ duration: 0.3, ease: 'easeInOut' }}
-                                                            className="overflow-hidden space-y-2.5"
+                                                            className="overflow-hidden space-y-2.5 pt-1"
                                                         >
-                                                            {extraList.map((item) => (
-                                                                <div 
-                                                                    key={item.id}
-                                                                    onClick={() => item.loanObj && openLoanDetail(item.loanObj)}
-                                                                    className={`flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40 last:border-0 ${item.loanObj ? 'cursor-pointer hover:bg-[#F4F7FC] dark:hover:bg-slate-700/30 px-1 rounded-lg transition-colors' : ''}`}
-                                                                >
-                                                                    <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                                        <div className={`w-7 h-7 rounded-full flex items-center justify-center ${item.color}`}>
-                                                                            <Icon name={item.icon || "landmark"} className="w-3.5 h-3.5" />
-                                                                        </div>
-                                                                        <div>
-                                                                            <div className="text-xs font-bold text-slate-800 dark:text-slate-200">{item.title}</div>
-                                                                            <div className="text-[10px] text-slate-400">{item.dateStr}</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${item.daysLeft <= 0 ? 'text-red-600 bg-red-100 dark:bg-red-950/80' : 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40'}`}>
-                                                                        {item.daysLeft < 0 ? `${Math.abs(item.daysLeft)} روز تأخیر` : item.daysLeft === 0 ? 'امروز' : `${item.daysLeft} روز مانده`}
-                                                                    </span>
-                                                                </div>
-                                                            ))}
+                                                            {extraList.map(item => renderReminderCard(item))}
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>
@@ -7369,43 +7425,36 @@
                                 </div>
 
                                 {/* Dashboard Bottom: Recent Transactions */}
-                                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-3">
-                                    <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-2">
-                                        <h3 className="text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1.5 space-x-reverse">
-                                            <Icon name="history" className="w-4 h-4 text-indigo-600" />
+                                <div className="space-y-3 pt-1">
+                                    <div className="flex justify-between items-center px-1">
+                                        <h3 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5 space-x-reverse">
+                                            <Icon name="history" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                             <span>آخرین تراکنش‌ها</span>
                                         </h3>
-                                        <button onClick={() => { setAllTxsPage(1); navigateToTab('all-transactions', 'none'); }} className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                                        <button 
+                                            onClick={() => { setAllTxsPage(1); navigateToTab('all-transactions', 'none'); }} 
+                                            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                                        >
                                             مشاهده همه
                                         </button>
                                     </div>
 
-                                    <div className="space-y-2.5">
-                                        {transactions.slice(0, 4).map((tx) => (
-                                            <div 
-                                                key={tx.id} 
-                                                id={`tx-card-${tx.id}`}
-                                                onClick={() => handleTransactionClick(tx)}
-                                                className={`flex items-center justify-between py-2 border-b border-slate-50 dark:border-slate-700/40 last:border-0 cursor-pointer hover:bg-[#F4F7FC] dark:hover:bg-slate-700/50 transition-all rounded-xl px-2 -mx-2 active:scale-[0.98] ${
-                                                    tx.id === highlightedTxId ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-md' : ''
-                                                }`}
-                                            >
-                                                <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.isPositive ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'}`}>
-                                                        <Icon name={tx.isPositive ? 'arrow-down-left' : 'arrow-up-right'} className="w-4 h-4" />
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200">{tx.title}</div>
-                                                        <div className="text-[10px] text-slate-400">{tx.dateStr}</div>
-                                                    </div>
-                                                </div>
-                                                <div className="flex flex-col items-start text-left shrink-0 max-w-[130px] sm:max-w-none">
-                                                    <span className={`text-xs font-bold text-left block w-full leading-tight whitespace-normal break-words ${tx.isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
-                                                        {tx.isPositive ? `+${Math.abs(tx.amount).toLocaleString()}` : `${Math.abs(tx.amount).toLocaleString()}`} تومان
-                                                    </span>
-                                                </div>
-                                            </div>
+                                    <div className="space-y-3">
+                                        {transactions.slice(0, 5).map((tx, idx) => (
+                                            <SwipeableTxCard
+                                                key={tx.id || idx}
+                                                tx={tx}
+                                                contacts={contacts}
+                                                isHighlighted={tx.id === highlightedTxId}
+                                                onEdit={(txItem) => handleTransactionClick(txItem)}
+                                                onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
+                                            />
                                         ))}
+                                        {transactions.length === 0 && (
+                                            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 shadow-sm">
+                                                تراکنشی ثبت نشده است
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -9158,10 +9207,10 @@
                     case 'all-transactions':
                         return (
                             <div className="space-y-4 animate-fade-in pb-12">
-                                        <div className="flex justify-between items-center py-2">
-                                            <button 
-                                                onClick={onBack ? () => onBack('button') : (() => navigateBack('dashboard'))} 
-                                                className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">
+                                <div className="flex justify-between items-center py-2">
+                                    <button 
+                                        onClick={onBack ? () => onBack('button') : (() => navigateBack('dashboard'))} 
+                                        className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform cursor-pointer">
                                         <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                                     </button>
                                     <div className="text-center">
@@ -9173,76 +9222,59 @@
                                     </span>
                                 </div>
 
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-3">
-                                    <div className="space-y-2.5">
-                                        {transactions.slice((allTxsPage - 1) * 20, allTxsPage * 20).map((tx) => (
-                                            <div 
-                                                key={tx.id} 
-                                                id={`tx-card-${tx.id}`}
-                                                onClick={() => handleTransactionClick(tx)}
-                                                className={`flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700/40 last:border-0 cursor-pointer hover:bg-[#F4F7FC] dark:hover:bg-slate-700/50 transition-all rounded-xl px-2 -mx-2 active:scale-[0.98] ${
-                                                    tx.id === highlightedTxId ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-md' : ''
-                                                }`}
-                                            >
-                                                <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                    <div className={`w-9 h-9 rounded-full flex items-center justify-center ${tx.isPositive ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60' : 'bg-red-50 text-red-500 dark:bg-red-950/60'}`}>
-                                                        <Icon name={tx.isPositive ? 'arrow-down-left' : 'arrow-up-right'} className="w-4.5 h-4.5" />
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200">{tx.title}</div>
-                                                        <div className="text-[10px] text-slate-400 mt-0.5">{formatDateToNumericJalali(tx.dateStr)}</div>
-                                                    </div>
-                                                </div>
-                                                <div className="flex flex-col items-start text-left shrink-0 max-w-[130px] sm:max-w-none">
-                                                    <span className={`text-xs font-black text-left block w-full leading-tight whitespace-normal break-words ${tx.isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
-                                                        {tx.isPositive ? `+${Math.abs(tx.amount).toLocaleString()}` : `${Math.abs(tx.amount).toLocaleString()}`} تومان
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        ))}
+                                <div className="space-y-3">
+                                    {transactions.slice((allTxsPage - 1) * dynamicPageSize, allTxsPage * dynamicPageSize).map((tx, idx) => (
+                                        <SwipeableTxCard
+                                            key={tx.id || idx}
+                                            tx={tx}
+                                            contacts={contacts}
+                                            isHighlighted={tx.id === highlightedTxId}
+                                            onEdit={(txItem) => handleTransactionClick(txItem)}
+                                            onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
+                                        />
+                                    ))}
 
-                                        {transactions.length === 0 && (
-                                            <div className="text-center py-8 text-xs text-slate-400">
-                                                تراکنشی ثبت نشده است
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {transactions.length > 0 && (() => {
-                                        const totalPages = Math.max(1, Math.ceil(transactions.length / 20));
-                                        return (
-                                            <div className="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-xs font-bold">
-                                                <button 
-                                                    disabled={allTxsPage <= 1}
-                                                    onClick={() => setAllTxsPage(p => Math.max(1, p - 1))}
-                                                    className={`px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all ${
-                                                        allTxsPage <= 1 
-                                                            ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' 
-                                                            : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'
-                                                    }`}>
-                                                    <Icon name="chevron-right" className="w-4 h-4" />
-                                                    <span>صفحه قبل</span>
-                                                </button>
-
-                                                <span className="text-slate-600 dark:text-slate-300 font-extrabold px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-700/60">
-                                                    صفحه {allTxsPage} از {totalPages}
-                                                </span>
-
-                                                <button 
-                                                    disabled={allTxsPage >= totalPages}
-                                                    onClick={() => setAllTxsPage(p => Math.min(totalPages, p + 1))}
-                                                    className={`px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all ${
-                                                        allTxsPage >= totalPages 
-                                                            ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' 
-                                                            : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'
-                                                    }`}>
-                                                    <span>صفحه بعد</span>
-                                                    <Icon name="chevron-left" className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        );
-                                    })()}
+                                    {transactions.length === 0 && (
+                                        <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 shadow-sm">
+                                            تراکنشی ثبت نشده است
+                                        </div>
+                                    )}
                                 </div>
+
+                                {transactions.length > 0 && (() => {
+                                    const totalPages = Math.max(1, Math.ceil(transactions.length / dynamicPageSize));
+                                    return (
+                                        <div className="bg-white dark:bg-slate-800 rounded-2xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold">
+                                            <button 
+                                                disabled={allTxsPage <= 1}
+                                                onClick={() => setAllTxsPage(p => Math.max(1, p - 1))}
+                                                className={`px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all cursor-pointer ${
+                                                    allTxsPage <= 1 
+                                                        ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' 
+                                                        : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'
+                                                }`}>
+                                                <Icon name="chevron-right" className="w-4 h-4" />
+                                                <span>صفحه قبل</span>
+                                            </button>
+
+                                            <span className="text-slate-600 dark:text-slate-300 font-extrabold px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-700/60">
+                                                صفحه {allTxsPage} از {totalPages}
+                                            </span>
+
+                                            <button 
+                                                disabled={allTxsPage >= totalPages}
+                                                onClick={() => setAllTxsPage(p => Math.min(totalPages, p + 1))}
+                                                className={`px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all cursor-pointer ${
+                                                    allTxsPage >= totalPages 
+                                                        ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' 
+                                                        : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'
+                                                }`}>
+                                                <span>صفحه بعد</span>
+                                                <Icon name="chevron-left" className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         );
                     case 'settings':

@@ -57,6 +57,16 @@ function syncPublicFiles() {
     }
   }
 
+  // Copy all apple-splash PNGs
+  const rootFiles = fs.readdirSync(process.cwd());
+  for (const f of rootFiles) {
+    if (f.startsWith('apple-splash-') && f.endsWith('.png')) {
+      const src = path.join(process.cwd(), f);
+      const dest = path.join(publicDir, f);
+      fs.copyFileSync(src, dest);
+    }
+  }
+
   // Copy vendor folder recursively if exists
   const vendorSrc = path.join(process.cwd(), 'vendor');
   const vendorDest = path.join(publicDir, 'vendor');
