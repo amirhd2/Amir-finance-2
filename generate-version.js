@@ -2,12 +2,12 @@ import fs from 'fs';
 import path from 'path';
 
 const versionPath = path.join(process.cwd(), 'version.json');
-let vData = { installedVersion: '2.1.9', buildNumber: 205, releaseDate: new Date().toISOString() };
+let vData = { installedVersion: '2.2.3', buildNumber: 217, releaseDate: new Date().toISOString() };
 
 if (fs.existsSync(versionPath)) {
   try {
     const existing = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
-    vData.installedVersion = existing.installedVersion || '2.1.9';
+    vData.installedVersion = '2.2.3';
     vData.buildNumber = (existing.buildNumber || 204) + 1;
     vData.releaseDate = new Date().toISOString();
   } catch (e) {

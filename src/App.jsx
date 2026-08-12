@@ -2564,10 +2564,10 @@
                 <div 
                     ref={containerRef}
                     data-swipe-item="true" style={{ touchAction: 'pan-y' }}
-                    className={`relative transition-all duration-300 ${
+                    className={`relative transition-[max-height,opacity,transform] duration-300 ${
                         isDeleting 
                             ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none overflow-hidden' 
-                            : 'max-h-[500px] opacity-100 my-1 swipe-container-safe'
+                            : 'max-h-[500px] opacity-100 my-0.5 swipe-container-safe'
                     } ${className}`}
                 >
                     {/* Morphing Red Delete Button */}
@@ -2613,28 +2613,46 @@
             );
         }
 
-        function getInstallmentNumberForTx(tx, repaymentTxs, totalCount, index) {
+        function getInstallmentNumberForTx(tx, repaymentTxs, totalCount, index, allTransactions) {
             if (!tx) return 1;
-            if (tx.installmentNum) return tx.installmentNum;
+            if (tx.installmentNum) return Number(tx.installmentNum);
+
+            // 1. Check title for explicit installment number e.g. "پرداخت قسط شماره ۶" or "قسط 6"
             if (tx.title) {
-                const match = tx.title.match(/قسط\s*(?:شماره\s*)?(\d+)/);
+                const match = tx.title.match(/(?:قسط|شماره)\s*(\d+)/i);
                 if (match && match[1]) {
                     return parseInt(match[1], 10);
                 }
             }
-            if (totalCount !== undefined && index !== undefined) {
-                return totalCount - index;
-            }
+
+            // 2. If repaymentTxs list is provided (e.g. in loan details list)
             if (Array.isArray(repaymentTxs) && repaymentTxs.length > 0) {
                 const idx = repaymentTxs.findIndex(t => t.id === tx.id);
                 if (idx !== -1) {
-                    return repaymentTxs.length - idx;
+                    return repaymentTxs.length - idx; // because repaymentTxs is sorted newest first
                 }
             }
+
+            // 3. If totalCount & index are provided (index in newest-first list of repayments)
+            if (totalCount !== undefined && index !== undefined && totalCount > 0) {
+                return totalCount - index;
+            }
+
+            // 4. If allTransactions is available and tx has loanId
+            if (tx.loanId && Array.isArray(allTransactions) && allTransactions.length > 0) {
+                const loanRepays = allTransactions
+                    .filter(t => t.loanId === tx.loanId && t.type === 'repayment')
+                    .sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+                const idx = loanRepays.findIndex(t => t.id === tx.id);
+                if (idx !== -1) {
+                    return idx + 1;
+                }
+            }
+
             return 1;
         }
 
-        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [], isHighlighted = false }) {
+        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [], loans = [], allTransactions = [], isHighlighted = false, hasShadow = false }) {
             const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
 
             const { line1, line2, line3 } = (() => {
@@ -2649,18 +2667,32 @@
                 let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : (tx.description && tx.description.trim() ? tx.description.trim() : (tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده'));
 
                 if (tx.type === 'repayment') {
-                    const instNum = getInstallmentNumberForTx(tx, undefined, totalCount, index);
+                    const instNum = getInstallmentNumberForTx(tx, undefined, totalCount, index, allTransactions);
                     l1 = `پرداخت قسط ${instNum}`;
 
                     let loanName = tx.loanTitle || (tx.loan ? tx.loan.title : '');
-                    if (!loanName && tx.title && tx.title.includes('-')) {
-                        const parts = tx.title.split('-');
-                        loanName = parts[parts.length - 1].trim();
+                    if (!loanName && tx.loanId && Array.isArray(loans) && loans.length > 0) {
+                        const foundLoan = loans.find(l => l.id === Number(tx.loanId));
+                        if (foundLoan && foundLoan.title) {
+                            loanName = foundLoan.title;
+                        }
                     }
-                    if (!loanName && tx.title && tx.title.includes('وام')) {
-                        loanName = tx.title.substring(tx.title.indexOf('وام')).trim();
+                    if (!loanName && tx.title) {
+                        if (tx.title.includes('-')) {
+                            const parts = tx.title.split('-');
+                            const candidate = parts[parts.length - 1].trim();
+                            if (candidate && !candidate.startsWith('شماره')) {
+                                loanName = candidate;
+                            }
+                        }
+                        if (!loanName && tx.title.includes('وام')) {
+                            loanName = tx.title.substring(tx.title.indexOf('وام')).trim();
+                        }
+                        if (!loanName) {
+                            loanName = tx.title.replace(/^پرداخت\s*قسط(?:\s*شماره\s*\d+)?(?:\s*-\s*)?/i, '').trim();
+                        }
                     }
-                    if (!loanName) loanName = 'وام';
+                    if (!loanName || loanName === 'پرداخت قسط') loanName = 'وام';
                     l2 = loanName;
                 } else if (tx.type === 'demand') {
                     l1 = tx.title || 'ثبت طلب جدید';
@@ -2697,7 +2729,11 @@
                 >
                     <div 
                         id={`tx-card-${tx.id}`}
-                        className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${
+                        className={`${
+                            hasShadow 
+                                ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' 
+                                : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'
+                        } rounded-2xl border pl-4 pr-3.5 sm:pl-5 sm:pr-4 py-3 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${
                             isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''
                         }`}
                     >
@@ -3372,25 +3408,25 @@
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "2.2.3",
-    "buildNumber": 213,
-    "releaseDate": "2026-08-11",
+    "buildNumber": 217,
+    "releaseDate": "2026-08-12",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "2.2.3",
-    "latestBuild": 213,
+    "latestBuild": 217,
     "isUpdateAvailable": false,
     "history": [
         {
             "version": "2.2.3",
-            "buildNumber": 213,
+            "buildNumber": 217,
             "releaseDate": "2026-08-12",
             "releaseChannel": "Stable",
             "commitHash": "v223rel",
-            "commitMessage": "fix: restore full changelog history and fix splash screen bugs",
+            "commitMessage": "feat: release version 2.2.3 with accordion transactions card redesign & smooth animation fix",
             "changes": [
-                "بازگردانی تاریخچه کامل نسخه‌ها در صفحه تغییرات",
-                "حل مشکل همیشگی نمایش صفحه سیاه یا شکسته در زمان بارگذاری اولیه اسپلش اسکرین در حالت وب و Preview",
-                "بهبود عملکرد و ظاهر کارت تاریخچه تغییرات در صفحه تنظیمات"
+                "یکسان‌سازی کامل سبک کارت‌ها و سایه تراکنش‌ها با بخش یادآوری‌های مهم",
+                "بهبود و روان‌سازی انیمیشن باز و بسته شدن آکاردئون تراکنش‌ها و رفع پرش هنگام بستن",
+                "انتشار رسمی نسخه ۲.۲.۳"
             ]
         },
         {
@@ -3597,8 +3633,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 212;
-                const EMBEDDED_VERSION = "2.2.2";
+                const EMBEDDED_BUILD = 217;
+                const EMBEDDED_VERSION = "2.2.3";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4100,6 +4136,21 @@
 
             const [reminders, setReminders] = useState(initialReminders);
             const [expandedReminders, setExpandedReminders] = useState(false);
+            const [expandedRecentTxs, setExpandedRecentTxs] = useState(true);
+            const recentTxsAccordionRef = useRef(null);
+            const toggleRecentTxsAccordion = (e) => {
+                if (e) e.stopPropagation();
+                setExpandedRecentTxs(prev => {
+                    const nextState = !prev;
+                    if (!nextState && recentTxsAccordionRef.current) {
+                        const rect = recentTxsAccordionRef.current.getBoundingClientRect();
+                        if (rect.top < 10 || rect.bottom > window.innerHeight) {
+                            recentTxsAccordionRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    }
+                    return nextState;
+                });
+            };
             const [contactFilter, setContactFilter] = useState('all');
             const [profileFilter, setProfileFilter] = useState('all');
             const [contactLoansSubFilter, setContactLoansSubFilter] = useState('active');
@@ -5422,12 +5473,17 @@
 
                         const updatedTxs = transactions.map(t => {
                             if (t.id === installmentForm.id) {
+                                const instNum = t.installmentNum || getInstallmentNumberForTx(t, undefined, undefined, undefined, transactions);
+                                const loanName = targetLoan ? targetLoan.title : (t.loanTitle || 'وام');
                                 return {
                                     ...t,
+                                    loanId: Number(installmentForm.selectedLoanId),
+                                    loanTitle: loanName,
+                                    installmentNum: instNum,
                                     amount: amt,
                                     dateStr: dateStr,
                                     notes: installmentForm.notes,
-                                    title: `پرداخت قسط - ${targetLoan ? targetLoan.title : 'وام'}`
+                                    title: `پرداخت قسط شماره ${instNum} - ${loanName}`
                                 };
                             }
                             return t;
@@ -5453,12 +5509,18 @@
                                 setSelectedLoan(updatedTarget);
                             }
                         }
+                        const existingLoanRepays = transactions.filter(t => t.loanId === Number(installmentForm.selectedLoanId) && t.type === 'repayment');
+                        const nextInstNum = existingLoanRepays.length + 1;
+                        const loanName = targetLoan ? targetLoan.title : 'وام';
+
                         const newTx = {
                             id: Date.now(),
                             loanId: Number(installmentForm.selectedLoanId),
+                            loanTitle: loanName,
+                            installmentNum: nextInstNum,
                             contactId: selectedContact ? selectedContact.id : (targetLoan ? targetLoan.contactId : null),
                             type: 'repayment',
-                            title: `پرداخت قسط - ${targetLoan ? targetLoan.title : 'وام'}`,
+                            title: `پرداخت قسط شماره ${nextInstNum} - ${loanName}`,
                             dateStr: dateStr,
                             amount: amt,
                             notes: installmentForm.notes,
@@ -7370,20 +7432,17 @@
                                                     </div>
                                                 )}
 
-                                                <AnimatePresence initial={false}>
-                                                    {expandedReminders && extraList.length > 0 && (
-                                                        <motion.div
-                                                            key="extra-reminders-accordion"
-                                                            initial={{ opacity: 0, height: 0 }}
-                                                            animate={{ opacity: 1, height: 'auto' }}
-                                                            exit={{ opacity: 0, height: 0 }}
-                                                            transition={{ duration: 0.3, ease: 'easeInOut' }}
-                                                            className="overflow-hidden space-y-2.5 pt-1"
-                                                        >
-                                                            {extraList.map(item => renderReminderCard(item))}
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
+                                                <div 
+                                                    className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                                                        expandedReminders && extraList.length > 0 
+                                                            ? 'grid-rows-[1fr] opacity-100 mt-2.5' 
+                                                            : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'
+                                                    }`}
+                                                >
+                                                    <div className="overflow-hidden space-y-2.5">
+                                                        {extraList.map(item => renderReminderCard(item))}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     );
@@ -7424,37 +7483,70 @@
                                     </div>
                                 </div>
 
-                                {/* Dashboard Bottom: Recent Transactions */}
-                                <div className="space-y-3 pt-1">
-                                    <div className="flex justify-between items-center px-1">
-                                        <h3 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5 space-x-reverse">
-                                            <Icon name="history" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                                            <span>آخرین تراکنش‌ها</span>
-                                        </h3>
-                                        <button 
-                                            onClick={() => { setAllTxsPage(1); navigateToTab('all-transactions', 'none'); }} 
-                                            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
-                                        >
-                                            مشاهده همه
-                                        </button>
+                                {/* Dashboard Bottom: Recent Transactions Accordion */}
+                                <div 
+                                    ref={recentTxsAccordionRef}
+                                    className="bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all"
+                                >
+                                    <div 
+                                        onClick={toggleRecentTxsAccordion}
+                                        className="flex justify-between items-center cursor-pointer select-none group px-0.5"
+                                    >
+                                        <div className="flex items-center space-x-3 space-x-reverse">
+                                            <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0">
+                                                <Icon name="history" className="w-5.5 h-5.5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-sm sm:text-base font-extrabold text-indigo-600 dark:text-indigo-400 leading-tight">آخرین تراکنش‌ها</h3>
+                                                <p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5">تراکنش‌های اخیر ثبت‌شده</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center space-x-2 space-x-reverse">
+                                            <button 
+                                                onClick={toggleRecentTxsAccordion} 
+                                                className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer"
+                                            >
+                                                <Icon name="chevron-down" className={`w-5 h-5 transition-transform duration-300 ${expandedRecentTxs ? 'rotate-180' : 'rotate-0'}`} />
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        {transactions.slice(0, 5).map((tx, idx) => (
-                                            <SwipeableTxCard
-                                                key={tx.id || idx}
-                                                tx={tx}
-                                                contacts={contacts}
-                                                isHighlighted={tx.id === highlightedTxId}
-                                                onEdit={(txItem) => handleTransactionClick(txItem)}
-                                                onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
-                                            />
-                                        ))}
-                                        {transactions.length === 0 && (
-                                            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 shadow-sm">
-                                                تراکنشی ثبت نشده است
-                                            </div>
-                                        )}
+                                    <div 
+                                        className={`grid transition-[grid-template-rows,opacity,margin,padding] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                                            expandedRecentTxs 
+                                                ? 'grid-rows-[1fr] opacity-100 mt-3.5' 
+                                                : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'
+                                        }`}
+                                    >
+                                        <div className="overflow-hidden space-y-2.5">
+                                            {transactions.slice(0, 5).map((tx, idx) => (
+                                                <SwipeableTxCard
+                                                    key={tx.id || idx}
+                                                    tx={tx}
+                                                    contacts={contacts}
+                                                    isHighlighted={tx.id === highlightedTxId}
+                                                    onEdit={(txItem) => handleTransactionClick(txItem)}
+                                                    onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
+                                                />
+                                            ))}
+                                            {transactions.length === 0 && (
+                                                <div className="bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100/90 dark:border-slate-700/50">
+                                                    تراکنشی ثبت نشده است
+                                                </div>
+                                            )}
+                                            {transactions.length > 0 && (
+                                                <button
+                                                    onClick={() => {
+                                                        setAllTxsPage(1);
+                                                        navigateToTab('all-transactions', 'none');
+                                                    }}
+                                                    className="w-full mt-1.5 py-3 px-4 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100/90 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 border border-indigo-100/80 dark:border-indigo-800/50 text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 space-x-reverse active:scale-[0.98] transition-all cursor-pointer group/viewall"
+                                                >
+                                                    <span>مشاهده همه تراکنش‌ها</span>
+                                                    <Icon name="chevron-left" className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover/viewall:-translate-x-1 transition-transform" />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -9228,6 +9320,7 @@
                                             key={tx.id || idx}
                                             tx={tx}
                                             contacts={contacts}
+                                            hasShadow={true}
                                             isHighlighted={tx.id === highlightedTxId}
                                             onEdit={(txItem) => handleTransactionClick(txItem)}
                                             onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
@@ -9726,10 +9819,10 @@
                                 className="fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
                             >
                                 <picture className="w-full h-full flex items-center justify-center">
-                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.2, ./splash-landscape.jpg?v=2.2.2" />
-                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png?v=2.2.2, ./splash-portrait.jpg?v=2.2.2" />
+                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.3, ./splash-landscape.jpg?v=2.2.3" />
+                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png?v=2.2.3, ./splash-portrait.jpg?v=2.2.3" />
                                     <img 
-                                        src="./splash-portrait.png?v=2.2.2" 
+                                        src="./splash-portrait.png?v=2.2.3" 
                                         alt="Amir Finance Splash Screen" 
                                         onError={(e) => { 
                                             if (!e.currentTarget.dataset.retry) {
