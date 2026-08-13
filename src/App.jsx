@@ -3505,15 +3505,28 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "2.2.4",
-    "buildNumber": 219,
+    "installedVersion": "2.2.5",
+    "buildNumber": 230,
     "releaseDate": "2026-08-13",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "2.2.4",
-    "latestBuild": 219,
+    "latestVersion": "2.2.5",
+    "latestBuild": 230,
     "isUpdateAvailable": false,
     "history": [
+        {
+            "version": "2.2.5",
+            "buildNumber": 230,
+            "releaseDate": "2026-08-13",
+            "releaseChannel": "Stable",
+            "commitHash": "v225rel",
+            "commitMessage": "feat: release version 2.2.5 with universal stack wizard styling and close button contrast fix",
+            "changes": [
+                "یکپارچه‌سازی و یونیورسال کردن کامل ظاهر پنجره کارت‌های استک و استیکی کارت‌ها در تمام مسیرهای ورودی برنامه و منوی شناور",
+                "بهبود کنتراست و خوانایی دکمه ضربدر بستن کارت‌های استک در تم روشن و تاریک",
+                "انتشار رسمی نسخه ۲.۲.۵"
+            ]
+        },
         {
             "version": "2.2.4",
             "buildNumber": 219,
@@ -3744,8 +3757,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 217;
-                const EMBEDDED_VERSION = "2.2.4";
+                const EMBEDDED_BUILD = 230;
+                const EMBEDDED_VERSION = "2.2.5";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -3899,7 +3912,6 @@
                 return () => clearTimeout(timer);
             }, []);
             const [showStackWizard, setShowStackWizard] = useState(false);
-            const [isWizardFromFab, setIsWizardFromFab] = useState(false);
             const [wizardType, setWizardType] = useState('loan');
             const [wizardMode, setWizardMode] = useState('add');
             const [currentCardIdx, setCurrentCardIdx] = useState(0);
@@ -4478,7 +4490,7 @@
                 const darkBackdropColor = '#0b101d';
 
                 if (isAnyModalOpen) {
-                    const modalThemeColor = (showStackWizard && !isDark && !isWizardFromFab) ? '#F4F7FC' : darkBackdropColor;
+                    const modalThemeColor = (showStackWizard && !isDark) ? '#F4F7FC' : darkBackdropColor;
                     if (metaTheme) metaTheme.setAttribute('content', modalThemeColor);
                     if (document.body) document.body.style.backgroundColor = modalThemeColor;
                     if (document.documentElement) document.documentElement.style.backgroundColor = modalThemeColor;
@@ -4488,7 +4500,7 @@
                     if (document.body) document.body.style.backgroundColor = activeColor;
                     if (document.documentElement) document.documentElement.style.backgroundColor = activeColor;
                 }
-            }, [isAnyModalOpen, isDark, showStackWizard, isWizardFromFab]);
+            }, [isAnyModalOpen, isDark, showStackWizard]);
 
             const handleExportBackup = () => {
                 try {
@@ -4913,7 +4925,6 @@
 
             // Open Wizard Methods for Stack Cards
             const openStackWizard = (type, mode = 'add', data = null) => {
-                setIsWizardFromFab(Boolean(data && data.fromFab));
                 setWizardType(type);
                 setWizardMode(mode);
                 setCurrentCardIdx(0);
@@ -5864,7 +5875,6 @@
                 setCardFormBackup(null);
                 setShowUnsavedConfirmDialog(false);
                 setShowStackWizard(false);
-                setIsWizardFromFab(false);
             };
 
             const startEditingCard = (card) => {
@@ -9865,10 +9875,10 @@
                                 className="fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
                             >
                                 <picture className="w-full h-full flex items-center justify-center">
-                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.4, ./splash-landscape.jpg?v=2.2.4" />
-                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png?v=2.2.4, ./splash-portrait.jpg?v=2.2.4" />
+                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.5, ./splash-landscape.jpg?v=2.2.5" />
+                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png?v=2.2.5, ./splash-portrait.jpg?v=2.2.5" />
                                     <img 
-                                        src="./splash-portrait.png?v=2.2.4" 
+                                        src="./splash-portrait.png?v=2.2.5" 
                                         alt="Amir Finance Splash Screen" 
                                         onError={(e) => { 
                                             if (!e.currentTarget.dataset.retry) {
@@ -10003,7 +10013,7 @@
 
                                     {/* مخاطب جدید */}
                                     <button 
-                                        onClick={() => closePlusMenu(() => openStackWizard('contact', 'add', { fromFab: true }))}
+                                        onClick={() => closePlusMenu(() => openStackWizard('contact', 'add'))}
                                         className="w-full bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all">
                                         <div className="w-8.5 h-8.5 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                                             <Icon name="user-plus" className="w-4 h-4" />
@@ -10017,7 +10027,7 @@
                                     {/* طلب / بازپرداخت طلب */}
                                     <div className="grid grid-cols-2 gap-2">
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('demand', 'add', { fromFab: true }))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('demand', 'add'))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                                 <Icon name="arrow-up-right" className="w-4 h-4" />
@@ -10026,7 +10036,7 @@
                                         </button>
 
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('demand_repayment', 'add', { fromFab: true }))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('demand_repayment', 'add'))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-teal-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
                                                 <Icon name="check-circle-2" className="w-4 h-4" />
@@ -10038,7 +10048,7 @@
                                     {/* بدهی / بازپرداخت بدهی */}
                                     <div className="grid grid-cols-2 gap-2">
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('debt', 'add', { fromFab: true }))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('debt', 'add'))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-rose-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
                                                 <Icon name="arrow-down-left" className="w-4 h-4" />
@@ -10047,7 +10057,7 @@
                                         </button>
 
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('debt_repayment', 'add', { fromFab: true }))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('debt_repayment', 'add'))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-amber-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                                                 <Icon name="corner-down-left" className="w-4 h-4" />
@@ -10059,7 +10069,7 @@
                                     {/* وام / پرداخت قسط */}
                                     <div className="grid grid-cols-2 gap-2">
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('loan', 'add', { fromFab: true }))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('loan', 'add'))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                                                 <Icon name="landmark" className="w-4 h-4" />
@@ -10068,7 +10078,7 @@
                                         </button>
 
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('installment', 'add', { fromFab: true }))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('installment', 'add'))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-purple-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
                                                 <Icon name="receipt" className="w-4 h-4" />
@@ -10153,12 +10163,12 @@
                                 animate="animate"
                                 exit="exit"
                                 className={`absolute inset-0 z-50 flex flex-col justify-start items-center p-3 pt-[max(env(safe-area-inset-top,0px),24px)] overflow-hidden ${
-                                    (!isDark && !isWizardFromFab) ? 'bg-[#F4F7FC]' : 'bg-[#0b101d]/90 backdrop-blur-md'
+                                    !isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d]/90 backdrop-blur-md'
                                 }`}
                             >
                                 {/* PWA Status Bar Safe Area Cover */}
                                 <div className={`fixed top-0 inset-x-0 h-[max(env(safe-area-inset-top,0px),24px)] z-[60] ${
-                                    (!isDark && !isWizardFromFab) ? 'bg-[#F4F7FC]' : 'bg-[#0b101d] backdrop-blur-md'
+                                    !isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d] backdrop-blur-md'
                                 }`}></div>
                                 <motion.div
                                     key="stack-wizard-panel"
@@ -10338,14 +10348,15 @@
 
                                             {/* Floating Close X Button at Bottom */}
                                             <div className="w-full flex justify-center items-center py-2 shrink-0 z-40 relative">
-                                                <button 
+                                                <motion.button 
                                                     type="button"
+                                                    whileTap={{ scale: 0.88 }}
                                                     onClick={() => closeStackWizard(false)}
                                                     className="w-12 h-12 rounded-full bg-slate-900/85 hover:bg-slate-900 active:scale-90 text-white flex items-center justify-center border border-white/20 shadow-2xl transition-all cursor-pointer backdrop-blur-lg"
                                                     title="بستن"
                                                 >
                                                     <Icon name="x" className="w-6 h-6" />
-                                                </button>
+                                                </motion.button>
                                             </div>
                                         </div>
                                     ) : (
@@ -10389,8 +10400,10 @@
                                                     type="button"
                                                     whileTap={{ scale: 0.88 }}
                                                     onClick={() => closeStackWizard(false)}
-                                                    className="w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 active:scale-90 text-white flex items-center justify-center border border-white/25 shadow-xl backdrop-blur-md transition-all cursor-pointer">
-                                                    <Icon name="x" className="w-5 h-5" />
+                                                    className="w-12 h-12 rounded-full bg-slate-900/85 hover:bg-slate-900 active:scale-90 text-white flex items-center justify-center border border-white/20 shadow-2xl transition-all cursor-pointer backdrop-blur-lg"
+                                                    title="بستن"
+                                                >
+                                                    <Icon name="x" className="w-6 h-6" />
                                                 </motion.button>
                                             </div>
                                         </div>
