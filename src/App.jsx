@@ -1614,7 +1614,7 @@
             );
         }
 
-        function SwipeBackWrapper({ onBack, onRefresh, underlyingContent, children, className = "" }) {
+        function SwipeBackWrapper({ onBack, onRefresh, underlyingContent, children, className = "", navDirection = "forward" }) {
             const page1Ref = useRef(null);
             const page2Ref = useRef(null);
             const overlayRef = useRef(null);
@@ -1686,16 +1686,24 @@
                 const page2 = page2Ref.current;
                 const overlay = overlayRef.current;
 
-
-                                if (page1 && page2 && overlay) {
-                    page1.classList.remove('smooth-transition');
-                    page2.classList.remove('smooth-transition');
-                    overlay.classList.remove('smooth-overlay');
-                    page2.style.transform = 'translate3d(100%, 0, 0)';
-                    page1.style.transform = 'translate3d(0%, 0, 0)';
-                    overlay.style.opacity = '0';
-                    void page2.offsetHeight;
-                    requestAnimationFrame(() => requestAnimationFrame(() => openPage()));
+                if (page1 && page2 && overlay) {
+                    if (navDirection === 'none') {
+                        page1.classList.remove('smooth-transition');
+                        page2.classList.remove('smooth-transition');
+                        overlay.classList.remove('smooth-overlay');
+                        page2.style.transform = 'translate3d(0%, 0, 0)';
+                        page1.style.transform = 'translate3d(-25%, 0, 0)';
+                        overlay.style.opacity = '0.4';
+                    } else {
+                        page1.classList.remove('smooth-transition');
+                        page2.classList.remove('smooth-transition');
+                        overlay.classList.remove('smooth-overlay');
+                        page2.style.transform = 'translate3d(100%, 0, 0)';
+                        page1.style.transform = 'translate3d(0%, 0, 0)';
+                        overlay.style.opacity = '0';
+                        void page2.offsetHeight;
+                        requestAnimationFrame(() => requestAnimationFrame(() => openPage()));
+                    }
                 }
             }, []);
 
@@ -2613,46 +2621,113 @@
             );
         }
 
-        function getInstallmentNumberForTx(tx, repaymentTxs, totalCount, index, allTransactions) {
+        function getInstallmentNumberForTx(tx, repaymentTxs, totalCount, index) {
             if (!tx) return 1;
-            if (tx.installmentNum) return Number(tx.installmentNum);
-
-            // 1. Check title for explicit installment number e.g. "پرداخت قسط شماره ۶" or "قسط 6"
+            if (tx.installmentNum) return tx.installmentNum;
             if (tx.title) {
-                const match = tx.title.match(/(?:قسط|شماره)\s*(\d+)/i);
+                const match = tx.title.match(/قسط\s*(?:شماره\s*)?(\d+)/);
                 if (match && match[1]) {
                     return parseInt(match[1], 10);
                 }
             }
-
-            // 2. If repaymentTxs list is provided (e.g. in loan details list)
+            if (totalCount !== undefined && index !== undefined) {
+                return totalCount - index;
+            }
             if (Array.isArray(repaymentTxs) && repaymentTxs.length > 0) {
                 const idx = repaymentTxs.findIndex(t => t.id === tx.id);
                 if (idx !== -1) {
-                    return repaymentTxs.length - idx; // because repaymentTxs is sorted newest first
+                    return repaymentTxs.length - idx;
                 }
             }
-
-            // 3. If totalCount & index are provided (index in newest-first list of repayments)
-            if (totalCount !== undefined && index !== undefined && totalCount > 0) {
-                return totalCount - index;
-            }
-
-            // 4. If allTransactions is available and tx has loanId
-            if (tx.loanId && Array.isArray(allTransactions) && allTransactions.length > 0) {
-                const loanRepays = allTransactions
-                    .filter(t => t.loanId === tx.loanId && t.type === 'repayment')
-                    .sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
-                const idx = loanRepays.findIndex(t => t.id === tx.id);
-                if (idx !== -1) {
-                    return idx + 1;
-                }
-            }
-
             return 1;
         }
 
-        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [], loans = [], allTransactions = [], isHighlighted = false, hasShadow = false }) {
+        function ActiveArchiveSegmentedControl({ 
+            activeLabel, 
+            activeCount = 0, 
+            archiveCount = 0, 
+            currentFilter, 
+            onChange, 
+            colorTheme = 'indigo' 
+        }) {
+            const themeConfig = {
+                indigo: {
+                    activeTextColor: 'text-indigo-600 dark:text-indigo-400',
+                    underlineBg: 'bg-indigo-600 dark:bg-indigo-400'
+                },
+                blue: {
+                    activeTextColor: 'text-indigo-600 dark:text-indigo-400',
+                    underlineBg: 'bg-indigo-600 dark:bg-indigo-400'
+                },
+                rose: {
+                    activeTextColor: 'text-rose-600 dark:text-rose-400',
+                    underlineBg: 'bg-rose-600 dark:bg-rose-400'
+                },
+                emerald: {
+                    activeTextColor: 'text-emerald-600 dark:text-emerald-400',
+                    underlineBg: 'bg-emerald-600 dark:bg-emerald-400'
+                }
+            }[colorTheme] || {
+                activeTextColor: 'text-indigo-600 dark:text-indigo-400',
+                underlineBg: 'bg-indigo-600 dark:bg-indigo-400'
+            };
+
+            const isRightActive = currentFilter === 'active';
+            const isLeftActive = currentFilter === 'archived';
+
+            return (
+                <div className="w-full relative mt-2 mb-3 select-none">
+                    {/* Full width bottom track baseline */}
+                    <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-slate-200/80 dark:bg-slate-700/60" />
+
+                    {/* The 2 Filter Options */}
+                    <div className="grid grid-cols-2 w-full relative z-10 pb-2">
+                        {/* RIGHT SIDE: Active Records (1st column in RTL) */}
+                        <button
+                            type="button"
+                            onClick={() => onChange('active')}
+                            className={`py-1 px-2 text-center text-xs transition-colors duration-200 cursor-pointer flex items-center justify-center gap-1.5 ${
+                                isRightActive
+                                    ? `font-extrabold ${themeConfig.activeTextColor}`
+                                    : 'font-medium text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                            }`}
+                        >
+                            <span>{activeLabel}</span>
+                            <span className="dir-ltr text-[11px] font-bold">
+                                ({toPersianDigits(activeCount)})
+                            </span>
+                        </button>
+
+                        {/* LEFT SIDE: Archive (2nd column in RTL) */}
+                        <button
+                            type="button"
+                            onClick={() => onChange('archived')}
+                            className={`py-1 px-2 text-center text-xs transition-colors duration-200 cursor-pointer flex items-center justify-center gap-1.5 ${
+                                isLeftActive
+                                    ? `font-extrabold ${themeConfig.activeTextColor}`
+                                    : 'font-medium text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                            }`}
+                        >
+                            <span>بایگانی</span>
+                            <span className="dir-ltr text-[11px] font-bold">
+                                ({toPersianDigits(archiveCount)})
+                            </span>
+                        </button>
+                    </div>
+
+                    {/* Animated Underline */}
+                    <div
+                        className={`absolute bottom-0 h-[2.5px] rounded-full transition-all duration-200 ease-out z-20 ${themeConfig.underlineBg}`}
+                        style={{
+                            width: '50%',
+                            right: isRightActive ? '0%' : '50%'
+                        }}
+                    />
+                </div>
+            );
+        }
+
+        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [], loans = [], isHighlighted = false, hasShadow = true }) {
             const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
 
             const { line1, line2, line3 } = (() => {
@@ -2667,33 +2742,56 @@
                 let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : (tx.description && tx.description.trim() ? tx.description.trim() : (tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده'));
 
                 if (tx.type === 'repayment') {
-                    const instNum = getInstallmentNumberForTx(tx, undefined, totalCount, index, allTransactions);
-                    l1 = `پرداخت قسط ${instNum}`;
-
-                    let loanName = tx.loanTitle || (tx.loan ? tx.loan.title : '');
-                    if (!loanName && tx.loanId && Array.isArray(loans) && loans.length > 0) {
-                        const foundLoan = loans.find(l => l.id === Number(tx.loanId));
-                        if (foundLoan && foundLoan.title) {
-                            loanName = foundLoan.title;
-                        }
+                    // Look up matching loan object
+                    let targetLoan = tx.loan || (tx.loanId && Array.isArray(loans) && loans.length > 0 ? loans.find(l => Number(l.id) === Number(tx.loanId)) : null);
+                    if (!targetLoan && tx.loanId && typeof loans !== 'undefined' && Array.isArray(loans)) {
+                        targetLoan = loans.find(l => Number(l.id) === Number(tx.loanId));
                     }
+
+                    // Get exact loan title from the loans section
+                    let loanName = targetLoan ? targetLoan.title : (tx.loanTitle || (tx.loan ? tx.loan.title : ''));
                     if (!loanName && tx.title) {
                         if (tx.title.includes('-')) {
                             const parts = tx.title.split('-');
-                            const candidate = parts[parts.length - 1].trim();
-                            if (candidate && !candidate.startsWith('شماره')) {
-                                loanName = candidate;
-                            }
-                        }
-                        if (!loanName && tx.title.includes('وام')) {
+                            loanName = parts[parts.length - 1].trim();
+                        } else if (tx.title.includes('وام')) {
                             loanName = tx.title.substring(tx.title.indexOf('وام')).trim();
-                        }
-                        if (!loanName) {
-                            loanName = tx.title.replace(/^پرداخت\s*قسط(?:\s*شماره\s*\d+)?(?:\s*-\s*)?/i, '').trim();
+                        } else {
+                            loanName = tx.title.replace(/^پرداخت\s*قسط\s*(?:شماره\s*\d+\s*)?[-–—]?\s*/, '').trim();
                         }
                     }
-                    if (!loanName || loanName === 'پرداخت قسط') loanName = 'وام';
-                    l2 = loanName;
+                    if (!loanName) loanName = 'وام';
+
+                    // Determine installment number
+                    let instNum = tx.installmentNum;
+                    if (!instNum && tx.title) {
+                        const match = tx.title.match(/قسط\s*(?:شماره\s*)?(\d+)/);
+                        if (match && match[1]) {
+                            instNum = parseInt(match[1], 10);
+                        }
+                    }
+                    if (!instNum && targetLoan && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+                        const loanRepayments = transactions.filter(t => Number(t.loanId) === Number(targetLoan.id) && t.type === 'repayment').sort((a, b) => (a.id || 0) - (b.id || 0));
+                        const idxInLoan = loanRepayments.findIndex(t => t.id === tx.id);
+                        if (idxInLoan !== -1) {
+                            instNum = idxInLoan + 1;
+                        }
+                    }
+                    if (!instNum && totalCount !== undefined && index !== undefined) {
+                        instNum = totalCount - index;
+                    }
+
+                    l1 = instNum ? `پرداخت قسط شماره ${instNum} - ${loanName}` : `پرداخت قسط - ${loanName}`;
+
+                    let contactInfo = rawContactName.trim();
+                    if (!contactInfo && targetLoan) {
+                        if (targetLoan.lender) contactInfo = targetLoan.lender;
+                        else if (targetLoan.contactId && Array.isArray(contacts)) {
+                            const foundC = contacts.find(c => c.id === targetLoan.contactId);
+                            if (foundC) contactInfo = `${foundC.firstName || ''} ${foundC.lastName || ''}`.trim();
+                        }
+                    }
+                    l2 = contactInfo ? contactInfo : `اقساط ${loanName}`;
                 } else if (tx.type === 'demand') {
                     l1 = tx.title || 'ثبت طلب جدید';
                     l2 = rawContactName.trim();
@@ -3407,15 +3505,28 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "2.2.3",
-    "buildNumber": 217,
-    "releaseDate": "2026-08-12",
+    "installedVersion": "2.2.4",
+    "buildNumber": 219,
+    "releaseDate": "2026-08-13",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "2.2.3",
-    "latestBuild": 217,
+    "latestVersion": "2.2.4",
+    "latestBuild": 219,
     "isUpdateAvailable": false,
     "history": [
+        {
+            "version": "2.2.4",
+            "buildNumber": 219,
+            "releaseDate": "2026-08-13",
+            "releaseChannel": "Stable",
+            "commitHash": "v224rel",
+            "commitMessage": "feat: release version 2.2.4 with card shadow consistency and return animation fix",
+            "changes": [
+                "یکسان‌سازی سایه کارت‌های تراکنش در تمام بخش‌های بدهی و طلب فعال",
+                "اصلاح انیمیشن بازگشت از صفحات جزئیات مخاطب، وام و طلب به صفحه اصلی",
+                "انتشار رسمی نسخه ۲.۲.۴"
+            ]
+        },
         {
             "version": "2.2.3",
             "buildNumber": 217,
@@ -3634,7 +3745,7 @@
                 }
 
                 const EMBEDDED_BUILD = 217;
-                const EMBEDDED_VERSION = "2.2.3";
+                const EMBEDDED_VERSION = "2.2.4";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -5473,17 +5584,12 @@
 
                         const updatedTxs = transactions.map(t => {
                             if (t.id === installmentForm.id) {
-                                const instNum = t.installmentNum || getInstallmentNumberForTx(t, undefined, undefined, undefined, transactions);
-                                const loanName = targetLoan ? targetLoan.title : (t.loanTitle || 'وام');
                                 return {
                                     ...t,
-                                    loanId: Number(installmentForm.selectedLoanId),
-                                    loanTitle: loanName,
-                                    installmentNum: instNum,
                                     amount: amt,
                                     dateStr: dateStr,
                                     notes: installmentForm.notes,
-                                    title: `پرداخت قسط شماره ${instNum} - ${loanName}`
+                                    title: `پرداخت قسط - ${targetLoan ? targetLoan.title : 'وام'}`
                                 };
                             }
                             return t;
@@ -5509,18 +5615,12 @@
                                 setSelectedLoan(updatedTarget);
                             }
                         }
-                        const existingLoanRepays = transactions.filter(t => t.loanId === Number(installmentForm.selectedLoanId) && t.type === 'repayment');
-                        const nextInstNum = existingLoanRepays.length + 1;
-                        const loanName = targetLoan ? targetLoan.title : 'وام';
-
                         const newTx = {
                             id: Date.now(),
                             loanId: Number(installmentForm.selectedLoanId),
-                            loanTitle: loanName,
-                            installmentNum: nextInstNum,
                             contactId: selectedContact ? selectedContact.id : (targetLoan ? targetLoan.contactId : null),
                             type: 'repayment',
-                            title: `پرداخت قسط شماره ${nextInstNum} - ${loanName}`,
+                            title: `پرداخت قسط - ${targetLoan ? targetLoan.title : 'وام'}`,
                             dateStr: dateStr,
                             amount: amt,
                             notes: installmentForm.notes,
@@ -8233,28 +8333,14 @@
 
                                                 return (
                                                     <div className="space-y-2.5">
-                                                        <div className="bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1 flex items-center justify-between border border-slate-200/50 dark:border-slate-700/50 text-xs font-bold mb-3 shadow-xs">
-                                                            <button 
-                                                                type="button"
-                                                                onClick={() => setContactLoansSubFilter('active')}
-                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
-                                                                    contactLoansSubFilter === 'active' 
-                                                                        ? 'bg-indigo-600 text-white shadow-sm' 
-                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600'
-                                                                }`}>
-                                                                وام‌ها ({activeLoans.length})
-                                                            </button>
-                                                            <button 
-                                                                type="button"
-                                                                onClick={() => setContactLoansSubFilter('archived')}
-                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
-                                                                    contactLoansSubFilter === 'archived' 
-                                                                        ? 'bg-indigo-600 text-white shadow-sm' 
-                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600'
-                                                                }`}>
-                                                                بایگانی ({closedLoans.length})
-                                                            </button>
-                                                        </div>
+                                                        <ActiveArchiveSegmentedControl 
+                                                            activeLabel="وام‌های فعال"
+                                                            activeCount={activeLoans.length}
+                                                            archiveCount={closedLoans.length}
+                                                            currentFilter={contactLoansSubFilter}
+                                                            onChange={setContactLoansSubFilter}
+                                                            colorTheme="indigo"
+                                                        />
 
                                                         {contactLoansSubFilter === 'active' ? (
                                                             activeLoans.length > 0 ? (
@@ -8345,28 +8431,14 @@
 
                                                 return (
                                                     <div className="space-y-2">
-                                                        <div className="bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1 flex items-center justify-between border border-slate-200/50 dark:border-slate-700/50 text-xs font-bold mb-3 shadow-xs">
-                                                            <button 
-                                                                type="button"
-                                                                onClick={() => setContactDebtsSubFilter('active')}
-                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
-                                                                    contactDebtsSubFilter === 'active' 
-                                                                        ? 'bg-rose-600 text-white shadow-sm' 
-                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-rose-600'
-                                                                }`}>
-                                                                بدهی‌ها ({activeDebtCount})
-                                                            </button>
-                                                            <button 
-                                                                type="button"
-                                                                onClick={() => setContactDebtsSubFilter('archived')}
-                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
-                                                                    contactDebtsSubFilter === 'archived' 
-                                                                        ? 'bg-rose-600 text-white shadow-sm' 
-                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-rose-600'
-                                                                }`}>
-                                                                بایگانی ({archivedDebtPeriods.length})
-                                                            </button>
-                                                        </div>
+                                                        <ActiveArchiveSegmentedControl 
+                                                            activeLabel="بدهی‌های فعال"
+                                                            activeCount={activeDebtCount}
+                                                            archiveCount={archivedDebtPeriods.length}
+                                                            currentFilter={contactDebtsSubFilter}
+                                                            onChange={setContactDebtsSubFilter}
+                                                            colorTheme="rose"
+                                                        />
 
                                                         {contactDebtsSubFilter === 'active' ? (
                                                             contactDebts.length > 0 ? (
@@ -8377,6 +8449,7 @@
                                                                             key={tx.id}
                                                                             tx={tx}
                                                                             colorType="rose"
+                                                                            hasShadow={true}
                                                                             isHighlighted={tx.id === highlightedTxId}
                                                                             onEdit={(txItem) => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem)}
                                                                             onDelete={(txItem) => requestDeleteTx(txItem, 'debt')}
@@ -8472,28 +8545,14 @@
 
                                                 return (
                                                     <div className="space-y-2">
-                                                        <div className="bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1 flex items-center justify-between border border-slate-200/50 dark:border-slate-700/50 text-xs font-bold mb-3 shadow-xs">
-                                                            <button 
-                                                                type="button"
-                                                                onClick={() => setContactDemandsSubFilter('active')}
-                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
-                                                                    contactDemandsSubFilter === 'active' 
-                                                                        ? 'bg-emerald-600 text-white shadow-sm' 
-                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-emerald-600'
-                                                                }`}>
-                                                                طلب‌ها ({activeDemandCount})
-                                                            </button>
-                                                            <button 
-                                                                type="button"
-                                                                onClick={() => setContactDemandsSubFilter('archived')}
-                                                                className={`flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${
-                                                                    contactDemandsSubFilter === 'archived' 
-                                                                        ? 'bg-emerald-600 text-white shadow-sm' 
-                                                                        : 'text-slate-600 dark:text-slate-300 hover:text-emerald-600'
-                                                                }`}>
-                                                                بایگانی ({archivedDemandPeriods.length})
-                                                            </button>
-                                                        </div>
+                                                        <ActiveArchiveSegmentedControl 
+                                                            activeLabel="طلب‌های فعال"
+                                                            activeCount={activeDemandCount}
+                                                            archiveCount={archivedDemandPeriods.length}
+                                                            currentFilter={contactDemandsSubFilter}
+                                                            onChange={setContactDemandsSubFilter}
+                                                            colorTheme="emerald"
+                                                        />
 
                                                         {contactDemandsSubFilter === 'active' ? (
                                                             contactDemands.length > 0 ? (
@@ -8504,6 +8563,7 @@
                                                                             key={tx.id}
                                                                             tx={tx}
                                                                             colorType="emerald"
+                                                                            hasShadow={true}
                                                                             isHighlighted={tx.id === highlightedTxId}
                                                                             onEdit={(txItem) => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem)}
                                                                             onDelete={(txItem) => requestDeleteTx(txItem, 'demand')}
@@ -9265,6 +9325,7 @@
                                                         colorType={isDebt ? "rose" : "emerald"}
                                                         contactName={contactDisplayName}
                                                         contacts={contacts}
+                                                     loans={loans}
                                                         isHighlighted={tx.id === highlightedTxId}
                                                         onEdit={(txItem) => openStackWizard(isDebt ? (isRepay ? "debt_repayment" : "debt") : (isRepay ? "demand_repayment" : "demand"), "edit", txItem)}
                                                         onDelete={(txItem) => requestDeleteTx(txItem, isDebt ? "debt" : "demand")}
@@ -9299,19 +9360,28 @@
                     case 'all-transactions':
                         return (
                             <div className="space-y-4 animate-fade-in pb-12">
-                                <div className="flex justify-between items-center py-2">
-                                    <button 
-                                        onClick={onBack ? () => onBack('button') : (() => navigateBack('dashboard'))} 
-                                        className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform cursor-pointer">
-                                        <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
-                                    </button>
-                                    <div className="text-center">
-                                        <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">همه تراکنش‌ها</h3>
-                                        <p className="text-[10px] text-slate-400">لیست کامل تراکنش‌های ثبت شده</p>
+                                {/* Header in style of Contacts and Accounts pages */}
+                                <div className="flex items-center justify-between py-1.5 mb-3">
+                                    <div className="flex items-center gap-2.5">
+                                        <button 
+                                            onClick={onBack ? () => onBack('button') : (() => navigateBack('dashboard'))} 
+                                            className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform cursor-pointer shrink-0"
+                                            title="بازگشت"
+                                        >
+                                            <Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <Icon name="receipt" className="w-7 h-7 text-slate-800 dark:text-slate-100" />
+                                            <h1 className="text-xl font-bold text-slate-900 dark:text-white">همه تراکنش‌ها</h1>
+                                        </div>
                                     </div>
-                                    <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-full border border-indigo-200 dark:border-indigo-800/60">
-                                        {transactions.length} مورد
-                                    </span>
+                                    <div className="flex items-center gap-1.5 bg-indigo-50/80 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-2xl border border-indigo-100 dark:border-indigo-800/60 shadow-2xs shrink-0">
+                                        <Icon name="layers" className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+                                        <span className="text-xs font-extrabold dir-ltr">
+                                            {toPersianDigits(transactions.length)}
+                                        </span>
+                                        <span className="text-xs font-bold opacity-80">تراکنش</span>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-3">
@@ -9320,6 +9390,7 @@
                                             key={tx.id || idx}
                                             tx={tx}
                                             contacts={contacts}
+                                            loans={loans}
                                             hasShadow={true}
                                             isHighlighted={tx.id === highlightedTxId}
                                             onEdit={(txItem) => handleTransactionClick(txItem)}
@@ -9819,10 +9890,10 @@
                                 className="fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
                             >
                                 <picture className="w-full h-full flex items-center justify-center">
-                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.3, ./splash-landscape.jpg?v=2.2.3" />
-                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png?v=2.2.3, ./splash-portrait.jpg?v=2.2.3" />
+                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.4, ./splash-landscape.jpg?v=2.2.4" />
+                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png?v=2.2.4, ./splash-portrait.jpg?v=2.2.4" />
                                     <img 
-                                        src="./splash-portrait.png?v=2.2.3" 
+                                        src="./splash-portrait.png?v=2.2.4" 
                                         alt="Amir Finance Splash Screen" 
                                         onError={(e) => { 
                                             if (!e.currentTarget.dataset.retry) {
@@ -9865,6 +9936,7 @@
                                         {currentTab === 'contact-detail' && selectedContact && (
                                             <SwipeBackWrapper 
                                                 onBack={() => navigateToTab(loanReturnTab || 'contacts', 'none')}
+                                                navDirection={navDirection}
                                                 onRefresh={() => handleRefreshData('contact-detail')}
                                                 underlyingContent={renderTab(getUnderlyingTabForSubpage('contact-detail'))}
                                             >
@@ -9875,6 +9947,7 @@
                                         {currentTab === 'loan-detail' && selectedLoan && (
                                             <SwipeBackWrapper 
                                                 onBack={() => navigateToTab(loanReturnTab || 'accounts', 'none')}
+                                                navDirection={navDirection}
                                                 onRefresh={() => handleRefreshData('loan-detail')}
                                                 underlyingContent={renderTab(getUnderlyingTabForSubpage('loan-detail'))}
                                             >
@@ -9885,6 +9958,7 @@
                                         {currentTab === 'archived-period-detail' && selectedPeriod && (
                                             <SwipeBackWrapper 
                                                 onBack={() => navigateToTab(loanReturnTab || 'contact-detail', 'none')}
+                                                navDirection={navDirection}
                                                 onRefresh={() => handleRefreshData('archived-period-detail')}
                                                 underlyingContent={renderTab(getUnderlyingTabForSubpage('archived-period-detail'))}
                                             >
@@ -9895,6 +9969,7 @@
                                         {currentTab === 'all-transactions' && (
                                             <SwipeBackWrapper 
                                                 onBack={() => navigateToTab('dashboard', 'none')}
+                                                navDirection={navDirection}
                                                 onRefresh={() => handleRefreshData('all-transactions')}
                                                 underlyingContent={renderTab(getUnderlyingTabForSubpage('all-transactions'))}
                                             >

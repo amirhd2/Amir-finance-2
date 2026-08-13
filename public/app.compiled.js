@@ -2417,7 +2417,8 @@ function SwipeBackWrapper({
   onRefresh,
   underlyingContent,
   children,
-  className = ""
+  className = "",
+  navDirection = "forward"
 }) {
   const page1Ref = useRef(null);
   const page2Ref = useRef(null);
@@ -2478,14 +2479,23 @@ function SwipeBackWrapper({
     const page2 = page2Ref.current;
     const overlay = overlayRef.current;
     if (page1 && page2 && overlay) {
-      page1.classList.remove('smooth-transition');
-      page2.classList.remove('smooth-transition');
-      overlay.classList.remove('smooth-overlay');
-      page2.style.transform = 'translate3d(100%, 0, 0)';
-      page1.style.transform = 'translate3d(0%, 0, 0)';
-      overlay.style.opacity = '0';
-      void page2.offsetHeight;
-      requestAnimationFrame(() => requestAnimationFrame(() => openPage()));
+      if (navDirection === 'none') {
+        page1.classList.remove('smooth-transition');
+        page2.classList.remove('smooth-transition');
+        overlay.classList.remove('smooth-overlay');
+        page2.style.transform = 'translate3d(0%, 0, 0)';
+        page1.style.transform = 'translate3d(-25%, 0, 0)';
+        overlay.style.opacity = '0.4';
+      } else {
+        page1.classList.remove('smooth-transition');
+        page2.classList.remove('smooth-transition');
+        overlay.classList.remove('smooth-overlay');
+        page2.style.transform = 'translate3d(100%, 0, 0)';
+        page1.style.transform = 'translate3d(0%, 0, 0)';
+        overlay.style.opacity = '0';
+        void page2.offsetHeight;
+        requestAnimationFrame(() => requestAnimationFrame(() => openPage()));
+      }
     }
   }, []);
   useEffect(() => {
@@ -3336,7 +3346,7 @@ function SwipeToDeleteItem({
     style: {
       touchAction: 'pan-y'
     },
-    className: `relative transition-all duration-300 ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none overflow-hidden' : 'max-h-[500px] opacity-100 my-1 swipe-container-safe'} ${className}`
+    className: `relative transition-[max-height,opacity,transform] duration-300 ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none overflow-hidden' : 'max-h-[500px] opacity-100 my-0.5 swipe-container-safe'} ${className}`
   }, /*#__PURE__*/React.createElement("div", {
     ref: btnRef,
     className: "absolute right-1 top-1/2 z-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white cursor-pointer shadow-md select-none transition-colors",
@@ -3393,6 +3403,63 @@ function getInstallmentNumberForTx(tx, repaymentTxs, totalCount, index) {
   }
   return 1;
 }
+function ActiveArchiveSegmentedControl({
+  activeLabel,
+  activeCount = 0,
+  archiveCount = 0,
+  currentFilter,
+  onChange,
+  colorTheme = 'indigo'
+}) {
+  const themeConfig = {
+    indigo: {
+      activeTextColor: 'text-indigo-600 dark:text-indigo-400',
+      underlineBg: 'bg-indigo-600 dark:bg-indigo-400'
+    },
+    blue: {
+      activeTextColor: 'text-indigo-600 dark:text-indigo-400',
+      underlineBg: 'bg-indigo-600 dark:bg-indigo-400'
+    },
+    rose: {
+      activeTextColor: 'text-rose-600 dark:text-rose-400',
+      underlineBg: 'bg-rose-600 dark:bg-rose-400'
+    },
+    emerald: {
+      activeTextColor: 'text-emerald-600 dark:text-emerald-400',
+      underlineBg: 'bg-emerald-600 dark:bg-emerald-400'
+    }
+  }[colorTheme] || {
+    activeTextColor: 'text-indigo-600 dark:text-indigo-400',
+    underlineBg: 'bg-indigo-600 dark:bg-indigo-400'
+  };
+  const isRightActive = currentFilter === 'active';
+  const isLeftActive = currentFilter === 'archived';
+  return /*#__PURE__*/React.createElement("div", {
+    className: "w-full relative mt-2 mb-3 select-none"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute bottom-0 left-0 right-0 h-[1.5px] bg-slate-200/80 dark:bg-slate-700/60"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-2 w-full relative z-10 pb-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => onChange('active'),
+    className: `py-1 px-2 text-center text-xs transition-colors duration-200 cursor-pointer flex items-center justify-center gap-1.5 ${isRightActive ? `font-extrabold ${themeConfig.activeTextColor}` : 'font-medium text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`
+  }, /*#__PURE__*/React.createElement("span", null, activeLabel), /*#__PURE__*/React.createElement("span", {
+    className: "dir-ltr text-[11px] font-bold"
+  }, "(", toPersianDigits(activeCount), ")")), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => onChange('archived'),
+    className: `py-1 px-2 text-center text-xs transition-colors duration-200 cursor-pointer flex items-center justify-center gap-1.5 ${isLeftActive ? `font-extrabold ${themeConfig.activeTextColor}` : 'font-medium text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`
+  }, /*#__PURE__*/React.createElement("span", null, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC"), /*#__PURE__*/React.createElement("span", {
+    className: "dir-ltr text-[11px] font-bold"
+  }, "(", toPersianDigits(archiveCount), ")"))), /*#__PURE__*/React.createElement("div", {
+    className: `absolute bottom-0 h-[2.5px] rounded-full transition-all duration-200 ease-out z-20 ${themeConfig.underlineBg}`,
+    style: {
+      width: '50%',
+      right: isRightActive ? '0%' : '50%'
+    }
+  }));
+}
 function SwipeableTxCard({
   tx,
   index,
@@ -3402,7 +3469,9 @@ function SwipeableTxCard({
   colorType = 'indigo',
   contactName,
   contacts = [],
-  isHighlighted = false
+  loans = [],
+  isHighlighted = false,
+  hasShadow = true
 }) {
   const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
   const {
@@ -3417,35 +3486,76 @@ function SwipeableTxCard({
     }
     let l1 = '';
     let l2 = '';
-    let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده';
+    let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : tx.description && tx.description.trim() ? tx.description.trim() : tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده';
     if (tx.type === 'repayment') {
-      const instNum = getInstallmentNumberForTx(tx, undefined, totalCount, index);
-      l1 = `پرداخت قسط ${instNum}`;
-      let loanName = tx.loanTitle || (tx.loan ? tx.loan.title : '');
-      if (!loanName && tx.title && tx.title.includes('-')) {
-        const parts = tx.title.split('-');
-        loanName = parts[parts.length - 1].trim();
+      // Look up matching loan object
+      let targetLoan = tx.loan || (tx.loanId && Array.isArray(loans) && loans.length > 0 ? loans.find(l => Number(l.id) === Number(tx.loanId)) : null);
+      if (!targetLoan && tx.loanId && typeof loans !== 'undefined' && Array.isArray(loans)) {
+        targetLoan = loans.find(l => Number(l.id) === Number(tx.loanId));
       }
-      if (!loanName && tx.title && tx.title.includes('وام')) {
-        loanName = tx.title.substring(tx.title.indexOf('وام')).trim();
+
+      // Get exact loan title from the loans section
+      let loanName = targetLoan ? targetLoan.title : tx.loanTitle || (tx.loan ? tx.loan.title : '');
+      if (!loanName && tx.title) {
+        if (tx.title.includes('-')) {
+          const parts = tx.title.split('-');
+          loanName = parts[parts.length - 1].trim();
+        } else if (tx.title.includes('وام')) {
+          loanName = tx.title.substring(tx.title.indexOf('وام')).trim();
+        } else {
+          loanName = tx.title.replace(/^پرداخت\s*قسط\s*(?:شماره\s*\d+\s*)?[-–—]?\s*/, '').trim();
+        }
       }
       if (!loanName) loanName = 'وام';
-      l2 = loanName;
+
+      // Determine installment number
+      let instNum = tx.installmentNum;
+      if (!instNum && tx.title) {
+        const match = tx.title.match(/قسط\s*(?:شماره\s*)?(\d+)/);
+        if (match && match[1]) {
+          instNum = parseInt(match[1], 10);
+        }
+      }
+      if (!instNum && targetLoan && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+        const loanRepayments = transactions.filter(t => Number(t.loanId) === Number(targetLoan.id) && t.type === 'repayment').sort((a, b) => (a.id || 0) - (b.id || 0));
+        const idxInLoan = loanRepayments.findIndex(t => t.id === tx.id);
+        if (idxInLoan !== -1) {
+          instNum = idxInLoan + 1;
+        }
+      }
+      if (!instNum && totalCount !== undefined && index !== undefined) {
+        instNum = totalCount - index;
+      }
+      l1 = instNum ? `پرداخت قسط شماره ${instNum} - ${loanName}` : `پرداخت قسط - ${loanName}`;
+      let contactInfo = rawContactName.trim();
+      if (!contactInfo && targetLoan) {
+        if (targetLoan.lender) contactInfo = targetLoan.lender;else if (targetLoan.contactId && Array.isArray(contacts)) {
+          const foundC = contacts.find(c => c.id === targetLoan.contactId);
+          if (foundC) contactInfo = `${foundC.firstName || ''} ${foundC.lastName || ''}`.trim();
+        }
+      }
+      l2 = contactInfo ? contactInfo : `اقساط ${loanName}`;
     } else if (tx.type === 'demand') {
-      l1 = 'ثبت طلب جدید';
+      l1 = tx.title || 'ثبت طلب جدید';
       l2 = rawContactName.trim();
     } else if (tx.type === 'demand_repayment') {
-      l1 = 'بازپرداخت طلب';
+      l1 = tx.title || 'بازپرداخت طلب';
       l2 = rawContactName.trim();
     } else if (tx.type === 'debt') {
-      l1 = 'ثبت بدهی جدید';
+      l1 = tx.title || 'ثبت بدهی جدید';
       l2 = rawContactName.trim();
     } else if (tx.type === 'debt_repayment') {
-      l1 = 'بازپرداخت بدهی';
+      l1 = tx.title || 'بازپرداخت بدهی';
       l2 = rawContactName.trim();
+    } else if (tx.type === 'income') {
+      l1 = tx.title || 'درآمد';
+      l2 = rawContactName.trim() || tx.category || 'درآمد عمومی';
+    } else if (tx.type === 'expense') {
+      l1 = tx.title || 'هزینه';
+      l2 = rawContactName.trim() || tx.category || 'هزینه عمومی';
     } else {
       l1 = tx.title || 'تراکنش';
-      l2 = rawContactName.trim();
+      l2 = rawContactName.trim() || (tx.category ? tx.category : '');
     }
     return {
       line1: l1,
@@ -3453,19 +3563,19 @@ function SwipeableTxCard({
       line3: l3
     };
   })();
-  const isRedAmount = tx.type === 'debt' || tx.type === 'demand_repayment' || colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment';
+  const isRedAmount = tx.isPositive !== undefined ? !tx.isPositive : tx.type === 'debt' || tx.type === 'demand_repayment' || tx.type === 'expense' || colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment' && tx.type !== 'income';
   return /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
     onDelete: confirmCb => onDelete && onDelete(tx, confirmCb),
     onCardClick: () => onEdit && onEdit(tx)
   }, /*#__PURE__*/React.createElement("div", {
     id: `tx-card-${tx.id}`,
-    className: `bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
+    className: `${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border pl-4 pr-3.5 sm:pl-5 sm:pr-4 py-3 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `w-12 h-12 rounded-2xl ${tx.type === 'debt' || tx.type === 'demand_repayment' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400'} flex items-center justify-center shrink-0`
+    className: `w-12 h-12 rounded-2xl font-bold text-lg ${isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`
   }, totalCount ? totalCount - index : /*#__PURE__*/React.createElement(Icon, {
-    name: tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : tx.type === 'debt' ? "arrow-down-left" : "arrow-up-right",
+    name: tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : isRedAmount ? "arrow-up-right" : "arrow-down-left",
     className: "w-6 h-6"
   })), /*#__PURE__*/React.createElement("div", {
     className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
@@ -4046,22 +4156,30 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "2.2.3",
-    "buildNumber": 213,
-    "releaseDate": "2026-08-11",
+    "installedVersion": "2.2.4",
+    "buildNumber": 219,
+    "releaseDate": "2026-08-13",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "2.2.3",
-    "latestBuild": 213,
+    "latestVersion": "2.2.4",
+    "latestBuild": 219,
     "isUpdateAvailable": false,
     "history": [{
+      "version": "2.2.4",
+      "buildNumber": 219,
+      "releaseDate": "2026-08-13",
+      "releaseChannel": "Stable",
+      "commitHash": "v224rel",
+      "commitMessage": "feat: release version 2.2.4 with card shadow consistency and return animation fix",
+      "changes": ["یکسان‌سازی سایه کارت‌های تراکنش در تمام بخش‌های بدهی و طلب فعال", "اصلاح انیمیشن بازگشت از صفحات جزئیات مخاطب، وام و طلب به صفحه اصلی", "انتشار رسمی نسخه ۲.۲.۴"]
+    }, {
       "version": "2.2.3",
-      "buildNumber": 213,
+      "buildNumber": 217,
       "releaseDate": "2026-08-12",
       "releaseChannel": "Stable",
       "commitHash": "v223rel",
-      "commitMessage": "fix: restore full changelog history and fix splash screen bugs",
-      "changes": ["بازگردانی تاریخچه کامل نسخه‌ها در صفحه تغییرات", "حل مشکل همیشگی نمایش صفحه سیاه یا شکسته در زمان بارگذاری اولیه اسپلش اسکرین در حالت وب و Preview", "بهبود عملکرد و ظاهر کارت تاریخچه تغییرات در صفحه تنظیمات"]
+      "commitMessage": "feat: release version 2.2.3 with accordion transactions card redesign & smooth animation fix",
+      "changes": ["یکسان‌سازی کامل سبک کارت‌ها و سایه تراکنش‌ها با بخش یادآوری‌های مهم", "بهبود و روان‌سازی انیمیشن باز و بسته شدن آکاردئون تراکنش‌ها و رفع پرش هنگام بستن", "انتشار رسمی نسخه ۲.۲.۳"]
     }, {
       "version": "2.2.2",
       "buildNumber": 212,
@@ -4202,8 +4320,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 212;
-    const EMBEDDED_VERSION = "2.2.2";
+    const EMBEDDED_BUILD = 217;
+    const EMBEDDED_VERSION = "2.2.4";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -4642,6 +4760,24 @@ function App() {
   }, [contacts, transactions, completedPeriods, accountsQuery, accountsSubTab]);
   const [reminders, setReminders] = useState(initialReminders);
   const [expandedReminders, setExpandedReminders] = useState(false);
+  const [expandedRecentTxs, setExpandedRecentTxs] = useState(true);
+  const recentTxsAccordionRef = useRef(null);
+  const toggleRecentTxsAccordion = e => {
+    if (e) e.stopPropagation();
+    setExpandedRecentTxs(prev => {
+      const nextState = !prev;
+      if (!nextState && recentTxsAccordionRef.current) {
+        const rect = recentTxsAccordionRef.current.getBoundingClientRect();
+        if (rect.top < 10 || rect.bottom > window.innerHeight) {
+          recentTxsAccordionRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+          });
+        }
+      }
+      return nextState;
+    });
+  };
   const [contactFilter, setContactFilter] = useState('all');
   const [profileFilter, setProfileFilter] = useState('all');
   const [contactLoansSubFilter, setContactLoansSubFilter] = useState('active');
@@ -4663,6 +4799,24 @@ function App() {
   });
   const [openSettingsSection, setOpenSettingsSection] = useState(null);
   const [allTxsPage, setAllTxsPage] = useState(1);
+  const [dynamicPageSize, setDynamicPageSize] = useState(() => {
+    if (typeof window === 'undefined') return 8;
+    const h = window.innerHeight;
+    const w = window.innerWidth;
+    if (w >= 1024 || h >= 1000) return 18;
+    if (w >= 768 || h >= 850) return 12;
+    return 8;
+  });
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === 'undefined') return;
+      const h = window.innerHeight;
+      const w = window.innerWidth;
+      if (w >= 1024 || h >= 1000) setDynamicPageSize(18);else if (w >= 768 || h >= 850) setDynamicPageSize(12);else setDynamicPageSize(8);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [highlightedTxId, setHighlightedTxId] = useState(null);
   const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
   const [showRestoreConfirmModal, setShowRestoreConfirmModal] = useState(false);
@@ -7747,104 +7901,113 @@ function App() {
           const loanReminders = loans.map(loan => {
             const nextDueInfo = getLoanNextDueInfo(loan, transactions);
             if (nextDueInfo.isCompleted) return null;
+            let iconName = 'landmark';
+            let iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+            const titleLower = (loan.title || '').toLowerCase();
+            if (titleLower.includes('خودرو') || titleLower.includes('ماشین') || titleLower.includes('car')) {
+              iconName = 'car';
+              iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+            } else if (titleLower.includes('مسکن') || titleLower.includes('خانه') || titleLower.includes('ملک') || titleLower.includes('آپارتمان')) {
+              iconName = 'home';
+              iconBgClass = 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-500 dark:text-emerald-400';
+            } else if (titleLower.includes('رضایی') || titleLower.includes('شخصی') || titleLower.includes('بازپرداخت') || titleLower.includes('پرداخت')) {
+              iconName = 'user';
+              iconBgClass = 'bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400';
+            } else {
+              const hash = String(loan.id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+              const variants = [{
+                bg: 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400',
+                icon: 'car'
+              }, {
+                bg: 'bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400',
+                icon: 'user'
+              }, {
+                bg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-500 dark:text-emerald-400',
+                icon: 'home'
+              }, {
+                bg: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 dark:text-indigo-400',
+                icon: 'credit-card'
+              }];
+              const choice = variants[hash % variants.length];
+              iconName = choice.icon;
+              iconBgClass = choice.bg;
+            }
             return {
               id: `loan-${loan.id}`,
               loanObj: loan,
-              title: `قسط ${nextDueInfo.nextDueNum} - ${loan.title}`,
+              title: loan.title,
               dateStr: nextDueInfo.nextDueDateStr,
               daysLeft: nextDueInfo.daysLeft,
-              icon: 'landmark',
-              color: nextDueInfo.daysLeft <= 3 ? 'bg-red-50 text-red-500 dark:bg-red-950/40' : 'bg-emerald-50 text-emerald-500 dark:bg-emerald-950/40'
+              icon: iconName,
+              iconColor: iconBgClass
             };
           }).filter(Boolean);
           const activeList = loanReminders.length > 0 ? loanReminders : reminders;
           const sortedList = [...activeList].sort((a, b) => a.daysLeft - b.daysLeft);
-          const firstTwo = sortedList.slice(0, 2);
-          const extraList = sortedList.slice(2);
+          const firstThree = sortedList.slice(0, 3);
+          const extraList = sortedList.slice(3);
+          const renderReminderCard = item => {
+            let iconName = item.icon || 'landmark';
+            let iconBgClass = item.iconColor || 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+            const daysBadgeText = item.daysLeft < 0 ? `${Math.abs(item.daysLeft)} روز تأخیر` : item.daysLeft === 0 ? 'امروز سررسید' : `${item.daysLeft} روز مانده`;
+            return /*#__PURE__*/React.createElement("div", {
+              key: item.id,
+              onClick: () => item.loanObj && openLoanDetail(item.loanObj),
+              className: `bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-3 sm:p-3.5 border border-slate-100/90 dark:border-slate-700/50 flex items-center justify-between gap-3 transition-all hover:bg-slate-100/80 dark:hover:bg-slate-700/70 ${item.loanObj ? 'cursor-pointer active:scale-[0.99]' : ''}`
+            }, /*#__PURE__*/React.createElement("div", {
+              className: "flex items-center space-x-3 space-x-reverse min-w-0"
+            }, /*#__PURE__*/React.createElement("div", {
+              className: `w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center shrink-0 ${iconBgClass}`
+            }, /*#__PURE__*/React.createElement(Icon, {
+              name: iconName,
+              className: "w-5 h-5 sm:w-5.5 sm:h-5.5"
+            })), /*#__PURE__*/React.createElement("div", {
+              className: "min-w-0"
+            }, /*#__PURE__*/React.createElement("h4", {
+              className: "text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white truncate"
+            }, item.title), /*#__PURE__*/React.createElement("p", {
+              className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5 truncate"
+            }, item.dateStr))), /*#__PURE__*/React.createElement("div", {
+              className: "shrink-0"
+            }, /*#__PURE__*/React.createElement("span", {
+              className: "px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 inline-block"
+            }, daysBadgeText)));
+          };
           return /*#__PURE__*/React.createElement("div", {
-            className: "bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all"
+            className: "bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all space-y-3.5"
           }, /*#__PURE__*/React.createElement("div", {
             onClick: () => setExpandedReminders(!expandedReminders),
-            className: "flex justify-between items-center cursor-pointer select-none group"
+            className: "flex justify-between items-center cursor-pointer select-none group px-0.5"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "flex items-center space-x-2 space-x-reverse"
+            className: "flex items-center space-x-3 space-x-reverse"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "w-8 h-8 rounded-xl bg-red-50 dark:bg-red-950/50 flex items-center justify-center text-red-500 group-hover:scale-105 transition-transform"
+            className: "w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-rose-500 dark:text-rose-400 group-hover:scale-105 transition-transform shrink-0"
           }, /*#__PURE__*/React.createElement(Icon, {
             name: "calendar-clock",
-            className: "w-4 h-4"
+            className: "w-5.5 h-5.5"
           })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
-            className: "text-xs font-bold text-red-600 dark:text-red-400"
+            className: "text-sm sm:text-base font-extrabold text-rose-600 dark:text-rose-400 leading-tight"
           }, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC\u200C\u0647\u0627\u06CC \u0645\u0647\u0645"), /*#__PURE__*/React.createElement("p", {
-            className: "text-[10px] text-slate-400"
-          }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627 (", sortedList.length, " \u0645\u0648\u0631\u062F)"))), /*#__PURE__*/React.createElement("button", {
+            className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5"
+          }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627"))), /*#__PURE__*/React.createElement("button", {
             type: "button",
             onClick: e => {
               e.stopPropagation();
               setExpandedReminders(!expandedReminders);
             },
-            className: "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors"
+            className: "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer"
           }, /*#__PURE__*/React.createElement(Icon, {
             name: "chevron-down",
-            className: `w-4 h-4 transition-transform duration-300 ${expandedReminders ? 'rotate-180' : 'rotate-0'}`
+            className: `w-5 h-5 transition-transform duration-300 ${expandedReminders ? 'rotate-180' : 'rotate-0'}`
           }))), /*#__PURE__*/React.createElement("div", {
-            className: "space-y-2.5 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-700/60"
-          }, firstTwo.map(item => /*#__PURE__*/React.createElement("div", {
-            key: item.id,
-            onClick: () => item.loanObj && openLoanDetail(item.loanObj),
-            className: `flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40 last:border-0 ${item.loanObj ? 'cursor-pointer hover:bg-[#F4F7FC] dark:hover:bg-slate-700/30 px-1 rounded-lg transition-colors' : ''}`
+            className: "space-y-2.5"
+          }, firstThree.map(item => renderReminderCard(item)), sortedList.length === 0 && /*#__PURE__*/React.createElement("div", {
+            className: "text-center py-4 text-xs text-slate-400"
+          }, "\u0633\u0631\u0631\u0633\u06CC\u062F\u06CC \u0646\u0632\u062F\u06CC\u06A9 \u0646\u06CC\u0633\u062A"), /*#__PURE__*/React.createElement("div", {
+            className: `grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${expandedReminders && extraList.length > 0 ? 'grid-rows-[1fr] opacity-100 mt-2.5' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'}`
           }, /*#__PURE__*/React.createElement("div", {
-            className: "flex items-center space-x-2.5 space-x-reverse"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: `w-7 h-7 rounded-full flex items-center justify-center ${item.color}`
-          }, /*#__PURE__*/React.createElement(Icon, {
-            name: item.icon || "landmark",
-            className: "w-3.5 h-3.5"
-          })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-            className: "text-xs font-bold text-slate-800 dark:text-slate-200"
-          }, item.title), /*#__PURE__*/React.createElement("div", {
-            className: "text-[10px] text-slate-400"
-          }, item.dateStr))), /*#__PURE__*/React.createElement("span", {
-            className: `text-[11px] font-bold px-2 py-0.5 rounded-full ${item.daysLeft <= 0 ? 'text-red-600 bg-red-100 dark:bg-red-950/80' : 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40'}`
-          }, item.daysLeft < 0 ? `${Math.abs(item.daysLeft)} روز تأخیر` : item.daysLeft === 0 ? 'امروز' : `${item.daysLeft} روز مانده`))), /*#__PURE__*/React.createElement(AnimatePresence, {
-            initial: false
-          }, expandedReminders && extraList.length > 0 && /*#__PURE__*/React.createElement(motion.div, {
-            key: "extra-reminders-accordion",
-            initial: {
-              opacity: 0,
-              height: 0
-            },
-            animate: {
-              opacity: 1,
-              height: 'auto'
-            },
-            exit: {
-              opacity: 0,
-              height: 0
-            },
-            transition: {
-              duration: 0.3,
-              ease: 'easeInOut'
-            },
             className: "overflow-hidden space-y-2.5"
-          }, extraList.map(item => /*#__PURE__*/React.createElement("div", {
-            key: item.id,
-            onClick: () => item.loanObj && openLoanDetail(item.loanObj),
-            className: `flex items-center justify-between py-1.5 border-b border-slate-50 dark:border-slate-700/40 last:border-0 ${item.loanObj ? 'cursor-pointer hover:bg-[#F4F7FC] dark:hover:bg-slate-700/30 px-1 rounded-lg transition-colors' : ''}`
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "flex items-center space-x-2.5 space-x-reverse"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: `w-7 h-7 rounded-full flex items-center justify-center ${item.color}`
-          }, /*#__PURE__*/React.createElement(Icon, {
-            name: item.icon || "landmark",
-            className: "w-3.5 h-3.5"
-          })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-            className: "text-xs font-bold text-slate-800 dark:text-slate-200"
-          }, item.title), /*#__PURE__*/React.createElement("div", {
-            className: "text-[10px] text-slate-400"
-          }, item.dateStr))), /*#__PURE__*/React.createElement("span", {
-            className: `text-[11px] font-bold px-2 py-0.5 rounded-full ${item.daysLeft <= 0 ? 'text-red-600 bg-red-100 dark:bg-red-950/80' : 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40'}`
-          }, item.daysLeft < 0 ? `${Math.abs(item.daysLeft)} روز تأخیر` : item.daysLeft === 0 ? 'امروز' : `${item.daysLeft} روز مانده`)))))));
+          }, extraList.map(item => renderReminderCard(item))))));
         })(), /*#__PURE__*/React.createElement("div", {
           className: "grid grid-cols-3 gap-2.5"
         }, /*#__PURE__*/React.createElement("div", {
@@ -7897,43 +8060,53 @@ function App() {
         }, totalDemand.toLocaleString()), /*#__PURE__*/React.createElement("div", {
           className: "text-[9px] text-white/70"
         }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-3"
+          ref: recentTxsAccordionRef,
+          className: "bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-2"
-        }, /*#__PURE__*/React.createElement("h3", {
-          className: "text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1.5 space-x-reverse"
+          onClick: toggleRecentTxsAccordion,
+          className: "flex justify-between items-center cursor-pointer select-none group px-0.5"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center space-x-3 space-x-reverse"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0"
         }, /*#__PURE__*/React.createElement(Icon, {
           name: "history",
-          className: "w-4 h-4 text-indigo-600"
-        }), /*#__PURE__*/React.createElement("span", null, "\u0622\u062E\u0631\u06CC\u0646 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("button", {
+          className: "w-5.5 h-5.5"
+        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+          className: "text-sm sm:text-base font-extrabold text-indigo-600 dark:text-indigo-400 leading-tight"
+        }, "\u0622\u062E\u0631\u06CC\u0646 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("p", {
+          className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5"
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0627\u062E\u06CC\u0631 \u062B\u0628\u062A\u200C\u0634\u062F\u0647"))), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center space-x-2 space-x-reverse"
+        }, /*#__PURE__*/React.createElement("button", {
+          onClick: toggleRecentTxsAccordion,
+          className: "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer"
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 transition-transform duration-300 ${expandedRecentTxs ? 'rotate-180' : 'rotate-0'}`
+        })))), /*#__PURE__*/React.createElement("div", {
+          className: `grid transition-[grid-template-rows,opacity,margin,padding] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${expandedRecentTxs ? 'grid-rows-[1fr] opacity-100 mt-3.5' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'}`
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "overflow-hidden space-y-2.5"
+        }, transactions.slice(0, 5).map((tx, idx) => /*#__PURE__*/React.createElement(SwipeableTxCard, {
+          key: tx.id || idx,
+          tx: tx,
+          contacts: contacts,
+          isHighlighted: tx.id === highlightedTxId,
+          onEdit: txItem => handleTransactionClick(txItem),
+          onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
+        })), transactions.length === 0 && /*#__PURE__*/React.createElement("div", {
+          className: "bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100/90 dark:border-slate-700/50"
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A"), transactions.length > 0 && /*#__PURE__*/React.createElement("button", {
           onClick: () => {
             setAllTxsPage(1);
             navigateToTab('all-transactions', 'none');
           },
-          className: "text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
-        }, "\u0645\u0634\u0627\u0647\u062F\u0647 \u0647\u0645\u0647")), /*#__PURE__*/React.createElement("div", {
-          className: "space-y-2.5"
-        }, transactions.slice(0, 4).map(tx => /*#__PURE__*/React.createElement("div", {
-          key: tx.id,
-          id: `tx-card-${tx.id}`,
-          onClick: () => handleTransactionClick(tx),
-          className: `flex items-center justify-between py-2 border-b border-slate-50 dark:border-slate-700/40 last:border-0 cursor-pointer hover:bg-[#F4F7FC] dark:hover:bg-slate-700/50 transition-all rounded-xl px-2 -mx-2 active:scale-[0.98] ${tx.id === highlightedTxId ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-md' : ''}`
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-2.5 space-x-reverse"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: `w-8 h-8 rounded-full flex items-center justify-center ${tx.isPositive ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'}`
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: tx.isPositive ? 'arrow-down-left' : 'arrow-up-right',
-          className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
-        }, tx.title), /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-slate-400"
-        }, tx.dateStr))), /*#__PURE__*/React.createElement("div", {
-          className: "flex flex-col items-start text-left shrink-0 max-w-[130px] sm:max-w-none"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: `text-xs font-bold text-left block w-full leading-tight whitespace-normal break-words ${tx.isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`
-        }, tx.isPositive ? `+${Math.abs(tx.amount).toLocaleString()}` : `${Math.abs(tx.amount).toLocaleString()}`, " \u062A\u0648\u0645\u0627\u0646")))))));
+          className: "w-full mt-1.5 py-3 px-4 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100/90 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 border border-indigo-100/80 dark:border-indigo-800/50 text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 space-x-reverse active:scale-[0.98] transition-all cursor-pointer group/viewall"
+        }, /*#__PURE__*/React.createElement("span", null, "\u0645\u0634\u0627\u0647\u062F\u0647 \u0647\u0645\u0647 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/React.createElement(Icon, {
+          name: "chevron-left",
+          className: "w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover/viewall:-translate-x-1 transition-transform"
+        }))))));
       case 'accounts':
         return /*#__PURE__*/React.createElement("div", {
           className: "space-y-4 animate-fade-in"
@@ -8572,17 +8745,14 @@ function App() {
           const closedLoans = contactLoans.filter(l => l.remainingAmount <= 0);
           return /*#__PURE__*/React.createElement("div", {
             className: "space-y-2.5"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1 flex items-center justify-between border border-slate-200/50 dark:border-slate-700/50 text-xs font-bold mb-3 shadow-xs"
-          }, /*#__PURE__*/React.createElement("button", {
-            type: "button",
-            onClick: () => setContactLoansSubFilter('active'),
-            className: `flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${contactLoansSubFilter === 'active' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600'}`
-          }, "\u0648\u0627\u0645\u200C\u0647\u0627 (", activeLoans.length, ")"), /*#__PURE__*/React.createElement("button", {
-            type: "button",
-            onClick: () => setContactLoansSubFilter('archived'),
-            className: `flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${contactLoansSubFilter === 'archived' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600'}`
-          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC (", closedLoans.length, ")")), contactLoansSubFilter === 'active' ? activeLoans.length > 0 ? activeLoans.map(loan => /*#__PURE__*/React.createElement("div", {
+          }, /*#__PURE__*/React.createElement(ActiveArchiveSegmentedControl, {
+            activeLabel: "\u0648\u0627\u0645\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
+            activeCount: activeLoans.length,
+            archiveCount: closedLoans.length,
+            currentFilter: contactLoansSubFilter,
+            onChange: setContactLoansSubFilter,
+            colorTheme: "indigo"
+          }), contactLoansSubFilter === 'active' ? activeLoans.length > 0 ? activeLoans.map(loan => /*#__PURE__*/React.createElement("div", {
             key: loan.id,
             onClick: () => openLoanDetail(loan),
             className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
@@ -8659,22 +8829,20 @@ function App() {
           const activeDebtCount = contactDebts.length > 0 ? contactDebts.length : selectedContact.totalDebt > 0 ? 1 : 0;
           return /*#__PURE__*/React.createElement("div", {
             className: "space-y-2"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1 flex items-center justify-between border border-slate-200/50 dark:border-slate-700/50 text-xs font-bold mb-3 shadow-xs"
-          }, /*#__PURE__*/React.createElement("button", {
-            type: "button",
-            onClick: () => setContactDebtsSubFilter('active'),
-            className: `flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${contactDebtsSubFilter === 'active' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:text-rose-600'}`
-          }, "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627 (", activeDebtCount, ")"), /*#__PURE__*/React.createElement("button", {
-            type: "button",
-            onClick: () => setContactDebtsSubFilter('archived'),
-            className: `flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${contactDebtsSubFilter === 'archived' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:text-rose-600'}`
-          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC (", archivedDebtPeriods.length, ")")), contactDebtsSubFilter === 'active' ? contactDebts.length > 0 ? contactDebts.map(tx => {
+          }, /*#__PURE__*/React.createElement(ActiveArchiveSegmentedControl, {
+            activeLabel: "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
+            activeCount: activeDebtCount,
+            archiveCount: archivedDebtPeriods.length,
+            currentFilter: contactDebtsSubFilter,
+            onChange: setContactDebtsSubFilter,
+            colorTheme: "rose"
+          }), contactDebtsSubFilter === 'active' ? contactDebts.length > 0 ? contactDebts.map(tx => {
             const isRepay = tx.type === 'debt_repayment';
             return /*#__PURE__*/React.createElement(SwipeableTxCard, {
               key: tx.id,
               tx: tx,
               colorType: "rose",
+              hasShadow: true,
               isHighlighted: tx.id === highlightedTxId,
               onEdit: txItem => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem),
               onDelete: txItem => requestDeleteTx(txItem, 'debt')
@@ -8762,22 +8930,20 @@ function App() {
           const activeDemandCount = contactDemands.length > 0 ? contactDemands.length : selectedContact.totalDemand > 0 ? 1 : 0;
           return /*#__PURE__*/React.createElement("div", {
             className: "space-y-2"
-          }, /*#__PURE__*/React.createElement("div", {
-            className: "bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1 flex items-center justify-between border border-slate-200/50 dark:border-slate-700/50 text-xs font-bold mb-3 shadow-xs"
-          }, /*#__PURE__*/React.createElement("button", {
-            type: "button",
-            onClick: () => setContactDemandsSubFilter('active'),
-            className: `flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${contactDemandsSubFilter === 'active' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:text-emerald-600'}`
-          }, "\u0637\u0644\u0628\u200C\u0647\u0627 (", activeDemandCount, ")"), /*#__PURE__*/React.createElement("button", {
-            type: "button",
-            onClick: () => setContactDemandsSubFilter('archived'),
-            className: `flex-1 py-2 px-3 rounded-xl transition-all duration-200 text-center ${contactDemandsSubFilter === 'archived' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:text-emerald-600'}`
-          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC (", archivedDemandPeriods.length, ")")), contactDemandsSubFilter === 'active' ? contactDemands.length > 0 ? contactDemands.map(tx => {
+          }, /*#__PURE__*/React.createElement(ActiveArchiveSegmentedControl, {
+            activeLabel: "\u0637\u0644\u0628\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
+            activeCount: activeDemandCount,
+            archiveCount: archivedDemandPeriods.length,
+            currentFilter: contactDemandsSubFilter,
+            onChange: setContactDemandsSubFilter,
+            colorTheme: "emerald"
+          }), contactDemandsSubFilter === 'active' ? contactDemands.length > 0 ? contactDemands.map(tx => {
             const isRepay = tx.type === 'demand_repayment';
             return /*#__PURE__*/React.createElement(SwipeableTxCard, {
               key: tx.id,
               tx: tx,
               colorType: "emerald",
+              hasShadow: true,
               isHighlighted: tx.id === highlightedTxId,
               onEdit: txItem => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem),
               onDelete: txItem => requestDeleteTx(txItem, 'demand')
@@ -9608,6 +9774,7 @@ function App() {
             colorType: isDebt ? "rose" : "emerald",
             contactName: contactDisplayName,
             contacts: contacts,
+            loans: loans,
             isHighlighted: tx.id === highlightedTxId,
             onEdit: txItem => openStackWizard(isDebt ? isRepay ? "debt_repayment" : "debt" : isRepay ? "demand_repayment" : "demand", "edit", txItem),
             onDelete: txItem => requestDeleteTx(txItem, isDebt ? "debt" : "demand")
@@ -9629,69 +9796,67 @@ function App() {
         return /*#__PURE__*/React.createElement("div", {
           className: "space-y-4 animate-fade-in pb-12"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "flex justify-between items-center py-2"
+          className: "flex items-center justify-between py-1.5 mb-3"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center gap-2.5"
         }, /*#__PURE__*/React.createElement("button", {
           onClick: onBack ? () => onBack('button') : () => navigateBack('dashboard'),
-          className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform"
+          className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform cursor-pointer shrink-0",
+          title: "\u0628\u0627\u0632\u06AF\u0634\u062A"
         }, /*#__PURE__*/React.createElement(Icon, {
           name: "arrow-right",
           className: "w-5 h-5 text-slate-700 dark:text-slate-200"
         })), /*#__PURE__*/React.createElement("div", {
-          className: "text-center"
-        }, /*#__PURE__*/React.createElement("h3", {
-          className: "text-sm font-extrabold text-slate-900 dark:text-white"
-        }, "\u0647\u0645\u0647 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("p", {
-          className: "text-[10px] text-slate-400"
-        }, "\u0644\u06CC\u0633\u062A \u06A9\u0627\u0645\u0644 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u062B\u0628\u062A \u0634\u062F\u0647")), /*#__PURE__*/React.createElement("span", {
-          className: "text-[10px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-full border border-indigo-200 dark:border-indigo-800/60"
-        }, transactions.length, " \u0645\u0648\u0631\u062F")), /*#__PURE__*/React.createElement("div", {
-          className: "bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 space-y-3"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "space-y-2.5"
-        }, transactions.slice((allTxsPage - 1) * 20, allTxsPage * 20).map(tx => /*#__PURE__*/React.createElement("div", {
-          key: tx.id,
-          id: `tx-card-${tx.id}`,
-          onClick: () => handleTransactionClick(tx),
-          className: `flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700/40 last:border-0 cursor-pointer hover:bg-[#F4F7FC] dark:hover:bg-slate-700/50 transition-all rounded-xl px-2 -mx-2 active:scale-[0.98] ${tx.id === highlightedTxId ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-md' : ''}`
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-2.5 space-x-reverse"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: `w-9 h-9 rounded-full flex items-center justify-center ${tx.isPositive ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60' : 'bg-red-50 text-red-500 dark:bg-red-950/60'}`
+          className: "flex items-center gap-2"
         }, /*#__PURE__*/React.createElement(Icon, {
-          name: tx.isPositive ? 'arrow-down-left' : 'arrow-up-right',
-          className: "w-4.5 h-4.5"
-        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
-        }, tx.title), /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-slate-400 mt-0.5"
-        }, formatDateToNumericJalali(tx.dateStr)))), /*#__PURE__*/React.createElement("div", {
-          className: "flex flex-col items-start text-left shrink-0 max-w-[130px] sm:max-w-none"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: `text-xs font-black text-left block w-full leading-tight whitespace-normal break-words ${tx.isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`
-        }, tx.isPositive ? `+${Math.abs(tx.amount).toLocaleString()}` : `${Math.abs(tx.amount).toLocaleString()}`, " \u062A\u0648\u0645\u0627\u0646")))), transactions.length === 0 && /*#__PURE__*/React.createElement("div", {
-          className: "text-center py-8 text-xs text-slate-400"
+          name: "receipt",
+          className: "w-7 h-7 text-slate-800 dark:text-slate-100"
+        }), /*#__PURE__*/React.createElement("h1", {
+          className: "text-xl font-bold text-slate-900 dark:text-white"
+        }, "\u0647\u0645\u0647 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"))), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center gap-1.5 bg-indigo-50/80 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-2xl border border-indigo-100 dark:border-indigo-800/60 shadow-2xs shrink-0"
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "layers",
+          className: "w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400"
+        }), /*#__PURE__*/React.createElement("span", {
+          className: "text-xs font-extrabold dir-ltr"
+        }, toPersianDigits(transactions.length)), /*#__PURE__*/React.createElement("span", {
+          className: "text-xs font-bold opacity-80"
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634"))), /*#__PURE__*/React.createElement("div", {
+          className: "space-y-3"
+        }, transactions.slice((allTxsPage - 1) * dynamicPageSize, allTxsPage * dynamicPageSize).map((tx, idx) => /*#__PURE__*/React.createElement(SwipeableTxCard, {
+          key: tx.id || idx,
+          tx: tx,
+          contacts: contacts,
+          loans: loans,
+          hasShadow: true,
+          isHighlighted: tx.id === highlightedTxId,
+          onEdit: txItem => handleTransactionClick(txItem),
+          onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
+        })), transactions.length === 0 && /*#__PURE__*/React.createElement("div", {
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-8 text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 shadow-sm"
         }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A")), transactions.length > 0 && (() => {
-          const totalPages = Math.max(1, Math.ceil(transactions.length / 20));
+          const totalPages = Math.max(1, Math.ceil(transactions.length / dynamicPageSize));
           return /*#__PURE__*/React.createElement("div", {
-            className: "pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-xs font-bold"
+            className: "bg-white dark:bg-slate-800 rounded-2xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold"
           }, /*#__PURE__*/React.createElement("button", {
             disabled: allTxsPage <= 1,
             onClick: () => setAllTxsPage(p => Math.max(1, p - 1)),
-            className: `px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all ${allTxsPage <= 1 ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'}`
+            className: `px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all cursor-pointer ${allTxsPage <= 1 ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'}`
           }, /*#__PURE__*/React.createElement(Icon, {
             name: "chevron-right",
             className: "w-4 h-4"
           }), /*#__PURE__*/React.createElement("span", null, "\u0635\u0641\u062D\u0647 \u0642\u0628\u0644")), /*#__PURE__*/React.createElement("span", {
-            className: "text-slate-600 dark:text-slate-300 font-extrabold px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-700/60"
+            className: "text-slate-600 dark:text-slate-300 font-extrabold px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-700/60"
           }, "\u0635\u0641\u062D\u0647 ", allTxsPage, " \u0627\u0632 ", totalPages), /*#__PURE__*/React.createElement("button", {
             disabled: allTxsPage >= totalPages,
             onClick: () => setAllTxsPage(p => Math.min(totalPages, p + 1)),
-            className: `px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all ${allTxsPage >= totalPages ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'}`
+            className: `px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all cursor-pointer ${allTxsPage >= totalPages ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'}`
           }, /*#__PURE__*/React.createElement("span", null, "\u0635\u0641\u062D\u0647 \u0628\u0639\u062F"), /*#__PURE__*/React.createElement(Icon, {
             name: "chevron-left",
             className: "w-4 h-4"
           })));
-        })()));
+        })());
       case 'settings':
         return /*#__PURE__*/React.createElement("div", {
           className: "space-y-3.5 animate-fade-in pb-12"
@@ -10159,12 +10324,12 @@ function App() {
     className: "w-full h-full flex items-center justify-center"
   }, /*#__PURE__*/React.createElement("source", {
     media: "(orientation: landscape)",
-    srcSet: "./splash-landscape.png?v=2.2.2, ./splash-landscape.jpg?v=2.2.2"
+    srcSet: "./splash-landscape.png?v=2.2.4, ./splash-landscape.jpg?v=2.2.4"
   }), /*#__PURE__*/React.createElement("source", {
     media: "(orientation: portrait)",
-    srcSet: "./splash-portrait.png?v=2.2.2, ./splash-portrait.jpg?v=2.2.2"
+    srcSet: "./splash-portrait.png?v=2.2.4, ./splash-portrait.jpg?v=2.2.4"
   }), /*#__PURE__*/React.createElement("img", {
-    src: "./splash-portrait.png?v=2.2.2",
+    src: "./splash-portrait.png?v=2.2.4",
     alt: "Amir Finance Splash Screen",
     onError: e => {
       if (!e.currentTarget.dataset.retry) {
@@ -10201,24 +10366,28 @@ function App() {
     className: "flex-1 relative w-full h-full"
   }, currentTab === 'contact-detail' && selectedContact && /*#__PURE__*/React.createElement(SwipeBackWrapper, {
     onBack: () => navigateToTab(loanReturnTab || 'contacts', 'none'),
+    navDirection: navDirection,
     onRefresh: () => handleRefreshData('contact-detail'),
     underlyingContent: renderTab(getUnderlyingTabForSubpage('contact-detail'))
   }, ({
     onBack
   }) => renderTab('contact-detail', onBack)), currentTab === 'loan-detail' && selectedLoan && /*#__PURE__*/React.createElement(SwipeBackWrapper, {
     onBack: () => navigateToTab(loanReturnTab || 'accounts', 'none'),
+    navDirection: navDirection,
     onRefresh: () => handleRefreshData('loan-detail'),
     underlyingContent: renderTab(getUnderlyingTabForSubpage('loan-detail'))
   }, ({
     onBack
   }) => renderTab('loan-detail', onBack)), currentTab === 'archived-period-detail' && selectedPeriod && /*#__PURE__*/React.createElement(SwipeBackWrapper, {
     onBack: () => navigateToTab(loanReturnTab || 'contact-detail', 'none'),
+    navDirection: navDirection,
     onRefresh: () => handleRefreshData('archived-period-detail'),
     underlyingContent: renderTab(getUnderlyingTabForSubpage('archived-period-detail'))
   }, ({
     onBack
   }) => renderTab('archived-period-detail', onBack)), currentTab === 'all-transactions' && /*#__PURE__*/React.createElement(SwipeBackWrapper, {
     onBack: () => navigateToTab('dashboard', 'none'),
+    navDirection: navDirection,
     onRefresh: () => handleRefreshData('all-transactions'),
     underlyingContent: renderTab(getUnderlyingTabForSubpage('all-transactions'))
   }, ({

@@ -2,12 +2,22 @@ import fs from 'fs';
 import path from 'path';
 
 const versionPath = path.join(process.cwd(), 'version.json');
-let vData = { installedVersion: '2.2.3', buildNumber: 217, releaseDate: new Date().toISOString() };
+const pkgPath = path.join(process.cwd(), 'package.json');
+
+let pkgVersion = '2.2.3';
+if (fs.existsSync(pkgPath)) {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    if (pkg.version) pkgVersion = pkg.version;
+  } catch (e) {}
+}
+
+let vData = { installedVersion: pkgVersion, buildNumber: 217, releaseDate: new Date().toISOString() };
 
 if (fs.existsSync(versionPath)) {
   try {
     const existing = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
-    vData.installedVersion = '2.2.3';
+    vData.installedVersion = pkgVersion;
     vData.buildNumber = (existing.buildNumber || 204) + 1;
     vData.releaseDate = new Date().toISOString();
   } catch (e) {
@@ -16,4 +26,4 @@ if (fs.existsSync(versionPath)) {
 }
 
 fs.writeFileSync(versionPath, JSON.stringify(vData, null, 2), 'utf8');
-console.log(`[generate-version] Incremented build number to ${vData.buildNumber}`);
+console.log(`[generate-version] Updated version to ${vData.installedVersion} and build number to ${vData.buildNumber}`);
