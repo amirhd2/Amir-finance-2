@@ -3588,7 +3588,7 @@ function SwipeableTxCard({
   }, line3))), /*#__PURE__*/React.createElement("div", {
     className: "text-center shrink-0 flex flex-col items-center justify-center min-w-[76px] sm:min-w-[90px] pl-1"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `font-bold text-base sm:text-lg leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`
+    className: `font-bold text-[15px] leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`
   }, Math.abs(tx.amount).toLocaleString()), /*#__PURE__*/React.createElement("div", {
     className: `text-xs font-semibold text-center w-full mt-0.5 ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`
   }, "\u062A\u0648\u0645\u0627\u0646"), (() => {
@@ -9862,65 +9862,47 @@ function App() {
           className: "space-y-3.5 animate-fade-in pb-12"
         }, /*#__PURE__*/React.createElement("div", {
           onClick: toggleVersionCard,
-          className: "bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300 dark:hover:border-indigo-800 overflow-hidden"
+          className: "bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300 dark:hover:border-indigo-800 overflow-hidden relative"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between gap-2.5"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
-        }, /*#__PURE__*/React.createElement(BrandAvatar, {
-          className: "w-11 h-11",
-          logoUrl: versionData.appLogo
-        }), /*#__PURE__*/React.createElement("div", {
-          className: "min-w-0 flex-1"
-        }, /*#__PURE__*/React.createElement("h2", {
-          className: "text-base font-black text-slate-900 dark:text-white truncate"
-        }, versionData.appName || "Amir Finance"), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center flex-wrap gap-1.5 mt-1 min-w-0"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: "text-xs text-slate-500 dark:text-slate-400 font-mono shrink-0"
-        }, "\u0646\u0633\u062E\u0647 ", versionData.installedVersion), /*#__PURE__*/React.createElement("span", {
-          className: "text-[10px] text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-1.5 py-0.5 rounded-md shrink-0"
-        }, "\u0628\u06CC\u0644\u062F ", versionData.buildNumber), versionData.isUpdateAvailable ? /*#__PURE__*/React.createElement("span", {
-          className: "text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "arrow-up-circle",
-          className: "w-3 h-3"
-        }), /*#__PURE__*/React.createElement("span", null, "\u0628\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC \u0645\u0648\u062C\u0648\u062F")) : /*#__PURE__*/React.createElement("span", {
-          className: "text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "check-circle-2",
-          className: "w-3 h-3"
-        }), /*#__PURE__*/React.createElement("span", null, "\u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647"))))), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-1.5 space-x-reverse shrink-0"
+          className: "absolute top-4 left-4 flex items-center space-x-1 space-x-reverse shrink-0"
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-[11px] font-medium text-slate-400 hidden sm:inline"
         }, isVersionCardExpanded ? 'بستن' : 'جزئیات'), /*#__PURE__*/React.createElement(Icon, {
           name: "chevron-down",
           className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${isVersionCardExpanded ? 'rotate-180' : 'rotate-0'}`
-        }))), /*#__PURE__*/React.createElement("div", {
+        })), /*#__PURE__*/React.createElement("div", {
+          className: "flex flex-col items-center justify-center text-center space-y-1.5 py-1"
+        }, /*#__PURE__*/React.createElement(BrandAvatar, {
+          className: "w-12 h-12 mb-0.5",
+          logoUrl: versionData.appLogo
+        }), /*#__PURE__*/React.createElement("h2", {
+          className: "text-base font-black text-slate-900 dark:text-white tracking-tight"
+        }, versionData.appName || "Amir Finance"), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center justify-center space-x-2 space-x-reverse text-xs"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-slate-600 dark:text-slate-300 font-mono font-medium"
+        }, "\u0646\u0633\u062E\u0647 ", versionData.installedVersion), /*#__PURE__*/React.createElement("span", {
+          className: "text-slate-300 dark:text-slate-600"
+        }, "\u2022"), /*#__PURE__*/React.createElement("span", {
+          className: "text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 rounded-md text-[11px]"
+        }, "\u0628\u06CC\u0644\u062F ", versionData.buildNumber)), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center justify-center pt-0.5"
+        }, versionData.isUpdateAvailable ? /*#__PURE__*/React.createElement("span", {
+          className: "text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0"
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "arrow-up-circle",
+          className: "w-3 h-3"
+        }), /*#__PURE__*/React.createElement("span", null, "\u0628\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC \u0645\u0648\u062C\u0648\u062F")) : /*#__PURE__*/React.createElement("span", {
+          className: "text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0"
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "check-circle-2",
+          className: "w-3 h-3"
+        }), /*#__PURE__*/React.createElement("span", null, "\u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647")))), /*#__PURE__*/React.createElement("div", {
           className: `grid transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isVersionCardExpanded ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
           onClick: e => e.stopPropagation()
         }, /*#__PURE__*/React.createElement("div", {
-          className: "overflow-hidden space-y-3.5"
+          className: "overflow-hidden space-y-3"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "grid grid-cols-2 gap-2 text-xs"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "bg-[#F4F7FC] dark:bg-slate-900/60 rounded-2xl p-3 border border-slate-100 dark:border-slate-800"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-slate-400 font-medium"
-        }, "\u0646\u0633\u062E\u0647 \u0646\u0635\u0628\u200C\u0634\u062F\u0647"), /*#__PURE__*/React.createElement("div", {
-          className: "text-sm font-black text-slate-800 dark:text-slate-100 font-mono mt-0.5"
-        }, versionData.installedVersion), /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-slate-400 mt-1"
-        }, "\u06A9\u0627\u0646\u0627\u0644: ", versionData.channelLabel || versionData.releaseChannel || 'نسخه پایدار')), /*#__PURE__*/React.createElement("div", {
-          className: "bg-[#F4F7FC] dark:bg-slate-900/60 rounded-2xl p-3 border border-slate-100 dark:border-slate-800"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-slate-400 font-medium"
-        }, "\u0634\u0645\u0627\u0631\u0647 \u0633\u0627\u062E\u062A (Build)"), /*#__PURE__*/React.createElement("div", {
-          className: "text-sm font-black text-slate-800 dark:text-slate-100 font-mono mt-0.5"
-        }, "#", versionData.buildNumber), /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-slate-400 mt-1"
-        }, "\u0627\u0646\u062A\u0634\u0627\u0631: ", versionData.releaseDate))), /*#__PURE__*/React.createElement("div", {
           className: "bg-indigo-50/70 dark:bg-indigo-950/40 rounded-2xl p-3.5 border border-indigo-100 dark:border-indigo-900/50 flex flex-col space-y-3"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
@@ -9957,16 +9939,16 @@ function App() {
             setIsChangelogModalOpen(true);
             setExpandedChangelogVersion(null);
           },
-          className: "w-full py-3 px-4 bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 rounded-2xl text-xs font-bold transition-all flex items-center justify-between border border-emerald-200/80 dark:border-emerald-800/60 active:scale-98 shadow-2xs font-vazir"
+          className: "w-full py-3 px-4 bg-indigo-50/80 hover:bg-indigo-100/80 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/50 text-indigo-900 dark:text-indigo-200 rounded-2xl text-xs font-bold transition-all flex items-center justify-between border border-indigo-200/80 dark:border-indigo-800/60 active:scale-98 shadow-2xs font-vazir"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center space-x-2.5 space-x-reverse"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "w-7 h-7 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0"
+          className: "w-7 h-7 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 flex items-center justify-center shrink-0"
         }, /*#__PURE__*/React.createElement(Icon, {
           name: "history",
           className: "w-4 h-4"
         })), /*#__PURE__*/React.createElement("span", null, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647\u200C\u0647\u0627 (Changelog)")), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-1 space-x-reverse text-emerald-700 dark:text-emerald-300"
+          className: "flex items-center space-x-1 space-x-reverse text-indigo-600 dark:text-indigo-400"
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-[11px] font-bold"
         }, "\u0645\u0634\u0627\u0647\u062F\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A"), /*#__PURE__*/React.createElement(Icon, {
@@ -10268,31 +10250,7 @@ function App() {
           className: "overflow-hidden space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed"
         }, /*#__PURE__*/React.createElement("p", null, "\u0628\u0631\u0646\u0627\u0645\u0647 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0645\u0627\u0644\u06CC Amir Finance \u0627\u0628\u0632\u0627\u0631\u06CC \u062C\u0647\u062A \u062B\u0628\u062A \u0648 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0648\u0627\u0645\u200C\u0647\u0627\u060C \u0627\u0642\u0633\u0627\u0637\u060C \u0637\u0644\u0628\u200C\u0647\u0627 \u0648 \u0628\u062F\u0647\u06CC\u200C\u0647\u0627\u06CC \u0634\u062E\u0635\u06CC."), /*#__PURE__*/React.createElement("p", {
           className: "text-[11px] text-slate-400"
-        }, "\u0637\u0631\u0627\u062D\u06CC \u0648 \u062A\u0648\u0633\u0639\u0647: Amir Finance")))), /*#__PURE__*/React.createElement("div", {
-          onClick: () => {
-            setIsChangelogModalOpen(true);
-            setExpandedChangelogVersion(null);
-          },
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-emerald-400 active:scale-98"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-3.5 space-x-reverse"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "history",
-          className: "w-5 h-5"
-        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
-          className: "text-sm font-bold text-slate-900 dark:text-white font-vazir"
-        }, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A"), /*#__PURE__*/React.createElement("p", {
-          className: "text-xs text-slate-400 mt-0.5 font-vazir"
-        }, "\u0645\u0634\u0627\u0647\u062F\u0647 \u0648 \u0628\u0631\u0631\u0633\u06CC \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647\u200C\u0647\u0627"))), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-1 space-x-reverse text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/50 px-3 py-1.5 rounded-xl border border-emerald-100 dark:border-emerald-900/40"
-        }, /*#__PURE__*/React.createElement("span", null, "\u0645\u0634\u0627\u0647\u062F\u0647"), /*#__PURE__*/React.createElement(Icon, {
-          name: "chevron-left",
-          className: "w-3.5 h-3.5"
-        }))))));
+        }, "\u0637\u0631\u0627\u062D\u06CC \u0648 \u062A\u0648\u0633\u0639\u0647: Amir Finance"))))));
       default:
         return null;
     }

@@ -2853,7 +2853,7 @@
                         </div>
 
                         <div className="text-center shrink-0 flex flex-col items-center justify-center min-w-[76px] sm:min-w-[90px] pl-1">
-                            <div className={`font-bold text-base sm:text-lg leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                            <div className={`font-bold text-[15px] leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                 {Math.abs(tx.amount).toLocaleString()}
                             </div>
                             <div className={`text-xs font-semibold text-center w-full mt-0.5 ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>تومان</div>
@@ -3899,6 +3899,7 @@
                 return () => clearTimeout(timer);
             }, []);
             const [showStackWizard, setShowStackWizard] = useState(false);
+            const [isWizardFromFab, setIsWizardFromFab] = useState(false);
             const [wizardType, setWizardType] = useState('loan');
             const [wizardMode, setWizardMode] = useState('add');
             const [currentCardIdx, setCurrentCardIdx] = useState(0);
@@ -4477,16 +4478,17 @@
                 const darkBackdropColor = '#0b101d';
 
                 if (isAnyModalOpen) {
-                    if (metaTheme) metaTheme.setAttribute('content', darkBackdropColor);
-                    if (document.body) document.body.style.backgroundColor = darkBackdropColor;
-                    if (document.documentElement) document.documentElement.style.backgroundColor = darkBackdropColor;
+                    const modalThemeColor = (showStackWizard && !isDark && !isWizardFromFab) ? '#F4F7FC' : darkBackdropColor;
+                    if (metaTheme) metaTheme.setAttribute('content', modalThemeColor);
+                    if (document.body) document.body.style.backgroundColor = modalThemeColor;
+                    if (document.documentElement) document.documentElement.style.backgroundColor = modalThemeColor;
                 } else {
                     const activeColor = isDark ? '#020617' : '#F4F7FC';
                     if (metaTheme) metaTheme.setAttribute('content', activeColor);
                     if (document.body) document.body.style.backgroundColor = activeColor;
                     if (document.documentElement) document.documentElement.style.backgroundColor = activeColor;
                 }
-            }, [isAnyModalOpen, isDark]);
+            }, [isAnyModalOpen, isDark, showStackWizard, isWizardFromFab]);
 
             const handleExportBackup = () => {
                 try {
@@ -4911,6 +4913,7 @@
 
             // Open Wizard Methods for Stack Cards
             const openStackWizard = (type, mode = 'add', data = null) => {
+                setIsWizardFromFab(Boolean(data && data.fromFab));
                 setWizardType(type);
                 setWizardMode(mode);
                 setCurrentCardIdx(0);
@@ -5861,6 +5864,7 @@
                 setCardFormBackup(null);
                 setShowUnsavedConfirmDialog(false);
                 setShowStackWizard(false);
+                setIsWizardFromFab(false);
             };
 
             const startEditingCard = (card) => {
@@ -5887,7 +5891,7 @@
                     const containerRect = container.getBoundingClientRect();
                     const cardRect = cardElem.getBoundingClientRect();
                     const offsetTop = cardRect.top - containerRect.top;
-                    const targetScrollTop = container.scrollTop + offsetTop - 12;
+                    const targetScrollTop = container.scrollTop + offsetTop;
 
                     container.scrollTo({
                         top: Math.max(0, targetScrollTop),
@@ -9447,34 +9451,43 @@
                                 {/* Header / Application Version Card (Single Source of Truth) */}
                                 <div 
                                     onClick={toggleVersionCard}
-                                    className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300 dark:hover:border-indigo-800 overflow-hidden">
-                                    <div className="flex items-center justify-between gap-2.5">
-                                        <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
-                                            <BrandAvatar className="w-11 h-11" logoUrl={versionData.appLogo} />
-                                            <div className="min-w-0 flex-1">
-                                                <h2 className="text-base font-black text-slate-900 dark:text-white truncate">{versionData.appName || "Amir Finance"}</h2>
-                                                <div className="flex items-center flex-wrap gap-1.5 mt-1 min-w-0">
-                                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-mono shrink-0">نسخه {versionData.installedVersion}</span>
-                                                    <span className="text-[10px] text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-1.5 py-0.5 rounded-md shrink-0">بیلد {versionData.buildNumber}</span>
-                                                    
-                                                    {versionData.isUpdateAvailable ? (
-                                                        <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
-                                                            <Icon name="arrow-up-circle" className="w-3 h-3" />
-                                                            <span>بروزرسانی موجود</span>
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
-                                                            <Icon name="check-circle-2" className="w-3 h-3" />
-                                                            <span>آخرین نسخه</span>
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
+                                    className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300 dark:hover:border-indigo-800 overflow-hidden relative">
+                                    
+                                    {/* Expand indicator (Top Left) */}
+                                    <div className="absolute top-4 left-4 flex items-center space-x-1 space-x-reverse shrink-0">
+                                        <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">{isVersionCardExpanded ? 'بستن' : 'جزئیات'}</span>
+                                        <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isVersionCardExpanded ? 'rotate-180' : 'rotate-0'}`} />
+                                    </div>
+
+                                    {/* Centered App Header (3 Lines) */}
+                                    <div className="flex flex-col items-center justify-center text-center space-y-1.5 py-1">
+                                        <BrandAvatar className="w-12 h-12 mb-0.5" logoUrl={versionData.appLogo} />
+                                        
+                                        {/* Line 1: App Name */}
+                                        <h2 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                                            {versionData.appName || "Amir Finance"}
+                                        </h2>
+                                        
+                                        {/* Line 2: Version & Build */}
+                                        <div className="flex items-center justify-center space-x-2 space-x-reverse text-xs">
+                                            <span className="text-slate-600 dark:text-slate-300 font-mono font-medium">نسخه {versionData.installedVersion}</span>
+                                            <span className="text-slate-300 dark:text-slate-600">•</span>
+                                            <span className="text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 rounded-md text-[11px]">بیلد {versionData.buildNumber}</span>
                                         </div>
 
-                                        <div className="flex items-center space-x-1.5 space-x-reverse shrink-0">
-                                            <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">{isVersionCardExpanded ? 'بستن' : 'جزئیات'}</span>
-                                            <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isVersionCardExpanded ? 'rotate-180' : 'rotate-0'}`} />
+                                        {/* Line 3: Latest Version Status */}
+                                        <div className="flex items-center justify-center pt-0.5">
+                                            {versionData.isUpdateAvailable ? (
+                                                <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
+                                                    <Icon name="arrow-up-circle" className="w-3 h-3" />
+                                                    <span>بروزرسانی موجود</span>
+                                                </span>
+                                            ) : (
+                                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
+                                                    <Icon name="check-circle-2" className="w-3 h-3" />
+                                                    <span>آخرین نسخه</span>
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 
@@ -9482,21 +9495,7 @@
                                     <div 
                                         className={`grid transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isVersionCardExpanded ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`}
                                         onClick={e => e.stopPropagation()}>
-                                        <div className="overflow-hidden space-y-3.5">
-                                            {/* Installed Version & Build Info Grid */}
-                                            <div className="grid grid-cols-2 gap-2 text-xs">
-                                                <div className="bg-[#F4F7FC] dark:bg-slate-900/60 rounded-2xl p-3 border border-slate-100 dark:border-slate-800">
-                                                    <div className="text-[10px] text-slate-400 font-medium">نسخه نصب‌شده</div>
-                                                    <div className="text-sm font-black text-slate-800 dark:text-slate-100 font-mono mt-0.5">{versionData.installedVersion}</div>
-                                                    <div className="text-[10px] text-slate-400 mt-1">کانال: {versionData.channelLabel || versionData.releaseChannel || 'نسخه پایدار'}</div>
-                                                </div>
-                                                <div className="bg-[#F4F7FC] dark:bg-slate-900/60 rounded-2xl p-3 border border-slate-100 dark:border-slate-800">
-                                                    <div className="text-[10px] text-slate-400 font-medium">شماره ساخت (Build)</div>
-                                                    <div className="text-sm font-black text-slate-800 dark:text-slate-100 font-mono mt-0.5">#{versionData.buildNumber}</div>
-                                                    <div className="text-[10px] text-slate-400 mt-1">انتشار: {versionData.releaseDate}</div>
-                                                </div>
-                                            </div>
-
+                                        <div className="overflow-hidden space-y-3">
                                             {/* Update Banner & Actions */}
                                             <div className="bg-indigo-50/70 dark:bg-indigo-950/40 rounded-2xl p-3.5 border border-indigo-100 dark:border-indigo-900/50 flex flex-col space-y-3">
                                                 <div className="flex items-center justify-between">
@@ -9536,21 +9535,21 @@
                                                 </div>
                                             </div>
 
-                                            {/* Changelog Card Button */}
+                                            {/* Changelog Card Button (Styled matching the version card) */}
                                             <button
                                                 type="button"
                                                 onClick={() => {
                                                     setIsChangelogModalOpen(true);
                                                     setExpandedChangelogVersion(null);
                                                 }}
-                                                className="w-full py-3 px-4 bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 rounded-2xl text-xs font-bold transition-all flex items-center justify-between border border-emerald-200/80 dark:border-emerald-800/60 active:scale-98 shadow-2xs font-vazir">
+                                                className="w-full py-3 px-4 bg-indigo-50/80 hover:bg-indigo-100/80 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/50 text-indigo-900 dark:text-indigo-200 rounded-2xl text-xs font-bold transition-all flex items-center justify-between border border-indigo-200/80 dark:border-indigo-800/60 active:scale-98 shadow-2xs font-vazir">
                                                 <div className="flex items-center space-x-2.5 space-x-reverse">
-                                                    <div className="w-7 h-7 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                                                    <div className="w-7 h-7 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 flex items-center justify-center shrink-0">
                                                         <Icon name="history" className="w-4 h-4" />
                                                     </div>
                                                     <span>تاریخچه تغییرات نسخه‌ها (Changelog)</span>
                                                 </div>
-                                                <div className="flex items-center space-x-1 space-x-reverse text-emerald-700 dark:text-emerald-300">
+                                                <div className="flex items-center space-x-1 space-x-reverse text-indigo-600 dark:text-indigo-400">
                                                     <span className="text-[11px] font-bold">مشاهده تغییرات</span>
                                                     <Icon name="chevron-left" className="w-4 h-4" />
                                                 </div>
@@ -9661,40 +9660,40 @@
                                                      <button 
                                                          type="button"
                                                          onClick={handleExportBackup}
-                                                         className="w-full flex items-center justify-between p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group text-right">
-                                                         <div className="flex items-center gap-3.5">
-                                                             <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors text-indigo-600 dark:text-indigo-400 shrink-0">
-                                                                 <Icon name="download" className="w-4 h-4" />
-                                                             </div>
-                                                             <div className="text-right min-w-0">
-                                                                 <p className="text-xs font-bold text-slate-800 dark:text-slate-100">تهیه نسخه پشتیبان</p>
-                                                                 <p className="text-[11px] text-slate-400 mt-0.5">دانلود فایل کامل دیتابیس (JSON)</p>
-                                                             </div>
-                                                         </div>
-                                                         <Icon name="chevron-left" className="w-4 h-4 text-slate-400 scale-90 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0" />
-                                                     </button>
+                                                          className="w-full flex items-center justify-between p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group text-right">
+                                                          <div className="flex items-center gap-3.5">
+                                                              <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors text-indigo-600 dark:text-indigo-400 shrink-0">
+                                                                  <Icon name="download" className="w-4 h-4" />
+                                                              </div>
+                                                              <div className="text-right min-w-0">
+                                                                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100">تهیه نسخه پشتیبان</p>
+                                                                  <p className="text-[11px] text-slate-400 mt-0.5">دانلود فایل کامل دیتابیس (JSON)</p>
+                                                              </div>
+                                                          </div>
+                                                          <Icon name="chevron-left" className="w-4 h-4 text-slate-400 scale-90 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0" />
+                                                      </button>
 
-                                                     {/* Restore Row */}
-                                                     <button 
-                                                         type="button"
-                                                         onClick={() => restoreInputRef.current && restoreInputRef.current.click()}
-                                                         className="w-full flex items-center justify-between p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group text-right">
-                                                         <div className="flex items-center gap-3.5">
-                                                             <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors text-indigo-600 dark:text-indigo-400 shrink-0">
-                                                                 <Icon name="upload" className="w-4 h-4" />
-                                                             </div>
-                                                             <div className="text-right min-w-0">
-                                                                 <p className="text-xs font-bold text-slate-800 dark:text-slate-100">بازیابی اطلاعات</p>
-                                                                 <p className="text-[11px] text-slate-400 mt-0.5">جایگزینی دیتابیس از فایل پشتیبان</p>
-                                                             </div>
-                                                         </div>
-                                                         <Icon name="chevron-left" className="w-4 h-4 text-slate-400 scale-90 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0" />
-                                                     </button>
+                                                      {/* Restore Row */}
+                                                      <button 
+                                                          type="button"
+                                                          onClick={() => restoreInputRef.current && restoreInputRef.current.click()}
+                                                          className="w-full flex items-center justify-between p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group text-right">
+                                                          <div className="flex items-center gap-3.5">
+                                                              <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors text-indigo-600 dark:text-indigo-400 shrink-0">
+                                                                  <Icon name="upload" className="w-4 h-4" />
+                                                              </div>
+                                                              <div className="text-right min-w-0">
+                                                                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100">بازیابی اطلاعات</p>
+                                                                  <p className="text-[11px] text-slate-400 mt-0.5">جایگزینی دیتابیس از فایل پشتیبان</p>
+                                                              </div>
+                                                          </div>
+                                                          <Icon name="chevron-left" className="w-4 h-4 text-slate-400 scale-90 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0" />
+                                                      </button>
 
-                                                     {/* Danger Zone Row */}
-                                                     <button 
-                                                         type="button"
-                                                         onClick={handleResetDatabaseClick}
+                                                      {/* Danger Zone Row */}
+                                                      <button 
+                                                          type="button" 
+                                                          onClick={handleResetDatabaseClick}
                                                          className="w-full flex items-center justify-between p-3.5 hover:bg-rose-50/50 dark:hover:bg-rose-950/30 transition-colors group text-right">
                                                          <div className="flex items-center gap-3.5">
                                                              <div className="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center group-hover:bg-rose-100 dark:group-hover:bg-rose-900/60 transition-colors text-rose-600 dark:text-rose-400 shrink-0">
@@ -9839,30 +9838,6 @@
                                             <div className="overflow-hidden space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                                                 <p>برنامه مدیریت مالی Amir Finance ابزاری جهت ثبت و مدیریت وام‌ها، اقساط، طلب‌ها و بدهی‌های شخصی.</p>
                                                 <p className="text-[11px] text-slate-400">طراحی و توسعه: Amir Finance</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* 7. Changelog Card */}
-                                    <div 
-                                        onClick={() => {
-                                            setIsChangelogModalOpen(true);
-                                            setExpandedChangelogVersion(null);
-                                        }}
-                                        className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-emerald-400 active:scale-98">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center space-x-3.5 space-x-reverse">
-                                                <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                                                    <Icon name="history" className="w-5 h-5" />
-                                                </div>
-                                                <div>
-                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white font-vazir">تاریخچه تغییرات</h3>
-                                                    <p className="text-xs text-slate-400 mt-0.5 font-vazir">مشاهده و بررسی تغییرات نسخه‌ها</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center space-x-1 space-x-reverse text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/50 px-3 py-1.5 rounded-xl border border-emerald-100 dark:border-emerald-900/40">
-                                                <span>مشاهده</span>
-                                                <Icon name="chevron-left" className="w-3.5 h-3.5" />
                                             </div>
                                         </div>
                                     </div>
@@ -10028,7 +10003,7 @@
 
                                     {/* مخاطب جدید */}
                                     <button 
-                                        onClick={() => closePlusMenu(() => openStackWizard('contact', 'add'))}
+                                        onClick={() => closePlusMenu(() => openStackWizard('contact', 'add', { fromFab: true }))}
                                         className="w-full bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all">
                                         <div className="w-8.5 h-8.5 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                                             <Icon name="user-plus" className="w-4 h-4" />
@@ -10177,10 +10152,14 @@
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                className="absolute inset-0 bg-[#0b101d]/90 backdrop-blur-md z-50 flex flex-col justify-start items-center p-3 pt-[calc(max(env(safe-area-inset-top,0px),24px)+10px)] overflow-hidden"
+                                className={`absolute inset-0 z-50 flex flex-col justify-start items-center p-3 pt-[max(env(safe-area-inset-top,0px),24px)] overflow-hidden ${
+                                    (!isDark && !isWizardFromFab) ? 'bg-[#F4F7FC]' : 'bg-[#0b101d]/90 backdrop-blur-md'
+                                }`}
                             >
                                 {/* PWA Status Bar Safe Area Cover */}
-                                <div className="fixed top-0 inset-x-0 h-[max(env(safe-area-inset-top,0px),24px)] bg-[#0b101d] backdrop-blur-md z-[60]"></div>
+                                <div className={`fixed top-0 inset-x-0 h-[max(env(safe-area-inset-top,0px),24px)] z-[60] ${
+                                    (!isDark && !isWizardFromFab) ? 'bg-[#F4F7FC]' : 'bg-[#0b101d] backdrop-blur-md'
+                                }`}></div>
                                 <motion.div
                                     key="stack-wizard-panel"
                                     variants={iosModalVariants}
@@ -10196,7 +10175,7 @@
                                             {/* Scrollable Floating Cards Area */}
                                             <div 
                                                 ref={editCardsContainerRef}
-                                                className={`w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
+                                                className={`w-full flex-1 hide-scrollbar pt-0 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
                                             >
                                                 {activeCards.map((card, index) => {
                                                     const isEditingThis = editingCardId === card.id;
@@ -10209,7 +10188,7 @@
                                                             id={`sticky-card-${card.id}`}
                                                             className={`sticky w-[96%] max-w-md mx-auto isolate ${isEditingThis ? 'z-[100]' : 'z-0'}`}
                                                             style={{
-                                                                top: `${12 + index * 8}px`,
+                                                                top: `${index * 8}px`,
                                                                 zIndex: isEditingThis ? 100 : index,
                                                                 transform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)',
                                                                 WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)'
