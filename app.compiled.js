@@ -3676,14 +3676,14 @@ function StackCardItem({
     type: "button",
     onClick: !isFirstCard ? handlePrevCard : undefined,
     disabled: isFirstCard,
-    className: `w-1/3 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center space-x-1 space-x-reverse ${isFirstCard ? 'bg-slate-100 dark:bg-slate-800/60 text-slate-300 dark:text-slate-600 border border-slate-200/50 dark:border-slate-700/50 cursor-not-allowed opacity-40 pointer-events-none' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 cursor-pointer opacity-100 active:scale-95 shadow-2xs'}`
+    className: `flex-1 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center space-x-1 space-x-reverse ${isFirstCard ? 'bg-slate-100 dark:bg-slate-800/60 text-slate-300 dark:text-slate-600 border border-slate-200/50 dark:border-slate-700/50 cursor-not-allowed opacity-40 pointer-events-none' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 cursor-pointer opacity-100 active:scale-95 shadow-2xs'}`
   }, /*#__PURE__*/React.createElement(Icon, {
     name: "arrow-right",
     className: "w-3.5 h-3.5 shrink-0"
   }), /*#__PURE__*/React.createElement("span", null, "\u0645\u0631\u062D\u0644\u0647 \u0642\u0628\u0644\u06CC")), /*#__PURE__*/React.createElement("button", {
     type: "button",
     onClick: handleNextCard,
-    className: "w-2/3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
+    className: "flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
   }, /*#__PURE__*/React.createElement("span", null, index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'))));
 }
 function ContactSelectorCard({
@@ -4156,15 +4156,31 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "2.2.4",
-    "buildNumber": 219,
-    "releaseDate": "2026-08-13",
+    "installedVersion": "2.2.6",
+    "buildNumber": 235,
+    "releaseDate": "2026-08-14",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "2.2.4",
-    "latestBuild": 219,
+    "latestVersion": "2.2.6",
+    "latestBuild": 235,
     "isUpdateAvailable": false,
     "history": [{
+      "version": "2.2.6",
+      "buildNumber": 235,
+      "releaseDate": "2026-08-14",
+      "releaseChannel": "Stable",
+      "commitHash": "v226rel",
+      "commitMessage": "feat: release version 2.2.6 with equal sized stack card navigation buttons",
+      "changes": ["هم‌اندازه شدن دکمه‌های «مرحله بعدی» و «مرحله قبلی» در تمام ویزاردهای کارت استک برنامه", "انتشار رسمی نسخه ۲.۲.۶"]
+    }, {
+      "version": "2.2.5",
+      "buildNumber": 230,
+      "releaseDate": "2026-08-13",
+      "releaseChannel": "Stable",
+      "commitHash": "v225rel",
+      "commitMessage": "feat: release version 2.2.5 with universal stack wizard styling and close button contrast fix",
+      "changes": ["یکپارچه‌سازی و یونیورسال کردن کامل ظاهر پنجره کارت‌های استک و استیکی کارت‌ها در تمام مسیرهای ورودی برنامه و منوی شناور", "بهبود کنتراست و خوانایی دکمه ضربدر بستن کارت‌های استک در تم روشن و تاریک", "انتشار رسمی نسخه ۲.۲.۵"]
+    }, {
       "version": "2.2.4",
       "buildNumber": 219,
       "releaseDate": "2026-08-13",
@@ -4320,8 +4336,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 217;
-    const EMBEDDED_VERSION = "2.2.4";
+    const EMBEDDED_BUILD = 235;
+    const EMBEDDED_VERSION = "2.2.6";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -4968,16 +4984,17 @@ function App() {
     const metaTheme = document.querySelector('meta[name="theme-color"]');
     const darkBackdropColor = '#0b101d';
     if (isAnyModalOpen) {
-      if (metaTheme) metaTheme.setAttribute('content', darkBackdropColor);
-      if (document.body) document.body.style.backgroundColor = darkBackdropColor;
-      if (document.documentElement) document.documentElement.style.backgroundColor = darkBackdropColor;
+      const modalThemeColor = showStackWizard && !isDark ? '#F4F7FC' : darkBackdropColor;
+      if (metaTheme) metaTheme.setAttribute('content', modalThemeColor);
+      if (document.body) document.body.style.backgroundColor = modalThemeColor;
+      if (document.documentElement) document.documentElement.style.backgroundColor = modalThemeColor;
     } else {
       const activeColor = isDark ? '#020617' : '#F4F7FC';
       if (metaTheme) metaTheme.setAttribute('content', activeColor);
       if (document.body) document.body.style.backgroundColor = activeColor;
       if (document.documentElement) document.documentElement.style.backgroundColor = activeColor;
     }
-  }, [isAnyModalOpen, isDark]);
+  }, [isAnyModalOpen, isDark, showStackWizard]);
   const handleExportBackup = () => {
     try {
       const data = {
@@ -6405,7 +6422,7 @@ function App() {
       const containerRect = container.getBoundingClientRect();
       const cardRect = cardElem.getBoundingClientRect();
       const offsetTop = cardRect.top - containerRect.top;
-      const targetScrollTop = container.scrollTop + offsetTop - 12;
+      const targetScrollTop = container.scrollTop + offsetTop;
       container.scrollTo({
         top: Math.max(0, targetScrollTop),
         behavior: 'smooth'
@@ -10282,12 +10299,12 @@ function App() {
     className: "w-full h-full flex items-center justify-center"
   }, /*#__PURE__*/React.createElement("source", {
     media: "(orientation: landscape)",
-    srcSet: "./splash-landscape.png?v=2.2.4, ./splash-landscape.jpg?v=2.2.4"
+    srcSet: "./splash-landscape.png?v=2.2.6, ./splash-landscape.jpg?v=2.2.6"
   }), /*#__PURE__*/React.createElement("source", {
     media: "(orientation: portrait)",
-    srcSet: "./splash-portrait.png?v=2.2.4, ./splash-portrait.jpg?v=2.2.4"
+    srcSet: "./splash-portrait.png?v=2.2.6, ./splash-portrait.jpg?v=2.2.6"
   }), /*#__PURE__*/React.createElement("img", {
-    src: "./splash-portrait.png?v=2.2.4",
+    src: "./splash-portrait.png?v=2.2.6",
     alt: "Amir Finance Splash Screen",
     onError: e => {
       if (!e.currentTarget.dataset.retry) {
@@ -10426,9 +10443,7 @@ function App() {
   }, "\u0627\u0641\u0632\u0648\u062F\u0646 \u0634\u062E\u0635 \u062C\u062F\u06CC\u062F \u0628\u0647 \u062F\u0641\u062A\u0631 \u0645\u062E\u0627\u0637\u0628\u06CC\u0646"))), /*#__PURE__*/React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('demand', 'add', {
-      fromFab: true
-    })),
+    onClick: () => closePlusMenu(() => openStackWizard('demand', 'add')),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
@@ -10438,9 +10453,7 @@ function App() {
   })), /*#__PURE__*/React.createElement("span", {
     className: "font-bold text-xs text-slate-800 dark:text-slate-100"
   }, "\u062B\u0628\u062A \u0637\u0644\u0628")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('demand_repayment', 'add', {
-      fromFab: true
-    })),
+    onClick: () => closePlusMenu(() => openStackWizard('demand_repayment', 'add')),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-teal-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0"
@@ -10452,9 +10465,7 @@ function App() {
   }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0637\u0644\u0628"))), /*#__PURE__*/React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('debt', 'add', {
-      fromFab: true
-    })),
+    onClick: () => closePlusMenu(() => openStackWizard('debt', 'add')),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-rose-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-rose-500/15 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0"
@@ -10464,9 +10475,7 @@ function App() {
   })), /*#__PURE__*/React.createElement("span", {
     className: "font-bold text-xs text-slate-800 dark:text-slate-100"
   }, "\u062B\u0628\u062A \u0628\u062F\u0647\u06CC")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('debt_repayment', 'add', {
-      fromFab: true
-    })),
+    onClick: () => closePlusMenu(() => openStackWizard('debt_repayment', 'add')),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-amber-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"
@@ -10478,9 +10487,7 @@ function App() {
   }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0628\u062F\u0647\u06CC"))), /*#__PURE__*/React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('loan', 'add', {
-      fromFab: true
-    })),
+    onClick: () => closePlusMenu(() => openStackWizard('loan', 'add')),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
@@ -10490,9 +10497,7 @@ function App() {
   })), /*#__PURE__*/React.createElement("span", {
     className: "font-bold text-xs text-slate-800 dark:text-slate-100"
   }, "\u062B\u0628\u062A \u0648\u0627\u0645")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('installment', 'add', {
-      fromFab: true
-    })),
+    onClick: () => closePlusMenu(() => openStackWizard('installment', 'add')),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-purple-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0"
@@ -10561,9 +10566,9 @@ function App() {
     initial: "initial",
     animate: "animate",
     exit: "exit",
-    className: "absolute inset-0 bg-[#0b101d]/90 backdrop-blur-md z-50 flex flex-col justify-start items-center p-3 pt-[calc(max(env(safe-area-inset-top,0px),24px)+10px)] overflow-hidden"
+    className: `absolute inset-0 z-50 flex flex-col justify-start items-center p-3 pt-[max(env(safe-area-inset-top,0px),24px)] overflow-hidden ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d]/90 backdrop-blur-md'}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "fixed top-0 inset-x-0 h-[max(env(safe-area-inset-top,0px),24px)] bg-[#0b101d] backdrop-blur-md z-[60]"
+    className: `fixed top-0 inset-x-0 h-[max(env(safe-area-inset-top,0px),24px)] z-[60] ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d] backdrop-blur-md'}`
   }), /*#__PURE__*/React.createElement(motion.div, {
     key: "stack-wizard-panel",
     variants: iosModalVariants,
@@ -10581,7 +10586,7 @@ function App() {
     className: "w-full flex flex-col items-center h-full max-h-[92vh] relative"
   }, /*#__PURE__*/React.createElement("div", {
     ref: editCardsContainerRef,
-    className: `w-full flex-1 hide-scrollbar py-2 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`
+    className: `w-full flex-1 hide-scrollbar pt-0 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`
   }, activeCards.map((card, index) => {
     const isEditingThis = editingCardId === card.id;
     const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
@@ -10591,8 +10596,8 @@ function App() {
       id: `sticky-card-${card.id}`,
       className: `sticky w-[96%] max-w-md mx-auto isolate ${isEditingThis ? 'z-[100]' : 'z-0'}`,
       style: {
-        top: `${12 + index * 8}px`,
-        zIndex: isEditingThis ? 100 : index,
+        top: `${index * 8}px`,
+        zIndex: isEditingThis ? 100 : index === activeCards.length - 1 ? index - 2 : index,
         transform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)',
         WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)'
       }
@@ -10618,7 +10623,7 @@ function App() {
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: `flex-1 py-1 transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-95' : ''}`
-    }, card.render()), /*#__PURE__*/React.createElement("div", {
+    }, card.render()), (isEditingThis || index !== activeCards.length - 1) && /*#__PURE__*/React.createElement("div", {
       className: "pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between shrink-0 h-12"
     }, /*#__PURE__*/React.createElement(AnimatePresence, {
       mode: "wait"
@@ -10739,8 +10744,11 @@ function App() {
     className: "w-4 h-4"
   }), /*#__PURE__*/React.createElement("span", null, "\u062B\u0628\u062A \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A"))))), /*#__PURE__*/React.createElement("div", {
     className: "w-full flex justify-center items-center py-2 shrink-0 z-40 relative"
-  }, /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement(motion.button, {
     type: "button",
+    whileTap: {
+      scale: 0.88
+    },
     onClick: () => closeStackWizard(false),
     className: "w-12 h-12 rounded-full bg-slate-900/85 hover:bg-slate-900 active:scale-90 text-white flex items-center justify-center border border-white/20 shadow-2xl transition-all cursor-pointer backdrop-blur-lg",
     title: "\u0628\u0633\u062A\u0646"
@@ -10779,10 +10787,11 @@ function App() {
       scale: 0.88
     },
     onClick: () => closeStackWizard(false),
-    className: "w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 active:scale-90 text-white flex items-center justify-center border border-white/25 shadow-xl backdrop-blur-md transition-all cursor-pointer"
+    className: "w-12 h-12 rounded-full bg-slate-900/85 hover:bg-slate-900 active:scale-90 text-white flex items-center justify-center border border-white/20 shadow-2xl transition-all cursor-pointer backdrop-blur-lg",
+    title: "\u0628\u0633\u062A\u0646"
   }, /*#__PURE__*/React.createElement(Icon, {
     name: "x",
-    className: "w-5 h-5"
+    className: "w-6 h-6"
   }))))))), /*#__PURE__*/React.createElement(AnimatePresence, null, showUnsavedConfirmDialog && /*#__PURE__*/React.createElement(motion.div, {
     key: "unsaved-confirm-backdrop",
     initial: {

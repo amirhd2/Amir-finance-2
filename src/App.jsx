@@ -2969,7 +2969,7 @@
                             type="button"
                             onClick={!isFirstCard ? handlePrevCard : undefined}
                             disabled={isFirstCard}
-                            className={`w-1/3 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center space-x-1 space-x-reverse ${
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center space-x-1 space-x-reverse ${
                                 isFirstCard
                                     ? 'bg-slate-100 dark:bg-slate-800/60 text-slate-300 dark:text-slate-600 border border-slate-200/50 dark:border-slate-700/50 cursor-not-allowed opacity-40 pointer-events-none'
                                     : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 cursor-pointer opacity-100 active:scale-95 shadow-2xs'
@@ -2982,7 +2982,7 @@
                         <button 
                             type="button"
                             onClick={handleNextCard}
-                            className="w-2/3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
+                            className="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
                         >
                             <span>{index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'}</span>
                         </button>
@@ -3505,15 +3505,42 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "2.2.5",
-    "buildNumber": 230,
-    "releaseDate": "2026-08-13",
+    "installedVersion": "3.0.0",
+    "buildNumber": 300,
+    "releaseDate": "2026-08-14",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "2.2.5",
-    "latestBuild": 230,
+    "latestVersion": "3.0.0",
+    "latestBuild": 300,
     "isUpdateAvailable": false,
     "history": [
+        {
+            "version": "3.0.0",
+            "buildNumber": 300,
+            "releaseDate": "2026-08-14",
+            "releaseChannel": "Stable",
+            "commitHash": "v300major",
+            "commitMessage": "feat: official release 3.0.0 with perfected sticky cards experience, loan card actions, and clean layout",
+            "changes": [
+                "تکمیل و بهینه‌سازی نهایی رفتار اسکرول و چیدمان پله‌ای کارت‌های استیکی در تمامی ویزاردها و پرونده‌های وام",
+                "جلوگیری از بالاتر رفتن کارت آخر نسبت به کارت یکی مانده به آخر هنگام اسکرول به بالا",
+                "نمایش کامل شماره کارت و دکمه ویرایش درون کارت در تمام کارت‌ها از جمله کارت آخر",
+                "حذف نوشته و دکمه‌های زائد خارج از کارت در ماژول استیکی و ارتقاء یکپارچگی ظاهری",
+                "انتشار رسمی نسخه عمده ۳.۰.۰"
+            ]
+        },
+        {
+            "version": "2.2.6",
+            "buildNumber": 235,
+            "releaseDate": "2026-08-14",
+            "releaseChannel": "Stable",
+            "commitHash": "v226rel",
+            "commitMessage": "feat: release version 2.2.6 with equal sized stack card navigation buttons",
+            "changes": [
+                "هم‌اندازه شدن دکمه‌های «مرحله بعدی» و «مرحله قبلی» در تمام ویزاردهای کارت استک برنامه",
+                "انتشار رسمی نسخه ۲.۲.۶"
+            ]
+        },
         {
             "version": "2.2.5",
             "buildNumber": 230,
@@ -3757,8 +3784,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 230;
-                const EMBEDDED_VERSION = "2.2.5";
+                const EMBEDDED_BUILD = 300;
+                const EMBEDDED_VERSION = "3.0.0";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -6013,6 +6040,9 @@
                 if (!modifiedCardIds.includes(card.id)) {
                     setModifiedCardIds(prev => [...prev, card.id]);
                 }
+                if (wizardMode === 'edit') {
+                    saveWizardData();
+                }
                 setEditingCardId(null);
                 showToast('تغییرات کارت ثبت شد');
             };
@@ -6271,7 +6301,7 @@
                 },
                 {
                     id: 'start_date',
-                    title: '۱- زمان دریافت وام',
+                    title: 'زمان دریافت وام',
                     render: () => (
                         <FullJalaliDatePicker 
                             day={pickerDay}
@@ -6295,7 +6325,7 @@
                 },
                 {
                     id: 'principal_amount',
-                    title: '۲- مبلغ اصل وام',
+                    title: 'مبلغ اصل وام',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ اصل وامی که دریافت کرده‌اید (تومان):</label>
@@ -6338,7 +6368,7 @@
                 },
                 {
                     id: 'total_repayment',
-                    title: '۳- مبلغ کل بازپرداخت',
+                    title: 'مبلغ کل بازپرداخت',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مجموع کل مبلغ بازپرداخت شامل اصل و کارمزد:</label>
@@ -6381,7 +6411,7 @@
                 },
                 {
                     id: 'installment_amount',
-                    title: '۴- مبلغ هر قسط',
+                    title: 'مبلغ هر قسط',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ هر قسط ماهانه (تومان):</label>
@@ -6532,7 +6562,7 @@
                 },
                 {
                     id: 'due_date',
-                    title: '۵- تاریخ اولین قسط وام',
+                    title: 'تاریخ اولین قسط وام',
                     render: () => {
                         const activeDueDay = loanForm.firstInstallmentDay || loanForm.dueDayOfMonth || pickerDay;
                         const curMonthName = loanForm.firstInstallmentMonth || pickerMonth;
@@ -6578,25 +6608,25 @@
                         };
 
                         return (
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 <label className="block text-xs text-slate-500 font-bold">تاریخ و ماه اولین قسط وام:</label>
-                                <div className="bg-[#F4F7FC] dark:bg-slate-900 rounded-2xl p-3 border border-slate-200 dark:border-slate-800 space-y-3">
+                                <div className="bg-[#F4F7FC] dark:bg-slate-900 rounded-2xl p-2.5 border border-slate-200 dark:border-slate-800 space-y-2">
                                     
                                     {/* Top Box for Month Selection: Right = Prev Month, Left = Next Month */}
-                                    <div className="p-2.5 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between shadow-2xs">
+                                    <div className="p-2 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between shadow-2xs">
                                         {/* Right Button (Previous Month) */}
                                         <button 
                                             type="button"
                                             onClick={handlePrevMonth}
                                             title="ماه قبل"
-                                            className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0">
-                                            <Icon name="chevron-right" className="w-5 h-5" />
+                                            className="p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0">
+                                            <Icon name="chevron-right" className="w-4 h-4" />
                                         </button>
 
                                         {/* Month & Year Display Box */}
                                         <div className="text-center min-w-0 px-2 flex flex-col items-center">
-                                            <div className="text-[10px] text-indigo-700/80 dark:text-indigo-300/80 font-bold mb-1">ماه و سال اولین قسط</div>
-                                            <div className="flex items-center justify-center gap-2">
+                                            <div className="text-[9px] text-indigo-700/80 dark:text-indigo-300/80 font-bold">ماه و سال اولین قسط</div>
+                                            <div className="flex items-center justify-center gap-1.5 mt-0.5">
                                                 <span className="text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100">{curMonthName}</span>
                                                 <input 
                                                     type="text"
@@ -6622,7 +6652,7 @@
                                                             setLoanForm(prev => ({ ...prev, firstInstallmentYear: num }));
                                                         }
                                                     }}
-                                                    className="w-16 h-7 text-center font-extrabold text-xs sm:text-sm text-indigo-900 dark:text-indigo-100 bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded-lg shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono transition-all cursor-pointer"
+                                                    className="w-14 h-6 text-center font-extrabold text-xs text-indigo-900 dark:text-indigo-100 bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded-md shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono transition-all cursor-pointer"
                                                     title="جهت تغییر سال کلیک کنید"
                                                 />
                                             </div>
@@ -6633,25 +6663,25 @@
                                             type="button"
                                             onClick={handleNextMonth}
                                             title="ماه بعد"
-                                            className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0">
-                                            <Icon name="chevron-left" className="w-5 h-5" />
+                                            className="p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0">
+                                            <Icon name="chevron-left" className="w-4 h-4" />
                                         </button>
                                     </div>
 
                                     {/* Summary Badge formatted as YYYY/MM/DD */}
-                                    <div className="p-2.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs flex items-center justify-center space-x-1.5 space-x-reverse">
+                                    <div className="p-1.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs flex items-center justify-center space-x-1.5 space-x-reverse">
                                         <span>سررسید اولین قسط:</span>
-                                        <span className="font-mono text-xs sm:text-sm tracking-wider font-extrabold dir-ltr text-indigo-700 dark:text-indigo-300 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-indigo-200 dark:border-indigo-700 shadow-2xs">{formattedDueDateStr}</span>
+                                        <span className="font-mono text-xs tracking-wider font-extrabold dir-ltr text-indigo-700 dark:text-indigo-300 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-700 shadow-2xs">{formattedDueDateStr}</span>
                                     </div>
 
                                     {/* Days Grid (1 to 31, without top label) */}
-                                    <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold pt-1">
+                                    <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold pt-0.5">
                                         {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                                             <button 
                                                 key={day}
                                                 type="button"
                                                 onClick={() => setLoanForm(prev => ({ ...prev, dueDayOfMonth: day, firstInstallmentDay: day }))}
-                                                className={`h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                                                className={`h-6 sm:h-6.5 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
                                                     activeDueDay === day 
                                                         ? 'bg-indigo-600 text-white font-black shadow-md scale-105' 
                                                         : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
@@ -6667,7 +6697,7 @@
                 },
                 {
                     id: 'notes',
-                    title: '۶- توضیحات تکمیلی',
+                    title: 'توضیحات تکمیلی',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500">یادداشت یا توضیحات اضافی برای این پرونده وام:</label>
@@ -6686,7 +6716,7 @@
             const demandWizardCards = [
                 {
                     id: 'demand_contact',
-                    title: 'کارت اول: انتخاب مخاطب',
+                    title: 'انتخاب مخاطب',
                     render: () => (
                         <ContactSelectorCard 
                             contacts={contacts}
@@ -6703,7 +6733,7 @@
                 },
                 {
                     id: 'demand_amount',
-                    title: 'کارت دوم: مبلغ طلب',
+                    title: 'مبلغ طلب',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ طلب (تومان):</label>
@@ -6746,7 +6776,7 @@
                 },
                 {
                     id: 'demand_date',
-                    title: 'کارت سوم: تاریخ طلب',
+                    title: 'تاریخ طلب',
                     render: () => (
                         <FullJalaliDatePicker 
                             day={pickerDay}
@@ -6762,7 +6792,7 @@
                 },
                 {
                     id: 'demand_notes',
-                    title: 'کارت چهارم: توضیحات',
+                    title: 'توضیحات تکمیلی',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات و بابت طلب:</label>
@@ -6781,7 +6811,7 @@
             const debtWizardCards = [
                 {
                     id: 'debt_contact',
-                    title: 'کارت اول: انتخاب مخاطب',
+                    title: 'انتخاب مخاطب',
                     render: () => (
                         <ContactSelectorCard 
                             contacts={contacts}
@@ -6798,7 +6828,7 @@
                 },
                 {
                     id: 'debt_amount',
-                    title: 'کارت دوم: مبلغ قرض',
+                    title: 'مبلغ قرض',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">مبلغ قرض (تومان):</label>
@@ -6841,7 +6871,7 @@
                 },
                 {
                     id: 'debt_date',
-                    title: 'کارت سوم: تاریخ قرض',
+                    title: 'تاریخ قرض',
                     render: () => (
                         <FullJalaliDatePicker 
                             day={pickerDay}
@@ -6857,7 +6887,7 @@
                 },
                 {
                     id: 'debt_notes',
-                    title: 'کارت چهارم: توضیحات',
+                    title: 'توضیحات تکمیلی',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات تکمیلی:</label>
@@ -6876,7 +6906,7 @@
             const installmentWizardCards = [
                 {
                     id: 'inst_select_loan',
-                    title: 'کارت اول: انتخاب وام',
+                    title: 'انتخاب وام',
                     render: () => (
                         <LoanSelectorCard 
                             loans={loans}
@@ -6899,7 +6929,7 @@
                 },
                 {
                     id: 'inst_date',
-                    title: 'کارت دوم: تاریخ پرداخت',
+                    title: 'تاریخ پرداخت',
                     render: () => (
                         <FullJalaliDatePicker 
                             day={pickerDay}
@@ -6915,7 +6945,7 @@
                 },
                 {
                     id: 'inst_amount',
-                    title: 'کارت سوم: مبلغ پرداخت',
+                    title: 'مبلغ پرداخت',
                     render: () => {
                         const targetLoan = loans.find(l => l.id === Number(installmentForm.selectedLoanId));
                         const editingTx = installmentForm.id ? transactions.find(t => t.id === installmentForm.id) : null;
@@ -6988,7 +7018,7 @@
                 },
                 {
                     id: 'inst_notes',
-                    title: 'کارت چهارم: توضیحات',
+                    title: 'توضیحات تکمیلی',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات یا شماره پیگیری پرداخت:</label>
@@ -7007,7 +7037,7 @@
             const debtRepaymentWizardCards = [
                 {
                     id: 'debt_repay_contact',
-                    title: '۱- انتخاب مخاطب',
+                    title: 'انتخاب مخاطب',
                     render: () => (
                         <ContactSelectorCard 
                             contacts={contacts}
@@ -7024,7 +7054,7 @@
                 },
                 {
                     id: 'debt_repay_amount',
-                    title: '۲- مبلغ بازپرداخت بدهی',
+                    title: 'مبلغ بازپرداخت بدهی',
                     render: () => {
                         const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
                         const editingTx = repaymentForm.id ? transactions.find(t => t.id === repaymentForm.id) : null;
@@ -7093,7 +7123,7 @@
                 },
                 {
                     id: 'debt_repay_date',
-                    title: '۳- تاریخ بازپرداخت',
+                    title: 'تاریخ بازپرداخت',
                     render: () => (
                         <FullJalaliDatePicker 
                             day={pickerDay}
@@ -7109,7 +7139,7 @@
                 },
                 {
                     id: 'debt_repay_notes',
-                    title: '۴- توضیحات تکمیلی',
+                    title: 'توضیحات تکمیلی',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات و بابت بازپرداخت:</label>
@@ -7128,7 +7158,7 @@
             const demandRepaymentWizardCards = [
                 {
                     id: 'demand_repay_contact',
-                    title: '۱- انتخاب مخاطب',
+                    title: 'انتخاب مخاطب',
                     render: () => (
                         <ContactSelectorCard 
                             contacts={contacts}
@@ -7145,7 +7175,7 @@
                 },
                 {
                     id: 'demand_repay_amount',
-                    title: '۲- مبلغ بازپرداخت طلب',
+                    title: 'مبلغ بازپرداخت طلب',
                     render: () => {
                         const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
                         const editingTx = repaymentForm.id ? transactions.find(t => t.id === repaymentForm.id) : null;
@@ -7214,7 +7244,7 @@
                 },
                 {
                     id: 'demand_repay_date',
-                    title: '۳- تاریخ دریافت',
+                    title: 'تاریخ دریافت',
                     render: () => (
                         <FullJalaliDatePicker 
                             day={pickerDay}
@@ -7230,7 +7260,7 @@
                 },
                 {
                     id: 'demand_repay_notes',
-                    title: '۴- توضیحات تکمیلی',
+                    title: 'توضیحات تکمیلی',
                     render: () => (
                         <div className="space-y-3">
                             <label className="block text-xs text-slate-500 font-bold">توضیحات بابت دریافتی:</label>
@@ -7249,7 +7279,7 @@
             const contactWizardCards = [
                 {
                     id: 'contact_names',
-                    title: wizardMode === 'edit' ? '۱- ویرایش نام و نام خانوادگی' : '۱- نام و نام خانوادگی مخاطب',
+                    title: wizardMode === 'edit' ? 'ویرایش نام و نام خانوادگی' : 'نام و نام خانوادگی مخاطب',
                     render: () => (
                         <div className="space-y-4">
                             {/* Center Avatar Display Box */}
@@ -7318,7 +7348,7 @@
                 },
                 {
                     id: 'contact_info',
-                    title: wizardMode === 'edit' ? '۲- ویرایش تماس و حساب بانکی' : '۲- شماره تماس و اطلاعات حساب بانکی',
+                    title: wizardMode === 'edit' ? 'ویرایش تماس و حساب بانکی' : 'شماره تماس و اطلاعات حساب بانکی',
                     render: () => (
                         <div className="space-y-3.5">
                             <div>
@@ -9875,10 +9905,10 @@
                                 className="fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
                             >
                                 <picture className="w-full h-full flex items-center justify-center">
-                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.5, ./splash-landscape.jpg?v=2.2.5" />
-                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png?v=2.2.5, ./splash-portrait.jpg?v=2.2.5" />
+                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.6, ./splash-landscape.jpg?v=2.2.6" />
+                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png?v=2.2.6, ./splash-portrait.jpg?v=2.2.6" />
                                     <img 
-                                        src="./splash-portrait.png?v=2.2.5" 
+                                        src="./splash-portrait.png?v=2.2.6" 
                                         alt="Amir Finance Splash Screen" 
                                         onError={(e) => { 
                                             if (!e.currentTarget.dataset.retry) {
@@ -10185,9 +10215,10 @@
                                             {/* Scrollable Floating Cards Area */}
                                             <div 
                                                 ref={editCardsContainerRef}
-                                                className={`w-full flex-1 hide-scrollbar pt-0 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
+                                                className={`w-full flex-1 hide-scrollbar pt-0 px-1 space-y-5 relative pb-10 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
                                             >
                                                 {activeCards.map((card, index) => {
+                                                    const isLastCard = index === activeCards.length - 1;
                                                     const isEditingThis = editingCardId === card.id;
                                                     const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
                                                     const isModified = modifiedCardIds.includes(card.id);
@@ -10199,7 +10230,7 @@
                                                             className={`sticky w-[96%] max-w-md mx-auto isolate ${isEditingThis ? 'z-[100]' : 'z-0'}`}
                                                             style={{
                                                                 top: `${index * 8}px`,
-                                                                zIndex: isEditingThis ? 100 : index,
+                                                                zIndex: isEditingThis ? 100 : (index + 1),
                                                                 transform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)',
                                                                 WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)'
                                                             }}
@@ -10212,7 +10243,7 @@
                                                                     y: (peekAnim && index > 0) ? -80 : 0
                                                                 }}
                                                                 transition={{ type: "spring", stiffness: 380, damping: 26 }}
-                                                                className={`w-full rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between ${
+                                                                className={`w-full rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between overflow-hidden ${
                                                                     isEditingThis 
                                                                         ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400' 
                                                                         : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'
@@ -10228,7 +10259,7 @@
                                                                 }}
                                                             >
                                                             {/* Card Editable Inputs Body - Exact match to stack card appearance */}
-                                                            <div className={`flex-1 py-1 transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-95' : ''}`}>
+                                                            <div className={`flex-1 min-h-0 py-1 overflow-y-auto hide-scrollbar transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-95' : ''}`}>
                                                                 {card.render()}
                                                             </div>
 
@@ -10309,42 +10340,6 @@
                                                     );
                                                 })}
                                             </div>
-
-                                            {/* Unsaved Changes Non-blocking Floating Bottom Action Bar */}
-                                            <AnimatePresence>
-                                                {modifiedCardIds.length > 0 && (
-                                                    <motion.div 
-                                                        initial={{ opacity: 0, y: 25, scale: 0.92 }}
-                                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                        exit={{ opacity: 0, y: 25, scale: 0.92 }}
-                                                        transition={{ type: "spring", stiffness: 420, damping: 26 }}
-                                                        className="absolute bottom-16 left-0 right-0 z-50 px-3 pointer-events-none flex justify-center"
-                                                    >
-                                                        <div className="w-full max-w-sm bg-slate-900/95 dark:bg-slate-800/95 text-white p-3 rounded-2xl shadow-2xl backdrop-blur-xl border border-white/20 flex items-center justify-between pointer-events-auto">
-                                                            <div className="flex items-center space-x-2 space-x-reverse">
-                                                                <div className="w-7 h-7 rounded-xl bg-amber-500/25 border border-amber-400/30 text-amber-300 flex items-center justify-center font-extrabold text-xs shrink-0 shadow-sm">
-                                                                    {modifiedCardIds.length}
-                                                                </div>
-                                                                <div>
-                                                                    <div className="text-xs font-bold text-white">
-                                                                        {modifiedCardIds.length} تغییر ذخیره‌نشده
-                                                                    </div>
-                                                                    <div className="text-[10px] text-slate-300">برای ثبت کلی داده‌ها کلیک کنید</div>
-                                                                </div>
-                                                            </div>
-
-                                                            <button 
-                                                                type="button"
-                                                                onClick={handleSaveAllChanges}
-                                                                className="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-lg transition-all flex items-center space-x-1.5 space-x-reverse cursor-pointer shrink-0"
-                                                            >
-                                                                <Icon name="check-circle" className="w-4 h-4" />
-                                                                <span>ثبت تغییرات</span>
-                                                            </button>
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
 
                                             {/* Floating Close X Button at Bottom */}
                                             <div className="w-full flex justify-center items-center py-2 shrink-0 z-40 relative">
