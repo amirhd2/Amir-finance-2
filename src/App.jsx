@@ -3505,15 +3505,29 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.0.0",
-    "buildNumber": 300,
+    "installedVersion": "3.1.0",
+    "buildNumber": 310,
     "releaseDate": "2026-08-14",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.0.0",
-    "latestBuild": 300,
+    "latestVersion": "3.1.0",
+    "latestBuild": 310,
     "isUpdateAvailable": false,
     "history": [
+        {
+            "version": "3.1.0",
+            "buildNumber": 310,
+            "releaseDate": "2026-08-14",
+            "releaseChannel": "Stable",
+            "commitHash": "v310clean",
+            "commitMessage": "feat: release version 3.1.0 with seamless sticky cards, edit buttons restoration, and clean overflow containment",
+            "changes": [
+                "رفع کامل بیرون‌زدگی محتوا و حذف نوشته و دکمه‌های زائد خارج از کارت استیکی در همه پرونده‌ها",
+                "بازگردانی و تثبیت دکمه «ویرایش» در گوشه پایین سمت چپ تمام کارت‌ها از جمله کارت آخر (۷ از ۷)",
+                "بهینه‌سازی ریسپانسیو و کپسوله‌سازی اسکرول داخلی کارت‌ها",
+                "انتشار رسمی نسخه ۳.۱.۰"
+            ]
+        },
         {
             "version": "3.0.0",
             "buildNumber": 300,
@@ -3784,8 +3798,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 300;
-                const EMBEDDED_VERSION = "3.0.0";
+                const EMBEDDED_BUILD = 310;
+                const EMBEDDED_VERSION = "3.1.0";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
