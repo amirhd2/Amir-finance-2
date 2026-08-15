@@ -148,26 +148,41 @@
         }
     </script>
     <style>
-        html, body, #root {
-            height: 100%;
+        html {
             width: 100%;
-            max-width: 100vw;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #0b101d; /* Fallback to prevent white flashes */
+        }
+        body {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
             margin: 0;
             padding: 0;
             overflow: hidden;
             overflow-x: clip !important;
-            position: relative;
             overscroll-behavior: none;
-            overscroll-behavior-x: none;
             touch-action: pan-y;
-            touch-action: pan-y;
-        }
-        .swipe-container-safe { overflow-x: clip; overflow-y: visible; }
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #f8fafc;
+            -webkit-user-select: none;
             user-select: none;
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8fafc; /* This gets overridden by dark mode class */
             -webkit-tap-highlight-color: transparent;
+        }
+        #root {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Prevent auto-zoom on mobile focus */
@@ -649,7 +664,7 @@
 
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-[100dvh] w-full h-full flex flex-col p-0 m-0 overflow-hidden" style="overscroll-behavior-x: none;
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 w-full h-full flex flex-col p-0 m-0 overflow-hidden" style="overscroll-behavior-x: none;
             touch-action: pan-y;">
     <!-- Instant HTML Splash Screen overlay for zero-delay startup in Preview & PWA -->
     <div id="app-static-splash" style="position:fixed;inset:0;z-index:99999;background:#0b101d;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity 0.5s ease, visibility 0.5s ease;">
@@ -663,14 +678,27 @@
         </div>
     </div>
     <!-- Main Mobile & Responsive App Container Frame -->
-    <div id="root" class="w-full h-full min-h-[100dvh] flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
+    <div id="root" class="w-full h-full flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=2.2.7-b230"></script>
+    <script src="app.compiled.js?v=3.1.12-b334"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>
         (function() {
+            // Lock window scroll at (0,0) in iOS PWA standalone mode
+            var lockScroll = function() {
+                if (window.scrollY !== 0 || window.scrollX !== 0) {
+                    window.scrollTo(0, 0);
+                }
+            };
+            window.addEventListener('scroll', lockScroll, { passive: true });
+            window.addEventListener('resize', lockScroll, { passive: true });
+            window.addEventListener('orientationchange', function() {
+                setTimeout(lockScroll, 100);
+            });
+            document.addEventListener('DOMContentLoaded', lockScroll);
+
             setTimeout(function() {
                 var root = document.getElementById('root');
                 if (root && (!root.children || root.children.length === 0) && !window.__APP_MOUNTED__) {
