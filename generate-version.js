@@ -16,17 +16,17 @@ let vData = {
   appName: "Amir Finance",
   appLogo: "apple-touch-icon.png",
   installedVersion: pkgVersion,
-  buildNumber: 328,
+  buildNumber: 330,
   releaseDate: new Date().toISOString().split('T')[0],
   releaseChannel: "Stable",
   channelLabel: "نسخه پایدار",
   latestVersion: pkgVersion,
-  latestBuild: 328,
+  latestBuild: 330,
   isUpdateAvailable: false,
   history: [
     {
       version: pkgVersion,
-      buildNumber: 328,
+      buildNumber: 330,
       releaseDate: new Date().toISOString().split('T')[0],
       releaseChannel: "Stable",
       commitHash: "v319stable",
@@ -49,7 +49,7 @@ if (fs.existsSync(versionPath)) {
       ...existing,
       installedVersion: pkgVersion,
       latestVersion: pkgVersion,
-      buildNumber: Math.max(328, (existing.buildNumber || 327) + 1),
+      buildNumber: Math.max(330, (existing.buildNumber || 329) + 1),
       releaseDate: new Date().toISOString().split('T')[0],
       isUpdateAvailable: false
     };

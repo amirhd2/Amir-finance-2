@@ -2649,7 +2649,7 @@ function SwipeBackWrapper({
     ref: page1Ref,
     className: "page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-clip overscroll-x-none w-full h-full"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] min-h-full"
+    className: "px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)] min-h-full"
   }, underlyingContent)), /*#__PURE__*/React.createElement("div", {
     ref: overlayRef,
     className: "backdrop-overlay"
@@ -2658,11 +2658,11 @@ function SwipeBackWrapper({
     className: "page-view z-20 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden"
   }, onRefresh ? /*#__PURE__*/React.createElement(PullToRefresh, {
     onRefresh: onRefresh,
-    className: "w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+5.5rem)]"
+    className: "w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)]"
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children) : /*#__PURE__*/React.createElement("div", {
-    className: "w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+5.5rem)]"
+    className: "w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)]"
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children)));
@@ -4048,7 +4048,7 @@ function NavRippleButton({
     id: id,
     onPointerDown: handlePointerDown,
     onClick: onClick,
-    className: `relative overflow-hidden flex flex-col items-center justify-center w-14 h-13 rounded-2xl transition-all duration-200 select-none cursor-pointer ${isActive ? 'text-indigo-600 dark:text-indigo-400 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`
+    className: `relative overflow-hidden flex flex-col items-center justify-center w-14 h-12 rounded-2xl transition-all duration-200 select-none cursor-pointer ${isActive ? 'text-indigo-600 dark:text-indigo-400 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`
   }, /*#__PURE__*/React.createElement(AnimatePresence, null, ripples.map(ripple => /*#__PURE__*/React.createElement(motion.span, {
     key: ripple.id,
     initial: {
@@ -4160,15 +4160,23 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.8",
-    "buildNumber": 321,
+    "installedVersion": "3.1.10",
+    "buildNumber": 331,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.8",
-    "latestBuild": 321,
+    "latestVersion": "3.1.10",
+    "latestBuild": 331,
     "isUpdateAvailable": false,
     "history": [{
+      "version": "3.1.9",
+      "buildNumber": 328,
+      "releaseDate": "2026-08-15",
+      "releaseChannel": "Stable",
+      "commitHash": "v319stable",
+      "commitMessage": "fix: universal viewport bottom gap fix and version synchronization",
+      "changes": ["حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها", "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی", "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه", "بهینه‌سازی نهایی کارکرد آفلاین PWA"]
+    }, {
       "version": "3.1.8",
       "buildNumber": 321,
       "releaseDate": "2026-08-15",
@@ -4420,19 +4428,20 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 325;
-    const EMBEDDED_VERSION = "3.1.8";
+    const EMBEDDED_BUILD = 331;
+    const EMBEDDED_VERSION = "3.1.10";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
-    // If local build is missing or older than current code, set it to current embedded build
+    // If local build is missing or older than current running code bundle, synchronize it
     if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD) {
       localStorage.setItem('amir_installed_build', EMBEDDED_BUILD.toString());
       localStorage.setItem('amir_installed_version', EMBEDDED_VERSION);
       localBuildStr = EMBEDDED_BUILD.toString();
       localVersion = EMBEDDED_VERSION;
     }
-    const localBuild = parseInt(localBuildStr, 10);
+    const localBuild = Math.max(EMBEDDED_BUILD, parseInt(localBuildStr || '0', 10));
+    const activeVersion = localBuild > EMBEDDED_BUILD && localVersion ? localVersion : EMBEDDED_VERSION;
     try {
       const res = await fetch('version.json?t=' + Date.now(), {
         cache: 'no-store',
@@ -4443,18 +4452,27 @@ function App() {
       });
       if (!res.ok) throw new Error('version.json fetch failed');
       const serverData = await res.json();
-      const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || '163', 10);
-      const serverVersion = serverData.installedVersion || serverData.latestVersion || '1.7.0';
+      const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || localBuild.toString(), 10);
+      const serverVersion = serverData.installedVersion || serverData.latestVersion || activeVersion;
       const isUpdateAvailable = serverBuild > localBuild || hasSWUpdate || swFoundUpdate;
-      setVersionData(prev => ({
-        ...serverData,
-        installedVersion: localVersion || EMBEDDED_VERSION,
-        buildNumber: localBuild,
-        latestVersion: serverVersion,
-        latestBuild: serverBuild,
-        isUpdateAvailable: isUpdateAvailable,
-        history: serverData && serverData.history && serverData.history.length > 0 ? serverData.history : prev.history && prev.history.length > 0 ? prev.history : defaultVersionData.history
-      }));
+      setVersionData(prev => {
+        const wasAlreadyAvailable = prev.isUpdateAvailable;
+        if (!isManual && isUpdateAvailable && !wasAlreadyAvailable) {
+          setTimeout(() => {
+            showToast('نسخه ' + serverVersion + ' آماده دریافت است. برای نصب به تنظیمات بروید.', 'info', 5000);
+          }, 1000);
+        }
+        return {
+          ...defaultVersionData,
+          ...serverData,
+          installedVersion: activeVersion,
+          buildNumber: localBuild,
+          latestVersion: serverVersion,
+          latestBuild: serverBuild,
+          isUpdateAvailable: isUpdateAvailable,
+          history: serverData && serverData.history && serverData.history.length > 0 ? serverData.history : prev.history && prev.history.length > 0 ? prev.history : defaultVersionData.history
+        };
+      });
       if (isManual) {
         setIsCheckingUpdate(false);
         if (isUpdateAvailable) {
@@ -9918,7 +9936,7 @@ function App() {
         }), /*#__PURE__*/React.createElement("span", null, "\u062E\u0631\u0648\u062C\u06CC \u067E\u0631\u0648\u0646\u062F\u0647 \u062A\u0633\u0648\u06CC\u0647\u200C\u062D\u0633\u0627\u0628")));
       case 'all-transactions':
         return /*#__PURE__*/React.createElement("div", {
-          className: "space-y-4 animate-fade-in pb-12"
+          className: "space-y-4 animate-fade-in pb-4"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between py-1.5 mb-3"
         }, /*#__PURE__*/React.createElement("div", {
@@ -9983,7 +10001,7 @@ function App() {
         })());
       case 'settings':
         return /*#__PURE__*/React.createElement("div", {
-          className: "space-y-3.5 animate-fade-in pb-12"
+          className: "space-y-3.5 animate-fade-in pb-4"
         }, /*#__PURE__*/React.createElement("div", {
           onClick: toggleVersionCard,
           className: "bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300 dark:hover:border-indigo-800 overflow-hidden relative"
@@ -10482,7 +10500,7 @@ function App() {
     onBack
   }) => renderTab('all-transactions', onBack))) : /*#__PURE__*/React.createElement(PullToRefresh, {
     onRefresh: () => handleRefreshData(currentTab),
-    className: "flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] h-full overflow-y-auto overflow-x-clip overscroll-x-none"
+    className: "flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)] h-full overflow-y-auto overflow-x-clip overscroll-x-none"
   }, currentTab === 'dashboard' && renderTab('dashboard'), currentTab === 'accounts' && renderTab('accounts'), currentTab === 'contacts' && renderTab('contacts'), currentTab === 'settings' && renderTab('settings'))))), /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "fab-backdrop",
     initial: {
@@ -10500,7 +10518,7 @@ function App() {
     onClick: () => closePlusMenu(),
     className: "absolute inset-0 bg-black/40 backdrop-blur-xs z-30"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
+    className: "fixed bottom-[calc(3.85rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
   }, /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "genie-fixed",
     initial: {
@@ -10623,7 +10641,9 @@ function App() {
     onClick: () => closePlusMenu(),
     className: "w-full py-1 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
   }, "\u0627\u0646\u0635\u0631\u0627\u0641")))), /*#__PURE__*/React.createElement("div", {
-    className: "fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 pt-1 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] min-h-[4rem]"
+    className: "fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end pb-[env(safe-area-inset-bottom,0px)]"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto"
   }, /*#__PURE__*/React.createElement(NavRippleButton, {
     id: "nav-btn-home",
     onClick: () => navigateToTab('dashboard', 'none'),
@@ -10636,7 +10656,9 @@ function App() {
     isActive: currentTab === 'accounts',
     iconName: "wallet",
     label: "\u062D\u0633\u0627\u0628\u200C\u0647\u0627"
-  }), /*#__PURE__*/React.createElement(motion.button, {
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "relative flex items-center justify-center w-14 h-14 shrink-0"
+  }, /*#__PURE__*/React.createElement(motion.button, {
     whileTap: {
       scale: 0.85
     },
@@ -10647,7 +10669,7 @@ function App() {
         setShowPlusMenu(true);
       }
     },
-    className: `w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg -mt-5 z-[50] transition-colors duration-300 ${showPlusMenu ? 'bg-red-500 hover:bg-red-600 shadow-red-500/35 ring-4 ring-red-500/25' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30'}`
+    className: `w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg absolute -top-3 z-[50] transition-colors duration-300 ${showPlusMenu ? 'bg-red-500 hover:bg-red-600 shadow-red-500/35 ring-4 ring-red-500/25' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30'}`
   }, /*#__PURE__*/React.createElement(motion.div, {
     className: "flex items-center justify-center w-full h-full leading-none shrink-0",
     animate: {
@@ -10661,7 +10683,7 @@ function App() {
   }, /*#__PURE__*/React.createElement(Icon, {
     name: "plus",
     className: "w-6 h-6 shrink-0 block"
-  }))), /*#__PURE__*/React.createElement(NavRippleButton, {
+  })))), /*#__PURE__*/React.createElement(NavRippleButton, {
     id: "nav-btn-contacts",
     onClick: () => navigateToTab('contacts', 'none'),
     isActive: currentTab === 'contacts',
@@ -10673,7 +10695,7 @@ function App() {
     isActive: currentTab === 'settings',
     iconName: "settings",
     label: "\u062A\u0646\u0638\u06CC\u0645\u0627\u062A"
-  })), /*#__PURE__*/React.createElement(AnimatePresence, null, showStackWizard && /*#__PURE__*/React.createElement(motion.div, {
+  }))), /*#__PURE__*/React.createElement(AnimatePresence, null, showStackWizard && /*#__PURE__*/React.createElement(motion.div, {
     key: "stack-wizard-backdrop",
     variants: iosBackdropVariants,
     initial: "initial",

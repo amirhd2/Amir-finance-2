@@ -3524,13 +3524,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.9",
-    "buildNumber": 328,
+    "installedVersion": "3.1.10",
+    "buildNumber": 331,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.9",
-    "latestBuild": 328,
+    "latestVersion": "3.1.10",
+    "latestBuild": 331,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -3939,8 +3939,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 328;
-                const EMBEDDED_VERSION = "3.1.9";
+                const EMBEDDED_BUILD = 331;
+                const EMBEDDED_VERSION = "3.1.10";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -3972,18 +3972,26 @@
 
                     const isUpdateAvailable = (serverBuild > localBuild) || hasSWUpdate || swFoundUpdate;
 
-                    setVersionData(prev => ({
-                        ...defaultVersionData,
-                        ...serverData,
-                        installedVersion: activeVersion,
-                        buildNumber: localBuild,
-                        latestVersion: serverVersion,
-                        latestBuild: serverBuild,
-                        isUpdateAvailable: isUpdateAvailable,
-                        history: (serverData && serverData.history && serverData.history.length > 0)
-                            ? serverData.history
-                            : (prev.history && prev.history.length > 0 ? prev.history : defaultVersionData.history)
-                    }));
+                    setVersionData(prev => {
+                        const wasAlreadyAvailable = prev.isUpdateAvailable;
+                        if (!isManual && isUpdateAvailable && !wasAlreadyAvailable) {
+                            setTimeout(() => {
+                                showToast('نسخه ' + serverVersion + ' آماده دریافت است. برای نصب به تنظیمات بروید.', 'info', 5000);
+                            }, 1000);
+                        }
+                        return {
+                            ...defaultVersionData,
+                            ...serverData,
+                            installedVersion: activeVersion,
+                            buildNumber: localBuild,
+                            latestVersion: serverVersion,
+                            latestBuild: serverBuild,
+                            isUpdateAvailable: isUpdateAvailable,
+                            history: (serverData && serverData.history && serverData.history.length > 0)
+                                ? serverData.history
+                                : (prev.history && prev.history.length > 0 ? prev.history : defaultVersionData.history)
+                        };
+                    });
 
                     if (isManual) {
                         setIsCheckingUpdate(false);
@@ -10314,7 +10322,7 @@
                     </div>
 
                     {/* Navigation Bar at Bottom */}
-                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end">
+                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end pb-[env(safe-area-inset-bottom,0px)]">
                         <div className="w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto">
                             <NavRippleButton 
                                 id="nav-btn-home"
@@ -10373,8 +10381,6 @@
                                 label="تنظیمات"
                             />
                         </div>
-                        {/* Physical safe area bottom spacer for devices with home indicator */}
-                        <div className="h-[env(safe-area-inset-bottom,0px)] w-full shrink-0"></div>
                     </div>
 
                     {/* Stack Wizard Modal (وام، طلب، قرض، قسط) */}
