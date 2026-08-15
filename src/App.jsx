@@ -1860,7 +1860,7 @@
                         ref={page1Ref}
                         className="page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-clip overscroll-x-none w-full h-full"
                     >
-                        <div className="px-4 pt-4 pb-24 min-h-full">
+                        <div className="px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] min-h-full">
                             {underlyingContent}
                         </div>
                     </div>
@@ -1877,11 +1877,11 @@
                         className="page-view z-20 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden"
                     >
                         {onRefresh ? (
-                            <PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-4 pb-24">
+                            <PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+5.5rem)]">
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </PullToRefresh>
                         ) : (
-                            <div className="w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-4 pb-24">
+                            <div className="w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+5.5rem)]">
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </div>
                         )}
@@ -3524,15 +3524,30 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.6",
-    "buildNumber": 319,
+    "installedVersion": "3.1.7",
+    "buildNumber": 320,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.6",
-    "latestBuild": 319,
+    "latestVersion": "3.1.7",
+    "latestBuild": 320,
     "isUpdateAvailable": false,
     "history": [
+        {
+            "version": "3.1.7",
+            "buildNumber": 320,
+            "releaseDate": "2026-08-15",
+            "releaseChannel": "Stable",
+            "commitHash": "v317safefix",
+            "commitMessage": "fix: fix iOS PWA safe area insets and viewport scrolling alignment",
+            "changes": [
+                "حل مشکل جابجایی صفحه در حالت PWA و Standalone روی گوشی‌های همراه",
+                "سازگاری دقیق با بریدگی ناچ (Notch) و جزیره پویا (Dynamic Island) در بالای صفحه با safe-area-inset-top",
+                "اصلاح ارتفاع و فاصله ایمن نوار ناوبری پایین صفحه با safe-area-inset-bottom و نوار هوم آیفون",
+                "قفل‌سازی موقعیت Viewport برای جلوگیری از بالا رفتن محتوا و ایجاد فضای خالی زیر برنامه",
+                "انتشار رسمی نسخه ۳.۱.۷"
+            ]
+        },
         {
             "version": "3.1.6",
             "buildNumber": 319,
@@ -10064,9 +10079,14 @@
                         )}
                     </AnimatePresence>
 
+                    {/* PWA Status Bar Safe Area Top Cover */}
+                    <div className={`fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[45] pointer-events-none transition-colors ${
+                        !isDark ? 'bg-[#F4F7FC]' : 'bg-slate-950'
+                    }`}></div>
+
                     {/* Notification Toast */}
                     {toastMessage && (
-                        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white dark:bg-slate-100 dark:text-slate-900 text-xs py-2 px-4 rounded-full shadow-lg border border-slate-700/50 transition-all duration-300">
+                        <div className="absolute top-[calc(env(safe-area-inset-top,0px)+1rem)] left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white dark:bg-slate-100 dark:text-slate-900 text-xs py-2 px-4 rounded-full shadow-lg border border-slate-700/50 transition-all duration-300">
                             {toastMessage}
                         </div>
                     )}
@@ -10131,7 +10151,7 @@
                                         )}
                                     </div>
                                 ) : (
-                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24 h-full overflow-y-auto overflow-x-clip overscroll-x-none">
+                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] h-full overflow-y-auto overflow-x-clip overscroll-x-none">
                                         {currentTab === 'dashboard' && renderTab('dashboard')}
                                         {currentTab === 'accounts' && renderTab('accounts')}
                                         {currentTab === 'contacts' && renderTab('contacts')}
@@ -10158,7 +10178,7 @@
                     </AnimatePresence>
 
                     {/* FAB Genie Menu Floating Container (Anchored ABOVE the bottom bar FAB button) */}
-                    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
+                    <div className="absolute bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
                         <AnimatePresence>
                             {showPlusMenu && (
                                 <motion.div
@@ -10264,7 +10284,7 @@
                     </div>
 
                     {/* Navigation Bar at Bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 z-40">
+                    <div className="absolute bottom-0 left-0 right-0 h-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[env(safe-area-inset-bottom,0px)] bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 z-40">
                         <NavRippleButton 
                             id="nav-btn-home"
                             onClick={() => navigateToTab('dashboard', 'none')}

@@ -148,19 +148,41 @@
         }
     </script>
     <style>
-        html, body, #root {
-            height: 100%;
+        html, body {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             width: 100%;
-            max-width: 100vw;
+            height: 100%;
+            height: 100dvh;
+            height: -webkit-fill-available;
             margin: 0;
             padding: 0;
             overflow: hidden;
             overflow-x: clip !important;
-            position: relative;
             overscroll-behavior: none;
             overscroll-behavior-x: none;
             touch-action: pan-y;
-            touch-action: pan-y;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        #root {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            height: -webkit-fill-available;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            overflow-x: clip !important;
+            overscroll-behavior: none;
+            overscroll-behavior-x: none;
+            display: flex;
+            flex-direction: column;
         }
         .swipe-container-safe { overflow-x: clip; overflow-y: visible; }
         body {
@@ -666,11 +688,24 @@
     <div id="root" class="w-full h-full min-h-[100dvh] flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=3.1.6-b320"></script>
+    <script src="app.compiled.js?v=3.1.7-b321"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>
         (function() {
+            // Lock window scroll at (0,0) in iOS PWA standalone mode
+            var lockScroll = function() {
+                if (window.scrollY !== 0 || window.scrollX !== 0) {
+                    window.scrollTo(0, 0);
+                }
+            };
+            window.addEventListener('scroll', lockScroll, { passive: true });
+            window.addEventListener('resize', lockScroll, { passive: true });
+            window.addEventListener('orientationchange', function() {
+                setTimeout(lockScroll, 100);
+            });
+            document.addEventListener('DOMContentLoaded', lockScroll);
+
             setTimeout(function() {
                 var root = document.getElementById('root');
                 if (root && (!root.children || root.children.length === 0) && !window.__APP_MOUNTED__) {
