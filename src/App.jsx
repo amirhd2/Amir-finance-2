@@ -1860,7 +1860,7 @@
                         ref={page1Ref}
                         className="page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-clip overscroll-x-none w-full h-full"
                     >
-                        <div className="px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)] min-h-full">
+                        <div className="px-4 pt-4 pb-24 min-h-full">
                             {underlyingContent}
                         </div>
                     </div>
@@ -1877,11 +1877,11 @@
                         className="page-view z-20 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden"
                     >
                         {onRefresh ? (
-                            <PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)]">
+                            <PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-4 pb-24">
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </PullToRefresh>
                         ) : (
-                            <div className="w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)]">
+                            <div className="w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-4 pb-24">
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </div>
                         )}
@@ -3343,34 +3343,15 @@
             const [srcIndex, setSrcIndex] = useState(0);
             const sources = useMemo(() => {
                 const list = [];
-                if (logoUrl) {
-                    list.push(logoUrl);
-                    if (!logoUrl.startsWith('/')) list.push(`/${logoUrl}`);
-                    if (!logoUrl.startsWith('./')) list.push(`./${logoUrl}`);
-                }
-                list.push(
-                    './apple-touch-icon.png',
-                    '/apple-touch-icon.png',
-                    'apple-touch-icon.png',
-                    './public/apple-touch-icon.png',
-                    '/public/apple-touch-icon.png',
-                    './favicon-96x96.png',
-                    '/favicon-96x96.png',
-                    'favicon-96x96.png',
-                    './web-app-manifest-192x192.png',
-                    '/web-app-manifest-192x192.png',
-                    'web-app-manifest-192x192.png',
-                    './icon-192x192.png',
-                    '/icon-192x192.png',
-                    'icon-192x192.png'
-                );
+                if (logoUrl) list.push(logoUrl);
+                list.push('/apple-touch-icon.png', 'apple-touch-icon.png', '/favicon-96x96.png', 'favicon-96x96.png');
                 return [...new Set(list)];
             }, [logoUrl]);
 
             if (srcIndex >= sources.length) {
                 return (
                     <div className={`rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white font-black flex items-center justify-center shadow-sm border border-indigo-400/30 shrink-0 ${className}`}>
-                        <span className="text-sm font-black tracking-tight">AF</span>
+                        <span className="text-xs tracking-tight">AF</span>
                     </div>
                 );
             }
@@ -3414,7 +3395,7 @@
                     id={id}
                     onPointerDown={handlePointerDown}
                     onClick={onClick}
-                    className={`relative overflow-hidden flex flex-col items-center justify-center w-14 h-12 rounded-2xl transition-all duration-200 select-none cursor-pointer ${
+                    className={`relative overflow-hidden flex flex-col items-center justify-center w-14 h-13 rounded-2xl transition-all duration-200 select-none cursor-pointer ${
                         isActive ? 'text-indigo-600 dark:text-indigo-400 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
                     }`}
                 >
@@ -3524,123 +3505,15 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.12",
-    "buildNumber": 334,
-    "releaseDate": "2026-08-15",
+    "installedVersion": "3.1.1",
+    "buildNumber": 311,
+    "releaseDate": "2026-08-14",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.12",
-    "latestBuild": 334,
+    "latestVersion": "3.1.1",
+    "latestBuild": 311,
     "isUpdateAvailable": false,
     "history": [
-        {
-            "version": "3.1.9",
-            "buildNumber": 328,
-            "releaseDate": "2026-08-15",
-            "releaseChannel": "Stable",
-            "commitHash": "v319stable",
-            "commitMessage": "fix: universal viewport bottom gap fix and version synchronization",
-            "changes": [
-                "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
-                "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",
-                "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه",
-                "بهینه‌سازی نهایی کارکرد آفلاین PWA"
-            ]
-        },
-        {
-            "version": "3.1.8",
-            "buildNumber": 321,
-            "releaseDate": "2026-08-15",
-            "releaseChannel": "Stable",
-            "commitHash": "v318bottomfix",
-            "commitMessage": "fix: fix bottom navigation bar floating gap in iOS PWA and mobile",
-            "changes": [
-                "تثبیت نوار ناوبری پایین صفحه چسبیده به لبه فیزیکی دستگاه (Fixed Bottom 0)",
-                "حذف فاصله و فضای خالی زیر نوار ناوبری در حالت Standalone / PWA",
-                "پوشش یکپارچه پس‌زمینه نوار پایین تا انتهای صفحه در زیر نوار هوم (Home Indicator)",
-                "انتشار رسمی نسخه ۳.۱.۸"
-            ]
-        },
-        {
-            "version": "3.1.7",
-            "buildNumber": 320,
-            "releaseDate": "2026-08-15",
-            "releaseChannel": "Stable",
-            "commitHash": "v317safefix",
-            "commitMessage": "fix: fix iOS PWA safe area insets and viewport scrolling alignment",
-            "changes": [
-                "حل مشکل جابجایی صفحه در حالت PWA و Standalone روی گوشی‌های همراه",
-                "سازگاری دقیق با بریدگی ناچ (Notch) و جزیره پویا (Dynamic Island) در بالای صفحه با safe-area-inset-top",
-                "اصلاح ارتفاع و فاصله ایمن نوار ناوبری پایین صفحه با safe-area-inset-bottom و نوار هوم آیفون",
-                "قفل‌سازی موقعیت Viewport برای جلوگیری از بالا رفتن محتوا و ایجاد فضای خالی زیر برنامه",
-                "انتشار رسمی نسخه ۳.۱.۷"
-            ]
-        },
-        {
-            "version": "3.1.6",
-            "buildNumber": 319,
-            "releaseDate": "2026-08-15",
-            "releaseChannel": "Stable",
-            "commitHash": "v316dashlogo",
-            "commitMessage": "feat: release version 3.1.6 with resized favicon-96x96 logo in dashboard header",
-            "changes": [
-                "استفاده از فایل favicon-96x96.png به عنوان تصویر لوگوی بالای صفحه داشبورد",
-                "افزایش ابعاد لوگوی داشبورد به میزان ۱.۵ برابر (۶۰ در ۶۰ پیکسل) با گوشه‌های گرد مدرن",
-                "انتشار رسمی نسخه ۳.۱.۶"
-            ]
-        },
-        {
-            "version": "3.1.5",
-            "buildNumber": 317,
-            "releaseDate": "2026-08-15",
-            "releaseChannel": "Stable",
-            "commitHash": "v315logo",
-            "commitMessage": "feat: release version 3.1.5 with enlarged settings brand logo and preview asset compatibility",
-            "changes": [
-                "افزایش اندازه تصویر و لوگوی بالای صفحه تنظیمات به حدود دو سوم ارتفاع باکس سربرگ برای نمایش هرچه زیباتر و برجسته‌تر",
-                "بهبود رندرینگ و سازگاری کامل لود تصویر در محیط Preview و مرورگر وب",
-                "انتشار رسمی نسخه ۳.۱.۵"
-            ]
-        },
-        {
-            "version": "3.1.4",
-            "buildNumber": 316,
-            "releaseDate": "2026-08-15",
-            "releaseChannel": "Stable",
-            "commitHash": "v314settings",
-            "commitMessage": "feat: release version 3.1.4 with aligned settings header logo to right",
-            "changes": [
-                "انتقال تصویر و لوگوی بالای صفحه تنظیمات به سمت راست باکس و متون برای زیبایی و هماهنگی بیشتر با چیدمان راست‌چین",
-                "انتشار رسمی نسخه ۳.۱.۴"
-            ]
-        },
-        {
-            "version": "3.1.3",
-            "buildNumber": 315,
-            "releaseDate": "2026-08-15",
-            "releaseChannel": "Stable",
-            "commitHash": "v313cascade",
-            "commitMessage": "feat: release version 3.1.3 with perfected sticky cards stack cascade behavior",
-            "changes": [
-                "تنظیم دقیق رفتار اسکرول کارت آخر در حالت استیکی به طوری که هنگام اسکرول تا ابتدای کارت قبلی بالا بیاید و متوقف شود",
-                "جلوگیری از بالاتر رفتن کارت آخر نسبت به چیدمان پله‌ای و یکپارچه‌سازی رفتار همه کارت‌های دسته",
-                "محاسبه پویا و هوشمند فضای اسکرول کارت‌ها متناسب با ابعاد صفحه نمایش",
-                "انتشار رسمی نسخه ۳.۱.۳"
-            ]
-        },
-        {
-            "version": "3.1.2",
-            "buildNumber": 312,
-            "releaseDate": "2026-08-15",
-            "releaseChannel": "Stable",
-            "commitHash": "v312cache",
-            "commitMessage": "fix: force aggressive cache clear and service worker update for PWA to sync latest sticky UI changes",
-            "changes": [
-                "تغییر مکانیزم کش مرورگر در نسخه نصب‌شده (PWA) برای دریافت قطعی آخرین تغییرات و کدهای جدید",
-                "به‌روزرسانی اجباری Service Worker و شکستن کش فایل index.html برای اعمال صد در صدی تغییرات ظاهری (استیکی شدن کارت آخر روی کارت ماقبل)",
-                "همسان‌سازی کامل نسخه نصبی روی گوشی با نسخه Preview"
-            ]
-        },
         {
             "version": "3.1.1",
             "buildNumber": 311,
@@ -3939,13 +3812,13 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 334;
-                const EMBEDDED_VERSION = "3.1.12";
+                const EMBEDDED_BUILD = 311;
+                const EMBEDDED_VERSION = "3.1.1";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
 
-                // If local build is missing or older than current running code bundle, synchronize it
+                // If local build is missing or older than current code, set it to current embedded build
                 if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD) {
                     localStorage.setItem('amir_installed_build', EMBEDDED_BUILD.toString());
                     localStorage.setItem('amir_installed_version', EMBEDDED_VERSION);
@@ -3953,8 +3826,7 @@
                     localVersion = EMBEDDED_VERSION;
                 }
 
-                const localBuild = Math.max(EMBEDDED_BUILD, parseInt(localBuildStr || '0', 10));
-                const activeVersion = (localBuild > EMBEDDED_BUILD && localVersion) ? localVersion : EMBEDDED_VERSION;
+                const localBuild = parseInt(localBuildStr, 10);
 
                 try {
                     const res = await fetch('version.json?t=' + Date.now(), { 
@@ -3967,31 +3839,22 @@
                     if (!res.ok) throw new Error('version.json fetch failed');
                     const serverData = await res.json();
 
-                    const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || localBuild.toString(), 10);
-                    const serverVersion = serverData.installedVersion || serverData.latestVersion || activeVersion;
+                    const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || '163', 10);
+                    const serverVersion = serverData.installedVersion || serverData.latestVersion || '1.7.0';
 
                     const isUpdateAvailable = (serverBuild > localBuild) || hasSWUpdate || swFoundUpdate;
 
-                    setVersionData(prev => {
-                        const wasAlreadyAvailable = prev.isUpdateAvailable;
-                        if (!isManual && isUpdateAvailable && !wasAlreadyAvailable) {
-                            setTimeout(() => {
-                                showToast('نسخه ' + serverVersion + ' آماده دریافت است. برای نصب به تنظیمات بروید.', 'info', 5000);
-                            }, 1000);
-                        }
-                        return {
-                            ...defaultVersionData,
-                            ...serverData,
-                            installedVersion: activeVersion,
-                            buildNumber: localBuild,
-                            latestVersion: serverVersion,
-                            latestBuild: serverBuild,
-                            isUpdateAvailable: isUpdateAvailable,
-                            history: (serverData && serverData.history && serverData.history.length > 0)
-                                ? serverData.history
-                                : (prev.history && prev.history.length > 0 ? prev.history : defaultVersionData.history)
-                        };
-                    });
+                    setVersionData(prev => ({
+                        ...serverData,
+                        installedVersion: localVersion || EMBEDDED_VERSION,
+                        buildNumber: localBuild,
+                        latestVersion: serverVersion,
+                        latestBuild: serverBuild,
+                        isUpdateAvailable: isUpdateAvailable,
+                        history: (serverData && serverData.history && serverData.history.length > 0)
+                            ? serverData.history
+                            : (prev.history && prev.history.length > 0 ? prev.history : defaultVersionData.history)
+                    }));
 
                     if (isManual) {
                         setIsCheckingUpdate(false);
@@ -4135,27 +3998,6 @@
             }, [showStackWizard, wizardMode, wizardViewStyle]);
 
             const editCardsContainerRef = useRef(null);
-            const [editCardsContainerHeight, setEditCardsContainerHeight] = useState(0);
-
-            useEffect(() => {
-                const el = editCardsContainerRef.current;
-                if (!el) return;
-                const updateHeight = () => {
-                    if (el.clientHeight > 0) {
-                        setEditCardsContainerHeight(el.clientHeight);
-                    }
-                };
-                updateHeight();
-                const ro = new ResizeObserver((entries) => {
-                    for (let entry of entries) {
-                        if (entry.contentRect && entry.contentRect.height > 0) {
-                            setEditCardsContainerHeight(entry.contentRect.height);
-                        }
-                    }
-                });
-                ro.observe(el);
-                return () => ro.disconnect();
-            }, [showStackWizard, wizardMode, wizardViewStyle]);
 
             useEffect(() => {
                 if (showStackWizard) {
@@ -7641,7 +7483,7 @@
                                         </p>
                                     </div>
 
-                                    <BrandAvatar className="w-[60px] h-[60px] rounded-2xl object-cover shadow-sm" logoUrl="favicon-96x96.png" />
+                                    <BrandAvatar className="w-10 h-10" logoUrl={versionData.appLogo} />
                                 </div>
 
                                 {/* Reminders Box */}
@@ -9589,7 +9431,7 @@
                         );
                     case 'all-transactions':
                         return (
-                            <div className="space-y-4 animate-fade-in pb-4">
+                            <div className="space-y-4 animate-fade-in pb-12">
                                 {/* Header in style of Contacts and Accounts pages */}
                                 <div className="flex items-center justify-between py-1.5 mb-3">
                                     <div className="flex items-center gap-2.5">
@@ -9673,52 +9515,47 @@
                         );
                     case 'settings':
                         return (
-                            <div className="space-y-3.5 animate-fade-in pb-4">
+                            <div className="space-y-3.5 animate-fade-in pb-12">
                                 {/* Header / Application Version Card (Single Source of Truth) */}
                                 <div 
                                     onClick={toggleVersionCard}
                                     className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300 dark:hover:border-indigo-800 overflow-hidden relative">
                                     
-                                    {/* App Header Row (Image on Right, Texts in Middle, Expand Indicator on Left) */}
-                                    <div className="flex items-center justify-between py-1">
-                                        {/* Right side in RTL: Brand Avatar + Texts */}
-                                        <div className="flex items-center space-x-3.5 space-x-reverse min-w-0">
-                                            <BrandAvatar className="w-[72px] h-[72px] rounded-2xl shrink-0" logoUrl={versionData.appLogo} />
-                                            
-                                            <div className="flex flex-col text-right space-y-1 min-w-0">
-                                                {/* Line 1: App Name */}
-                                                <h2 className="text-base font-black text-slate-900 dark:text-white tracking-tight truncate">
-                                                    {versionData.appName || "Amir Finance"}
-                                                </h2>
-                                                
-                                                {/* Line 2: Version & Build */}
-                                                <div className="flex items-center space-x-2 space-x-reverse text-xs">
-                                                    <span className="text-slate-600 dark:text-slate-300 font-mono font-medium">نسخه {versionData.installedVersion}</span>
-                                                    <span className="text-slate-300 dark:text-slate-600">•</span>
-                                                    <span className="text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 rounded-md text-[11px]">بیلد {versionData.buildNumber}</span>
-                                                </div>
+                                    {/* Expand indicator (Top Left) */}
+                                    <div className="absolute top-4 left-4 flex items-center space-x-1 space-x-reverse shrink-0">
+                                        <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">{isVersionCardExpanded ? 'بستن' : 'جزئیات'}</span>
+                                        <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isVersionCardExpanded ? 'rotate-180' : 'rotate-0'}`} />
+                                    </div>
 
-                                                {/* Line 3: Latest Version Status */}
-                                                <div className="flex items-center pt-0.5">
-                                                    {versionData.isUpdateAvailable ? (
-                                                        <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
-                                                            <Icon name="arrow-up-circle" className="w-3 h-3" />
-                                                            <span>بروزرسانی موجود</span>
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
-                                                            <Icon name="check-circle-2" className="w-3 h-3" />
-                                                            <span>آخرین نسخه</span>
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
+                                    {/* Centered App Header (3 Lines) */}
+                                    <div className="flex flex-col items-center justify-center text-center space-y-1.5 py-1">
+                                        <BrandAvatar className="w-12 h-12 mb-0.5" logoUrl={versionData.appLogo} />
+                                        
+                                        {/* Line 1: App Name */}
+                                        <h2 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                                            {versionData.appName || "Amir Finance"}
+                                        </h2>
+                                        
+                                        {/* Line 2: Version & Build */}
+                                        <div className="flex items-center justify-center space-x-2 space-x-reverse text-xs">
+                                            <span className="text-slate-600 dark:text-slate-300 font-mono font-medium">نسخه {versionData.installedVersion}</span>
+                                            <span className="text-slate-300 dark:text-slate-600">•</span>
+                                            <span className="text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 rounded-md text-[11px]">بیلد {versionData.buildNumber}</span>
                                         </div>
 
-                                        {/* Expand indicator (Left in RTL) */}
-                                        <div className="flex items-center space-x-1 space-x-reverse shrink-0 self-center pl-1">
-                                            <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">{isVersionCardExpanded ? 'بستن' : 'جزئیات'}</span>
-                                            <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isVersionCardExpanded ? 'rotate-180' : 'rotate-0'}`} />
+                                        {/* Line 3: Latest Version Status */}
+                                        <div className="flex items-center justify-center pt-0.5">
+                                            {versionData.isUpdateAvailable ? (
+                                                <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
+                                                    <Icon name="arrow-up-circle" className="w-3 h-3" />
+                                                    <span>بروزرسانی موجود</span>
+                                                </span>
+                                            ) : (
+                                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
+                                                    <Icon name="check-circle-2" className="w-3 h-3" />
+                                                    <span>آخرین نسخه</span>
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 
@@ -10083,7 +9920,7 @@
             const activeCards = getCurrentWizardCards();
 
             return (
-                <div className={`w-full h-full relative flex flex-col justify-between overflow-hidden ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#F4F7FC] text-slate-800'}`}>
+                <div className={`w-full h-full flex flex-col justify-between ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#F4F7FC] text-slate-800'}`}>
                     {/* Startup Splash Screen Overlay */}
                     <AnimatePresence>
                         {showSplashScreen && (
@@ -10117,14 +9954,9 @@
                         )}
                     </AnimatePresence>
 
-                    {/* PWA Status Bar Safe Area Top Cover */}
-                    <div className={`fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[45] pointer-events-none transition-colors ${
-                        !isDark ? 'bg-[#F4F7FC]' : 'bg-slate-950'
-                    }`}></div>
-
                     {/* Notification Toast */}
                     {toastMessage && (
-                        <div className="absolute top-[calc(env(safe-area-inset-top,0px)+1rem)] left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white dark:bg-slate-100 dark:text-slate-900 text-xs py-2 px-4 rounded-full shadow-lg border border-slate-700/50 transition-all duration-300">
+                        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white dark:bg-slate-100 dark:text-slate-900 text-xs py-2 px-4 rounded-full shadow-lg border border-slate-700/50 transition-all duration-300">
                             {toastMessage}
                         </div>
                     )}
@@ -10189,7 +10021,7 @@
                                         )}
                                     </div>
                                 ) : (
-                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)] h-full overflow-y-auto overflow-x-clip overscroll-x-none">
+                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-4 pb-24 h-full overflow-y-auto overflow-x-clip overscroll-x-none">
                                         {currentTab === 'dashboard' && renderTab('dashboard')}
                                         {currentTab === 'accounts' && renderTab('accounts')}
                                         {currentTab === 'contacts' && renderTab('contacts')}
@@ -10216,7 +10048,7 @@
                     </AnimatePresence>
 
                     {/* FAB Genie Menu Floating Container (Anchored ABOVE the bottom bar FAB button) */}
-                    <div className="fixed bottom-[calc(3.85rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
+                    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
                         <AnimatePresence>
                             {showPlusMenu && (
                                 <motion.div
@@ -10322,65 +10154,61 @@
                     </div>
 
                     {/* Navigation Bar at Bottom */}
-                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end pb-[env(safe-area-inset-bottom,0px)]">
-                        <div className="w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto">
-                            <NavRippleButton 
-                                id="nav-btn-home"
-                                onClick={() => navigateToTab('dashboard', 'none')}
-                                isActive={currentTab === 'dashboard'}
-                                iconName="home"
-                                label="خانه"
-                            />
+                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 z-40">
+                        <NavRippleButton 
+                            id="nav-btn-home"
+                            onClick={() => navigateToTab('dashboard', 'none')}
+                            isActive={currentTab === 'dashboard'}
+                            iconName="home"
+                            label="خانه"
+                        />
 
-                            <NavRippleButton 
-                                id="nav-btn-accounts"
-                                onClick={() => navigateToTab('accounts', 'none')}
-                                isActive={currentTab === 'accounts'}
-                                iconName="wallet"
-                                label="حساب‌ها"
-                            />
+                        <NavRippleButton 
+                            id="nav-btn-accounts"
+                            onClick={() => navigateToTab('accounts', 'none')}
+                            isActive={currentTab === 'accounts'}
+                            iconName="wallet"
+                            label="حساب‌ها"
+                        />
 
-                            {/* Plus Button Slot */}
-                            <div className="relative flex items-center justify-center w-14 h-14 shrink-0">
-                                <motion.button 
-                                    whileTap={{ scale: 0.85 }}
-                                    onClick={() => {
-                                        if (showPlusMenu) {
-                                            closePlusMenu();
-                                        } else {
-                                            setShowPlusMenu(true);
-                                        }
-                                    }}
-                                    className={`w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg absolute -top-3 z-[50] transition-colors duration-300 ${
-                                        showPlusMenu 
-                                            ? 'bg-red-500 hover:bg-red-600 shadow-red-500/35 ring-4 ring-red-500/25' 
-                                            : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30'
-                                    }`}>
-                                    <motion.div 
-                                        className="flex items-center justify-center w-full h-full leading-none shrink-0"
-                                        animate={{ rotate: showPlusMenu ? 135 : 0 }} 
-                                        transition={{ type: "spring", stiffness: 300, damping: 20 }}>
-                                        <Icon name="plus" className="w-6 h-6 shrink-0 block" />
-                                    </motion.div>
-                                </motion.button>
-                            </div>
+                        {/* Plus Button */}
+                        <motion.button 
+                            whileTap={{ scale: 0.85 }}
+                            onClick={() => {
+                                if (showPlusMenu) {
+                                    closePlusMenu();
+                                } else {
+                                    setShowPlusMenu(true);
+                                }
+                            }}
+                            className={`w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg -mt-5 z-[50] transition-colors duration-300 ${
+                                showPlusMenu 
+                                    ? 'bg-red-500 hover:bg-red-600 shadow-red-500/35 ring-4 ring-red-500/25' 
+                                    : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30'
+                            }`}>
+                            <motion.div 
+                                className="flex items-center justify-center w-full h-full leading-none shrink-0"
+                                animate={{ rotate: showPlusMenu ? 135 : 0 }} 
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}>
+                                <Icon name="plus" className="w-6 h-6 shrink-0 block" />
+                            </motion.div>
+                        </motion.button>
 
-                            <NavRippleButton 
-                                id="nav-btn-contacts"
-                                onClick={() => navigateToTab('contacts', 'none')}
-                                isActive={currentTab === 'contacts'}
-                                iconName="users"
-                                label="مخاطبین"
-                            />
+                        <NavRippleButton 
+                            id="nav-btn-contacts"
+                            onClick={() => navigateToTab('contacts', 'none')}
+                            isActive={currentTab === 'contacts'}
+                            iconName="users"
+                            label="مخاطبین"
+                        />
 
-                            <NavRippleButton 
-                                id="nav-btn-settings"
-                                onClick={() => navigateToTab('settings', 'none')}
-                                isActive={currentTab === 'settings'}
-                                iconName="settings"
-                                label="تنظیمات"
-                            />
-                        </div>
+                        <NavRippleButton 
+                            id="nav-btn-settings"
+                            onClick={() => navigateToTab('settings', 'none')}
+                            isActive={currentTab === 'settings'}
+                            iconName="settings"
+                            label="تنظیمات"
+                        />
                     </div>
 
                     {/* Stack Wizard Modal (وام، طلب، قرض، قسط) */}
@@ -10415,7 +10243,7 @@
                                             {/* Scrollable Floating Cards Area */}
                                             <div 
                                                 ref={editCardsContainerRef}
-                                                className={`w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-2 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
+                                                className={`w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-28 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
                                             >
                                                 {activeCards.map((card, index) => {
                                                     const isLastCard = index === activeCards.length - 1;
@@ -10431,8 +10259,8 @@
                                                             style={{
                                                                 top: `${index * 8}px`,
                                                                 zIndex: isEditingThis ? 200 : (index + 10),
-                                                                transform: isEditingThis ? 'translate3d(0,0,1px)' : 'none',
-                                                                WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'none'
+                                                                transform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)',
+                                                                WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)'
                                                             }}
                                                         >
                                                             <motion.div 
@@ -10539,17 +10367,6 @@
                                                         </div>
                                                     );
                                                 })}
-
-                                                {/* Dynamic bottom spacer allowing the last card to scroll up exactly to its cascade position in the sticky stack */}
-                                                <div 
-                                                    aria-hidden="true" 
-                                                    className="w-full shrink-0 pointer-events-none"
-                                                    style={{
-                                                        height: editCardsContainerHeight > 0 
-                                                            ? `${Math.max(24, Math.round(editCardsContainerHeight - 385 - (activeCards.length - 1) * 8 + 8))}px`
-                                                            : `max(24px, calc(100vh - ${385 + (activeCards.length - 1) * 8 + 120}px))`
-                                                    }}
-                                                />
                                             </div>
 
                                             {/* Floating Close X Button at Bottom */}

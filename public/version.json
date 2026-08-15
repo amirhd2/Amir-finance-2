@@ -1,56 +1,5 @@
 {
-  "appName": "Amir Finance",
-  "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.1.12",
-  "buildNumber": 334,
-  "releaseDate": "2026-08-15",
-  "releaseChannel": "Stable",
-  "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.1.12",
-  "latestBuild": 334,
-  "isUpdateAvailable": false,
-  "history": [
-    {
-      "version": "3.1.12",
-      "buildNumber": 334,
-      "releaseDate": "2026-08-15",
-      "releaseChannel": "Stable",
-      "commitHash": "v3112b334",
-      "commitMessage": "fix: universal viewport bottom gap fix and version synchronization",
-      "changes": [
-        "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
-        "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",
-        "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه",
-        "بهینه‌سازی نهایی کارکرد آفلاین PWA"
-      ]
-    },
-    {
-      "version": "3.1.11",
-      "buildNumber": 332,
-      "releaseDate": "2026-08-15",
-      "releaseChannel": "Stable",
-      "commitHash": "v3111b332",
-      "commitMessage": "fix: universal viewport bottom gap fix and version synchronization",
-      "changes": [
-        "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
-        "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",
-        "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه",
-        "بهینه‌سازی نهایی کارکرد آفلاین PWA"
-      ]
-    },
-    {
-      "version": "3.1.10",
-      "buildNumber": 331,
-      "releaseDate": "2026-08-15",
-      "releaseChannel": "Stable",
-      "commitHash": "v3110b331",
-      "commitMessage": "fix: universal viewport bottom gap fix and version synchronization",
-      "changes": [
-        "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
-        "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",
-        "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه",
-        "بهینه‌سازی نهایی کارکرد آفلاین PWA"
-      ]
-    }
-  ]
+  "installedVersion": "2.2.7",
+  "buildNumber": 230,
+  "releaseDate": "2026-08-14T11:46:56.627Z"
 }

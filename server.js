@@ -68,38 +68,7 @@ app.get(['/', '/index.html'], (req, res) => {
   res.sendFile(path.join(rootPath, 'index.html'));
 });
 
-// Static assets middleware - mount both public and root directories
-app.use('/public', express.static(path.join(rootPath, 'public')));
-app.use(express.static(path.join(rootPath, 'public')));
 app.use(express.static(rootPath));
-
-// Guard image requests so they never fall through to index.html
-app.use((req, res, next) => {
-  if (req.path.match(/\.(png|jpg|jpeg|svg|ico|webp|gif)$/i)) {
-    const rawName = path.basename(req.path);
-    const inPublic = path.join(rootPath, 'public', rawName);
-    const inRoot = path.join(rootPath, rawName);
-    const defaultIcon = path.join(rootPath, 'apple-touch-icon.png');
-    
-    let mimeType = 'image/png';
-    if (rawName.endsWith('.ico')) mimeType = 'image/x-icon';
-    if (rawName.endsWith('.svg')) mimeType = 'image/svg+xml';
-    if (rawName.endsWith('.jpg') || rawName.endsWith('.jpeg')) mimeType = 'image/jpeg';
-    if (rawName.endsWith('.webp')) mimeType = 'image/webp';
-    
-    res.setHeader('Content-Type', mimeType);
-    res.setHeader('Cache-Control', 'public, max-age=86400');
-    
-    if (fs.existsSync(inPublic)) {
-      return res.sendFile(inPublic);
-    } else if (fs.existsSync(inRoot)) {
-      return res.sendFile(inRoot);
-    } else if (fs.existsSync(defaultIcon)) {
-      return res.sendFile(defaultIcon);
-    }
-  }
-  next();
-});
 
 app.get('*', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
