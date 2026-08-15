@@ -26,11 +26,11 @@ let vData = {
   history: [
     {
       version: pkgVersion,
-      buildNumber: 332,
+      buildNumber: 333,
       releaseDate: new Date().toISOString().split('T')[0],
       releaseChannel: "Stable",
-      commitHash: "v3111stable",
-      commitMessage: "fix: completely remove all bottom safe-area paddings to fix bottom gap",
+      commitHash: "v3112stable",
+      commitMessage: "fix: absolute positioning layout shift bug in iOS Safari",
       changes: [
         "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
         "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",

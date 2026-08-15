@@ -2649,7 +2649,7 @@ function SwipeBackWrapper({
     ref: page1Ref,
     className: "page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-clip overscroll-x-none w-full h-full"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[4.25rem] min-h-full"
+    className: "px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)] min-h-full"
   }, underlyingContent)), /*#__PURE__*/React.createElement("div", {
     ref: overlayRef,
     className: "backdrop-overlay"
@@ -2658,11 +2658,11 @@ function SwipeBackWrapper({
     className: "page-view z-20 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden"
   }, onRefresh ? /*#__PURE__*/React.createElement(PullToRefresh, {
     onRefresh: onRefresh,
-    className: "w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[4.25rem]"
+    className: "w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)]"
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children) : /*#__PURE__*/React.createElement("div", {
-    className: "w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[4.25rem]"
+    className: "w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)]"
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children)));
@@ -4160,13 +4160,13 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.11",
-    "buildNumber": 332,
+    "installedVersion": "3.1.12",
+    "buildNumber": 334,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.11",
-    "latestBuild": 332,
+    "latestVersion": "3.1.12",
+    "latestBuild": 334,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.1.9",
@@ -4428,8 +4428,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 332;
-    const EMBEDDED_VERSION = "3.1.11";
+    const EMBEDDED_BUILD = 334;
+    const EMBEDDED_VERSION = "3.1.12";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -10500,7 +10500,7 @@ function App() {
     onBack
   }) => renderTab('all-transactions', onBack))) : /*#__PURE__*/React.createElement(PullToRefresh, {
     onRefresh: () => handleRefreshData(currentTab),
-    className: "flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[4.25rem] h-full overflow-y-auto overflow-x-clip overscroll-x-none"
+    className: "flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)] h-full overflow-y-auto overflow-x-clip overscroll-x-none"
   }, currentTab === 'dashboard' && renderTab('dashboard'), currentTab === 'accounts' && renderTab('accounts'), currentTab === 'contacts' && renderTab('contacts'), currentTab === 'settings' && renderTab('settings'))))), /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "fab-backdrop",
     initial: {
@@ -10518,7 +10518,7 @@ function App() {
     onClick: () => closePlusMenu(),
     className: "absolute inset-0 bg-black/40 backdrop-blur-xs z-30"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "fixed bottom-[3.85rem] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
+    className: "fixed bottom-[calc(3.85rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
   }, /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "genie-fixed",
     initial: {
@@ -10641,7 +10641,7 @@ function App() {
     onClick: () => closePlusMenu(),
     className: "w-full py-1 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
   }, "\u0627\u0646\u0635\u0631\u0627\u0641")))), /*#__PURE__*/React.createElement("div", {
-    className: "fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end"
+    className: "fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end pb-[env(safe-area-inset-bottom,0px)]"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto"
   }, /*#__PURE__*/React.createElement(NavRippleButton, {

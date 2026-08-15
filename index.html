@@ -148,7 +148,14 @@
         }
     </script>
     <style>
-        html, body {
+        html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #0b101d; /* Fallback to prevent white flashes */
+        }
+        body {
             position: fixed;
             top: 0;
             left: 0;
@@ -161,35 +168,21 @@
             overflow: hidden;
             overflow-x: clip !important;
             overscroll-behavior: none;
-            overscroll-behavior-x: none;
             touch-action: pan-y;
             -webkit-user-select: none;
             user-select: none;
-            background-color: #F4F7FC;
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8fafc; /* This gets overridden by dark mode class */
+            -webkit-tap-highlight-color: transparent;
         }
         #root {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
             width: 100%;
             height: 100%;
             margin: 0;
             padding: 0;
             overflow: hidden;
-            overflow-x: clip !important;
-            overscroll-behavior: none;
-            overscroll-behavior-x: none;
             display: flex;
             flex-direction: column;
-        }
-        .swipe-container-safe { overflow-x: clip; overflow-y: visible; }
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #f8fafc;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
 
         /* Prevent auto-zoom on mobile focus */
@@ -688,7 +681,7 @@
     <div id="root" class="w-full h-full flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=3.1.11-b332"></script>
+    <script src="app.compiled.js?v=3.1.12-b334"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>
