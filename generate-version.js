@@ -26,11 +26,11 @@ let vData = {
   history: [
     {
       version: pkgVersion,
-      buildNumber: 330,
+      buildNumber: 332,
       releaseDate: new Date().toISOString().split('T')[0],
       releaseChannel: "Stable",
-      commitHash: "v319stable",
-      commitMessage: "fix: universal viewport bottom gap fix and version synchronization",
+      commitHash: "v3111stable",
+      commitMessage: "fix: completely remove all bottom safe-area paddings to fix bottom gap",
       changes: [
         "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
         "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",

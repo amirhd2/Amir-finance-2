@@ -1860,7 +1860,7 @@
                         ref={page1Ref}
                         className="page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-clip overscroll-x-none w-full h-full"
                     >
-                        <div className="px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)] min-h-full">
+                        <div className="px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[4.25rem] min-h-full">
                             {underlyingContent}
                         </div>
                     </div>
@@ -1877,11 +1877,11 @@
                         className="page-view z-20 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden"
                     >
                         {onRefresh ? (
-                            <PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)]">
+                            <PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[4.25rem]">
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </PullToRefresh>
                         ) : (
-                            <div className="w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)]">
+                            <div className="w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[4.25rem]">
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </div>
                         )}
@@ -3524,13 +3524,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.10",
-    "buildNumber": 331,
+    "installedVersion": "3.1.11",
+    "buildNumber": 332,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.10",
-    "latestBuild": 331,
+    "latestVersion": "3.1.11",
+    "latestBuild": 332,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -3939,8 +3939,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 331;
-                const EMBEDDED_VERSION = "3.1.10";
+                const EMBEDDED_BUILD = 332;
+                const EMBEDDED_VERSION = "3.1.11";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -10189,7 +10189,7 @@
                                         )}
                                     </div>
                                 ) : (
-                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,0px)+4.25rem)] h-full overflow-y-auto overflow-x-clip overscroll-x-none">
+                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-[4.25rem] h-full overflow-y-auto overflow-x-clip overscroll-x-none">
                                         {currentTab === 'dashboard' && renderTab('dashboard')}
                                         {currentTab === 'accounts' && renderTab('accounts')}
                                         {currentTab === 'contacts' && renderTab('contacts')}
@@ -10216,7 +10216,7 @@
                     </AnimatePresence>
 
                     {/* FAB Genie Menu Floating Container (Anchored ABOVE the bottom bar FAB button) */}
-                    <div className="fixed bottom-[calc(3.85rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
+                    <div className="fixed bottom-[3.85rem] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
                         <AnimatePresence>
                             {showPlusMenu && (
                                 <motion.div
@@ -10322,7 +10322,7 @@
                     </div>
 
                     {/* Navigation Bar at Bottom */}
-                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end pb-[env(safe-area-inset-bottom,0px)]">
+                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end">
                         <div className="w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto">
                             <NavRippleButton 
                                 id="nav-btn-home"
