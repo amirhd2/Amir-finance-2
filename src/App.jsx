@@ -3505,29 +3505,15 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.1",
-    "buildNumber": 311,
+    "installedVersion": "3.1.0",
+    "buildNumber": 310,
     "releaseDate": "2026-08-14",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.1",
-    "latestBuild": 311,
+    "latestVersion": "3.1.0",
+    "latestBuild": 310,
     "isUpdateAvailable": false,
     "history": [
-        {
-            "version": "3.1.1",
-            "buildNumber": 311,
-            "releaseDate": "2026-08-14",
-            "releaseChannel": "Stable",
-            "commitHash": "v311layout",
-            "commitMessage": "feat: release version 3.1.1 with optimized top spacing and perfected sticky cards layering",
-            "changes": [
-                "حذف فاصله و فضای خالی اضافه در بالای کارت‌ها تا status bar و بالا کشیدن موقعیت کارت‌ها در ماژول‌های استیکی و استک",
-                "جلوگیری از رفتن کارت‌ها زیر کیبورد در هنگام تایپ",
-                "اصلاح اولویت لایه‌بندی (z-index) کارت‌های استیکی و قرارگیری صحیح کارت آخر روی کارت ماقبل در نسخه وب و موبایل",
-                "انتشار رسمی نسخه ۳.۱.۱"
-            ]
-        },
         {
             "version": "3.1.0",
             "buildNumber": 310,
@@ -3812,8 +3798,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 311;
-                const EMBEDDED_VERSION = "3.1.1";
+                const EMBEDDED_BUILD = 310;
+                const EMBEDDED_VERSION = "3.1.0";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -10220,12 +10206,12 @@
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                className={`absolute inset-0 z-50 flex flex-col justify-start items-center px-3 pb-2 pt-[calc(env(safe-area-inset-top,0px)+4px)] overflow-hidden ${
+                                className={`absolute inset-0 z-50 flex flex-col justify-start items-center p-3 pt-[max(env(safe-area-inset-top,0px),24px)] overflow-hidden ${
                                     !isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d]/90 backdrop-blur-md'
                                 }`}
                             >
                                 {/* PWA Status Bar Safe Area Cover */}
-                                <div className={`fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[60] ${
+                                <div className={`fixed top-0 inset-x-0 h-[max(env(safe-area-inset-top,0px),24px)] z-[60] ${
                                     !isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d] backdrop-blur-md'
                                 }`}></div>
                                 <motion.div
@@ -10235,15 +10221,15 @@
                                     animate="animate"
                                     exit="exit"
                                     style={{ transformOrigin: "center center" }}
-                                    className="w-full max-w-md md:max-w-2xl flex flex-col items-center mx-auto h-full pt-0.5"
+                                    className="w-full max-w-md md:max-w-2xl flex flex-col items-center mx-auto h-full"
                                 >
                                     {(wizardMode === 'edit' || wizardViewStyle === 'stacked') ? (
                                         /* Premium Mobile Vertical Sticky Stacked Cards Editing View */
-                                        <div className="w-full flex flex-col items-center h-full max-h-[96vh] relative">
+                                        <div className="w-full flex flex-col items-center h-full max-h-[92vh] relative">
                                             {/* Scrollable Floating Cards Area */}
                                             <div 
                                                 ref={editCardsContainerRef}
-                                                className={`w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-28 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
+                                                className={`w-full flex-1 hide-scrollbar pt-0 px-1 space-y-5 relative pb-10 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
                                             >
                                                 {activeCards.map((card, index) => {
                                                     const isLastCard = index === activeCards.length - 1;
@@ -10255,10 +10241,10 @@
                                                         <div 
                                                             key={card.id}
                                                             id={`sticky-card-${card.id}`}
-                                                            className="sticky w-[96%] max-w-md mx-auto"
+                                                            className={`sticky w-[96%] max-w-md mx-auto isolate ${isEditingThis ? 'z-[100]' : 'z-0'}`}
                                                             style={{
                                                                 top: `${index * 8}px`,
-                                                                zIndex: isEditingThis ? 200 : (index + 10),
+                                                                zIndex: isEditingThis ? 100 : (index + 1),
                                                                 transform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)',
                                                                 WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)'
                                                             }}
@@ -10384,7 +10370,7 @@
                                         </div>
                                     ) : (
                                         /* Step-by-Step Stack Card Mode */
-                                        <div className="w-full flex flex-col items-center pt-0.5">
+                                        <div className="w-full flex flex-col items-center">
 
 
                                             <div className={`card-stack-container w-full ${isFinalSubmitting ? 'card-stack-fall-submit' : ''}`}>
@@ -10406,7 +10392,7 @@
                                             </div>
 
                                             {/* Progress dots */}
-                                            <div className="flex justify-center items-center space-x-1.5 space-x-reverse mt-2.5">
+                                            <div className="flex justify-center items-center space-x-1.5 space-x-reverse mt-3">
                                                 {activeCards.map((_, i) => (
                                                     <div 
                                                         key={i} 
@@ -10418,7 +10404,7 @@
                                             </div>
 
                                             {/* Bottom Center Close X Button */}
-                                            <div className="flex justify-center items-center mt-3.5 mb-1">
+                                            <div className="flex justify-center items-center mt-5 mb-1">
                                                 <motion.button 
                                                     type="button"
                                                     whileTap={{ scale: 0.88 }}

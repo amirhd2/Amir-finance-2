@@ -4,7 +4,7 @@ import path from 'path';
 const versionPath = path.join(process.cwd(), 'version.json');
 const pkgPath = path.join(process.cwd(), 'package.json');
 
-let pkgVersion = '3.1.1';
+let pkgVersion = '3.1.0';
 if (fs.existsSync(pkgPath)) {
   try {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
@@ -12,13 +12,13 @@ if (fs.existsSync(pkgPath)) {
   } catch (e) {}
 }
 
-let vData = { installedVersion: pkgVersion, buildNumber: 311, releaseDate: new Date().toISOString() };
+let vData = { installedVersion: pkgVersion, buildNumber: 310, releaseDate: new Date().toISOString() };
 
 if (fs.existsSync(versionPath)) {
   try {
     const existing = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
     vData.installedVersion = pkgVersion;
-    vData.buildNumber = Math.max(311, (existing.buildNumber || 310) + 1);
+    vData.buildNumber = Math.max(310, (existing.buildNumber || 309) + 1);
     vData.releaseDate = new Date().toISOString();
   } catch (e) {
     console.warn('Could not read version.json, creating new one');
