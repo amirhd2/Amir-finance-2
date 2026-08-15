@@ -3525,27 +3525,26 @@
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.1.9",
-    "buildNumber": 326,
+    "buildNumber": 328,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.1.9",
-    "latestBuild": 326,
+    "latestBuild": 328,
     "isUpdateAvailable": false,
     "history": [
         {
             "version": "3.1.9",
-            "buildNumber": 326,
+            "buildNumber": 328,
             "releaseDate": "2026-08-15",
             "releaseChannel": "Stable",
-            "commitHash": "v319universalbottom",
-            "commitMessage": "fix: root fix for bottom viewport gap in iOS/Android web and standalone PWA",
+            "commitHash": "v319stable",
+            "commitMessage": "fix: universal viewport bottom gap fix and version synchronization",
             "changes": [
-                "محاسبه پویا و میلی‌متری ارتفاع کامل صفحه (100dvh و --app-height) در حالت وب و مرورگرهای موبایل",
-                "تراز دقیق نوار ناوبری پایین صفحه با لبه فیزیکی دستگاه بدون فاصله و فضای خالی معلق",
-                "بهینه‌سازی پدینگ انتهای لیست‌ها و کارت‌ها جهت جلوگیری از فضای خالی اضافه در پایین صفحات",
-                "همگام‌سازی نوار شناور ایجاد سریع (FAB) با موقعیت اصلاح‌شده دکمه مرکزی",
-                "انتشار رسمی نسخه ۳.۱.۹"
+                "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
+                "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",
+                "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه",
+                "بهینه‌سازی نهایی کارکرد آفلاین PWA"
             ]
         },
         {
@@ -3940,13 +3939,13 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 326;
+                const EMBEDDED_BUILD = 328;
                 const EMBEDDED_VERSION = "3.1.9";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
 
-                // If local build is missing or older than current code, set it to current embedded build
+                // If local build is missing or older than current running code bundle, synchronize it
                 if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD) {
                     localStorage.setItem('amir_installed_build', EMBEDDED_BUILD.toString());
                     localStorage.setItem('amir_installed_version', EMBEDDED_VERSION);
@@ -3954,7 +3953,8 @@
                     localVersion = EMBEDDED_VERSION;
                 }
 
-                const localBuild = parseInt(localBuildStr, 10);
+                const localBuild = Math.max(EMBEDDED_BUILD, parseInt(localBuildStr || '0', 10));
+                const activeVersion = (localBuild > EMBEDDED_BUILD && localVersion) ? localVersion : EMBEDDED_VERSION;
 
                 try {
                     const res = await fetch('version.json?t=' + Date.now(), { 
@@ -3967,14 +3967,15 @@
                     if (!res.ok) throw new Error('version.json fetch failed');
                     const serverData = await res.json();
 
-                    const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || '163', 10);
-                    const serverVersion = serverData.installedVersion || serverData.latestVersion || '1.7.0';
+                    const serverBuild = parseInt(serverData.buildNumber || serverData.latestBuild || localBuild.toString(), 10);
+                    const serverVersion = serverData.installedVersion || serverData.latestVersion || activeVersion;
 
                     const isUpdateAvailable = (serverBuild > localBuild) || hasSWUpdate || swFoundUpdate;
 
                     setVersionData(prev => ({
+                        ...defaultVersionData,
                         ...serverData,
-                        installedVersion: localVersion || EMBEDDED_VERSION,
+                        installedVersion: activeVersion,
                         buildNumber: localBuild,
                         latestVersion: serverVersion,
                         latestBuild: serverBuild,

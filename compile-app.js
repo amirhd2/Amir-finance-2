@@ -6,11 +6,12 @@ function updateVersionTags() {
   const versionPath = path.join(process.cwd(), 'version.json');
   const indexHtmlPath = path.join(process.cwd(), 'index.html');
   const swPath = path.join(process.cwd(), 'sw.js');
+  const appJsxPath = path.join(process.cwd(), 'src', 'App.jsx');
 
   if (fs.existsSync(versionPath)) {
     try {
       const vData = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
-      const versionTag = `${vData.installedVersion || '2.1.3'}-b${vData.buildNumber || 204}`;
+      const versionTag = `${vData.installedVersion || '3.1.9'}-b${vData.buildNumber || 328}`;
 
       if (fs.existsSync(indexHtmlPath)) {
         let html = fs.readFileSync(indexHtmlPath, 'utf8');
@@ -24,6 +25,21 @@ function updateVersionTags() {
         sw = sw.replace(/const CACHE_NAME = ['"][^'"]*['"];/, `const CACHE_NAME = 'amir-finance-v${versionTag}';`);
         fs.writeFileSync(swPath, sw, 'utf8');
         console.log(`[compile-app] Updated sw.js CACHE_NAME to amir-finance-v${versionTag}`);
+      }
+
+      if (fs.existsSync(appJsxPath)) {
+        let jsx = fs.readFileSync(appJsxPath, 'utf8');
+        jsx = jsx.replace(/const EMBEDDED_BUILD = \d+;/, `const EMBEDDED_BUILD = ${vData.buildNumber || 328};`);
+        jsx = jsx.replace(/const EMBEDDED_VERSION = ['"][^'"]*['"];/, `const EMBEDDED_VERSION = "${vData.installedVersion || '3.1.9'}";`);
+        
+        // Update defaultVersionData installedVersion and buildNumber inside App.jsx
+        jsx = jsx.replace(/"installedVersion":\s*['"][^'"]*['"]/, `"installedVersion": "${vData.installedVersion || '3.1.9'}"`);
+        jsx = jsx.replace(/"buildNumber":\s*\d+/, `"buildNumber": ${vData.buildNumber || 328}`);
+        jsx = jsx.replace(/"latestVersion":\s*['"][^'"]*['"]/, `"latestVersion": "${vData.installedVersion || '3.1.9'}"`);
+        jsx = jsx.replace(/"latestBuild":\s*\d+/, `"latestBuild": ${vData.buildNumber || 328}`);
+        
+        fs.writeFileSync(appJsxPath, jsx, 'utf8');
+        console.log(`[compile-app] Synchronized App.jsx constants with version ${vData.installedVersion} (Build ${vData.buildNumber})`);
       }
     } catch (e) {
       console.warn('[compile-app] Warning updating version tags:', e);
