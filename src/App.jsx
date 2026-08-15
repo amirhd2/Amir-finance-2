@@ -3524,15 +3524,29 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.7",
-    "buildNumber": 320,
+    "installedVersion": "3.1.8",
+    "buildNumber": 321,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.7",
-    "latestBuild": 320,
+    "latestVersion": "3.1.8",
+    "latestBuild": 321,
     "isUpdateAvailable": false,
     "history": [
+        {
+            "version": "3.1.8",
+            "buildNumber": 321,
+            "releaseDate": "2026-08-15",
+            "releaseChannel": "Stable",
+            "commitHash": "v318bottomfix",
+            "commitMessage": "fix: fix bottom navigation bar floating gap in iOS PWA and mobile",
+            "changes": [
+                "تثبیت نوار ناوبری پایین صفحه چسبیده به لبه فیزیکی دستگاه (Fixed Bottom 0)",
+                "حذف فاصله و فضای خالی زیر نوار ناوبری در حالت Standalone / PWA",
+                "پوشش یکپارچه پس‌زمینه نوار پایین تا انتهای صفحه در زیر نوار هوم (Home Indicator)",
+                "انتشار رسمی نسخه ۳.۱.۸"
+            ]
+        },
         {
             "version": "3.1.7",
             "buildNumber": 320,
@@ -10045,7 +10059,7 @@
             const activeCards = getCurrentWizardCards();
 
             return (
-                <div className={`w-full h-full flex flex-col justify-between ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#F4F7FC] text-slate-800'}`}>
+                <div className={`w-full h-full relative flex flex-col justify-between overflow-hidden ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#F4F7FC] text-slate-800'}`}>
                     {/* Startup Splash Screen Overlay */}
                     <AnimatePresence>
                         {showSplashScreen && (
@@ -10178,7 +10192,7 @@
                     </AnimatePresence>
 
                     {/* FAB Genie Menu Floating Container (Anchored ABOVE the bottom bar FAB button) */}
-                    <div className="absolute bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
+                    <div className="fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
                         <AnimatePresence>
                             {showPlusMenu && (
                                 <motion.div
@@ -10284,7 +10298,7 @@
                     </div>
 
                     {/* Navigation Bar at Bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 h-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[env(safe-area-inset-bottom,0px)] bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 z-40">
+                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 pt-1 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] min-h-[4rem]">
                         <NavRippleButton 
                             id="nav-btn-home"
                             onClick={() => navigateToTab('dashboard', 'none')}
