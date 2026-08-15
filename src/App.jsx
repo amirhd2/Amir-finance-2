@@ -3505,15 +3505,28 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.1",
-    "buildNumber": 311,
-    "releaseDate": "2026-08-14",
+    "installedVersion": "3.1.2",
+    "buildNumber": 312,
+    "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.1",
-    "latestBuild": 311,
+    "latestVersion": "3.1.2",
+    "latestBuild": 312,
     "isUpdateAvailable": false,
     "history": [
+        {
+            "version": "3.1.2",
+            "buildNumber": 312,
+            "releaseDate": "2026-08-15",
+            "releaseChannel": "Stable",
+            "commitHash": "v312cache",
+            "commitMessage": "fix: force aggressive cache clear and service worker update for PWA to sync latest sticky UI changes",
+            "changes": [
+                "تغییر مکانیزم کش مرورگر در نسخه نصب‌شده (PWA) برای دریافت قطعی آخرین تغییرات و کدهای جدید",
+                "به‌روزرسانی اجباری Service Worker و شکستن کش فایل index.html برای اعمال صد در صدی تغییرات ظاهری (استیکی شدن کارت آخر روی کارت ماقبل)",
+                "همسان‌سازی کامل نسخه نصبی روی گوشی با نسخه Preview"
+            ]
+        },
         {
             "version": "3.1.1",
             "buildNumber": 311,
@@ -3812,8 +3825,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 311;
-                const EMBEDDED_VERSION = "3.1.1";
+                const EMBEDDED_BUILD = 312;
+                const EMBEDDED_VERSION = "3.1.2";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -10259,8 +10272,8 @@
                                                             style={{
                                                                 top: `${index * 8}px`,
                                                                 zIndex: isEditingThis ? 200 : (index + 10),
-                                                                transform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)',
-                                                                WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)'
+                                                                transform: isEditingThis ? 'translate3d(0,0,1px)' : 'none',
+                                                                WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'none'
                                                             }}
                                                         >
                                                             <motion.div 

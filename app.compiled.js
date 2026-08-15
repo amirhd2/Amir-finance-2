@@ -4156,15 +4156,47 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "2.2.6",
-    "buildNumber": 235,
-    "releaseDate": "2026-08-14",
+    "installedVersion": "3.1.2",
+    "buildNumber": 312,
+    "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "2.2.6",
-    "latestBuild": 235,
+    "latestVersion": "3.1.2",
+    "latestBuild": 312,
     "isUpdateAvailable": false,
     "history": [{
+      "version": "3.1.2",
+      "buildNumber": 312,
+      "releaseDate": "2026-08-15",
+      "releaseChannel": "Stable",
+      "commitHash": "v312cache",
+      "commitMessage": "fix: force aggressive cache clear and service worker update for PWA to sync latest sticky UI changes",
+      "changes": ["تغییر مکانیزم کش مرورگر در نسخه نصب‌شده (PWA) برای دریافت قطعی آخرین تغییرات و کدهای جدید", "به‌روزرسانی اجباری Service Worker و شکستن کش فایل index.html برای اعمال صد در صدی تغییرات ظاهری (استیکی شدن کارت آخر روی کارت ماقبل)", "همسان‌سازی کامل نسخه نصبی روی گوشی با نسخه Preview"]
+    }, {
+      "version": "3.1.1",
+      "buildNumber": 311,
+      "releaseDate": "2026-08-14",
+      "releaseChannel": "Stable",
+      "commitHash": "v311layout",
+      "commitMessage": "feat: release version 3.1.1 with optimized top spacing and perfected sticky cards layering",
+      "changes": ["حذف فاصله و فضای خالی اضافه در بالای کارت‌ها تا status bar و بالا کشیدن موقعیت کارت‌ها در ماژول‌های استیکی و استک", "جلوگیری از رفتن کارت‌ها زیر کیبورد در هنگام تایپ", "اصلاح اولویت لایه‌بندی (z-index) کارت‌های استیکی و قرارگیری صحیح کارت آخر روی کارت ماقبل در نسخه وب و موبایل", "انتشار رسمی نسخه ۳.۱.۱"]
+    }, {
+      "version": "3.1.0",
+      "buildNumber": 310,
+      "releaseDate": "2026-08-14",
+      "releaseChannel": "Stable",
+      "commitHash": "v310clean",
+      "commitMessage": "feat: release version 3.1.0 with seamless sticky cards, edit buttons restoration, and clean overflow containment",
+      "changes": ["رفع کامل بیرون‌زدگی محتوا و حذف نوشته و دکمه‌های زائد خارج از کارت استیکی در همه پرونده‌ها", "بازگردانی و تثبیت دکمه «ویرایش» در گوشه پایین سمت چپ تمام کارت‌ها از جمله کارت آخر (۷ از ۷)", "بهینه‌سازی ریسپانسیو و کپسوله‌سازی اسکرول داخلی کارت‌ها", "انتشار رسمی نسخه ۳.۱.۰"]
+    }, {
+      "version": "3.0.0",
+      "buildNumber": 300,
+      "releaseDate": "2026-08-14",
+      "releaseChannel": "Stable",
+      "commitHash": "v300major",
+      "commitMessage": "feat: official release 3.0.0 with perfected sticky cards experience, loan card actions, and clean layout",
+      "changes": ["تکمیل و بهینه‌سازی نهایی رفتار اسکرول و چیدمان پله‌ای کارت‌های استیکی در تمامی ویزاردها و پرونده‌های وام", "جلوگیری از بالاتر رفتن کارت آخر نسبت به کارت یکی مانده به آخر هنگام اسکرول به بالا", "نمایش کامل شماره کارت و دکمه ویرایش درون کارت در تمام کارت‌ها از جمله کارت آخر", "حذف نوشته و دکمه‌های زائد خارج از کارت در ماژول استیکی و ارتقاء یکپارچگی ظاهری", "انتشار رسمی نسخه عمده ۳.۰.۰"]
+    }, {
       "version": "2.2.6",
       "buildNumber": 235,
       "releaseDate": "2026-08-14",
@@ -4336,8 +4368,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 235;
-    const EMBEDDED_VERSION = "2.2.6";
+    const EMBEDDED_BUILD = 312;
+    const EMBEDDED_VERSION = "3.1.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -6533,6 +6565,9 @@ function App() {
     if (!modifiedCardIds.includes(card.id)) {
       setModifiedCardIds(prev => [...prev, card.id]);
     }
+    if (wizardMode === 'edit') {
+      saveWizardData();
+    }
     setEditingCardId(null);
     showToast('تغییرات کارت ثبت شد');
   };
@@ -6781,7 +6816,7 @@ function App() {
     }))
   }, {
     id: 'start_date',
-    title: '۱- زمان دریافت وام',
+    title: 'زمان دریافت وام',
     render: () => /*#__PURE__*/React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
       month: pickerMonth,
@@ -6806,7 +6841,7 @@ function App() {
     })
   }, {
     id: 'principal_amount',
-    title: '۲- مبلغ اصل وام',
+    title: 'مبلغ اصل وام',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -6847,7 +6882,7 @@ function App() {
     }, numToPersianWords(loanForm.principalAmount))))
   }, {
     id: 'total_repayment',
-    title: '۳- مبلغ کل بازپرداخت',
+    title: 'مبلغ کل بازپرداخت',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -6888,7 +6923,7 @@ function App() {
     }, numToPersianWords(loanForm.totalRepayment))))
   }, {
     id: 'installment_amount',
-    title: '۴- مبلغ هر قسط',
+    title: 'مبلغ هر قسط',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -7032,7 +7067,7 @@ function App() {
     })())
   }, {
     id: 'due_date',
-    title: '۵- تاریخ اولین قسط وام',
+    title: 'تاریخ اولین قسط وام',
     render: () => {
       const activeDueDay = loanForm.firstInstallmentDay || loanForm.dueDayOfMonth || pickerDay;
       const curMonthName = loanForm.firstInstallmentMonth || pickerMonth;
@@ -7073,27 +7108,27 @@ function App() {
         }));
       };
       return /*#__PURE__*/React.createElement("div", {
-        className: "space-y-3"
+        className: "space-y-2"
       }, /*#__PURE__*/React.createElement("label", {
         className: "block text-xs text-slate-500 font-bold"
       }, "\u062A\u0627\u0631\u06CC\u062E \u0648 \u0645\u0627\u0647 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637 \u0648\u0627\u0645:"), /*#__PURE__*/React.createElement("div", {
-        className: "bg-[#F4F7FC] dark:bg-slate-900 rounded-2xl p-3 border border-slate-200 dark:border-slate-800 space-y-3"
+        className: "bg-[#F4F7FC] dark:bg-slate-900 rounded-2xl p-2.5 border border-slate-200 dark:border-slate-800 space-y-2"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "p-2.5 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between shadow-2xs"
+        className: "p-2 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between shadow-2xs"
       }, /*#__PURE__*/React.createElement("button", {
         type: "button",
         onClick: handlePrevMonth,
         title: "\u0645\u0627\u0647 \u0642\u0628\u0644",
-        className: "p-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0"
+        className: "p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0"
       }, /*#__PURE__*/React.createElement(Icon, {
         name: "chevron-right",
-        className: "w-5 h-5"
+        className: "w-4 h-4"
       })), /*#__PURE__*/React.createElement("div", {
         className: "text-center min-w-0 px-2 flex flex-col items-center"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "text-[10px] text-indigo-700/80 dark:text-indigo-300/80 font-bold mb-1"
+        className: "text-[9px] text-indigo-700/80 dark:text-indigo-300/80 font-bold"
       }, "\u0645\u0627\u0647 \u0648 \u0633\u0627\u0644 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637"), /*#__PURE__*/React.createElement("div", {
-        className: "flex items-center justify-center gap-2"
+        className: "flex items-center justify-center gap-1.5 mt-0.5"
       }, /*#__PURE__*/React.createElement("span", {
         className: "text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100"
       }, curMonthName), /*#__PURE__*/React.createElement("input", {
@@ -7126,22 +7161,22 @@ function App() {
             }));
           }
         },
-        className: "w-16 h-7 text-center font-extrabold text-xs sm:text-sm text-indigo-900 dark:text-indigo-100 bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded-lg shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono transition-all cursor-pointer",
+        className: "w-14 h-6 text-center font-extrabold text-xs text-indigo-900 dark:text-indigo-100 bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded-md shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono transition-all cursor-pointer",
         title: "\u062C\u0647\u062A \u062A\u063A\u06CC\u06CC\u0631 \u0633\u0627\u0644 \u06A9\u0644\u06CC\u06A9 \u06A9\u0646\u06CC\u062F"
       }))), /*#__PURE__*/React.createElement("button", {
         type: "button",
         onClick: handleNextMonth,
         title: "\u0645\u0627\u0647 \u0628\u0639\u062F",
-        className: "p-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0"
+        className: "p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0"
       }, /*#__PURE__*/React.createElement(Icon, {
         name: "chevron-left",
-        className: "w-5 h-5"
+        className: "w-4 h-4"
       }))), /*#__PURE__*/React.createElement("div", {
-        className: "p-2.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs flex items-center justify-center space-x-1.5 space-x-reverse"
+        className: "p-1.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs flex items-center justify-center space-x-1.5 space-x-reverse"
       }, /*#__PURE__*/React.createElement("span", null, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637:"), /*#__PURE__*/React.createElement("span", {
-        className: "font-mono text-xs sm:text-sm tracking-wider font-extrabold dir-ltr text-indigo-700 dark:text-indigo-300 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-indigo-200 dark:border-indigo-700 shadow-2xs"
+        className: "font-mono text-xs tracking-wider font-extrabold dir-ltr text-indigo-700 dark:text-indigo-300 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-700 shadow-2xs"
       }, formattedDueDateStr)), /*#__PURE__*/React.createElement("div", {
-        className: "grid grid-cols-7 gap-1 text-center text-xs font-bold pt-1"
+        className: "grid grid-cols-7 gap-1 text-center text-xs font-bold pt-0.5"
       }, Array.from({
         length: 31
       }, (_, i) => i + 1).map(day => /*#__PURE__*/React.createElement("button", {
@@ -7152,12 +7187,12 @@ function App() {
           dueDayOfMonth: day,
           firstInstallmentDay: day
         })),
-        className: `h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer ${activeDueDay === day ? 'bg-indigo-600 text-white font-black shadow-md scale-105' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}`
+        className: `h-6 sm:h-6.5 rounded-lg flex items-center justify-center transition-all cursor-pointer ${activeDueDay === day ? 'bg-indigo-600 text-white font-black shadow-md scale-105' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}`
       }, day)))));
     }
   }, {
     id: 'notes',
-    title: '۶- توضیحات تکمیلی',
+    title: 'توضیحات تکمیلی',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -7175,7 +7210,7 @@ function App() {
   }];
   const demandWizardCards = [{
     id: 'demand_contact',
-    title: 'کارت اول: انتخاب مخاطب',
+    title: 'انتخاب مخاطب',
     render: () => /*#__PURE__*/React.createElement(ContactSelectorCard, {
       contacts: contacts,
       selectedContactId: demandDebtForm.selectedContactId,
@@ -7198,7 +7233,7 @@ function App() {
     })
   }, {
     id: 'demand_amount',
-    title: 'کارت دوم: مبلغ طلب',
+    title: 'مبلغ طلب',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -7239,7 +7274,7 @@ function App() {
     }, numToPersianWords(demandDebtForm.amount))))
   }, {
     id: 'demand_date',
-    title: 'کارت سوم: تاریخ طلب',
+    title: 'تاریخ طلب',
     render: () => /*#__PURE__*/React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
       month: pickerMonth,
@@ -7256,7 +7291,7 @@ function App() {
     })
   }, {
     id: 'demand_notes',
-    title: 'کارت چهارم: توضیحات',
+    title: 'توضیحات تکمیلی',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -7274,7 +7309,7 @@ function App() {
   }];
   const debtWizardCards = [{
     id: 'debt_contact',
-    title: 'کارت اول: انتخاب مخاطب',
+    title: 'انتخاب مخاطب',
     render: () => /*#__PURE__*/React.createElement(ContactSelectorCard, {
       contacts: contacts,
       selectedContactId: demandDebtForm.selectedContactId,
@@ -7297,7 +7332,7 @@ function App() {
     })
   }, {
     id: 'debt_amount',
-    title: 'کارت دوم: مبلغ قرض',
+    title: 'مبلغ قرض',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -7338,7 +7373,7 @@ function App() {
     }, numToPersianWords(demandDebtForm.amount))))
   }, {
     id: 'debt_date',
-    title: 'کارت سوم: تاریخ قرض',
+    title: 'تاریخ قرض',
     render: () => /*#__PURE__*/React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
       month: pickerMonth,
@@ -7355,7 +7390,7 @@ function App() {
     })
   }, {
     id: 'debt_notes',
-    title: 'کارت چهارم: توضیحات',
+    title: 'توضیحات تکمیلی',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -7373,7 +7408,7 @@ function App() {
   }];
   const installmentWizardCards = [{
     id: 'inst_select_loan',
-    title: 'کارت اول: انتخاب وام',
+    title: 'انتخاب وام',
     render: () => /*#__PURE__*/React.createElement(LoanSelectorCard, {
       loans: loans,
       transactions: transactions,
@@ -7403,7 +7438,7 @@ function App() {
     })
   }, {
     id: 'inst_date',
-    title: 'کارت دوم: تاریخ پرداخت',
+    title: 'تاریخ پرداخت',
     render: () => /*#__PURE__*/React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
       month: pickerMonth,
@@ -7420,7 +7455,7 @@ function App() {
     })
   }, {
     id: 'inst_amount',
-    title: 'کارت سوم: مبلغ پرداخت',
+    title: 'مبلغ پرداخت',
     render: () => {
       const targetLoan = loans.find(l => l.id === Number(installmentForm.selectedLoanId));
       const editingTx = installmentForm.id ? transactions.find(t => t.id === installmentForm.id) : null;
@@ -7484,7 +7519,7 @@ function App() {
     }
   }, {
     id: 'inst_notes',
-    title: 'کارت چهارم: توضیحات',
+    title: 'توضیحات تکمیلی',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -7502,7 +7537,7 @@ function App() {
   }];
   const debtRepaymentWizardCards = [{
     id: 'debt_repay_contact',
-    title: '۱- انتخاب مخاطب',
+    title: 'انتخاب مخاطب',
     render: () => /*#__PURE__*/React.createElement(ContactSelectorCard, {
       contacts: contacts,
       selectedContactId: demandDebtForm.selectedContactId,
@@ -7525,7 +7560,7 @@ function App() {
     })
   }, {
     id: 'debt_repay_amount',
-    title: '۲- مبلغ بازپرداخت بدهی',
+    title: 'مبلغ بازپرداخت بدهی',
     render: () => {
       const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
       const editingTx = repaymentForm.id ? transactions.find(t => t.id === repaymentForm.id) : null;
@@ -7587,7 +7622,7 @@ function App() {
     }
   }, {
     id: 'debt_repay_date',
-    title: '۳- تاریخ بازپرداخت',
+    title: 'تاریخ بازپرداخت',
     render: () => /*#__PURE__*/React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
       month: pickerMonth,
@@ -7604,7 +7639,7 @@ function App() {
     })
   }, {
     id: 'debt_repay_notes',
-    title: '۴- توضیحات تکمیلی',
+    title: 'توضیحات تکمیلی',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -7622,7 +7657,7 @@ function App() {
   }];
   const demandRepaymentWizardCards = [{
     id: 'demand_repay_contact',
-    title: '۱- انتخاب مخاطب',
+    title: 'انتخاب مخاطب',
     render: () => /*#__PURE__*/React.createElement(ContactSelectorCard, {
       contacts: contacts,
       selectedContactId: demandDebtForm.selectedContactId,
@@ -7645,7 +7680,7 @@ function App() {
     })
   }, {
     id: 'demand_repay_amount',
-    title: '۲- مبلغ بازپرداخت طلب',
+    title: 'مبلغ بازپرداخت طلب',
     render: () => {
       const targetContact = contacts.find(c => c.id === Number(demandDebtForm.selectedContactId));
       const editingTx = repaymentForm.id ? transactions.find(t => t.id === repaymentForm.id) : null;
@@ -7707,7 +7742,7 @@ function App() {
     }
   }, {
     id: 'demand_repay_date',
-    title: '۳- تاریخ دریافت',
+    title: 'تاریخ دریافت',
     render: () => /*#__PURE__*/React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
       month: pickerMonth,
@@ -7724,7 +7759,7 @@ function App() {
     })
   }, {
     id: 'demand_repay_notes',
-    title: '۴- توضیحات تکمیلی',
+    title: 'توضیحات تکمیلی',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
@@ -7742,7 +7777,7 @@ function App() {
   }];
   const contactWizardCards = [{
     id: 'contact_names',
-    title: wizardMode === 'edit' ? '۱- ویرایش نام و نام خانوادگی' : '۱- نام و نام خانوادگی مخاطب',
+    title: wizardMode === 'edit' ? 'ویرایش نام و نام خانوادگی' : 'نام و نام خانوادگی مخاطب',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-4"
     }, /*#__PURE__*/React.createElement("div", {
@@ -7806,7 +7841,7 @@ function App() {
     })))
   }, {
     id: 'contact_info',
-    title: wizardMode === 'edit' ? '۲- ویرایش تماس و حساب بانکی' : '۲- شماره تماس و اطلاعات حساب بانکی',
+    title: wizardMode === 'edit' ? 'ویرایش تماس و حساب بانکی' : 'شماره تماس و اطلاعات حساب بانکی',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3.5"
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
@@ -10566,9 +10601,9 @@ function App() {
     initial: "initial",
     animate: "animate",
     exit: "exit",
-    className: `absolute inset-0 z-50 flex flex-col justify-start items-center p-3 pt-[max(env(safe-area-inset-top,0px),24px)] overflow-hidden ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d]/90 backdrop-blur-md'}`
+    className: `absolute inset-0 z-50 flex flex-col justify-start items-center px-3 pb-2 pt-[calc(env(safe-area-inset-top,0px)+4px)] overflow-hidden ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d]/90 backdrop-blur-md'}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: `fixed top-0 inset-x-0 h-[max(env(safe-area-inset-top,0px),24px)] z-[60] ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d] backdrop-blur-md'}`
+    className: `fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[60] ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d] backdrop-blur-md'}`
   }), /*#__PURE__*/React.createElement(motion.div, {
     key: "stack-wizard-panel",
     variants: iosModalVariants,
@@ -10578,28 +10613,29 @@ function App() {
     style: {
       transformOrigin: "center center"
     },
-    className: "w-full max-w-md md:max-w-2xl flex flex-col items-center mx-auto h-full"
+    className: "w-full max-w-md md:max-w-2xl flex flex-col items-center mx-auto h-full pt-0.5"
   }, wizardMode === 'edit' || wizardViewStyle === 'stacked' ?
   /*#__PURE__*/
   /* Premium Mobile Vertical Sticky Stacked Cards Editing View */
   React.createElement("div", {
-    className: "w-full flex flex-col items-center h-full max-h-[92vh] relative"
+    className: "w-full flex flex-col items-center h-full max-h-[96vh] relative"
   }, /*#__PURE__*/React.createElement("div", {
     ref: editCardsContainerRef,
-    className: `w-full flex-1 hide-scrollbar pt-0 px-1 space-y-5 relative pb-44 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`
+    className: `w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-28 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`
   }, activeCards.map((card, index) => {
+    const isLastCard = index === activeCards.length - 1;
     const isEditingThis = editingCardId === card.id;
     const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
     const isModified = modifiedCardIds.includes(card.id);
     return /*#__PURE__*/React.createElement("div", {
       key: card.id,
       id: `sticky-card-${card.id}`,
-      className: `sticky w-[96%] max-w-md mx-auto isolate ${isEditingThis ? 'z-[100]' : 'z-0'}`,
+      className: "sticky w-[96%] max-w-md mx-auto",
       style: {
         top: `${index * 8}px`,
-        zIndex: isEditingThis ? 100 : index === activeCards.length - 1 ? index - 2 : index,
-        transform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)',
-        WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'translate3d(0,0,0)'
+        zIndex: isEditingThis ? 200 : index + 10,
+        transform: isEditingThis ? 'translate3d(0,0,1px)' : 'none',
+        WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'none'
       }
     }, /*#__PURE__*/React.createElement(motion.div, {
       initial: {
@@ -10615,15 +10651,15 @@ function App() {
         stiffness: 380,
         damping: 26
       },
-      className: `w-full rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between ${isEditingThis ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400' : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'} ${isOtherCardBlur ? 'pointer-events-none select-none' : ''} ${shakeCardId === card.id ? 'animate-shake' : ''}`,
+      className: `w-full rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between overflow-hidden ${isEditingThis ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400' : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'} ${isOtherCardBlur ? 'pointer-events-none select-none' : ''} ${shakeCardId === card.id ? 'animate-shake' : ''}`,
       onClick: e => {
         if (!isEditingThis && editingCardId === null) {
           handleStartEditingCard(card);
         }
       }
     }, /*#__PURE__*/React.createElement("div", {
-      className: `flex-1 py-1 transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-95' : ''}`
-    }, card.render()), (isEditingThis || index !== activeCards.length - 1) && /*#__PURE__*/React.createElement("div", {
+      className: `flex-1 min-h-0 py-1 overflow-y-auto hide-scrollbar transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-95' : ''}`
+    }, card.render()), /*#__PURE__*/React.createElement("div", {
       className: "pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between shrink-0 h-12"
     }, /*#__PURE__*/React.createElement(AnimatePresence, {
       mode: "wait"
@@ -10703,46 +10739,7 @@ function App() {
       name: "edit-2",
       className: "w-3.5 h-3.5 shrink-0"
     }), /*#__PURE__*/React.createElement("span", null, "\u0648\u06CC\u0631\u0627\u06CC\u0634")))))));
-  })), /*#__PURE__*/React.createElement(AnimatePresence, null, modifiedCardIds.length > 0 && /*#__PURE__*/React.createElement(motion.div, {
-    initial: {
-      opacity: 0,
-      y: 25,
-      scale: 0.92
-    },
-    animate: {
-      opacity: 1,
-      y: 0,
-      scale: 1
-    },
-    exit: {
-      opacity: 0,
-      y: 25,
-      scale: 0.92
-    },
-    transition: {
-      type: "spring",
-      stiffness: 420,
-      damping: 26
-    },
-    className: "absolute bottom-16 left-0 right-0 z-50 px-3 pointer-events-none flex justify-center"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "w-full max-w-sm bg-slate-900/95 dark:bg-slate-800/95 text-white p-3 rounded-2xl shadow-2xl backdrop-blur-xl border border-white/20 flex items-center justify-between pointer-events-auto"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center space-x-2 space-x-reverse"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "w-7 h-7 rounded-xl bg-amber-500/25 border border-amber-400/30 text-amber-300 flex items-center justify-center font-extrabold text-xs shrink-0 shadow-sm"
-  }, modifiedCardIds.length), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    className: "text-xs font-bold text-white"
-  }, modifiedCardIds.length, " \u062A\u063A\u06CC\u06CC\u0631 \u0630\u062E\u06CC\u0631\u0647\u200C\u0646\u0634\u062F\u0647"), /*#__PURE__*/React.createElement("div", {
-    className: "text-[10px] text-slate-300"
-  }, "\u0628\u0631\u0627\u06CC \u062B\u0628\u062A \u06A9\u0644\u06CC \u062F\u0627\u062F\u0647\u200C\u0647\u0627 \u06A9\u0644\u06CC\u06A9 \u06A9\u0646\u06CC\u062F"))), /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    onClick: handleSaveAllChanges,
-    className: "bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-lg transition-all flex items-center space-x-1.5 space-x-reverse cursor-pointer shrink-0"
-  }, /*#__PURE__*/React.createElement(Icon, {
-    name: "check-circle",
-    className: "w-4 h-4"
-  }), /*#__PURE__*/React.createElement("span", null, "\u062B\u0628\u062A \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A"))))), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
     className: "w-full flex justify-center items-center py-2 shrink-0 z-40 relative"
   }, /*#__PURE__*/React.createElement(motion.button, {
     type: "button",
@@ -10759,7 +10756,7 @@ function App() {
   /*#__PURE__*/
   /* Step-by-Step Stack Card Mode */
   React.createElement("div", {
-    className: "w-full flex flex-col items-center"
+    className: "w-full flex flex-col items-center pt-0.5"
   }, /*#__PURE__*/React.createElement("div", {
     className: `card-stack-container w-full ${isFinalSubmitting ? 'card-stack-fall-submit' : ''}`
   }, activeCards.map((card, index) => /*#__PURE__*/React.createElement(StackCardItem, {
@@ -10775,12 +10772,12 @@ function App() {
     showStackWizard: showStackWizard,
     shakeCardId: shakeCardId
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-center items-center space-x-1.5 space-x-reverse mt-3"
+    className: "flex justify-center items-center space-x-1.5 space-x-reverse mt-2.5"
   }, activeCards.map((_, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     className: `h-1.5 rounded-full transition-all duration-300 ${i === currentCardIdx ? 'w-6 bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]' : 'w-1.5 bg-slate-400/40'}`
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-center items-center mt-5 mb-1"
+    className: "flex justify-center items-center mt-3.5 mb-1"
   }, /*#__PURE__*/React.createElement(motion.button, {
     type: "button",
     whileTap: {
