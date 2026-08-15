@@ -3343,15 +3343,34 @@
             const [srcIndex, setSrcIndex] = useState(0);
             const sources = useMemo(() => {
                 const list = [];
-                if (logoUrl) list.push(logoUrl);
-                list.push('/apple-touch-icon.png', 'apple-touch-icon.png', '/favicon-96x96.png', 'favicon-96x96.png');
+                if (logoUrl) {
+                    list.push(logoUrl);
+                    if (!logoUrl.startsWith('/')) list.push(`/${logoUrl}`);
+                    if (!logoUrl.startsWith('./')) list.push(`./${logoUrl}`);
+                }
+                list.push(
+                    './apple-touch-icon.png',
+                    '/apple-touch-icon.png',
+                    'apple-touch-icon.png',
+                    './public/apple-touch-icon.png',
+                    '/public/apple-touch-icon.png',
+                    './favicon-96x96.png',
+                    '/favicon-96x96.png',
+                    'favicon-96x96.png',
+                    './web-app-manifest-192x192.png',
+                    '/web-app-manifest-192x192.png',
+                    'web-app-manifest-192x192.png',
+                    './icon-192x192.png',
+                    '/icon-192x192.png',
+                    'icon-192x192.png'
+                );
                 return [...new Set(list)];
             }, [logoUrl]);
 
             if (srcIndex >= sources.length) {
                 return (
                     <div className={`rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white font-black flex items-center justify-center shadow-sm border border-indigo-400/30 shrink-0 ${className}`}>
-                        <span className="text-xs tracking-tight">AF</span>
+                        <span className="text-sm font-black tracking-tight">AF</span>
                     </div>
                 );
             }
@@ -3505,15 +3524,67 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.2",
-    "buildNumber": 312,
+    "installedVersion": "3.1.6",
+    "buildNumber": 319,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.2",
-    "latestBuild": 312,
+    "latestVersion": "3.1.6",
+    "latestBuild": 319,
     "isUpdateAvailable": false,
     "history": [
+        {
+            "version": "3.1.6",
+            "buildNumber": 319,
+            "releaseDate": "2026-08-15",
+            "releaseChannel": "Stable",
+            "commitHash": "v316dashlogo",
+            "commitMessage": "feat: release version 3.1.6 with resized favicon-96x96 logo in dashboard header",
+            "changes": [
+                "استفاده از فایل favicon-96x96.png به عنوان تصویر لوگوی بالای صفحه داشبورد",
+                "افزایش ابعاد لوگوی داشبورد به میزان ۱.۵ برابر (۶۰ در ۶۰ پیکسل) با گوشه‌های گرد مدرن",
+                "انتشار رسمی نسخه ۳.۱.۶"
+            ]
+        },
+        {
+            "version": "3.1.5",
+            "buildNumber": 317,
+            "releaseDate": "2026-08-15",
+            "releaseChannel": "Stable",
+            "commitHash": "v315logo",
+            "commitMessage": "feat: release version 3.1.5 with enlarged settings brand logo and preview asset compatibility",
+            "changes": [
+                "افزایش اندازه تصویر و لوگوی بالای صفحه تنظیمات به حدود دو سوم ارتفاع باکس سربرگ برای نمایش هرچه زیباتر و برجسته‌تر",
+                "بهبود رندرینگ و سازگاری کامل لود تصویر در محیط Preview و مرورگر وب",
+                "انتشار رسمی نسخه ۳.۱.۵"
+            ]
+        },
+        {
+            "version": "3.1.4",
+            "buildNumber": 316,
+            "releaseDate": "2026-08-15",
+            "releaseChannel": "Stable",
+            "commitHash": "v314settings",
+            "commitMessage": "feat: release version 3.1.4 with aligned settings header logo to right",
+            "changes": [
+                "انتقال تصویر و لوگوی بالای صفحه تنظیمات به سمت راست باکس و متون برای زیبایی و هماهنگی بیشتر با چیدمان راست‌چین",
+                "انتشار رسمی نسخه ۳.۱.۴"
+            ]
+        },
+        {
+            "version": "3.1.3",
+            "buildNumber": 315,
+            "releaseDate": "2026-08-15",
+            "releaseChannel": "Stable",
+            "commitHash": "v313cascade",
+            "commitMessage": "feat: release version 3.1.3 with perfected sticky cards stack cascade behavior",
+            "changes": [
+                "تنظیم دقیق رفتار اسکرول کارت آخر در حالت استیکی به طوری که هنگام اسکرول تا ابتدای کارت قبلی بالا بیاید و متوقف شود",
+                "جلوگیری از بالاتر رفتن کارت آخر نسبت به چیدمان پله‌ای و یکپارچه‌سازی رفتار همه کارت‌های دسته",
+                "محاسبه پویا و هوشمند فضای اسکرول کارت‌ها متناسب با ابعاد صفحه نمایش",
+                "انتشار رسمی نسخه ۳.۱.۳"
+            ]
+        },
         {
             "version": "3.1.2",
             "buildNumber": 312,
@@ -3825,8 +3896,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 312;
-                const EMBEDDED_VERSION = "3.1.2";
+                const EMBEDDED_BUILD = 319;
+                const EMBEDDED_VERSION = "3.1.6";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4011,6 +4082,27 @@
             }, [showStackWizard, wizardMode, wizardViewStyle]);
 
             const editCardsContainerRef = useRef(null);
+            const [editCardsContainerHeight, setEditCardsContainerHeight] = useState(0);
+
+            useEffect(() => {
+                const el = editCardsContainerRef.current;
+                if (!el) return;
+                const updateHeight = () => {
+                    if (el.clientHeight > 0) {
+                        setEditCardsContainerHeight(el.clientHeight);
+                    }
+                };
+                updateHeight();
+                const ro = new ResizeObserver((entries) => {
+                    for (let entry of entries) {
+                        if (entry.contentRect && entry.contentRect.height > 0) {
+                            setEditCardsContainerHeight(entry.contentRect.height);
+                        }
+                    }
+                });
+                ro.observe(el);
+                return () => ro.disconnect();
+            }, [showStackWizard, wizardMode, wizardViewStyle]);
 
             useEffect(() => {
                 if (showStackWizard) {
@@ -7496,7 +7588,7 @@
                                         </p>
                                     </div>
 
-                                    <BrandAvatar className="w-10 h-10" logoUrl={versionData.appLogo} />
+                                    <BrandAvatar className="w-[60px] h-[60px] rounded-2xl object-cover shadow-sm" logoUrl="favicon-96x96.png" />
                                 </div>
 
                                 {/* Reminders Box */}
@@ -9534,41 +9626,46 @@
                                     onClick={toggleVersionCard}
                                     className="bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300 dark:hover:border-indigo-800 overflow-hidden relative">
                                     
-                                    {/* Expand indicator (Top Left) */}
-                                    <div className="absolute top-4 left-4 flex items-center space-x-1 space-x-reverse shrink-0">
-                                        <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">{isVersionCardExpanded ? 'بستن' : 'جزئیات'}</span>
-                                        <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isVersionCardExpanded ? 'rotate-180' : 'rotate-0'}`} />
-                                    </div>
+                                    {/* App Header Row (Image on Right, Texts in Middle, Expand Indicator on Left) */}
+                                    <div className="flex items-center justify-between py-1">
+                                        {/* Right side in RTL: Brand Avatar + Texts */}
+                                        <div className="flex items-center space-x-3.5 space-x-reverse min-w-0">
+                                            <BrandAvatar className="w-[72px] h-[72px] rounded-2xl shrink-0" logoUrl={versionData.appLogo} />
+                                            
+                                            <div className="flex flex-col text-right space-y-1 min-w-0">
+                                                {/* Line 1: App Name */}
+                                                <h2 className="text-base font-black text-slate-900 dark:text-white tracking-tight truncate">
+                                                    {versionData.appName || "Amir Finance"}
+                                                </h2>
+                                                
+                                                {/* Line 2: Version & Build */}
+                                                <div className="flex items-center space-x-2 space-x-reverse text-xs">
+                                                    <span className="text-slate-600 dark:text-slate-300 font-mono font-medium">نسخه {versionData.installedVersion}</span>
+                                                    <span className="text-slate-300 dark:text-slate-600">•</span>
+                                                    <span className="text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 rounded-md text-[11px]">بیلد {versionData.buildNumber}</span>
+                                                </div>
 
-                                    {/* Centered App Header (3 Lines) */}
-                                    <div className="flex flex-col items-center justify-center text-center space-y-1.5 py-1">
-                                        <BrandAvatar className="w-12 h-12 mb-0.5" logoUrl={versionData.appLogo} />
-                                        
-                                        {/* Line 1: App Name */}
-                                        <h2 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
-                                            {versionData.appName || "Amir Finance"}
-                                        </h2>
-                                        
-                                        {/* Line 2: Version & Build */}
-                                        <div className="flex items-center justify-center space-x-2 space-x-reverse text-xs">
-                                            <span className="text-slate-600 dark:text-slate-300 font-mono font-medium">نسخه {versionData.installedVersion}</span>
-                                            <span className="text-slate-300 dark:text-slate-600">•</span>
-                                            <span className="text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 rounded-md text-[11px]">بیلد {versionData.buildNumber}</span>
+                                                {/* Line 3: Latest Version Status */}
+                                                <div className="flex items-center pt-0.5">
+                                                    {versionData.isUpdateAvailable ? (
+                                                        <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
+                                                            <Icon name="arrow-up-circle" className="w-3 h-3" />
+                                                            <span>بروزرسانی موجود</span>
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
+                                                            <Icon name="check-circle-2" className="w-3 h-3" />
+                                                            <span>آخرین نسخه</span>
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        {/* Line 3: Latest Version Status */}
-                                        <div className="flex items-center justify-center pt-0.5">
-                                            {versionData.isUpdateAvailable ? (
-                                                <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
-                                                    <Icon name="arrow-up-circle" className="w-3 h-3" />
-                                                    <span>بروزرسانی موجود</span>
-                                                </span>
-                                            ) : (
-                                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0">
-                                                    <Icon name="check-circle-2" className="w-3 h-3" />
-                                                    <span>آخرین نسخه</span>
-                                                </span>
-                                            )}
+                                        {/* Expand indicator (Left in RTL) */}
+                                        <div className="flex items-center space-x-1 space-x-reverse shrink-0 self-center pl-1">
+                                            <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">{isVersionCardExpanded ? 'بستن' : 'جزئیات'}</span>
+                                            <Icon name="chevron-down" className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isVersionCardExpanded ? 'rotate-180' : 'rotate-0'}`} />
                                         </div>
                                     </div>
 
@@ -10256,7 +10353,7 @@
                                             {/* Scrollable Floating Cards Area */}
                                             <div 
                                                 ref={editCardsContainerRef}
-                                                className={`w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-28 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
+                                                className={`w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-2 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
                                             >
                                                 {activeCards.map((card, index) => {
                                                     const isLastCard = index === activeCards.length - 1;
@@ -10380,6 +10477,17 @@
                                                         </div>
                                                     );
                                                 })}
+
+                                                {/* Dynamic bottom spacer allowing the last card to scroll up exactly to its cascade position in the sticky stack */}
+                                                <div 
+                                                    aria-hidden="true" 
+                                                    className="w-full shrink-0 pointer-events-none"
+                                                    style={{
+                                                        height: editCardsContainerHeight > 0 
+                                                            ? `${Math.max(24, Math.round(editCardsContainerHeight - 385 - (activeCards.length - 1) * 8 + 8))}px`
+                                                            : `max(24px, calc(100vh - ${385 + (activeCards.length - 1) * 8 + 120}px))`
+                                                    }}
+                                                />
                                             </div>
 
                                             {/* Floating Close X Button at Bottom */}
