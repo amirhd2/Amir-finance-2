@@ -3925,8 +3925,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 319;
-                const EMBEDDED_VERSION = "3.1.6";
+                const EMBEDDED_BUILD = 325;
+                const EMBEDDED_VERSION = "3.1.8";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');

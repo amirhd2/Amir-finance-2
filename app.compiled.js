@@ -4160,15 +4160,23 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.7",
-    "buildNumber": 320,
+    "installedVersion": "3.1.8",
+    "buildNumber": 321,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.7",
-    "latestBuild": 320,
+    "latestVersion": "3.1.8",
+    "latestBuild": 321,
     "isUpdateAvailable": false,
     "history": [{
+      "version": "3.1.8",
+      "buildNumber": 321,
+      "releaseDate": "2026-08-15",
+      "releaseChannel": "Stable",
+      "commitHash": "v318bottomfix",
+      "commitMessage": "fix: fix bottom navigation bar floating gap in iOS PWA and mobile",
+      "changes": ["تثبیت نوار ناوبری پایین صفحه چسبیده به لبه فیزیکی دستگاه (Fixed Bottom 0)", "حذف فاصله و فضای خالی زیر نوار ناوبری در حالت Standalone / PWA", "پوشش یکپارچه پس‌زمینه نوار پایین تا انتهای صفحه در زیر نوار هوم (Home Indicator)", "انتشار رسمی نسخه ۳.۱.۸"]
+    }, {
       "version": "3.1.7",
       "buildNumber": 320,
       "releaseDate": "2026-08-15",
@@ -4412,8 +4420,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 319;
-    const EMBEDDED_VERSION = "3.1.6";
+    const EMBEDDED_BUILD = 325;
+    const EMBEDDED_VERSION = "3.1.8";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -10377,7 +10385,7 @@ function App() {
   };
   const activeCards = getCurrentWizardCards();
   return /*#__PURE__*/React.createElement("div", {
-    className: `w-full h-full flex flex-col justify-between ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#F4F7FC] text-slate-800'}`
+    className: `w-full h-full relative flex flex-col justify-between overflow-hidden ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#F4F7FC] text-slate-800'}`
   }, /*#__PURE__*/React.createElement(AnimatePresence, null, showSplashScreen && /*#__PURE__*/React.createElement(motion.div, {
     key: "app-splash-screen",
     initial: {
@@ -10492,7 +10500,7 @@ function App() {
     onClick: () => closePlusMenu(),
     className: "absolute inset-0 bg-black/40 backdrop-blur-xs z-30"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "absolute bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
+    className: "fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
   }, /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "genie-fixed",
     initial: {
@@ -10615,7 +10623,7 @@ function App() {
     onClick: () => closePlusMenu(),
     className: "w-full py-1 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
   }, "\u0627\u0646\u0635\u0631\u0627\u0641")))), /*#__PURE__*/React.createElement("div", {
-    className: "absolute bottom-0 left-0 right-0 h-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[env(safe-area-inset-bottom,0px)] bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 z-40"
+    className: "fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-around px-2 pt-1 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] min-h-[4rem]"
   }, /*#__PURE__*/React.createElement(NavRippleButton, {
     id: "nav-btn-home",
     onClick: () => navigateToTab('dashboard', 'none'),
