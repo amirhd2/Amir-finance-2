@@ -26,15 +26,16 @@ let vData = {
   history: [
     {
       version: pkgVersion,
-      buildNumber: 343,
+      buildNumber: 348,
       releaseDate: new Date().toISOString().split('T')[0],
       releaseChannel: "Stable",
-      commitHash: "v3118stable",
-      commitMessage: "fix: restore compact nav bar height and clean FAB menu spacing",
+      commitHash: "v3119stable",
+      commitMessage: "fix: eliminate iOS PWA standalone bottom gap and status bar offset",
       changes: [
-        "تنظیم دقیق و بازگردانی ارتفاع استاندارد و باریک نوار پایین (h-14)",
-        "اصلاح و استانداردسازی فاصله منوی شناور با دکمه و نوار ناوبری",
-        "حذف پدینگ‌های اضافی و تراز تمیز و چشم‌نواز تمامی اجزای ناوبری"
+        "حذف قطعی فضای خالی پایین صفحه در حالت نصب PWA روی آیپد و آیفون",
+        "اصلاح متاتگ استاتوس‌بار iOS و حذف جابجایی منفی ویوپورت در وب‌اپلیکیشن",
+        "تراز دقیق و چسبیدن بی‌نقص نوار ناوبری به پایین‌ترین لبه استاندارد دستگاه",
+        "بهینه‌سازی محاسبات ارتفاع ویوپورت با 100dvh و -webkit-fill-available"
       ]
     }
   ]

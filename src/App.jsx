@@ -3524,13 +3524,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.18",
-    "buildNumber": 346,
+    "installedVersion": "3.1.19",
+    "buildNumber": 350,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.18",
-    "latestBuild": 346,
+    "latestVersion": "3.1.19",
+    "latestBuild": 350,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -3939,8 +3939,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 346;
-                const EMBEDDED_VERSION = "3.1.18";
+                const EMBEDDED_BUILD = 350;
+                const EMBEDDED_VERSION = "3.1.19";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
