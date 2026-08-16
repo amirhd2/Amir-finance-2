@@ -26,15 +26,15 @@ let vData = {
   history: [
     {
       version: pkgVersion,
-      buildNumber: 340,
+      buildNumber: 343,
       releaseDate: new Date().toISOString().split('T')[0],
       releaseChannel: "Stable",
-      commitHash: "v3117stable",
-      commitMessage: "fix: restore env(safe-area-inset-bottom) to bottom nav bar",
+      commitHash: "v3118stable",
+      commitMessage: "fix: restore compact nav bar height and clean FAB menu spacing",
       changes: [
-        "بازگردانی فاصله ایمن (Safe Area) به نوار ناوبری پایین صفحه",
-        "هماهنگی رنگ پس‌زمینه نوار پایین با حاشیه سیستم‌عامل iOS",
-        "رفع مشکل نمایش نوار زرد/سفید در دستگاه‌های بدون دکمه هوم"
+        "تنظیم دقیق و بازگردانی ارتفاع استاندارد و باریک نوار پایین (h-14)",
+        "اصلاح و استانداردسازی فاصله منوی شناور با دکمه و نوار ناوبری",
+        "حذف پدینگ‌های اضافی و تراز تمیز و چشم‌نواز تمامی اجزای ناوبری"
       ]
     }
   ]

@@ -1,15 +1,29 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.1.17",
-  "buildNumber": 342,
+  "installedVersion": "3.1.18",
+  "buildNumber": 346,
   "releaseDate": "2026-08-16",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.1.17",
-  "latestBuild": 342,
+  "latestVersion": "3.1.18",
+  "latestBuild": 346,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "3.1.18",
+      "buildNumber": 346,
+      "releaseDate": "2026-08-16",
+      "releaseChannel": "Stable",
+      "commitHash": "v3118b346",
+      "commitMessage": "fix: universal viewport bottom gap fix and version synchronization",
+      "changes": [
+        "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
+        "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",
+        "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه",
+        "بهینه‌سازی نهایی کارکرد آفلاین PWA"
+      ]
+    },
     {
       "version": "3.1.17",
       "buildNumber": 342,

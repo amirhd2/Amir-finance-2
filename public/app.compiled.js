@@ -4160,13 +4160,13 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.17",
-    "buildNumber": 341,
+    "installedVersion": "3.1.18",
+    "buildNumber": 345,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.17",
-    "latestBuild": 341,
+    "latestVersion": "3.1.18",
+    "latestBuild": 345,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.1.9",
@@ -4428,8 +4428,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 341;
-    const EMBEDDED_VERSION = "3.1.17";
+    const EMBEDDED_BUILD = 345;
+    const EMBEDDED_VERSION = "3.1.18";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -10518,7 +10518,7 @@ function App() {
     onClick: () => closePlusMenu(),
     className: "absolute inset-0 bg-black/40 backdrop-blur-xs z-30"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "fixed bottom-16 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
+    className: "fixed bottom-20 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
   }, /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "genie-fixed",
     initial: {
@@ -10532,7 +10532,7 @@ function App() {
       opacity: 1,
       scaleX: 1,
       scaleY: 1,
-      y: -16,
+      y: 0,
       clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
     },
     exit: {
@@ -10641,7 +10641,7 @@ function App() {
     onClick: () => closePlusMenu(),
     className: "w-full py-1 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
   }, "\u0627\u0646\u0635\u0631\u0627\u0641")))), /*#__PURE__*/React.createElement("div", {
-    className: "fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end pb-[env(safe-area-inset-bottom)]"
+    className: "fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 h-14 flex items-center justify-center"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto"
   }, /*#__PURE__*/React.createElement(NavRippleButton, {

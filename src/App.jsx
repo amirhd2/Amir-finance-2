@@ -3524,13 +3524,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.17",
-    "buildNumber": 342,
+    "installedVersion": "3.1.18",
+    "buildNumber": 346,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.17",
-    "latestBuild": 342,
+    "latestVersion": "3.1.18",
+    "latestBuild": 346,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -3939,8 +3939,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 342;
-                const EMBEDDED_VERSION = "3.1.17";
+                const EMBEDDED_BUILD = 346;
+                const EMBEDDED_VERSION = "3.1.18";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -10216,13 +10216,13 @@
                     </AnimatePresence>
 
                     {/* FAB Genie Menu Floating Container (Anchored ABOVE the bottom bar FAB button) */}
-                    <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
+                    <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none">
                         <AnimatePresence>
                             {showPlusMenu && (
                                 <motion.div
                                     key="genie-fixed"
                                     initial={{ opacity: 0, scaleX: 0.1, scaleY: 0.05, y: 100, clipPath: "polygon(40% 100%, 60% 100%, 50% 100%, 50% 100%)" }}
-                                    animate={{ opacity: 1, scaleX: 1, scaleY: 1, y: -16, clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
+                                    animate={{ opacity: 1, scaleX: 1, scaleY: 1, y: 0, clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
                                     exit={{ 
                                         opacity: 0, 
                                         scaleX: 0.08, 
@@ -10322,7 +10322,7 @@
                     </div>
 
                     {/* Navigation Bar at Bottom */}
-                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end pb-[env(safe-area-inset-bottom)]">
+                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 h-14 flex items-center justify-center">
                         <div className="w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto">
                             <NavRippleButton 
                                 id="nav-btn-home"
