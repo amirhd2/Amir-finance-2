@@ -3524,13 +3524,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.16",
-    "buildNumber": 340,
+    "installedVersion": "3.1.17",
+    "buildNumber": 342,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.16",
-    "latestBuild": 340,
+    "latestVersion": "3.1.17",
+    "latestBuild": 342,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -3939,8 +3939,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 340;
-                const EMBEDDED_VERSION = "3.1.16";
+                const EMBEDDED_BUILD = 342;
+                const EMBEDDED_VERSION = "3.1.17";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -10322,7 +10322,7 @@
                     </div>
 
                     {/* Navigation Bar at Bottom */}
-                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end">
+                    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end pb-[env(safe-area-inset-bottom)]">
                         <div className="w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto">
                             <NavRippleButton 
                                 id="nav-btn-home"

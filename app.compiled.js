@@ -4160,13 +4160,13 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.16",
-    "buildNumber": 339,
+    "installedVersion": "3.1.17",
+    "buildNumber": 341,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.16",
-    "latestBuild": 339,
+    "latestVersion": "3.1.17",
+    "latestBuild": 341,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.1.9",
@@ -4428,8 +4428,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 339;
-    const EMBEDDED_VERSION = "3.1.16";
+    const EMBEDDED_BUILD = 341;
+    const EMBEDDED_VERSION = "3.1.17";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -10641,7 +10641,7 @@ function App() {
     onClick: () => closePlusMenu(),
     className: "w-full py-1 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
   }, "\u0627\u0646\u0635\u0631\u0627\u0641")))), /*#__PURE__*/React.createElement("div", {
-    className: "fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end"
+    className: "fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 flex flex-col justify-end pb-[env(safe-area-inset-bottom)]"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto"
   }, /*#__PURE__*/React.createElement(NavRippleButton, {

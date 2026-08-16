@@ -26,15 +26,15 @@ let vData = {
   history: [
     {
       version: pkgVersion,
-      buildNumber: 339,
+      buildNumber: 340,
       releaseDate: new Date().toISOString().split('T')[0],
       releaseChannel: "Stable",
-      commitHash: "v3116stable",
-      commitMessage: "fix: force absolute physical boundaries, remove buggy fill-available",
+      commitHash: "v3117stable",
+      commitMessage: "fix: restore env(safe-area-inset-bottom) to bottom nav bar",
       changes: [
-        "حذف محاسبات اشتباه موتور وب‌کیت در iOS (مربوط به fill-available و 100dvh)",
-        "پوشش قطعی، ۱۰۰ درصدی و فیکس تمام صفحه از بالاترین تا پایین‌ترین لبه سخت‌افزاری دستگاه",
-        "تثبیت نهایی نوار ناوبری روی کف مطلق گوشی و حذف کامل هرگونه فضای خالی اضافه"
+        "بازگردانی فاصله ایمن (Safe Area) به نوار ناوبری پایین صفحه",
+        "هماهنگی رنگ پس‌زمینه نوار پایین با حاشیه سیستم‌عامل iOS",
+        "رفع مشکل نمایش نوار زرد/سفید در دستگاه‌های بدون دکمه هوم"
       ]
     }
   ]
