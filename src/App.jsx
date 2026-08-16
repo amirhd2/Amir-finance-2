@@ -1559,7 +1559,7 @@
             return (
                 <div 
                     ref={containerRef}
-                    className={`relative overflow-y-auto overflow-x-clip overscroll-x-none hide-scrollbar ${className}`}
+                    className={`relative overflow-y-auto overflow-x-hidden overscroll-x-none hide-scrollbar ${className}`}
                     style={{ 
                         WebkitOverflowScrolling: 'touch',
                         overscrollBehaviorY: 'contain'
@@ -1858,7 +1858,7 @@
                     {/* Page 1 (Underlying Page) */}
                     <div 
                         ref={page1Ref}
-                        className="page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-clip overscroll-x-none w-full h-full"
+                        className="page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-hidden overscroll-x-none w-full h-full"
                     >
                         <div className="px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 min-h-full">
                             {underlyingContent}
@@ -1881,7 +1881,7 @@
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </PullToRefresh>
                         ) : (
-                            <div className="w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20">
+                            <div className="w-full h-full overflow-y-auto overflow-x-hidden overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20">
                                 {typeof children === 'function' ? children({ onBack: handleHeaderBack }) : children}
                             </div>
                         )}
@@ -2572,9 +2572,9 @@
                 <div 
                     ref={containerRef}
                     data-swipe-item="true" style={{ touchAction: 'pan-y' }}
-                    className={`relative transition-[max-height,opacity,transform] duration-300 ${
+                    className={`relative transition-[max-height,opacity,transform] duration-300 overflow-hidden rounded-2xl ${
                         isDeleting 
-                            ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none overflow-hidden' 
+                            ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' 
                             : 'max-h-[500px] opacity-100 my-0.5 swipe-container-safe'
                     } ${className}`}
                 >
@@ -2950,7 +2950,7 @@
                     }`}
                 >
                     <div 
-                        className="flex-1 py-2 overflow-y-auto overflow-x-clip overscroll-x-none hide-scrollbar touch-pan-y"
+                        className="flex-1 py-2 overflow-y-auto overflow-x-hidden overscroll-x-none hide-scrollbar touch-pan-y"
                         onClick={(e) => {
                             if (e.target.closest('input, textarea, select, button, label, a')) return;
                             if (cardRef.current) {
@@ -3068,7 +3068,7 @@
                         />
                     </div>
 
-                    <div className={`max-h-52 overflow-y-auto overflow-x-clip overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
+                    <div className={`max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
                         error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'
                     }`}>
                         {filtered.length > 0 ? (
@@ -3247,7 +3247,7 @@
                                         className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none"
                                     />
                                 </div>
-                                <div className="max-h-44 overflow-y-auto overflow-x-clip overscroll-x-none space-y-1.5 hide-scrollbar p-1">
+                                <div className="max-h-44 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1">
                                     {filtered.length > 0 ? (
                                         filtered.map(l => (
                                             <div 
@@ -3294,7 +3294,7 @@
                             className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
-                    <div className={`max-h-52 overflow-y-auto overflow-x-clip overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
+                    <div className={`max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${
                         error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'
                     }`}>
                         {filtered.length > 0 ? (
@@ -3525,12 +3525,12 @@
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.1.19",
-    "buildNumber": 350,
+    "buildNumber": 352,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.1.19",
-    "latestBuild": 350,
+    "latestBuild": 352,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -3939,7 +3939,7 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 350;
+                const EMBEDDED_BUILD = 352;
                 const EMBEDDED_VERSION = "3.1.19";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
@@ -10140,7 +10140,7 @@
                                 animate="animate"
                                 exit="exit"
                                 style={{ willChange: 'transform', WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}
-                                className="w-full h-full absolute inset-0 overflow-y-auto overflow-x-clip overscroll-x-none bg-[#F4F7FC] dark:bg-slate-950 z-10"
+                                className="w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden overscroll-x-none bg-[#F4F7FC] dark:bg-slate-950 z-10"
                             >
                                 {['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? (
                                     <div className="flex-1 relative w-full h-full">
@@ -10189,7 +10189,7 @@
                                         )}
                                     </div>
                                 ) : (
-                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 h-full overflow-y-auto overflow-x-clip overscroll-x-none">
+                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 h-full overflow-y-auto overflow-x-hidden overscroll-x-none">
                                         {currentTab === 'dashboard' && renderTab('dashboard')}
                                         {currentTab === 'accounts' && renderTab('accounts')}
                                         {currentTab === 'contacts' && renderTab('contacts')}
@@ -10415,7 +10415,7 @@
                                             {/* Scrollable Floating Cards Area */}
                                             <div 
                                                 ref={editCardsContainerRef}
-                                                className={`w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-2 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`}
+                                                className={`w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-2 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-hidden overscroll-x-none"}`}
                                             >
                                                 {activeCards.map((card, index) => {
                                                     const isLastCard = index === activeCards.length - 1;
@@ -10779,7 +10779,7 @@
                                     animate="animate"
                                     exit="exit"
                                     style={{ transformOrigin: "center center" }}
-                                    className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto overflow-x-clip overscroll-x-none"
+                                    className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto overflow-x-hidden overscroll-x-none"
                                 >
                                     <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"></div>
                                     <div className="text-center">
@@ -10924,7 +10924,7 @@
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-clip overscroll-x-none"
+                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden overscroll-x-none"
                             >
                                 <motion.div 
                                     key="add-contact-panel"
@@ -10996,7 +10996,7 @@
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-clip overscroll-x-none"
+                                className="absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden overscroll-x-none"
                             >
                                 <motion.div 
                                     key="edit-contact-panel"

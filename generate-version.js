@@ -26,16 +26,16 @@ let vData = {
   history: [
     {
       version: pkgVersion,
-      buildNumber: 348,
+      buildNumber: 350,
       releaseDate: new Date().toISOString().split('T')[0],
       releaseChannel: "Stable",
-      commitHash: "v3119stable",
-      commitMessage: "fix: eliminate iOS PWA standalone bottom gap and status bar offset",
+      commitHash: "v3120stable",
+      commitMessage: "fix: prevent entire page horizontal shift during swipe-to-delete",
       changes: [
-        "حذف قطعی فضای خالی پایین صفحه در حالت نصب PWA روی آیپد و آیفون",
-        "اصلاح متاتگ استاتوس‌بار iOS و حذف جابجایی منفی ویوپورت در وب‌اپلیکیشن",
-        "تراز دقیق و چسبیدن بی‌نقص نوار ناوبری به پایین‌ترین لبه استاندارد دستگاه",
-        "بهینه‌سازی محاسبات ارتفاع ویوپورت با 100dvh و -webkit-fill-available"
+        "رفع کامل جابجایی افقی کل صفحه هنگام سوایپ کارت‌ها برای حذف در موبایل",
+        "محدودسازی و کانتینمنت دقیق محدوده ترنسفرم کارت با overflow-hidden و rounded-2xl",
+        "اصلاح و جایگزینی جامع overflow-x: hidden در تمام تب‌ها، صفحات و پنجره‌های اسکرول",
+        "بهبود رویدادهای لمسی و جلوگیری از انتشار ناخواسته رویداد سوایپ به کانتینر والد"
       ]
     }
   ]
