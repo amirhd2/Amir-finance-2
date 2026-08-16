@@ -26,15 +26,15 @@ let vData = {
   history: [
     {
       version: pkgVersion,
-      buildNumber: 338,
+      buildNumber: 339,
       releaseDate: new Date().toISOString().split('T')[0],
       releaseChannel: "Stable",
-      commitHash: "v3115stable",
-      commitMessage: "fix: exact standalone iOS PWA fill-available height",
+      commitHash: "v3116stable",
+      commitMessage: "fix: force absolute physical boundaries, remove buggy fill-available",
       changes: [
-        "حل دقیق مشکل خالی ماندن لبه پایین در حالت نصب شده PWA در آیفون",
-        "اعمال ویژگی fill-available اختصاصی موتور وب‌کیت برای پر کردن کامل صفحه",
-        "تثبیت نهایی نوار پایینی روی خط صفر صفحه بدون نیاز به فاصله امن"
+        "حذف محاسبات اشتباه موتور وب‌کیت در iOS (مربوط به fill-available و 100dvh)",
+        "پوشش قطعی، ۱۰۰ درصدی و فیکس تمام صفحه از بالاترین تا پایین‌ترین لبه سخت‌افزاری دستگاه",
+        "تثبیت نهایی نوار ناوبری روی کف مطلق گوشی و حذف کامل هرگونه فضای خالی اضافه"
       ]
     }
   ]
