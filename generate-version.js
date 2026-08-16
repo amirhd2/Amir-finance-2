@@ -26,16 +26,15 @@ let vData = {
   history: [
     {
       version: pkgVersion,
-      buildNumber: 333,
+      buildNumber: 335,
       releaseDate: new Date().toISOString().split('T')[0],
       releaseChannel: "Stable",
-      commitHash: "v3112stable",
-      commitMessage: "fix: absolute positioning layout shift bug in iOS Safari",
+      commitHash: "v3113stable",
+      commitMessage: "fix: absolute bottom edge alignment and zero safe-area bottom gap",
       changes: [
-        "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
-        "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",
-        "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه",
-        "بهینه‌سازی نهایی کارکرد آفلاین PWA"
+        "تنظیم دقیق و قطعی نوار ناوبری و کل برنامه در کف مطلق صفحه (حذف کامل هرگونه فاصله و پدینگ اضافه)",
+        "رفع کامل شیفت و جهش لایه در سیستم‌عامل iOS و PWA",
+        "همگام‌سازی مستقیم نسخه و بارگذاری فوری بدون نیاز به کش قبلی"
       ]
     }
   ]
