@@ -2376,7 +2376,7 @@ function PullToRefresh({
   const rotation = progress * 360;
   return /*#__PURE__*/React.createElement("div", {
     ref: containerRef,
-    className: `relative overflow-y-auto overflow-x-clip overscroll-x-none hide-scrollbar ${className}`,
+    className: `relative overflow-y-auto overflow-x-hidden overscroll-x-none hide-scrollbar ${className}`,
     style: {
       WebkitOverflowScrolling: 'touch',
       overscrollBehaviorY: 'contain'
@@ -2647,7 +2647,7 @@ function SwipeBackWrapper({
     className: `app-viewport fixed inset-0 w-full h-full overflow-hidden bg-[#F4F7FC] dark:bg-slate-950 z-30 ${className}`
   }, /*#__PURE__*/React.createElement("div", {
     ref: page1Ref,
-    className: "page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-clip overscroll-x-none w-full h-full"
+    className: "page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-hidden overscroll-x-none w-full h-full"
   }, /*#__PURE__*/React.createElement("div", {
     className: "px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 min-h-full"
   }, underlyingContent)), /*#__PURE__*/React.createElement("div", {
@@ -2662,7 +2662,7 @@ function SwipeBackWrapper({
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children) : /*#__PURE__*/React.createElement("div", {
-    className: "w-full h-full overflow-y-auto overflow-x-clip overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20"
+    className: "w-full h-full overflow-y-auto overflow-x-hidden overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20"
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
   }) : children)));
@@ -3346,7 +3346,7 @@ function SwipeToDeleteItem({
     style: {
       touchAction: 'pan-y'
     },
-    className: `relative transition-[max-height,opacity,transform] duration-300 ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none overflow-hidden' : 'max-h-[500px] opacity-100 my-0.5 swipe-container-safe'} ${className}`
+    className: `relative transition-[max-height,opacity,transform] duration-300 overflow-hidden rounded-2xl ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' : 'max-h-[500px] opacity-100 my-0.5 swipe-container-safe'} ${className}`
   }, /*#__PURE__*/React.createElement("div", {
     ref: btnRef,
     className: "absolute right-1 top-1/2 z-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white cursor-pointer shadow-md select-none transition-colors",
@@ -3542,7 +3542,11 @@ function SwipeableTxCard({
       l1 = tx.title || 'بازپرداخت طلب';
       l2 = rawContactName.trim();
     } else if (tx.type === 'debt') {
-      l1 = tx.title || 'ثبت بدهی جدید';
+      let cleanTitle = tx.title || 'ثبت بدهی جدید';
+      if (cleanTitle.startsWith('ثبت قرض / بدهی') || cleanTitle.startsWith('ثبت قرض/بدهی') || cleanTitle.startsWith('ثبت قرض')) {
+        cleanTitle = cleanTitle.replace(/^ثبت\s*قرض\s*\/?\s*بدهی/g, 'ثبت بدهی جدید').replace(/^ثبت\s*قرض/g, 'ثبت بدهی جدید');
+      }
+      l1 = cleanTitle;
       l2 = rawContactName.trim();
     } else if (tx.type === 'debt_repayment') {
       l1 = tx.title || 'بازپرداخت بدهی';
@@ -3569,34 +3573,34 @@ function SwipeableTxCard({
     onCardClick: () => onEdit && onEdit(tx)
   }, /*#__PURE__*/React.createElement("div", {
     id: `tx-card-${tx.id}`,
-    className: `${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border pl-4 pr-3.5 sm:pl-5 sm:pr-4 py-3 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
+    className: `${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
+    className: "flex items-center space-x-2 sm:space-x-3 space-x-reverse min-w-0 flex-1"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `w-12 h-12 rounded-2xl font-bold text-lg ${isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`
+    className: `w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg ${isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`
   }, totalCount ? totalCount - index : /*#__PURE__*/React.createElement(Icon, {
     name: tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : isRedAmount ? "arrow-up-right" : "arrow-down-left",
-    className: "w-6 h-6"
+    className: "w-5 h-5 sm:w-6 sm:h-6"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+    className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-1 sm:pl-4 pr-0 sm:pr-1"
   }, /*#__PURE__*/React.createElement("h3", {
-    className: "text-sm font-extrabold text-slate-800 dark:text-white leading-snug break-words whitespace-normal"
+    className: "text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug break-words whitespace-normal"
   }, line1), line2 && /*#__PURE__*/React.createElement("div", {
-    className: "text-xs font-bold text-slate-600 dark:text-slate-300 break-words whitespace-normal leading-snug"
+    className: "text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 break-words whitespace-normal leading-snug"
   }, line2), /*#__PURE__*/React.createElement("p", {
-    className: "text-xs text-slate-500 dark:text-slate-400 break-words whitespace-normal leading-relaxed mt-0.5"
+    className: "text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 break-words whitespace-normal leading-relaxed mt-0.5"
   }, line3))), /*#__PURE__*/React.createElement("div", {
-    className: "text-center shrink-0 flex flex-col items-center justify-center min-w-[76px] sm:min-w-[90px] pl-1"
+    className: "text-center shrink-0 flex flex-col items-center justify-center min-w-[70px] sm:min-w-[90px] pl-0 sm:pl-1"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `font-bold text-[15px] leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`
+    className: `font-bold text-sm sm:text-[15px] leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`
   }, Math.abs(tx.amount).toLocaleString()), /*#__PURE__*/React.createElement("div", {
-    className: `text-xs font-semibold text-center w-full mt-0.5 ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`
+    className: `text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`
   }, "\u062A\u0648\u0645\u0627\u0646"), (() => {
     const rawDate = tx.dateStr || tx.date || tx.receiveDate || tx.startDate || tx.createdAt || '';
     const numericDate = formatDateToNumericJalali(rawDate);
     if (!numericDate || numericDate === '-') return null;
     return /*#__PURE__*/React.createElement("div", {
-      className: "text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 font-mono mt-1 text-center whitespace-nowrap"
+      className: "text-[11px] sm:text-sm font-bold text-slate-600 dark:text-slate-300 font-mono mt-0.5 sm:mt-1 text-center whitespace-nowrap"
     }, numericDate);
   })())));
 }
@@ -3658,7 +3662,7 @@ function StackCardItem({
     "data-depth": depthAttr,
     className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex-1 py-2 overflow-y-auto overflow-x-clip overscroll-x-none hide-scrollbar touch-pan-y",
+    className: "flex-1 py-2 overflow-y-auto overflow-x-hidden overscroll-x-none hide-scrollbar touch-pan-y",
     onClick: e => {
       if (e.target.closest('input, textarea, select, button, label, a')) return;
       if (cardRef.current) {
@@ -3749,7 +3753,7 @@ function ContactSelectorCard({
     onChange: e => setSearchQuery(e.target.value),
     className: `w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 ${error ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:ring-indigo-500'}`
   })), /*#__PURE__*/React.createElement("div", {
-    className: `max-h-52 overflow-y-auto overflow-x-clip overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
+    className: `max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
   }, filtered.length > 0 ? filtered.map(c => {
     const isSelected = Number(selectedContactId) === c.id;
     return /*#__PURE__*/React.createElement("div", {
@@ -3912,7 +3916,7 @@ function LoanSelectorCard({
       onChange: e => setSearchQuery(e.target.value),
       className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none"
     })), /*#__PURE__*/React.createElement("div", {
-      className: "max-h-44 overflow-y-auto overflow-x-clip overscroll-x-none space-y-1.5 hide-scrollbar p-1"
+      className: "max-h-44 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1"
     }, filtered.length > 0 ? filtered.map(l => /*#__PURE__*/React.createElement("div", {
       key: l.id,
       onClick: () => handleSelect(l),
@@ -3951,7 +3955,7 @@ function LoanSelectorCard({
     onChange: e => setSearchQuery(e.target.value),
     className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
   })), /*#__PURE__*/React.createElement("div", {
-    className: `max-h-52 overflow-y-auto overflow-x-clip overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
+    className: `max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
   }, filtered.length > 0 ? filtered.map(l => {
     const contact = contacts.find(c => c.id === l.contactId);
     const cName = contact ? `${contact.firstName} ${contact.lastName}` : l.contactName || 'بانک/سازمان';
@@ -4160,13 +4164,13 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.19",
-    "buildNumber": 349,
+    "installedVersion": "3.1.20",
+    "buildNumber": 355,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.19",
-    "latestBuild": 349,
+    "latestVersion": "3.1.20",
+    "latestBuild": 355,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.1.9",
@@ -4428,8 +4432,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 349;
-    const EMBEDDED_VERSION = "3.1.19";
+    const EMBEDDED_BUILD = 355;
+    const EMBEDDED_VERSION = "3.1.20";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -5802,7 +5806,7 @@ function App() {
         // debt_amount
         const amt = Number(demandDebtForm.amount) || 0;
         if (amt <= 0) {
-          triggerCardError('debt_amount', 'لطفاً مبلغ قرض را وارد نمایید');
+          triggerCardError('debt_amount', 'لطفاً مبلغ بدهی را وارد نمایید');
           return;
         }
       }
@@ -6125,7 +6129,7 @@ function App() {
           return t;
         });
         setTransactions(updatedTxs);
-        showToast('اطلاعات قرض / بدهی با موفقیت به‌روزرسانی شد');
+        showToast('اطلاعات بدهی با موفقیت به‌روزرسانی شد');
       } else if (wizardMode === 'edit' && !demandDebtForm.id && targetContact) {
         const updatedContacts = contacts.map(c => {
           if (c.id === targetContact.id) {
@@ -6167,14 +6171,14 @@ function App() {
           id: Date.now(),
           contactId: targetContact ? targetContact.id : null,
           type: 'debt',
-          title: `ثبت قرض / بدهی ${targetContact ? 'به ' + targetContact.firstName + ' ' + targetContact.lastName : ''}`,
+          title: `ثبت بدهی جدید ${targetContact ? 'به ' + targetContact.firstName + ' ' + targetContact.lastName : ''}`.trim(),
           dateStr: dateStr,
           amount: -amt,
           notes: demandDebtForm.notes,
           isPositive: false
         };
         setTransactions([newTx, ...transactions]);
-        showToast('قرض / بدهی با موفقیت ثبت گردید');
+        showToast('بدهی جدید با موفقیت ثبت گردید');
       }
     } else if (wizardType === 'installment') {
       const amt = Number(installmentForm.amount) || 0;
@@ -7422,12 +7426,12 @@ function App() {
     })
   }, {
     id: 'debt_amount',
-    title: 'مبلغ قرض',
+    title: 'مبلغ بدهی',
     render: () => /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
     }, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u0645\u0628\u0644\u063A \u0642\u0631\u0636 (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/React.createElement("input", {
+    }, "\u0645\u0628\u0644\u063A \u0628\u062F\u0647\u06CC (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/React.createElement("input", {
       type: "text",
       inputMode: "numeric",
       placeholder: "\u0645\u062B\u0644\u0627\u064B: \u06F2,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0",
@@ -7463,7 +7467,7 @@ function App() {
     }, numToPersianWords(demandDebtForm.amount))))
   }, {
     id: 'debt_date',
-    title: 'تاریخ قرض',
+    title: 'تاریخ بدهی',
     render: () => /*#__PURE__*/React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
       month: pickerMonth,
@@ -7487,7 +7491,7 @@ function App() {
       className: "block text-xs text-slate-500 font-bold"
     }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u062A\u06A9\u0645\u06CC\u0644\u06CC:"), /*#__PURE__*/React.createElement("textarea", {
       rows: "3",
-      placeholder: "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0628\u0627\u0628\u062A \u0642\u0631\u0636...",
+      placeholder: "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0628\u0627\u0628\u062A \u0628\u062F\u0647\u06CC...",
       value: demandDebtForm.notes,
       onChange: e => setDemandDebtForm({
         ...demandDebtForm,
@@ -9008,9 +9012,9 @@ function App() {
             className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
           }, /*#__PURE__*/React.createElement("h3", {
             className: "font-bold text-slate-800 dark:text-white text-sm"
-          }, "\u0628\u062F\u0647\u06CC \u0634\u062E\u0635\u06CC"), /*#__PURE__*/React.createElement("p", {
+          }, "\u062B\u0628\u062A \u0628\u062F\u0647\u06CC \u062C\u062F\u06CC\u062F \u0628\u0647 ", selectedContact.firstName, " ", selectedContact.lastName), /*#__PURE__*/React.createElement("p", {
             className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
-          }, selectedContact.note || `بدهی به ${selectedContact.firstName} ${selectedContact.lastName}`)), /*#__PURE__*/React.createElement("div", {
+          }, selectedContact.note || 'توضیحات ثبت نشده')), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
           }, /*#__PURE__*/React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none"
@@ -10427,21 +10431,33 @@ function App() {
   }, /*#__PURE__*/React.createElement("picture", {
     className: "w-full h-full flex items-center justify-center"
   }, /*#__PURE__*/React.createElement("source", {
+    media: "(min-width: 1024px) and (orientation: landscape) and (max-aspect-ratio: 16/11)",
+    srcSet: "./apple-splash-2732-2048.png"
+  }), /*#__PURE__*/React.createElement("source", {
+    media: "(min-width: 800px) and (orientation: landscape) and (max-aspect-ratio: 16/11)",
+    srcSet: "./apple-splash-2388-1668.png"
+  }), /*#__PURE__*/React.createElement("source", {
+    media: "(min-width: 600px) and (orientation: landscape) and (max-aspect-ratio: 16/11)",
+    srcSet: "./apple-splash-2048-1536.png"
+  }), /*#__PURE__*/React.createElement("source", {
+    media: "(min-width: 900px) and (orientation: portrait)",
+    srcSet: "./apple-splash-2048-2732.png"
+  }), /*#__PURE__*/React.createElement("source", {
+    media: "(min-width: 768px) and (orientation: portrait)",
+    srcSet: "./apple-splash-1668-2388.png"
+  }), /*#__PURE__*/React.createElement("source", {
+    media: "(min-width: 600px) and (orientation: portrait)",
+    srcSet: "./apple-splash-1536-2048.png"
+  }), /*#__PURE__*/React.createElement("source", {
     media: "(orientation: landscape)",
-    srcSet: "./splash-landscape.png?v=2.2.6, ./splash-landscape.jpg?v=2.2.6"
+    srcSet: "./splash-landscape.png"
   }), /*#__PURE__*/React.createElement("source", {
     media: "(orientation: portrait)",
-    srcSet: "./splash-portrait.png?v=2.2.6, ./splash-portrait.jpg?v=2.2.6"
+    srcSet: "./splash-portrait.png"
   }), /*#__PURE__*/React.createElement("img", {
-    src: "./splash-portrait.png?v=2.2.6",
+    src: "./splash-portrait.png",
     alt: "Amir Finance Splash Screen",
-    onError: e => {
-      if (!e.currentTarget.dataset.retry) {
-        e.currentTarget.dataset.retry = '1';
-        e.currentTarget.src = './splash-portrait.jpg';
-      }
-    },
-    className: "w-full h-full object-cover object-center"
+    className: "w-full h-full object-cover object-center bg-[#050714]"
   })), /*#__PURE__*/React.createElement("div", {
     className: "absolute bottom-10 inset-x-0 flex flex-col items-center justify-center space-y-2 pointer-events-none z-10"
   }, /*#__PURE__*/React.createElement("div", {
@@ -10467,7 +10483,7 @@ function App() {
       WebkitBackfaceVisibility: 'hidden',
       backfaceVisibility: 'hidden'
     },
-    className: "w-full h-full absolute inset-0 overflow-y-auto overflow-x-clip overscroll-x-none bg-[#F4F7FC] dark:bg-slate-950 z-10"
+    className: "w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden overscroll-x-none bg-[#F4F7FC] dark:bg-slate-950 z-10"
   }, ['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? /*#__PURE__*/React.createElement("div", {
     className: "flex-1 relative w-full h-full"
   }, currentTab === 'contact-detail' && selectedContact && /*#__PURE__*/React.createElement(SwipeBackWrapper, {
@@ -10500,7 +10516,7 @@ function App() {
     onBack
   }) => renderTab('all-transactions', onBack))) : /*#__PURE__*/React.createElement(PullToRefresh, {
     onRefresh: () => handleRefreshData(currentTab),
-    className: "flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 h-full overflow-y-auto overflow-x-clip overscroll-x-none"
+    className: "flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 h-full overflow-y-auto overflow-x-hidden overscroll-x-none"
   }, currentTab === 'dashboard' && renderTab('dashboard'), currentTab === 'accounts' && renderTab('accounts'), currentTab === 'contacts' && renderTab('contacts'), currentTab === 'settings' && renderTab('settings'))))), /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "fab-backdrop",
     initial: {
@@ -10721,7 +10737,7 @@ function App() {
     className: "w-full flex flex-col items-center h-full max-h-[96vh] relative"
   }, /*#__PURE__*/React.createElement("div", {
     ref: editCardsContainerRef,
-    className: `w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-2 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-clip overscroll-x-none"}`
+    className: `w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-2 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-hidden overscroll-x-none"}`
   }, activeCards.map((card, index) => {
     const isLastCard = index === activeCards.length - 1;
     const isEditingThis = editingCardId === card.id;
@@ -11051,7 +11067,7 @@ function App() {
     style: {
       transformOrigin: "center center"
     },
-    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto overflow-x-clip overscroll-x-none"
+    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto overflow-x-hidden overscroll-x-none"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
   }), /*#__PURE__*/React.createElement("div", {
@@ -11187,7 +11203,7 @@ function App() {
     initial: "initial",
     animate: "animate",
     exit: "exit",
-    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-clip overscroll-x-none"
+    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden overscroll-x-none"
   }, /*#__PURE__*/React.createElement(motion.div, {
     key: "add-contact-panel",
     variants: iosModalVariants,
@@ -11268,7 +11284,7 @@ function App() {
     initial: "initial",
     animate: "animate",
     exit: "exit",
-    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-clip overscroll-x-none"
+    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden overscroll-x-none"
   }, /*#__PURE__*/React.createElement(motion.div, {
     key: "edit-contact-panel",
     variants: iosModalVariants,

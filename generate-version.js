@@ -65,12 +65,12 @@ if (fs.existsSync(versionPath)) {
           releaseDate: vData.releaseDate,
           releaseChannel: "Stable",
           commitHash: `v${pkgVersion.replace(/\./g, '')}b${vData.buildNumber}`,
-          commitMessage: "fix: universal viewport bottom gap fix and version synchronization",
+          commitMessage: "feat: responsive splash screen optimization for all screen sizes and devices",
           changes: [
-            "حل ریشه‌ای و کامل مشکل جای خالی پایین صفحه در تمام مرورگرها و دیوایس‌ها",
-            "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",
-            "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه",
-            "بهینه‌سازی نهایی کارکرد آفلاین PWA"
+            "بهینه‌سازی ریسپانسیو و دقیق اسپلش‌اسکرین برای تمام رزولوشن‌ها و دستگاه‌ها (دسکتاپ، تبلت، آیپد و موبایل)",
+            "رفع کامل زوم، کراپ و کشیدگی تصویر لودینگ اولیه در نمایشگرهای آیپد و ریسایز افقی پنجره مرورگر",
+            "پیاده‌سازی ساختار چندگانه Picture هوشمند بر اساس نسبت ابعاد و رزولوشن دقیق صفحه",
+            "اصلاح مدیاکوئری‌های startup image در iOS و ارتقای یکپارچه به نسخه 3.1.20"
           ]
         },
         ...otherHistory

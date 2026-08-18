@@ -2799,7 +2799,11 @@
                     l1 = tx.title || 'بازپرداخت طلب';
                     l2 = rawContactName.trim();
                 } else if (tx.type === 'debt') {
-                    l1 = tx.title || 'ثبت بدهی جدید';
+                    let cleanTitle = tx.title || 'ثبت بدهی جدید';
+                    if (cleanTitle.startsWith('ثبت قرض / بدهی') || cleanTitle.startsWith('ثبت قرض/بدهی') || cleanTitle.startsWith('ثبت قرض')) {
+                        cleanTitle = cleanTitle.replace(/^ثبت\s*قرض\s*\/?\s*بدهی/g, 'ثبت بدهی جدید').replace(/^ثبت\s*قرض/g, 'ثبت بدهی جدید');
+                    }
+                    l1 = cleanTitle;
                     l2 = rawContactName.trim();
                 } else if (tx.type === 'debt_repayment') {
                     l1 = tx.title || 'بازپرداخت بدهی';
@@ -2831,38 +2835,38 @@
                             hasShadow 
                                 ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' 
                                 : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'
-                        } rounded-2xl border pl-4 pr-3.5 sm:pl-5 sm:pr-4 py-3 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto ${
+                        } rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto ${
                             isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''
                         }`}
                     >
-                        <div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">
-                            <div className={`w-12 h-12 rounded-2xl font-bold text-lg ${ isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`}>
-                                {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (isRedAmount ? "arrow-up-right" : "arrow-down-left")} className="w-6 h-6" />}
+                        <div className="flex items-center space-x-2 sm:space-x-3 space-x-reverse min-w-0 flex-1">
+                            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg ${ isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`}>
+                                {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (isRedAmount ? "arrow-up-right" : "arrow-down-left")} className="w-5 h-5 sm:w-6 sm:h-6" />}
                             </div>
-                            <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
-                                <h3 className="text-sm font-extrabold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{line1}</h3>
+                            <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-1 sm:pl-4 pr-0 sm:pr-1">
+                                <h3 className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{line1}</h3>
                                 {line2 && (
-                                    <div className="text-xs font-bold text-slate-600 dark:text-slate-300 break-words whitespace-normal leading-snug">
+                                    <div className="text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 break-words whitespace-normal leading-snug">
                                         {line2}
                                     </div>
                                 )}
-                                <p className="text-xs text-slate-500 dark:text-slate-400 break-words whitespace-normal leading-relaxed mt-0.5">
+                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 break-words whitespace-normal leading-relaxed mt-0.5">
                                     {line3}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="text-center shrink-0 flex flex-col items-center justify-center min-w-[76px] sm:min-w-[90px] pl-1">
-                            <div className={`font-bold text-[15px] leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                        <div className="text-center shrink-0 flex flex-col items-center justify-center min-w-[70px] sm:min-w-[90px] pl-0 sm:pl-1">
+                            <div className={`font-bold text-sm sm:text-[15px] leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                 {Math.abs(tx.amount).toLocaleString()}
                             </div>
-                            <div className={`text-xs font-semibold text-center w-full mt-0.5 ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>تومان</div>
+                            <div className={`text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>تومان</div>
                             {(() => {
                                 const rawDate = tx.dateStr || tx.date || tx.receiveDate || tx.startDate || tx.createdAt || '';
                                 const numericDate = formatDateToNumericJalali(rawDate);
                                 if (!numericDate || numericDate === '-') return null;
                                 return (
-                                    <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 font-mono mt-1 text-center whitespace-nowrap">
+                                    <div className="text-[11px] sm:text-sm font-bold text-slate-600 dark:text-slate-300 font-mono mt-0.5 sm:mt-1 text-center whitespace-nowrap">
                                         {numericDate}
                                     </div>
                                 );
@@ -3524,13 +3528,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.19",
-    "buildNumber": 352,
+    "installedVersion": "3.1.20",
+    "buildNumber": 355,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.19",
-    "latestBuild": 352,
+    "latestVersion": "3.1.20",
+    "latestBuild": 355,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -3939,8 +3943,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 352;
-                const EMBEDDED_VERSION = "3.1.19";
+                const EMBEDDED_BUILD = 355;
+                const EMBEDDED_VERSION = "3.1.20";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -5440,7 +5444,7 @@
                     if (currentCardIdx === 1) { // debt_amount
                         const amt = Number(demandDebtForm.amount) || 0;
                         if (amt <= 0) {
-                            triggerCardError('debt_amount', 'لطفاً مبلغ قرض را وارد نمایید');
+                            triggerCardError('debt_amount', 'لطفاً مبلغ بدهی را وارد نمایید');
                             return;
                         }
                     }
@@ -5741,7 +5745,7 @@
                             return t;
                         });
                         setTransactions(updatedTxs);
-                        showToast('اطلاعات قرض / بدهی با موفقیت به‌روزرسانی شد');
+                        showToast('اطلاعات بدهی با موفقیت به‌روزرسانی شد');
                     } else if (wizardMode === 'edit' && !demandDebtForm.id && targetContact) {
                         const updatedContacts = contacts.map(c => {
                             if (c.id === targetContact.id) {
@@ -5772,14 +5776,14 @@
                             id: Date.now(),
                             contactId: targetContact ? targetContact.id : null,
                             type: 'debt',
-                            title: `ثبت قرض / بدهی ${targetContact ? 'به ' + targetContact.firstName + ' ' + targetContact.lastName : ''}`,
+                            title: `ثبت بدهی جدید ${targetContact ? 'به ' + targetContact.firstName + ' ' + targetContact.lastName : ''}`.trim(),
                             dateStr: dateStr,
                             amount: -amt,
                             notes: demandDebtForm.notes,
                             isPositive: false
                         };
                         setTransactions([newTx, ...transactions]);
-                        showToast('قرض / بدهی با موفقیت ثبت گردید');
+                        showToast('بدهی جدید با موفقیت ثبت گردید');
                     }
                 } else if (wizardType === 'installment') {
                     const amt = Number(installmentForm.amount) || 0;
@@ -7014,10 +7018,10 @@
                 },
                 {
                     id: 'debt_amount',
-                    title: 'مبلغ قرض',
+                    title: 'مبلغ بدهی',
                     render: () => (
                         <div className="space-y-3">
-                            <label className="block text-xs text-slate-500 font-bold">مبلغ قرض (تومان):</label>
+                            <label className="block text-xs text-slate-500 font-bold">مبلغ بدهی (تومان):</label>
                             <input 
                                 type="text"
                                 inputMode="numeric"
@@ -7057,7 +7061,7 @@
                 },
                 {
                     id: 'debt_date',
-                    title: 'تاریخ قرض',
+                    title: 'تاریخ بدهی',
                     render: () => (
                         <FullJalaliDatePicker 
                             day={pickerDay}
@@ -7079,7 +7083,7 @@
                             <label className="block text-xs text-slate-500 font-bold">توضیحات تکمیلی:</label>
                             <textarea 
                                 rows="3"
-                                placeholder="توضیحات بابت قرض..."
+                                placeholder="توضیحات بابت بدهی..."
                                 value={demandDebtForm.notes}
                                 onChange={(e) => setDemandDebtForm({...demandDebtForm, notes: e.target.value})}
                                 className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none"
@@ -8696,8 +8700,8 @@
                                                                                 <Icon name="arrow-down-left" className="w-6 h-6" />
                                                                             </div>
                                                                             <div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">
-                                                                                <h3 className="font-bold text-slate-800 dark:text-white text-sm">بدهی شخصی</h3>
-                                                                                <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || `بدهی به ${selectedContact.firstName} ${selectedContact.lastName}`}</p>
+                                                                                <h3 className="font-bold text-slate-800 dark:text-white text-sm">ثبت بدهی جدید به {selectedContact.firstName} {selectedContact.lastName}</h3>
+                                                                                <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || 'توضیحات ثبت نشده'}</p>
                                                                             </div>
                                                                             <div className="text-left shrink-0 flex flex-col items-center">
                                                                                 <div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none">{selectedContact.totalDebt.toLocaleString()}</div>
@@ -10096,18 +10100,30 @@
                                 className="fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
                             >
                                 <picture className="w-full h-full flex items-center justify-center">
-                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png?v=2.2.6, ./splash-landscape.jpg?v=2.2.6" />
-                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png?v=2.2.6, ./splash-portrait.jpg?v=2.2.6" />
+                                    {/* iPad Pro 12.9" Landscape (4:3 aspect ratio) */}
+                                    <source media="(min-width: 1024px) and (orientation: landscape) and (max-aspect-ratio: 16/11)" srcSet="./apple-splash-2732-2048.png" />
+                                    {/* iPad Pro 11", iPad Air Landscape (~1.43 aspect ratio) */}
+                                    <source media="(min-width: 800px) and (orientation: landscape) and (max-aspect-ratio: 16/11)" srcSet="./apple-splash-2388-1668.png" />
+                                    {/* iPad 10.2", 10.5", 9.7", iPad mini Landscape (4:3 aspect ratio) */}
+                                    <source media="(min-width: 600px) and (orientation: landscape) and (max-aspect-ratio: 16/11)" srcSet="./apple-splash-2048-1536.png" />
+                                    
+                                    {/* iPad Pro 12.9" Portrait */}
+                                    <source media="(min-width: 900px) and (orientation: portrait)" srcSet="./apple-splash-2048-2732.png" />
+                                    {/* iPad Pro 11", iPad Air Portrait */}
+                                    <source media="(min-width: 768px) and (orientation: portrait)" srcSet="./apple-splash-1668-2388.png" />
+                                    {/* iPad 10.2", 10.5", 9.7", mini Portrait */}
+                                    <source media="(min-width: 600px) and (orientation: portrait)" srcSet="./apple-splash-1536-2048.png" />
+
+                                    {/* Desktop & Mobile Widescreen Landscape (16:9 / 19.5:9) */}
+                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png" />
+                                    {/* Mobile Portrait (Standard & Pro Max) */}
+                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png" />
+
+                                    {/* Default Fallback Image */}
                                     <img 
-                                        src="./splash-portrait.png?v=2.2.6" 
+                                        src="./splash-portrait.png" 
                                         alt="Amir Finance Splash Screen" 
-                                        onError={(e) => { 
-                                            if (!e.currentTarget.dataset.retry) {
-                                                e.currentTarget.dataset.retry = '1';
-                                                e.currentTarget.src = './splash-portrait.jpg';
-                                            }
-                                        }}
-                                        className="w-full h-full object-cover object-center" 
+                                        className="w-full h-full object-cover object-center bg-[#050714]" 
                                     />
                                 </picture>
                                 <div className="absolute bottom-10 inset-x-0 flex flex-col items-center justify-center space-y-2 pointer-events-none z-10">

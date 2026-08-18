@@ -1,15 +1,29 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.1.19",
-  "buildNumber": 350,
-  "releaseDate": "2026-08-16",
+  "installedVersion": "3.1.20",
+  "buildNumber": 355,
+  "releaseDate": "2026-08-18",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.1.19",
-  "latestBuild": 350,
+  "latestVersion": "3.1.20",
+  "latestBuild": 355,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "3.1.20",
+      "buildNumber": 355,
+      "releaseDate": "2026-08-18",
+      "releaseChannel": "Stable",
+      "commitHash": "v3120b355",
+      "commitMessage": "feat: responsive splash screen optimization for all screen sizes and devices",
+      "changes": [
+        "بهینه‌سازی ریسپانسیو و دقیق اسپلش‌اسکرین برای تمام رزولوشن‌ها و دستگاه‌ها (دسکتاپ، تبلت، آیپد و موبایل)",
+        "رفع کامل زوم، کراپ و کشیدگی تصویر لودینگ اولیه در نمایشگرهای آیپد و ریسایز افقی پنجره مرورگر",
+        "پیاده‌سازی ساختار چندگانه Picture هوشمند بر اساس نسبت ابعاد و رزولوشن دقیق صفحه",
+        "اصلاح مدیاکوئری‌های startup image در iOS و ارتقای یکپارچه به نسخه 3.1.20"
+      ]
+    },
     {
       "version": "3.1.19",
       "buildNumber": 350,

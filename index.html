@@ -103,9 +103,6 @@
     <link rel="apple-touch-startup-image" href="./apple-splash-1536-2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
     <link rel="apple-touch-startup-image" href="./apple-splash-2048-1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
 
-    <!-- Android & Fallback Splash Screens -->
-    <link rel="apple-touch-startup-image" href="/splash-portrait.jpg" media="(orientation: portrait)" />
-    <link rel="apple-touch-startup-image" href="/splash-landscape.jpg" media="(orientation: landscape)" />
     <!-- Local Offline Vendor Dependencies -->
     <script src="vendor/tailwindcss.js"></script>
     <link rel="stylesheet" href="vendor/vazirmatn.css" />
@@ -665,11 +662,29 @@
 </head>
 <body class="bg-[#F4F7FC] dark:bg-slate-950 text-slate-800 dark:text-slate-100 w-full h-full flex flex-col p-0 m-0 overflow-hidden">
     <!-- Instant HTML Splash Screen overlay for zero-delay startup in Preview & PWA -->
-    <div id="app-static-splash" style="position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:99999;background:#0b101d;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity 0.5s ease, visibility 0.5s ease;margin:0;padding:0;">
+    <div id="app-static-splash" style="position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:99999;background:#050714;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity 0.5s ease, visibility 0.5s ease;margin:0;padding:0;">
         <picture style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;margin:0;padding:0;">
-            <source media="(orientation: landscape)" srcset="/splash-landscape.jpg?v=2.2.3" />
-            <source media="(orientation: portrait)" srcset="/splash-portrait.jpg?v=2.2.3" />
-            <img src="/splash-portrait.jpg?v=2.2.3" alt="Amir Finance Splash" style="width:100%;height:100%;object-fit:cover;object-position:center;background-color:#0b101d;display:block;margin:0;padding:0;" />
+            <!-- iPad Pro 12.9" Landscape (4:3 aspect ratio) -->
+            <source media="(min-width: 1024px) and (orientation: landscape) and (max-aspect-ratio: 16/11)" srcset="./apple-splash-2732-2048.png" />
+            <!-- iPad Pro 11", iPad Air Landscape (~1.43 aspect ratio) -->
+            <source media="(min-width: 800px) and (orientation: landscape) and (max-aspect-ratio: 16/11)" srcset="./apple-splash-2388-1668.png" />
+            <!-- iPad 10.2", 10.5", 9.7", iPad mini Landscape (4:3 aspect ratio) -->
+            <source media="(min-width: 600px) and (orientation: landscape) and (max-aspect-ratio: 16/11)" srcset="./apple-splash-2048-1536.png" />
+            
+            <!-- iPad Pro 12.9" Portrait -->
+            <source media="(min-width: 900px) and (orientation: portrait)" srcset="./apple-splash-2048-2732.png" />
+            <!-- iPad Pro 11", iPad Air Portrait -->
+            <source media="(min-width: 768px) and (orientation: portrait)" srcset="./apple-splash-1668-2388.png" />
+            <!-- iPad 10.2", 10.5", 9.7", mini Portrait -->
+            <source media="(min-width: 600px) and (orientation: portrait)" srcset="./apple-splash-1536-2048.png" />
+
+            <!-- Desktop & Mobile Widescreen Landscape (16:9 / 19.5:9) -->
+            <source media="(orientation: landscape)" srcset="./splash-landscape.png" />
+            <!-- Mobile Portrait (Standard & Pro Max) -->
+            <source media="(orientation: portrait)" srcset="./splash-portrait.png" />
+
+            <!-- Default Fallback Image -->
+            <img src="./splash-portrait.png" alt="Amir Finance Splash" style="width:100%;height:100%;object-fit:cover;object-position:center;background-color:#050714;display:block;margin:0;padding:0;" />
         </picture>
         <div style="position:absolute;bottom:2.5rem;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;pointer-events:none;z-index:10;">
             <div style="width:2rem;height:2rem;border:2px solid #818cf8;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div>
@@ -679,7 +694,7 @@
     <div id="root" class="w-full h-full flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=3.1.19-b352"></script>
+    <script src="app.compiled.js?v=3.1.20-b355"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>
