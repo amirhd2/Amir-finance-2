@@ -4164,13 +4164,13 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.20",
-    "buildNumber": 357,
-    "releaseDate": "2026-08-15",
+    "installedVersion": "3.2.0",
+    "buildNumber": 361,
+    "releaseDate": "2026-08-18",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.20",
-    "latestBuild": 357,
+    "latestVersion": "3.2.0",
+    "latestBuild": 361,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.1.9",
@@ -4432,8 +4432,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 357;
-    const EMBEDDED_VERSION = "3.1.20";
+    const EMBEDDED_BUILD = 361;
+    const EMBEDDED_VERSION = "3.2.0";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -8021,29 +8021,28 @@ function App() {
     switch (tabName) {
       case 'dashboard':
         return /*#__PURE__*/React.createElement("div", {
-          className: "space-y-5 animate-fade-in"
+          className: "space-y-3 animate-fade-in"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "flex justify-between items-center py-2"
-        }, /*#__PURE__*/React.createElement("button", {
-          onClick: () => showToast('اعلان جدیدی وجود ندارد'),
-          className: "w-10 h-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 relative text-slate-600 dark:text-slate-300"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "bell",
-          className: "w-5 h-5"
-        }), /*#__PURE__*/React.createElement("span", {
-          className: "absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"
-        })), /*#__PURE__*/React.createElement("div", {
-          className: "text-center"
-        }, /*#__PURE__*/React.createElement("h1", {
-          className: "text-base font-bold text-slate-900 dark:text-white"
-        }, "Amir Finance"), /*#__PURE__*/React.createElement("p", {
-          className: "text-xs text-slate-500 dark:text-slate-400"
+          className: "flex justify-between items-center pt-0 pb-0"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex flex-col items-start text-right"
+        }, /*#__PURE__*/React.createElement("p", {
+          className: "text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight"
         }, "\u0633\u0644\u0627\u0645 \u0648\u0642\u062A \u0628\u0647 \u062E\u06CC\u0631 \uD83D\uDC4B"), /*#__PURE__*/React.createElement("p", {
-          className: "text-[11px] text-slate-400 font-medium mt-0.5"
-        }, "\u0627\u0645\u0631\u0648\u0632: ", getDeviceJalaliDate().day, " ", getDeviceJalaliDate().month, " ", getDeviceJalaliDate().year)), /*#__PURE__*/React.createElement(BrandAvatar, {
-          className: "w-[60px] h-[60px] rounded-2xl object-cover shadow-sm",
+          className: "text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right"
+        }, "\u0627\u0645\u0631\u0648\u0632: ", getDeviceJalaliDate().day, " ", getDeviceJalaliDate().month, " ", getDeviceJalaliDate().year)), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center gap-2.5",
+          dir: "ltr"
+        }, /*#__PURE__*/React.createElement(BrandAvatar, {
+          className: "w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] rounded-2xl object-cover shadow-sm shrink-0",
           logoUrl: "favicon-96x96.png"
-        })), (() => {
+        }), /*#__PURE__*/React.createElement("div", {
+          className: "flex flex-col items-start text-left"
+        }, /*#__PURE__*/React.createElement("h1", {
+          className: "text-[15px] sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight font-sans tracking-wide"
+        }, "Amir Finance"), /*#__PURE__*/React.createElement("span", {
+          className: "text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
+        }, "\u0646\u0633\u062E\u0647 ", versionData.installedVersion || '3.2.0')))), (() => {
           const loanReminders = loans.map(loan => {
             const nextDueInfo = getLoanNextDueInfo(loan, transactions);
             if (nextDueInfo.isCompleted) return null;
@@ -10516,7 +10515,7 @@ function App() {
     onBack
   }) => renderTab('all-transactions', onBack))) : /*#__PURE__*/React.createElement(PullToRefresh, {
     onRefresh: () => handleRefreshData(currentTab),
-    className: "flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 h-full overflow-y-auto overflow-x-hidden overscroll-x-none"
+    className: "flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.15rem)] pb-20 h-full overflow-y-auto overflow-x-hidden overscroll-x-none"
   }, currentTab === 'dashboard' && renderTab('dashboard'), currentTab === 'accounts' && renderTab('accounts'), currentTab === 'contacts' && renderTab('contacts'), currentTab === 'settings' && renderTab('settings'))))), /*#__PURE__*/React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/React.createElement(motion.div, {
     key: "fab-backdrop",
     initial: {

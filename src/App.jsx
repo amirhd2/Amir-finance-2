@@ -3528,13 +3528,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.1.20",
-    "buildNumber": 357,
-    "releaseDate": "2026-08-15",
+    "installedVersion": "3.2.0",
+    "buildNumber": 361,
+    "releaseDate": "2026-08-18",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.1.20",
-    "latestBuild": 357,
+    "latestVersion": "3.2.0",
+    "latestBuild": 361,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -3943,8 +3943,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 357;
-                const EMBEDDED_VERSION = "3.1.20";
+                const EMBEDDED_BUILD = 361;
+                const EMBEDDED_VERSION = "3.2.0";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -7630,22 +7630,30 @@
                 switch (tabName) {
                     case 'dashboard':
                         return (
-                            <div className="space-y-5 animate-fade-in">
-                                <div className="flex justify-between items-center py-2">
-                                    <button onClick={() => showToast('اعلان جدیدی وجود ندارد')} className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 relative text-slate-600 dark:text-slate-300">
-                                        <Icon name="bell" className="w-5 h-5" />
-                                        <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                                    </button>
-
-                                    <div className="text-center">
-                                        <h1 className="text-base font-bold text-slate-900 dark:text-white">Amir Finance</h1>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">سلام وقت به خیر 👋</p>
-                                        <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                            <div className="space-y-3 animate-fade-in">
+                                <div className="flex justify-between items-center pt-0 pb-0">
+                                    {/* Right Side: Welcome message & Today's Date (both right-aligned) */}
+                                    <div className="flex flex-col items-start text-right">
+                                        <p className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight">
+                                            سلام وقت به خیر 👋
+                                        </p>
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right">
                                             امروز: {getDeviceJalaliDate().day} {getDeviceJalaliDate().month} {getDeviceJalaliDate().year}
                                         </p>
                                     </div>
 
-                                    <BrandAvatar className="w-[60px] h-[60px] rounded-2xl object-cover shadow-sm" logoUrl="favicon-96x96.png" />
+                                    {/* Left Side: App Icon on far left + Amir Finance & Version immediately next to it */}
+                                    <div className="flex items-center gap-2.5" dir="ltr">
+                                        <BrandAvatar className="w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] rounded-2xl object-cover shadow-sm shrink-0" logoUrl="favicon-96x96.png" />
+                                        <div className="flex flex-col items-start text-left">
+                                            <h1 className="text-[15px] sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight font-sans tracking-wide">
+                                                Amir Finance
+                                            </h1>
+                                            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+                                                نسخه {versionData.installedVersion || '3.2.0'}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Reminders Box */}
@@ -10210,7 +10218,7 @@
                                         )}
                                     </div>
                                 ) : (
-                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 h-full overflow-y-auto overflow-x-hidden overscroll-x-none">
+                                    <PullToRefresh onRefresh={() => handleRefreshData(currentTab)} className="flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.15rem)] pb-20 h-full overflow-y-auto overflow-x-hidden overscroll-x-none">
                                         {currentTab === 'dashboard' && renderTab('dashboard')}
                                         {currentTab === 'accounts' && renderTab('accounts')}
                                         {currentTab === 'contacts' && renderTab('contacts')}

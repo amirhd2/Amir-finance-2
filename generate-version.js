@@ -65,12 +65,13 @@ if (fs.existsSync(versionPath)) {
           releaseDate: vData.releaseDate,
           releaseChannel: "Stable",
           commitHash: `v${pkgVersion.replace(/\./g, '')}b${vData.buildNumber}`,
-          commitMessage: "feat: responsive splash screen optimization for all screen sizes and devices",
+          commitMessage: "feat: redesign dashboard header layout and update to version 3.2.0",
           changes: [
-            "بهینه‌سازی ریسپانسیو و دقیق اسپلش‌اسکرین برای تمام رزولوشن‌ها و دستگاه‌ها (دسکتاپ، تبلت، آیپد و موبایل)",
-            "رفع کامل زوم، کراپ و کشیدگی تصویر لودینگ اولیه در نمایشگرهای آیپد و ریسایز افقی پنجره مرورگر",
-            "پیاده‌سازی ساختار چندگانه Picture هوشمند بر اساس نسبت ابعاد و رزولوشن دقیق صفحه",
-            "اصلاح مدیاکوئری‌های startup image در iOS و ارتقای یکپارچه به نسخه 3.1.20"
+            "بازطراحی مدرن و خلوت هدر داشبورد: چینش برند Amir Finance و نسخه در سمت چپ، خوش‌آمدگویی و تاریخ در سمت راست",
+            "کاهش و بهینه‌سازی فاصله استاتوس بار با هدر صفحه داشبورد",
+            "حذف آیکون زنگوله اعلان‌ها جهت ساده‌سازی و زیبایی بصری هدر",
+            "تراز وسط تاریخ نسبت به متن خوش‌آمدگویی در سمت راست هدر",
+            "ارتقا به نسخه 3.2.0"
           ]
         },
         ...otherHistory

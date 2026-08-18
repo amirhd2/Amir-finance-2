@@ -1,21 +1,36 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.1.20",
-  "buildNumber": 357,
+  "installedVersion": "3.2.0",
+  "buildNumber": 361,
   "releaseDate": "2026-08-18",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.1.20",
-  "latestBuild": 357,
+  "latestVersion": "3.2.0",
+  "latestBuild": 361,
   "isUpdateAvailable": false,
   "history": [
     {
-      "version": "3.1.20",
-      "buildNumber": 357,
+      "version": "3.2.0",
+      "buildNumber": 361,
       "releaseDate": "2026-08-18",
       "releaseChannel": "Stable",
-      "commitHash": "v3120b357",
+      "commitHash": "v320b361",
+      "commitMessage": "feat: redesign dashboard header layout and update to version 3.2.0",
+      "changes": [
+        "بازطراحی مدرن و خلوت هدر داشبورد: چینش برند Amir Finance و نسخه در سمت چپ، خوش‌آمدگویی و تاریخ در سمت راست",
+        "کاهش و بهینه‌سازی فاصله استاتوس بار با هدر صفحه داشبورد",
+        "حذف آیکون زنگوله اعلان‌ها جهت ساده‌سازی و زیبایی بصری هدر",
+        "تراز وسط تاریخ نسبت به متن خوش‌آمدگویی در سمت راست هدر",
+        "ارتقا به نسخه 3.2.0"
+      ]
+    },
+    {
+      "version": "3.1.20",
+      "buildNumber": 358,
+      "releaseDate": "2026-08-18",
+      "releaseChannel": "Stable",
+      "commitHash": "v3120b358",
       "commitMessage": "feat: responsive splash screen optimization for all screen sizes and devices",
       "changes": [
         "بهینه‌سازی ریسپانسیو و دقیق اسپلش‌اسکرین برای تمام رزولوشن‌ها و دستگاه‌ها (دسکتاپ، تبلت، آیپد و موبایل)",
