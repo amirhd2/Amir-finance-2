@@ -3529,12 +3529,12 @@
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.1.20",
-    "buildNumber": 355,
+    "buildNumber": 357,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.1.20",
-    "latestBuild": 355,
+    "latestBuild": 357,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -3943,7 +3943,7 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 355;
+                const EMBEDDED_BUILD = 357;
                 const EMBEDDED_VERSION = "3.1.20";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
@@ -10100,28 +10100,33 @@
                                 className="fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
                             >
                                 <picture className="w-full h-full flex items-center justify-center">
-                                    {/* iPad Pro 12.9" Landscape (4:3 aspect ratio) */}
-                                    <source media="(min-width: 1024px) and (orientation: landscape) and (max-aspect-ratio: 16/11)" srcSet="./apple-splash-2732-2048.png" />
-                                    {/* iPad Pro 11", iPad Air Landscape (~1.43 aspect ratio) */}
-                                    <source media="(min-width: 800px) and (orientation: landscape) and (max-aspect-ratio: 16/11)" srcSet="./apple-splash-2388-1668.png" />
-                                    {/* iPad 10.2", 10.5", 9.7", iPad mini Landscape (4:3 aspect ratio) */}
-                                    <source media="(min-width: 600px) and (orientation: landscape) and (max-aspect-ratio: 16/11)" srcSet="./apple-splash-2048-1536.png" />
-                                    
-                                    {/* iPad Pro 12.9" Portrait */}
-                                    <source media="(min-width: 900px) and (orientation: portrait)" srcSet="./apple-splash-2048-2732.png" />
-                                    {/* iPad Pro 11", iPad Air Portrait */}
-                                    <source media="(min-width: 768px) and (orientation: portrait)" srcSet="./apple-splash-1668-2388.png" />
-                                    {/* iPad 10.2", 10.5", 9.7", mini Portrait */}
-                                    <source media="(min-width: 600px) and (orientation: portrait)" srcSet="./apple-splash-1536-2048.png" />
+                                    {/* 1. Ultra-wide Landscape (Modern phones in landscape, 20:9, 19.5:9, ratio >= 1.95) */}
+                                    <source media="(orientation: landscape) and (min-aspect-ratio: 195/100)" srcSet="./apple-splash-2796-1290.png" />
 
-                                    {/* Desktop & Mobile Widescreen Landscape (16:9 / 19.5:9) */}
-                                    <source media="(orientation: landscape)" srcSet="./splash-landscape.png" />
-                                    {/* Mobile Portrait (Standard & Pro Max) */}
-                                    <source media="(orientation: portrait)" srcSet="./splash-portrait.png" />
+                                    {/* 2. Standard 16:9 & 16:10 Landscape (Desktops, laptops, monitors, ratio 1.50 to 1.95) */}
+                                    <source media="(orientation: landscape) and (min-aspect-ratio: 150/100) and (max-aspect-ratio: 195/100)" srcSet="./apple-splash-2208-1242.png" />
 
-                                    {/* Default Fallback Image */}
+                                    {/* 3. iPad Pro 11" & iPad Air 10.9" Landscape (ratio ~1.432, range 1.37 to 1.50) */}
+                                    <source media="(orientation: landscape) and (min-aspect-ratio: 137/100) and (max-aspect-ratio: 150/100)" srcSet="./apple-splash-2388-1668.png" />
+
+                                    {/* 4. iPad Pro 12.9", 10.2", 9.7", mini Landscape (4:3 ratio ~1.333, range < 1.37) */}
+                                    <source media="(orientation: landscape) and (max-aspect-ratio: 137/100)" srcSet="./apple-splash-2732-2048.png" />
+
+                                    {/* 5. iPad Pro 12.9", 10.2", 9.7", mini Portrait (4:3 ratio ~0.750, range >= 0.725) */}
+                                    <source media="(orientation: portrait) and (min-aspect-ratio: 725/1000)" srcSet="./apple-splash-2048-2732.png" />
+
+                                    {/* 6. iPad Pro 11" & iPad Air 10.9" Portrait (ratio ~0.6985, range 0.62 to 0.725) */}
+                                    <source media="(orientation: portrait) and (min-aspect-ratio: 62/100) and (max-aspect-ratio: 725/1000)" srcSet="./apple-splash-1668-2388.png" />
+
+                                    {/* 7. 16:9 Mobile Portrait (ratio ~0.5625, range 0.52 to 0.62) */}
+                                    <source media="(orientation: portrait) and (min-aspect-ratio: 52/100) and (max-aspect-ratio: 62/100)" srcSet="./apple-splash-1242-2208.png" />
+
+                                    {/* 8. Ultra-tall Smartphone Portrait (19.5:9 / 20:9, ratio < 0.52) */}
+                                    <source media="(orientation: portrait) and (max-aspect-ratio: 52/100)" srcSet="./apple-splash-1290-2796.png" />
+
+                                    {/* Universal Fallback Image */}
                                     <img 
-                                        src="./splash-portrait.png" 
+                                        src="./apple-splash-1290-2796.png" 
                                         alt="Amir Finance Splash Screen" 
                                         className="w-full h-full object-cover object-center bg-[#050714]" 
                                     />

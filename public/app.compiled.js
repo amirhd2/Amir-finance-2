@@ -4165,12 +4165,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.1.20",
-    "buildNumber": 355,
+    "buildNumber": 357,
     "releaseDate": "2026-08-15",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.1.20",
-    "latestBuild": 355,
+    "latestBuild": 357,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.1.9",
@@ -4432,7 +4432,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 355;
+    const EMBEDDED_BUILD = 357;
     const EMBEDDED_VERSION = "3.1.20";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -10431,31 +10431,31 @@ function App() {
   }, /*#__PURE__*/React.createElement("picture", {
     className: "w-full h-full flex items-center justify-center"
   }, /*#__PURE__*/React.createElement("source", {
-    media: "(min-width: 1024px) and (orientation: landscape) and (max-aspect-ratio: 16/11)",
-    srcSet: "./apple-splash-2732-2048.png"
+    media: "(orientation: landscape) and (min-aspect-ratio: 195/100)",
+    srcSet: "./apple-splash-2796-1290.png"
   }), /*#__PURE__*/React.createElement("source", {
-    media: "(min-width: 800px) and (orientation: landscape) and (max-aspect-ratio: 16/11)",
+    media: "(orientation: landscape) and (min-aspect-ratio: 150/100) and (max-aspect-ratio: 195/100)",
+    srcSet: "./apple-splash-2208-1242.png"
+  }), /*#__PURE__*/React.createElement("source", {
+    media: "(orientation: landscape) and (min-aspect-ratio: 137/100) and (max-aspect-ratio: 150/100)",
     srcSet: "./apple-splash-2388-1668.png"
   }), /*#__PURE__*/React.createElement("source", {
-    media: "(min-width: 600px) and (orientation: landscape) and (max-aspect-ratio: 16/11)",
-    srcSet: "./apple-splash-2048-1536.png"
+    media: "(orientation: landscape) and (max-aspect-ratio: 137/100)",
+    srcSet: "./apple-splash-2732-2048.png"
   }), /*#__PURE__*/React.createElement("source", {
-    media: "(min-width: 900px) and (orientation: portrait)",
+    media: "(orientation: portrait) and (min-aspect-ratio: 725/1000)",
     srcSet: "./apple-splash-2048-2732.png"
   }), /*#__PURE__*/React.createElement("source", {
-    media: "(min-width: 768px) and (orientation: portrait)",
+    media: "(orientation: portrait) and (min-aspect-ratio: 62/100) and (max-aspect-ratio: 725/1000)",
     srcSet: "./apple-splash-1668-2388.png"
   }), /*#__PURE__*/React.createElement("source", {
-    media: "(min-width: 600px) and (orientation: portrait)",
-    srcSet: "./apple-splash-1536-2048.png"
+    media: "(orientation: portrait) and (min-aspect-ratio: 52/100) and (max-aspect-ratio: 62/100)",
+    srcSet: "./apple-splash-1242-2208.png"
   }), /*#__PURE__*/React.createElement("source", {
-    media: "(orientation: landscape)",
-    srcSet: "./splash-landscape.png"
-  }), /*#__PURE__*/React.createElement("source", {
-    media: "(orientation: portrait)",
-    srcSet: "./splash-portrait.png"
+    media: "(orientation: portrait) and (max-aspect-ratio: 52/100)",
+    srcSet: "./apple-splash-1290-2796.png"
   }), /*#__PURE__*/React.createElement("img", {
-    src: "./splash-portrait.png",
+    src: "./apple-splash-1290-2796.png",
     alt: "Amir Finance Splash Screen",
     className: "w-full h-full object-cover object-center bg-[#050714]"
   })), /*#__PURE__*/React.createElement("div", {
