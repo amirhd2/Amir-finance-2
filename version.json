@@ -1,21 +1,35 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.2.0",
-  "buildNumber": 361,
-  "releaseDate": "2026-08-18",
+  "installedVersion": "3.2.1",
+  "buildNumber": 365,
+  "releaseDate": "2026-08-19",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.2.0",
-  "latestBuild": 361,
+  "latestVersion": "3.2.1",
+  "latestBuild": 365,
   "isUpdateAvailable": false,
   "history": [
     {
-      "version": "3.2.0",
-      "buildNumber": 361,
-      "releaseDate": "2026-08-18",
+      "version": "3.2.1",
+      "buildNumber": 365,
+      "releaseDate": "2026-08-19",
       "releaseChannel": "Stable",
-      "commitHash": "v320b361",
+      "commitHash": "v321b365",
+      "commitMessage": "fix: resolve missing backup logs and bell indicator on dashboard transaction deletion and release v3.2.1",
+      "changes": [
+        "رفع کامل مشکل عدم ثبت لاگ در نشانگر زنگوله هنگام حذف تراکنش‌ها از صفحه داشبورد و بخش آخرین تراکنش‌ها",
+        "پشتیبانی جامع و دقیق از حذف کلیه انواع تراکنش‌ها شامل اقساط، بازپرداخت‌ها، بدهی‌ها، طلب‌ها و تراکنش‌های عمومی",
+        "به‌روزرسانی خودکار و بلادرنگ مانده وام‌ها و وضعیت مخاطبین پس از حذف تراکنش‌ها",
+        "انتشار رسمی نسخه 3.2.1"
+      ]
+    },
+    {
+      "version": "3.2.0",
+      "buildNumber": 363,
+      "releaseDate": "2026-08-19",
+      "releaseChannel": "Stable",
+      "commitHash": "v320b363",
       "commitMessage": "feat: redesign dashboard header layout and update to version 3.2.0",
       "changes": [
         "بازطراحی مدرن و خلوت هدر داشبورد: چینش برند Amir Finance و نسخه در سمت چپ، خوش‌آمدگویی و تاریخ در سمت راست",

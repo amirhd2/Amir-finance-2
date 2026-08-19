@@ -65,13 +65,12 @@ if (fs.existsSync(versionPath)) {
           releaseDate: vData.releaseDate,
           releaseChannel: "Stable",
           commitHash: `v${pkgVersion.replace(/\./g, '')}b${vData.buildNumber}`,
-          commitMessage: "feat: redesign dashboard header layout and update to version 3.2.0",
+          commitMessage: "fix: resolve missing backup logs and bell indicator on dashboard transaction deletion and release v3.2.1",
           changes: [
-            "بازطراحی مدرن و خلوت هدر داشبورد: چینش برند Amir Finance و نسخه در سمت چپ، خوش‌آمدگویی و تاریخ در سمت راست",
-            "کاهش و بهینه‌سازی فاصله استاتوس بار با هدر صفحه داشبورد",
-            "حذف آیکون زنگوله اعلان‌ها جهت ساده‌سازی و زیبایی بصری هدر",
-            "تراز وسط تاریخ نسبت به متن خوش‌آمدگویی در سمت راست هدر",
-            "ارتقا به نسخه 3.2.0"
+            "رفع کامل مشکل عدم ثبت لاگ در نشانگر زنگوله هنگام حذف تراکنش‌ها از صفحه داشبورد و بخش آخرین تراکنش‌ها",
+            "پشتیبانی جامع و دقیق از حذف کلیه انواع تراکنش‌ها شامل اقساط، بازپرداخت‌ها، بدهی‌ها، طلب‌ها و تراکنش‌های عمومی",
+            "به‌روزرسانی خودکار و بلادرنگ مانده وام‌ها و وضعیت مخاطبین پس از حذف تراکنش‌ها",
+            "انتشار رسمی نسخه 3.2.1"
           ]
         },
         ...otherHistory

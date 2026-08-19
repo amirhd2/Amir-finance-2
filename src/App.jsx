@@ -3528,15 +3528,44 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.0",
-    "buildNumber": 361,
-    "releaseDate": "2026-08-18",
+    "installedVersion": "3.2.1",
+    "buildNumber": 365,
+    "releaseDate": "2026-08-19",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.0",
-    "latestBuild": 361,
+    "latestVersion": "3.2.1",
+    "latestBuild": 365,
     "isUpdateAvailable": false,
     "history": [
+        {
+            "version": "3.2.1",
+            "buildNumber": 365,
+            "releaseDate": "2026-08-19",
+            "releaseChannel": "Stable",
+            "commitHash": "v321b365",
+            "commitMessage": "fix: resolve missing backup logs and bell indicator on dashboard transaction deletion and release v3.2.1",
+            "changes": [
+                "رفع کامل مشکل عدم ثبت لاگ در نشانگر زنگوله هنگام حذف تراکنش‌ها از صفحه داشبورد و بخش آخرین تراکنش‌ها",
+                "پشتیبانی جامع و دقیق از حذف کلیه انواع تراکنش‌ها شامل اقساط، بازپرداخت‌ها، بدهی‌ها، طلب‌ها و تراکنش‌های عمومی",
+                "به‌روزرسانی خودکار و بلادرنگ مانده وام‌ها و وضعیت مخاطبین پس از حذف تراکنش‌ها",
+                "انتشار رسمی نسخه 3.2.1"
+            ]
+        },
+        {
+            "version": "3.2.0",
+            "buildNumber": 363,
+            "releaseDate": "2026-08-19",
+            "releaseChannel": "Stable",
+            "commitHash": "v320b363",
+            "commitMessage": "feat: redesign dashboard header layout and update to version 3.2.0",
+            "changes": [
+                "بازطراحی مدرن و خلوت هدر داشبورد: چینش برند Amir Finance و نسخه در سمت چپ، خوش‌آمدگویی و تاریخ در سمت راست",
+                "کاهش و بهینه‌سازی فاصله استاتوس بار با هدر صفحه داشبورد",
+                "حذف آیکون زنگوله اعلان‌ها جهت ساده‌سازی و زیبایی بصری هدر",
+                "تراز وسط تاریخ نسبت به متن خوش‌آمدگویی در سمت راست هدر",
+                "ارتقا به نسخه 3.2.0"
+            ]
+        },
         {
             "version": "3.1.9",
             "buildNumber": 328,
@@ -3943,8 +3972,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 361;
-                const EMBEDDED_VERSION = "3.2.0";
+                const EMBEDDED_BUILD = 365;
+                const EMBEDDED_VERSION = "3.2.1";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4278,6 +4307,7 @@
 
             const handleRefreshData = async (tabName) => {
                 try {
+                    isRestoringOrClearingRef.current = true;
                     const savedLoans = loadSavedArray('amir_fin_loans_v3', ['amir_fin_loans_v2', 'amir_fin_loans'], loans);
                     setLoans(savedLoans);
 
@@ -4299,8 +4329,12 @@
                         const updatedLoan = savedLoans.find(l => l.id === selectedLoan.id);
                         if (updatedLoan) setSelectedLoan(updatedLoan);
                     }
+                    setTimeout(() => {
+                        isRestoringOrClearingRef.current = false;
+                    }, 400);
                 } catch (e) {
                     console.error('Refresh error:', e);
+                    isRestoringOrClearingRef.current = false;
                 }
             };
 
@@ -4326,6 +4360,291 @@
             const [transactions, setTransactions] = useState(() => 
                 loadSavedArray('amir_fin_txs_v3', ['amir_fin_txs_v2', 'amir_fin_tx'], initialTransactions)
             );
+
+            // Backup Status & Unsaved Changes Tracking State
+            const initialBackupStatus = (() => {
+                try {
+                    const saved = localStorage.getItem('amir_fin_backup_status_v1');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (parsed && typeof parsed === 'object') {
+                            const catCounts = (parsed.categoryCounts && typeof parsed.categoryCounts === 'object') 
+                                ? parsed.categoryCounts 
+                                : {};
+                            const total = Object.values(catCounts).reduce((a, b) => a + (Number(b) || 0), 0) || Number(parsed.unbackedChangesCount) || 0;
+                            return {
+                                unbackedChangesCount: Math.max(0, total),
+                                lastBackupTimestamp: parsed.lastBackupTimestamp || null,
+                                lastBackupFormatted: parsed.lastBackupFormatted || null,
+                                categoryCounts: catCounts
+                            };
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error loading backup status:', e);
+                }
+                return {
+                    unbackedChangesCount: 0,
+                    lastBackupTimestamp: null,
+                    lastBackupFormatted: null,
+                    categoryCounts: {}
+                };
+            })();
+
+            const [backupStatus, setBackupStatus] = useState(initialBackupStatus);
+            const [showBackupPopover, setShowBackupPopover] = useState(false);
+            const [isBackingUp, setIsBackingUp] = useState(false);
+            const [backupError, setBackupError] = useState(null);
+            const [isBellWiggling, setIsBellWiggling] = useState(false);
+
+            const isInitialMountRef = useRef(true);
+            const isRestoringOrClearingRef = useRef(false);
+            
+            // Entity snapshot maps for precise single-log mutation diffing
+            const prevContactsMapRef = useRef(new Map());
+            const prevLoansMapRef = useRef(new Map());
+            const prevTxsMapRef = useRef(new Map());
+            const prevPeriodsSetRef = useRef(new Set());
+
+            const formatBackupDateTime = (date = new Date()) => {
+                try {
+                    const now = new Date();
+                    const isToday = date.toDateString() === now.toDateString();
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    const timeStr = `${hours}:${minutes}`;
+                    if (isToday) {
+                        return `امروز، ${timeStr}`;
+                    }
+                    const jalali = getDeviceJalaliDate(date);
+                    return `${jalali.day} ${jalali.month}، ${timeStr}`;
+                } catch (e) {
+                    return 'امروز';
+                }
+            };
+
+            const markBackupAsSuccessful = () => {
+                const formatted = formatBackupDateTime(new Date());
+                const newStatus = {
+                    unbackedChangesCount: 0,
+                    lastBackupTimestamp: Date.now(),
+                    lastBackupFormatted: formatted,
+                    categoryCounts: {}
+                };
+                setBackupStatus(newStatus);
+                try {
+                    localStorage.setItem('amir_fin_backup_status_v1', JSON.stringify(newStatus));
+                } catch (e) {}
+            };
+
+            // Periodic gentle wiggle animation every 7.5 seconds when unbacked changes exist
+            useEffect(() => {
+                if (!backupStatus || backupStatus.unbackedChangesCount === 0) {
+                    setIsBellWiggling(false);
+                    return;
+                }
+
+                const interval = setInterval(() => {
+                    setIsBellWiggling(true);
+                    setTimeout(() => {
+                        setIsBellWiggling(false);
+                    }, 700);
+                }, 7500);
+
+                return () => clearInterval(interval);
+            }, [backupStatus?.unbackedChangesCount]);
+
+            // Precise entity-level semantic mutation tracker
+            useEffect(() => {
+                if (isInitialMountRef.current) {
+                    isInitialMountRef.current = false;
+                    prevContactsMapRef.current = new Map(contacts.map(c => [c.id, c]));
+                    prevLoansMapRef.current = new Map(loans.map(l => [l.id, l]));
+                    prevTxsMapRef.current = new Map(transactions.map(t => [t.id, t]));
+                    prevPeriodsSetRef.current = new Set(completedPeriods.map(p => (p.id || JSON.stringify(p))));
+                    return;
+                }
+
+                if (isRestoringOrClearingRef.current) {
+                    prevContactsMapRef.current = new Map(contacts.map(c => [c.id, c]));
+                    prevLoansMapRef.current = new Map(loans.map(l => [l.id, l]));
+                    prevTxsMapRef.current = new Map(transactions.map(t => [t.id, t]));
+                    prevPeriodsSetRef.current = new Set(completedPeriods.map(p => (p.id || JSON.stringify(p))));
+                    return;
+                }
+
+                const batchCategoryCounts = {};
+                const addCat = (label, count = 1) => {
+                    if (!label || count <= 0) return;
+                    batchCategoryCounts[label] = (batchCategoryCounts[label] || 0) + count;
+                };
+
+                const currentTxsMap = new Map(transactions.map(t => [t.id, t]));
+                const currentLoansMap = new Map(loans.map(l => [l.id, l]));
+                const currentContactsMap = new Map(contacts.map(c => [c.id, c]));
+                const currentPeriodsSet = new Set(completedPeriods.map(p => (p.id || JSON.stringify(p))));
+
+                // 1. Transactions Diffing
+                const addedTxs = transactions.filter(t => !prevTxsMapRef.current.has(t.id));
+                const deletedTxs = [];
+                for (const [id, t] of prevTxsMapRef.current.entries()) {
+                    if (!currentTxsMap.has(id)) deletedTxs.push(t);
+                }
+                const editedTxs = transactions.filter(t => {
+                    if (!prevTxsMapRef.current.has(t.id)) return false;
+                    const prevT = prevTxsMapRef.current.get(t.id);
+                    return prevT.amount !== t.amount || prevT.date !== t.date || prevT.note !== t.note || prevT.title !== t.title;
+                });
+
+                addedTxs.forEach(t => {
+                    const type = t.type || '';
+                    if (type === 'loan_installment' || type === 'installment' || t.installmentNumber || (t.loanId && !type.includes('debt') && !type.includes('demand'))) {
+                        addCat('ثبت قسط جدید');
+                    } else if (type === 'debt') {
+                        addCat('ثبت بدهی جدید');
+                    } else if (type === 'demand') {
+                        addCat('ثبت طلب جدید');
+                    } else if (type === 'debt_repayment' || type === 'demand_repayment' || type === 'repayment') {
+                        addCat('ثبت بازپرداخت جدید');
+                    } else {
+                        addCat('ثبت تراکنش جدید');
+                    }
+                });
+
+                deletedTxs.forEach(t => {
+                    const type = t.type || '';
+                    if (type === 'loan_installment' || type === 'installment' || t.installmentNumber || (t.loanId && !type.includes('debt') && !type.includes('demand'))) {
+                        addCat('حذف قسط');
+                    } else if (type === 'debt') {
+                        addCat('حذف بدهی');
+                    } else if (type === 'demand') {
+                        addCat('حذف طلب');
+                    } else if (type === 'debt_repayment' || type === 'demand_repayment' || type === 'repayment') {
+                        addCat('حذف بازپرداخت');
+                    } else {
+                        addCat('حذف تراکنش');
+                    }
+                });
+
+                editedTxs.forEach(t => {
+                    const type = t.type || '';
+                    if (type === 'loan_installment' || type === 'installment' || t.installmentNumber || (t.loanId && !type.includes('debt') && !type.includes('demand'))) {
+                        addCat('ویرایش قسط');
+                    } else if (type === 'debt') {
+                        addCat('ویرایش بدهی');
+                    } else if (type === 'demand') {
+                        addCat('ویرایش طلب');
+                    } else if (type === 'debt_repayment' || type === 'demand_repayment' || type === 'repayment') {
+                        addCat('ویرایش بازپرداخت');
+                    } else {
+                        addCat('ویرایش تراکنش');
+                    }
+                });
+
+                // 2. Loans Diffing
+                const addedLoans = loans.filter(l => !prevLoansMapRef.current.has(l.id));
+                const deletedLoans = [];
+                for (const [id, l] of prevLoansMapRef.current.entries()) {
+                    if (!currentLoansMap.has(id)) deletedLoans.push(l);
+                }
+                const editedLoans = loans.filter(l => {
+                    if (!prevLoansMapRef.current.has(l.id)) return false;
+                    const prevL = prevLoansMapRef.current.get(l.id);
+                    // Check if non-derivative fields changed (avoid double counting when only paidInstallments/status updated via tx)
+                    const titleChanged = prevL.title !== l.title;
+                    const amountChanged = prevL.totalAmount !== l.totalAmount || prevL.amount !== l.amount;
+                    const totalInstChanged = prevL.totalInstallments !== l.totalInstallments;
+                    const contactChanged = prevL.contactId !== l.contactId;
+                    const noteChanged = prevL.note !== l.note;
+                    return titleChanged || amountChanged || totalInstChanged || contactChanged || noteChanged;
+                });
+
+                addedLoans.forEach(l => {
+                    const type = l.type || '';
+                    if (type === 'debt') {
+                        addCat('ثبت بدهی جدید');
+                    } else if (type === 'demand') {
+                        addCat('ثبت طلب جدید');
+                    } else {
+                        addCat('ثبت وام جدید');
+                    }
+                });
+
+                deletedLoans.forEach(l => {
+                    const type = l.type || '';
+                    if (type === 'debt') {
+                        addCat('حذف بدهی');
+                    } else if (type === 'demand') {
+                        addCat('حذف طلب');
+                    } else {
+                        addCat('حذف وام');
+                    }
+                });
+
+                editedLoans.forEach(l => {
+                    const type = l.type || '';
+                    if (type === 'debt') {
+                        addCat('ویرایش بدهی');
+                    } else if (type === 'demand') {
+                        addCat('ویرایش طلب');
+                    } else {
+                        addCat('ویرایش وام');
+                    }
+                });
+
+                // 3. Contacts Diffing
+                const addedContacts = contacts.filter(c => !prevContactsMapRef.current.has(c.id));
+                const deletedContacts = [];
+                for (const [id, c] of prevContactsMapRef.current.entries()) {
+                    if (!currentContactsMap.has(id)) deletedContacts.push(c);
+                }
+                const editedContacts = contacts.filter(c => {
+                    if (!prevContactsMapRef.current.has(c.id)) return false;
+                    const prevC = prevContactsMapRef.current.get(c.id);
+                    return prevC.name !== c.name || prevC.phone !== c.phone || prevC.cardNumber !== c.cardNumber || prevC.note !== c.note;
+                });
+
+                addedContacts.forEach(() => addCat('ثبت مخاطب جدید'));
+                deletedContacts.forEach(() => addCat('حذف مخاطب'));
+                editedContacts.forEach(() => addCat('ویرایش مخاطب'));
+
+                // 4. Completed Periods Diffing
+                let addedPeriodsCount = 0;
+                for (const key of currentPeriodsSet) {
+                    if (!prevPeriodsSetRef.current.has(key)) addedPeriodsCount++;
+                }
+                if (addedPeriodsCount > 0) {
+                    addCat('تسویه و بایگانی دوره', addedPeriodsCount);
+                }
+
+                // Update snapshot refs
+                prevContactsMapRef.current = currentContactsMap;
+                prevLoansMapRef.current = currentLoansMap;
+                prevTxsMapRef.current = currentTxsMap;
+                prevPeriodsSetRef.current = currentPeriodsSet;
+
+                // Update aggregated backup state
+                const batchTotal = Object.values(batchCategoryCounts).reduce((a, b) => a + b, 0);
+                if (batchTotal > 0) {
+                    setBackupStatus(prevStatus => {
+                        const existingCatCounts = prevStatus?.categoryCounts || {};
+                        const mergedCatCounts = { ...existingCatCounts };
+                        for (const [key, count] of Object.entries(batchCategoryCounts)) {
+                            mergedCatCounts[key] = (mergedCatCounts[key] || 0) + count;
+                        }
+                        const totalUnbacked = Object.values(mergedCatCounts).reduce((a, b) => a + (Number(b) || 0), 0);
+                        const updated = {
+                            ...prevStatus,
+                            unbackedChangesCount: totalUnbacked,
+                            categoryCounts: mergedCatCounts
+                        };
+                        try {
+                            localStorage.setItem('amir_fin_backup_status_v1', JSON.stringify(updated));
+                        } catch (e) {}
+                        return updated;
+                    });
+                }
+            }, [contacts, loans, transactions, completedPeriods]);
 
             const [accountsSearchQuery, setAccountsSearchQuery] = useState('');
             const [showCompletedLoans, setShowCompletedLoans] = useState(() => {
@@ -4742,9 +5061,14 @@
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    
+                    markBackupAsSuccessful();
                     showToast('فایل پشتیبان با موفقیت دانلود شد');
+                    return true;
                 } catch (e) {
                     showToast('خطا در ایجاد فایل پشتیبان');
+                    return false;
                 }
             };
 
@@ -4769,15 +5093,21 @@
                             isDestructive: false,
                             onConfirm: () => {
                                 try {
+                                    isRestoringOrClearingRef.current = true;
                                     if (Array.isArray(parsed.contacts)) setContacts(parsed.contacts);
                                     if (Array.isArray(parsed.loans)) setLoans(parsed.loans);
                                     if (Array.isArray(parsed.transactions)) setTransactions(parsed.transactions);
                                     if (Array.isArray(parsed.reminders)) setReminders(parsed.reminders);
                                     if (Array.isArray(parsed.completedPeriods)) setCompletedPeriods(parsed.completedPeriods);
                                     if (parsed.theme) setTheme(parsed.theme);
+                                    markBackupAsSuccessful();
                                     showToast('اطلاعات دیتابیس با موفقیت بازیابی شد');
+                                    setTimeout(() => {
+                                        isRestoringOrClearingRef.current = false;
+                                    }, 500);
                                 } catch (err) {
                                     showToast('خطا در اعمال اطلاعات پشتیبان');
+                                    isRestoringOrClearingRef.current = false;
                                 }
                                 setConfirmConfig(null);
                             },
@@ -4817,6 +5147,7 @@
             const handleConfirmRestoreData = () => {
                 if (!pendingRestoreData) return;
                 try {
+                    isRestoringOrClearingRef.current = true;
                     if (Array.isArray(pendingRestoreData.contacts)) setContacts(pendingRestoreData.contacts);
                     if (Array.isArray(pendingRestoreData.loans)) setLoans(pendingRestoreData.loans);
                     if (Array.isArray(pendingRestoreData.transactions)) setTransactions(pendingRestoreData.transactions);
@@ -4824,15 +5155,21 @@
                     if (Array.isArray(pendingRestoreData.completedPeriods)) setCompletedPeriods(pendingRestoreData.completedPeriods);
                     if (pendingRestoreData.theme) setTheme(pendingRestoreData.theme);
 
+                    markBackupAsSuccessful();
                     setShowRestoreConfirmModal(false);
                     setPendingRestoreData(null);
                     showToast('اطلاعات دیتابیس با موفقیت بازیابی شد');
+                    setTimeout(() => {
+                        isRestoringOrClearingRef.current = false;
+                    }, 500);
                 } catch (e) {
                     showToast('خطا در اعمال اطلاعات پشتیبان');
+                    isRestoringOrClearingRef.current = false;
                 }
             };
 
             const handleConfirmDeleteAllData = () => {
+                isRestoringOrClearingRef.current = true;
                 setContacts([]);
                 setLoans([]);
                 setTransactions([]);
@@ -4850,8 +5187,23 @@
                 localStorage.removeItem('amir_fin_contacts');
                 localStorage.removeItem('amir_fin_loans');
                 localStorage.removeItem('amir_fin_tx');
+
+                const resetStatus = {
+                    unbackedChangesCount: 0,
+                    lastBackupTimestamp: null,
+                    lastBackupFormatted: null,
+                    categoryCounts: {}
+                };
+                setBackupStatus(resetStatus);
+                try {
+                    localStorage.setItem('amir_fin_backup_status_v1', JSON.stringify(resetStatus));
+                } catch (e) {}
+
                 setShowResetConfirmModal(false);
                 showToast('کل اطلاعات برنامه با موفقیت پاک شد');
+                setTimeout(() => {
+                    isRestoringOrClearingRef.current = false;
+                }, 500);
             };
 
             useEffect(() => {
@@ -4915,11 +5267,22 @@
 
             const performDeleteTx = (txToDelete, txType) => {
                 if (!txToDelete) return;
+                const effectiveType = txType || txToDelete.type || 'tx';
 
-                if (txType === 'loan_installment') {
-                    const updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
-                    setTransactions(updatedTxs);
+                let updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
+                const periodId = txToDelete.periodId;
 
+                if (periodId) {
+                    setCompletedPeriods(prev => prev.filter(p => p.id !== periodId));
+                    updatedTxs = updatedTxs.map(t => t.periodId === periodId ? { ...t, periodId: undefined } : t);
+                    if (selectedPeriod && selectedPeriod.id === periodId) {
+                        setSelectedPeriod(null);
+                        navigateToTab(loanReturnTab || 'contact-detail', 'back');
+                    }
+                }
+                setTransactions(updatedTxs);
+
+                if (effectiveType === 'loan_installment' || effectiveType === 'installment' || txToDelete.installmentNumber || (txToDelete.loanId && !effectiveType.includes('debt') && !effectiveType.includes('demand'))) {
                     const targetLoan = loans.find(l => l.id === txToDelete.loanId);
                     if (targetLoan) {
                         const deletedAmt = Math.abs(txToDelete.amount || 0);
@@ -4946,20 +5309,10 @@
                         }
                     }
                     showToast('قسط با موفقیت حذف گردید');
-                } else if (txType === 'debt') {
-                    let updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
-                    const periodId = txToDelete.periodId;
+                    return;
+                }
 
-                    if (periodId) {
-                        setCompletedPeriods(prev => prev.filter(p => p.id !== periodId));
-                        updatedTxs = updatedTxs.map(t => t.periodId === periodId ? { ...t, periodId: undefined } : t);
-                        if (selectedPeriod && selectedPeriod.id === periodId) {
-                            setSelectedPeriod(null);
-                            navigateToTab(loanReturnTab || 'contact-detail', 'back');
-                        }
-                    }
-                    setTransactions(updatedTxs);
-
+                if (effectiveType === 'debt' || effectiveType === 'debt_repayment') {
                     if (txToDelete.contactId) {
                         const contactDebts = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
                         let netDebt = 0;
@@ -4980,21 +5333,11 @@
                             setSelectedContact(prev => ({ ...prev, totalDebt: netDebt }));
                         }
                     }
-                    showToast(periodId ? 'تراکنش حذف شد و بدهی از حالت بایگانی خارج گردید' : 'تراکنش بدهی با موفقیت حذف گردید');
-                } else if (txType === 'demand') {
-                    let updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
-                    const periodId = txToDelete.periodId;
+                    showToast(periodId ? 'تراکنش حذف شد و بدهی از حالت بایگانی خارج گردید' : (effectiveType === 'debt_repayment' ? 'بازپرداخت بدهی با موفقیت حذف شد' : 'تراکنش بدهی با موفقیت حذف گردید'));
+                    return;
+                }
 
-                    if (periodId) {
-                        setCompletedPeriods(prev => prev.filter(p => p.id !== periodId));
-                        updatedTxs = updatedTxs.map(t => t.periodId === periodId ? { ...t, periodId: undefined } : t);
-                        if (selectedPeriod && selectedPeriod.id === periodId) {
-                            setSelectedPeriod(null);
-                            navigateToTab(loanReturnTab || 'contact-detail', 'back');
-                        }
-                    }
-                    setTransactions(updatedTxs);
-
+                if (effectiveType === 'demand' || effectiveType === 'demand_repayment') {
                     if (txToDelete.contactId) {
                         const contactDemands = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
                         let netDemand = 0;
@@ -5015,8 +5358,11 @@
                             setSelectedContact(prev => ({ ...prev, totalDemand: netDemand }));
                         }
                     }
-                    showToast(periodId ? 'تراکنش حذف شد و طلب از حالت بایگانی خارج گردید' : 'تراکنش طلب با موفقیت حذف گردید');
+                    showToast(periodId ? 'تراکنش حذف شد و طلب از حالت بایگانی خارج گردید' : (effectiveType === 'demand_repayment' ? 'بازپرداخت طلب با موفقیت حذف شد' : 'تراکنش طلب با موفقیت حذف گردید'));
+                    return;
                 }
+
+                showToast('تراکنش با موفقیت حذف گردید');
             };
 
             const exportPeriodAsPNG = (period) => {
@@ -7631,15 +7977,179 @@
                     case 'dashboard':
                         return (
                             <div className="space-y-3 animate-fade-in">
-                                <div className="flex justify-between items-center pt-0 pb-0">
-                                    {/* Right Side: Welcome message & Today's Date (both right-aligned) */}
-                                    <div className="flex flex-col items-start text-right">
-                                        <p className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight">
-                                            سلام وقت به خیر 👋
-                                        </p>
-                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right">
-                                            امروز: {getDeviceJalaliDate().day} {getDeviceJalaliDate().month} {getDeviceJalaliDate().year}
-                                        </p>
+                                <div className="flex justify-between items-center pt-0 pb-0 relative">
+                                    {/* Right Side: Additive Backup Warning Indicator + Welcome message & Today's Date */}
+                                    <div className="flex items-center gap-2 sm:gap-2.5">
+                                        {/* Additive Backup Warning Bell Indicator - positioned on the right side of the header texts */}
+                                        <AnimatePresence>
+                                            {backupStatus && backupStatus.unbackedChangesCount > 0 && (
+                                                <motion.div
+                                                    key="dashboard-backup-status-pill"
+                                                    initial={{ opacity: 0, scale: 0.7 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.7 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="relative shrink-0"
+                                                >
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowBackupPopover(prev => !prev);
+                                                            setBackupError(null);
+                                                        }}
+                                                        className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/50 dark:border-amber-500/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer"
+                                                        title={`${backupStatus.unbackedChangesCount} تغییر جدید بدون پشتیبان`}
+                                                        aria-label="وضعیت پشتیبان‌گیری"
+                                                    >
+                                                        <Icon name="bell" className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBellWiggling ? 'animate-bell-wiggle' : ''}`} />
+                                                        <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] font-bold px-1 rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 leading-none font-sans">
+                                                            {backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount}
+                                                        </span>
+                                                    </button>
+
+                                                    {/* Floating Popover connected to the bell */}
+                                                    <AnimatePresence>
+                                                        {showBackupPopover && (
+                                                            <>
+                                                                {/* Backdrop to close on click outside */}
+                                                                <div 
+                                                                    className="fixed inset-0 z-40"
+                                                                    onClick={() => {
+                                                                        setShowBackupPopover(false);
+                                                                        setBackupError(null);
+                                                                    }}
+                                                                />
+
+                                                                <motion.div
+                                                                    initial={{ opacity: 0, scale: 0.92, y: -6 }}
+                                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                                    exit={{ opacity: 0, scale: 0.92, y: -6 }}
+                                                                    transition={{ type: "spring", duration: 0.25, bounce: 0.15 }}
+                                                                    className="absolute top-11 right-0 w-[285px] sm:w-[310px] max-w-[calc(100vw-32px)] bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-[0_12px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] border border-slate-200/90 dark:border-slate-700/80 z-50 text-right"
+                                                                    dir="rtl"
+                                                                >
+                                                                    {/* Popover Header */}
+                                                                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-700/60">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <div className="w-7 h-7 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                                                                            <Icon name="shield-alert" className="w-4 h-4" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">نیاز به پشتیبان‌گیری</h4>
+                                                                                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">اطلاعات تغییر یافته</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button 
+                                                                            onClick={() => {
+                                                                                setShowBackupPopover(false);
+                                                                                setBackupError(null);
+                                                                            }}
+                                                                            className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-700/60 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-colors cursor-pointer"
+                                                                        >
+                                                                            <Icon name="x" className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    </div>
+
+                                                                    {/* Popover Body */}
+                                                                    <div className="py-2.5 space-y-2.5">
+                                                                        <div className="bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl p-2.5 border border-amber-200/60 dark:border-amber-800/40">
+                                                                            <p className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                                                                                {backupStatus.unbackedChangesCount} تغییر پس از آخرین نسخه
+                                                                            </p>
+                                                                            <p className="text-[11px] text-amber-700 dark:text-amber-300/90 mt-0.5 leading-relaxed">
+                                                                                جهت حفظ امنیت اطلاعات مالی، فایل پشتیبان تهیه کنید.
+                                                                            </p>
+                                                                        </div>
+
+                                                                        {/* Changes summary by category */}
+                                                                        {backupStatus.categoryCounts && Object.keys(backupStatus.categoryCounts).length > 0 && (
+                                                                            <div className="space-y-1.5 pt-0.5">
+                                                                                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">خلاصه تغییرات ثبت‌شده:</span>
+                                                                                <div className="space-y-1 max-h-32 overflow-y-auto pr-0.5">
+                                                                                    {Object.entries(backupStatus.categoryCounts)
+                                                                                        .filter(([_, count]) => count > 0)
+                                                                                        .map(([categoryLabel, count]) => (
+                                                                                            <div key={categoryLabel} className="flex items-center justify-between text-[11px] py-1 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700/40 text-slate-700 dark:text-slate-200">
+                                                                                                <div className="flex items-center gap-1.5 truncate">
+                                                                                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                                                                                                    <span className="truncate font-medium">{categoryLabel}</span>
+                                                                                                </div>
+                                                                                                <span className="font-bold text-amber-600 dark:text-amber-400 shrink-0 mr-2 font-sans">
+                                                                                                    {count} مورد
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+
+                                                                        {/* Last backup info */}
+                                                                        <div className="pt-1 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/60">
+                                                                            <span>آخرین پشتیبان:</span>
+                                                                            <span className="font-medium text-slate-700 dark:text-slate-200">
+                                                                                {backupStatus.lastBackupFormatted || 'هنوز فایلی ذخیره نشده'}
+                                                                            </span>
+                                                                        </div>
+
+                                                                        {/* Error alert if failed */}
+                                                                        {backupError && (
+                                                                            <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-xl p-2 text-center text-rose-600 dark:text-rose-400 text-xs">
+                                                                                <p className="font-bold">خطا در پشتیبان‌گیری</p>
+                                                                                <p className="text-[10px] mt-0.5">فایل پشتیبان ذخیره نشد. لطفاً مجدداً امتحان کنید.</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+
+                                                                    {/* Action button */}
+                                                                    <div className="pt-1">
+                                                                        <button
+                                                                            disabled={isBackingUp}
+                                                                            onClick={async () => {
+                                                                                setIsBackingUp(true);
+                                                                                setBackupError(null);
+                                                                                try {
+                                                                                    const success = handleExportBackup();
+                                                                                    if (success) {
+                                                                                        setShowBackupPopover(false);
+                                                                                    } else {
+                                                                                        setBackupError('خطا در دانلود یا ایجاد فایل');
+                                                                                    }
+                                                                                } catch (err) {
+                                                                                    setBackupError('خطا در پشتیبان‌گیری');
+                                                                                } finally {
+                                                                                    setIsBackingUp(false);
+                                                                                }
+                                                                            }}
+                                                                            className="w-full py-2.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                                                                        >
+                                                                            {isBackingUp ? (
+                                                                                <>
+                                                                                    <Icon name="loader" className="w-4 h-4 animate-spin" />
+                                                                                    <span>در حال آماده‌سازی فایل...</span>
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <Icon name="download" className="w-4 h-4" />
+                                                                                    <span>{backupError ? 'تلاش مجدد' : 'پشتیبان‌گیری اکنون'}</span>
+                                                                                </>
+                                                                            )}
+                                                                        </button>
+                                                                    </div>
+                                                                </motion.div>
+                                                            </>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+
+                                        <div className="flex flex-col items-start text-right">
+                                            <p className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight">
+                                                سلام وقت به خیر 👋
+                                            </p>
+                                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right">
+                                                امروز: {getDeviceJalaliDate().day} {getDeviceJalaliDate().month} {getDeviceJalaliDate().year}
+                                            </p>
+                                        </div>
                                     </div>
 
                                     {/* Left Side: App Icon on far left + Amir Finance & Version immediately next to it */}
