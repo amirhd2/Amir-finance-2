@@ -290,15 +290,67 @@
             return String(n).replace(/\d/g, x => farsiDigits[x]);
         };
 
+        const toEnglishDigits = (str) => {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+                .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+        };
+
+        const parseRawNumber = (val) => {
+            if (val === null || val === undefined) return '';
+            const normalized = toEnglishDigits(String(val));
+            return normalized.replace(/\D/g, '');
+        };
+
+        const parseRawDecimal = (val, allowNegative = false) => {
+            if (val === null || val === undefined) return '';
+            let s = toEnglishDigits(String(val))
+                .replace(/٫/g, '.')
+                .replace(/,/g, '');
+            let isNegative = false;
+            if (allowNegative && (s.startsWith('-') || s.startsWith('−'))) {
+                isNegative = true;
+            }
+            s = s.replace(/[^\d.]/g, '');
+            const parts = s.split('.');
+            let result = parts[0];
+            if (parts.length > 1) {
+                result += '.' + parts.slice(1).join('');
+            }
+            return (isNegative && result) ? '-' + result : result;
+        };
+
+        const formatWithCommas = (val) => {
+            if (val === null || val === undefined || val === '') return '';
+            const clean = parseRawNumber(val);
+            if (!clean) return '';
+            return Number(clean).toLocaleString('en-US');
+        };
+
         const formatCardNumber = (val) => {
             if (!val) return '';
-            const clean = String(val).replace(/\D/g, '').slice(0, 16);
+            const clean = parseRawNumber(val).slice(0, 16);
             return clean.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+        };
+
+        const normalizePhoneNumber = (val) => {
+            if (!val) return '';
+            const eng = toEnglishDigits(String(val));
+            const hasPlus = eng.trim().startsWith('+');
+            const clean = eng.replace(/\D/g, '');
+            return hasPlus ? '+' + clean : clean;
+        };
+
+        const normalizeIBAN = (val) => {
+            if (!val) return '';
+            const eng = toEnglishDigits(String(val)).toUpperCase().replace(/[^A-Z0-9]/g, '');
+            return eng.slice(0, 26);
         };
 
         const getBankNameFromCard = (cardNo) => {
             if (!cardNo) return '';
-            const clean = String(cardNo).replace(/\D/g, '');
+            const clean = parseRawNumber(cardNo);
             if (clean.length < 6) return '';
             const prefix6 = clean.slice(0, 6);
             const bankMap = {
@@ -319,14 +371,17 @@
                 '504172': 'قرض‌الحسنه رسالت',
                 '505416': 'بانک گردشگری',
                 '606373': 'قرض‌الحسنه مهر ایران',
-                '62.1.7': 'بانک پارسیان',
+                '622106': 'بانک پارسیان',
                 '639194': 'بانک پارسیان',
                 '505785': 'بانک ایران زمین',
                 '636949': 'بانک حکمت ایرانیان',
                 '502938': 'بانک دی',
                 '603769': 'بانک صادرات',
                 '610000': 'بانک صادرات',
-                '589463': 'بانک رفاه کارگران'
+                '589463': 'بانک رفاه کارگران',
+                '627760': 'پست بانک ایران',
+                '585983': 'بانک تجارت',
+                '627353': 'بانک تجارت'
             };
             return bankMap[prefix6] || '';
         };
@@ -368,25 +423,6 @@
             const d = String(parsed.day).padStart(2, '0');
 
             return `${y}/${m}/${d}`;
-        };
-
-        const toEnglishDigits = (str) => {
-            if (!str) return '';
-            return String(str)
-                .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
-                .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-        };
-
-        const parseRawNumber = (val) => {
-            if (val === null || val === undefined) return '';
-            return String(val).replace(/\D/g, '');
-        };
-
-        const formatWithCommas = (val) => {
-            if (val === null || val === undefined || val === '') return '';
-            const clean = String(val).replace(/\D/g, '');
-            if (!clean) return '';
-            return Number(clean).toLocaleString('en-US');
         };
 
         const numToPersianWords = (num) => {
@@ -3528,21 +3564,36 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.1",
-    "buildNumber": 366,
-    "releaseDate": "2026-08-19",
+    "installedVersion": "3.2.2",
+    "buildNumber": 370,
+    "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.1",
-    "latestBuild": 366,
+    "latestVersion": "3.2.2",
+    "latestBuild": 370,
     "isUpdateAvailable": false,
     "history": [
         {
-            "version": "3.2.1",
-            "buildNumber": 365,
-            "releaseDate": "2026-08-19",
+            "version": "3.2.2",
+            "buildNumber": 370,
+            "releaseDate": "2026-08-22",
             "releaseChannel": "Stable",
-            "commitHash": "v321b365",
+            "commitHash": "v322b370",
+            "commitMessage": "fix: universal numeric input keyboard modes, arabic digit parsing, and delete backup tracking in v3.2.2",
+            "changes": [
+                "ثبت دقیق و بلادرنگ حذف انواع تراکنش‌ها در نشانگر زنگوله و لیست تغییرات پشتیبان‌گیری",
+                "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا با inputmode عددی)",
+                "تبدیل خودکار و بی‌درنگ ارقام فارسی و عربی به اعداد انگلیسی استاندارد در ورودی‌ها",
+                "تشخیص و فرمت خودکار شماره کارت و شبا در افزودن و ویرایش مخاطبین",
+                "انتشار رسمی نسخه 3.2.2"
+            ]
+        },
+        {
+            "version": "3.2.1",
+            "buildNumber": 367,
+            "releaseDate": "2026-08-22",
+            "releaseChannel": "Stable",
+            "commitHash": "v321b367",
             "commitMessage": "fix: resolve missing backup logs and bell indicator on dashboard transaction deletion and release v3.2.1",
             "changes": [
                 "رفع کامل مشکل عدم ثبت لاگ در نشانگر زنگوله هنگام حذف تراکنش‌ها از صفحه داشبورد و بخش آخرین تراکنش‌ها",
@@ -3972,8 +4023,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 366;
-                const EMBEDDED_VERSION = "3.2.1";
+                const EMBEDDED_BUILD = 370;
+                const EMBEDDED_VERSION = "3.2.2";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4458,18 +4509,18 @@
             useEffect(() => {
                 if (isInitialMountRef.current) {
                     isInitialMountRef.current = false;
-                    prevContactsMapRef.current = new Map(contacts.map(c => [c.id, c]));
-                    prevLoansMapRef.current = new Map(loans.map(l => [l.id, l]));
-                    prevTxsMapRef.current = new Map(transactions.map(t => [t.id, t]));
-                    prevPeriodsSetRef.current = new Set(completedPeriods.map(p => (p.id || JSON.stringify(p))));
+                    prevContactsMapRef.current = new Map(contacts.map(c => [String(c.id), c]));
+                    prevLoansMapRef.current = new Map(loans.map(l => [String(l.id), l]));
+                    prevTxsMapRef.current = new Map(transactions.map(t => [String(t.id), t]));
+                    prevPeriodsSetRef.current = new Set(completedPeriods.map(p => String(p.id || JSON.stringify(p))));
                     return;
                 }
 
                 if (isRestoringOrClearingRef.current) {
-                    prevContactsMapRef.current = new Map(contacts.map(c => [c.id, c]));
-                    prevLoansMapRef.current = new Map(loans.map(l => [l.id, l]));
-                    prevTxsMapRef.current = new Map(transactions.map(t => [t.id, t]));
-                    prevPeriodsSetRef.current = new Set(completedPeriods.map(p => (p.id || JSON.stringify(p))));
+                    prevContactsMapRef.current = new Map(contacts.map(c => [String(c.id), c]));
+                    prevLoansMapRef.current = new Map(loans.map(l => [String(l.id), l]));
+                    prevTxsMapRef.current = new Map(transactions.map(t => [String(t.id), t]));
+                    prevPeriodsSetRef.current = new Set(completedPeriods.map(p => String(p.id || JSON.stringify(p))));
                     return;
                 }
 
@@ -4479,32 +4530,32 @@
                     batchCategoryCounts[label] = (batchCategoryCounts[label] || 0) + count;
                 };
 
-                const currentTxsMap = new Map(transactions.map(t => [t.id, t]));
-                const currentLoansMap = new Map(loans.map(l => [l.id, l]));
-                const currentContactsMap = new Map(contacts.map(c => [c.id, c]));
-                const currentPeriodsSet = new Set(completedPeriods.map(p => (p.id || JSON.stringify(p))));
+                const currentTxsMap = new Map(transactions.map(t => [String(t.id), t]));
+                const currentLoansMap = new Map(loans.map(l => [String(l.id), l]));
+                const currentContactsMap = new Map(contacts.map(c => [String(c.id), c]));
+                const currentPeriodsSet = new Set(completedPeriods.map(p => String(p.id || JSON.stringify(p))));
 
                 // 1. Transactions Diffing
-                const addedTxs = transactions.filter(t => !prevTxsMapRef.current.has(t.id));
+                const addedTxs = transactions.filter(t => !prevTxsMapRef.current.has(String(t.id)));
                 const deletedTxs = [];
                 for (const [id, t] of prevTxsMapRef.current.entries()) {
-                    if (!currentTxsMap.has(id)) deletedTxs.push(t);
+                    if (!currentTxsMap.has(String(id))) deletedTxs.push(t);
                 }
                 const editedTxs = transactions.filter(t => {
-                    if (!prevTxsMapRef.current.has(t.id)) return false;
-                    const prevT = prevTxsMapRef.current.get(t.id);
-                    return prevT.amount !== t.amount || prevT.date !== t.date || prevT.note !== t.note || prevT.title !== t.title;
+                    if (!prevTxsMapRef.current.has(String(t.id))) return false;
+                    const prevT = prevTxsMapRef.current.get(String(t.id));
+                    return prevT.amount !== t.amount || prevT.dateStr !== t.dateStr || prevT.date !== t.date || prevT.note !== t.note || prevT.notes !== t.notes || prevT.title !== t.title;
                 });
 
                 addedTxs.forEach(t => {
                     const type = t.type || '';
-                    if (type === 'loan_installment' || type === 'installment' || t.installmentNumber || (t.loanId && !type.includes('debt') && !type.includes('demand'))) {
+                    if (type === 'loan_installment' || type === 'installment' || type === 'repayment' || t.installmentNumber || (t.loanId && !type.includes('debt') && !type.includes('demand'))) {
                         addCat('ثبت قسط جدید');
                     } else if (type === 'debt') {
                         addCat('ثبت بدهی جدید');
                     } else if (type === 'demand') {
                         addCat('ثبت طلب جدید');
-                    } else if (type === 'debt_repayment' || type === 'demand_repayment' || type === 'repayment') {
+                    } else if (type === 'debt_repayment' || type === 'demand_repayment') {
                         addCat('ثبت بازپرداخت جدید');
                     } else {
                         addCat('ثبت تراکنش جدید');
@@ -4513,13 +4564,13 @@
 
                 deletedTxs.forEach(t => {
                     const type = t.type || '';
-                    if (type === 'loan_installment' || type === 'installment' || t.installmentNumber || (t.loanId && !type.includes('debt') && !type.includes('demand'))) {
+                    if (type === 'loan_installment' || type === 'installment' || type === 'repayment' || t.installmentNumber || (t.loanId && !type.includes('debt') && !type.includes('demand'))) {
                         addCat('حذف قسط');
                     } else if (type === 'debt') {
                         addCat('حذف بدهی');
                     } else if (type === 'demand') {
                         addCat('حذف طلب');
-                    } else if (type === 'debt_repayment' || type === 'demand_repayment' || type === 'repayment') {
+                    } else if (type === 'debt_repayment' || type === 'demand_repayment') {
                         addCat('حذف بازپرداخت');
                     } else {
                         addCat('حذف تراکنش');
@@ -4528,13 +4579,13 @@
 
                 editedTxs.forEach(t => {
                     const type = t.type || '';
-                    if (type === 'loan_installment' || type === 'installment' || t.installmentNumber || (t.loanId && !type.includes('debt') && !type.includes('demand'))) {
+                    if (type === 'loan_installment' || type === 'installment' || type === 'repayment' || t.installmentNumber || (t.loanId && !type.includes('debt') && !type.includes('demand'))) {
                         addCat('ویرایش قسط');
                     } else if (type === 'debt') {
                         addCat('ویرایش بدهی');
                     } else if (type === 'demand') {
                         addCat('ویرایش طلب');
-                    } else if (type === 'debt_repayment' || type === 'demand_repayment' || type === 'repayment') {
+                    } else if (type === 'debt_repayment' || type === 'demand_repayment') {
                         addCat('ویرایش بازپرداخت');
                     } else {
                         addCat('ویرایش تراکنش');
@@ -4542,20 +4593,19 @@
                 });
 
                 // 2. Loans Diffing
-                const addedLoans = loans.filter(l => !prevLoansMapRef.current.has(l.id));
+                const addedLoans = loans.filter(l => !prevLoansMapRef.current.has(String(l.id)));
                 const deletedLoans = [];
                 for (const [id, l] of prevLoansMapRef.current.entries()) {
-                    if (!currentLoansMap.has(id)) deletedLoans.push(l);
+                    if (!currentLoansMap.has(String(id))) deletedLoans.push(l);
                 }
                 const editedLoans = loans.filter(l => {
-                    if (!prevLoansMapRef.current.has(l.id)) return false;
-                    const prevL = prevLoansMapRef.current.get(l.id);
-                    // Check if non-derivative fields changed (avoid double counting when only paidInstallments/status updated via tx)
+                    if (!prevLoansMapRef.current.has(String(l.id))) return false;
+                    const prevL = prevLoansMapRef.current.get(String(l.id));
                     const titleChanged = prevL.title !== l.title;
-                    const amountChanged = prevL.totalAmount !== l.totalAmount || prevL.amount !== l.amount;
+                    const amountChanged = prevL.totalAmount !== l.totalAmount || prevL.amount !== l.amount || prevL.principalAmount !== l.principalAmount || prevL.totalRepayment !== l.totalRepayment;
                     const totalInstChanged = prevL.totalInstallments !== l.totalInstallments;
                     const contactChanged = prevL.contactId !== l.contactId;
-                    const noteChanged = prevL.note !== l.note;
+                    const noteChanged = prevL.notes !== l.notes && prevL.note !== l.note;
                     return titleChanged || amountChanged || totalInstChanged || contactChanged || noteChanged;
                 });
 
@@ -4593,15 +4643,15 @@
                 });
 
                 // 3. Contacts Diffing
-                const addedContacts = contacts.filter(c => !prevContactsMapRef.current.has(c.id));
+                const addedContacts = contacts.filter(c => !prevContactsMapRef.current.has(String(c.id)));
                 const deletedContacts = [];
                 for (const [id, c] of prevContactsMapRef.current.entries()) {
-                    if (!currentContactsMap.has(id)) deletedContacts.push(c);
+                    if (!currentContactsMap.has(String(id))) deletedContacts.push(c);
                 }
                 const editedContacts = contacts.filter(c => {
-                    if (!prevContactsMapRef.current.has(c.id)) return false;
-                    const prevC = prevContactsMapRef.current.get(c.id);
-                    return prevC.name !== c.name || prevC.phone !== c.phone || prevC.cardNumber !== c.cardNumber || prevC.note !== c.note;
+                    if (!prevContactsMapRef.current.has(String(c.id))) return false;
+                    const prevC = prevContactsMapRef.current.get(String(c.id));
+                    return prevC.firstName !== c.firstName || prevC.lastName !== c.lastName || prevC.phone !== c.phone || prevC.bankName !== c.bankName || prevC.bankCard !== c.bankCard || prevC.cardNumber !== c.cardNumber || prevC.iban !== c.iban || (prevC.note !== c.note && prevC.notes !== c.notes);
                 });
 
                 addedContacts.forEach(() => addCat('ثبت مخاطب جدید'));
@@ -4615,6 +4665,14 @@
                 }
                 if (addedPeriodsCount > 0) {
                     addCat('تسویه و بایگانی دوره', addedPeriodsCount);
+                }
+
+                let deletedPeriodsCount = 0;
+                for (const key of prevPeriodsSetRef.current) {
+                    if (!currentPeriodsSet.has(key)) deletedPeriodsCount++;
+                }
+                if (deletedPeriodsCount > 0) {
+                    addCat('حذف دوره تسویه‌شده', deletedPeriodsCount);
                 }
 
                 // Update snapshot refs
@@ -5269,28 +5327,28 @@
                 if (!txToDelete) return;
                 const effectiveType = txType || txToDelete.type || 'tx';
 
-                let updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
+                let updatedTxs = transactions.filter(t => String(t.id) !== String(txToDelete.id));
                 const periodId = txToDelete.periodId;
 
                 if (periodId) {
-                    setCompletedPeriods(prev => prev.filter(p => p.id !== periodId));
-                    updatedTxs = updatedTxs.map(t => t.periodId === periodId ? { ...t, periodId: undefined } : t);
-                    if (selectedPeriod && selectedPeriod.id === periodId) {
+                    setCompletedPeriods(prev => prev.filter(p => String(p.id) !== String(periodId)));
+                    updatedTxs = updatedTxs.map(t => String(t.periodId) === String(periodId) ? { ...t, periodId: undefined } : t);
+                    if (selectedPeriod && String(selectedPeriod.id) === String(periodId)) {
                         setSelectedPeriod(null);
                         navigateToTab(loanReturnTab || 'contact-detail', 'back');
                     }
                 }
                 setTransactions(updatedTxs);
 
-                if (effectiveType === 'loan_installment' || effectiveType === 'installment' || txToDelete.installmentNumber || (txToDelete.loanId && !effectiveType.includes('debt') && !effectiveType.includes('demand'))) {
-                    const targetLoan = loans.find(l => l.id === txToDelete.loanId);
+                if (effectiveType === 'loan_installment' || effectiveType === 'installment' || effectiveType === 'repayment' || txToDelete.installmentNumber || (txToDelete.loanId && !effectiveType.includes('debt') && !effectiveType.includes('demand'))) {
+                    const targetLoan = loans.find(l => String(l.id) === String(txToDelete.loanId));
                     if (targetLoan) {
                         const deletedAmt = Math.abs(txToDelete.amount || 0);
                         const newPaid = Math.max(0, (targetLoan.paidAmount || 0) - deletedAmt);
                         const newRemaining = Math.max(0, (targetLoan.totalRepayment || 0) - newPaid);
 
                         const updatedLoans = loans.map(l => {
-                            if (l.id === targetLoan.id) {
+                            if (String(l.id) === String(targetLoan.id)) {
                                 return {
                                     ...l,
                                     paidAmount: newPaid,
@@ -5300,7 +5358,7 @@
                             return l;
                         });
                         setLoans(updatedLoans);
-                        if (selectedLoan && selectedLoan.id === targetLoan.id) {
+                        if (selectedLoan && String(selectedLoan.id) === String(targetLoan.id)) {
                             setSelectedLoan(prev => ({
                                 ...prev,
                                 paidAmount: newPaid,
@@ -5314,7 +5372,7 @@
 
                 if (effectiveType === 'debt' || effectiveType === 'debt_repayment') {
                     if (txToDelete.contactId) {
-                        const contactDebts = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
+                        const contactDebts = updatedTxs.filter(t => String(t.contactId) === String(txToDelete.contactId) && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
                         let netDebt = 0;
                         contactDebts.forEach(t => {
                             if (t.type === 'debt') netDebt += Math.abs(t.amount);
@@ -5323,13 +5381,13 @@
                         netDebt = Math.max(0, netDebt);
 
                         const updatedContacts = contacts.map(c => {
-                            if (c.id === txToDelete.contactId) {
+                            if (String(c.id) === String(txToDelete.contactId)) {
                                 return { ...c, totalDebt: netDebt };
                             }
                             return c;
                         });
                         setContacts(updatedContacts);
-                        if (selectedContact && selectedContact.id === txToDelete.contactId) {
+                        if (selectedContact && String(selectedContact.id) === String(txToDelete.contactId)) {
                             setSelectedContact(prev => ({ ...prev, totalDebt: netDebt }));
                         }
                     }
@@ -5339,7 +5397,7 @@
 
                 if (effectiveType === 'demand' || effectiveType === 'demand_repayment') {
                     if (txToDelete.contactId) {
-                        const contactDemands = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
+                        const contactDemands = updatedTxs.filter(t => String(t.contactId) === String(txToDelete.contactId) && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
                         let netDemand = 0;
                         contactDemands.forEach(t => {
                             if (t.type === 'demand') netDemand += Math.abs(t.amount);
@@ -5348,13 +5406,13 @@
                         netDemand = Math.max(0, netDemand);
 
                         const updatedContacts = contacts.map(c => {
-                            if (c.id === txToDelete.contactId) {
+                            if (String(c.id) === String(txToDelete.contactId)) {
                                 return { ...c, totalDemand: netDemand };
                             }
                             return c;
                         });
                         setContacts(updatedContacts);
-                        if (selectedContact && selectedContact.id === txToDelete.contactId) {
+                        if (selectedContact && String(selectedContact.id) === String(txToDelete.contactId)) {
                             setSelectedContact(prev => ({ ...prev, totalDemand: netDemand }));
                         }
                     }
@@ -6673,11 +6731,11 @@
                     isDestructive: true,
                     onConfirm: () => {
                         if (typeof confirmCb === 'function') confirmCb();
-                        setContacts(prev => prev.filter(c => c.id !== targetContactId));
-                        setLoans(prev => prev.filter(l => l.contactId !== targetContactId));
-                        setTransactions(prev => prev.filter(t => t.contactId !== targetContactId));
+                        setContacts(prev => prev.filter(c => String(c.id) !== String(targetContactId)));
+                        setLoans(prev => prev.filter(l => String(l.contactId) !== String(targetContactId)));
+                        setTransactions(prev => prev.filter(t => String(t.contactId) !== String(targetContactId)));
                         setShowEditContactModal(false);
-                        if (selectedContact && selectedContact.id === targetContactId) {
+                        if (selectedContact && String(selectedContact.id) === String(targetContactId)) {
                             setSelectedContact(null);
                             navigateToTab('contacts', 'back');
                         }
@@ -6690,7 +6748,7 @@
 
             const handleDeleteLoanClick = (loan, confirmCb = null) => {
                 if (!loan || typeof loan !== 'object') return;
-                const loanTxs = transactions.filter(t => t.loanId === loan.id);
+                const loanTxs = transactions.filter(t => String(t.loanId) === String(loan.id));
                 const paymentTxs = loanTxs.filter(t => t.type === 'repayment');
                 const totalInstallmentsCount = loan.totalInstallments || loanTxs.length || 0;
 
@@ -6710,8 +6768,8 @@
                     onConfirm: () => {
                         if (typeof confirmCb === 'function') confirmCb();
                         const loanIdToDelete = loan.id;
-                        setLoans(prev => prev.filter(l => l.id !== loanIdToDelete));
-                        setTransactions(prev => prev.filter(t => t.loanId !== loanIdToDelete));
+                        setLoans(prev => prev.filter(l => String(l.id) !== String(loanIdToDelete)));
+                        setTransactions(prev => prev.filter(t => String(t.loanId) !== String(loanIdToDelete)));
                         setSelectedLoan(null);
                         navigateToTab(loanReturnTab || 'accounts', 'back');
                         setConfirmConfig(null);
@@ -6723,7 +6781,7 @@
 
             const handleDeleteArchivedPeriodClick = (period) => {
                 if (!period) return;
-                let periodTxs = transactions.filter(t => t.periodId === period.id);
+                let periodTxs = transactions.filter(t => String(t.periodId) === String(period.id));
                 if (periodTxs.length === 0 && period.transactions && period.transactions.length > 0) {
                     periodTxs = period.transactions;
                 }
@@ -6746,8 +6804,8 @@
                     isDestructive: true,
                     onConfirm: () => {
                         const periodIdToDelete = period.id;
-                        setCompletedPeriods(prev => prev.filter(p => p.id !== periodIdToDelete));
-                        setTransactions(prev => prev.filter(t => t.periodId !== periodIdToDelete));
+                        setCompletedPeriods(prev => prev.filter(p => String(p.id) !== String(periodIdToDelete)));
+                        setTransactions(prev => prev.filter(t => String(t.periodId) !== String(periodIdToDelete)));
                         setSelectedPeriod(null);
                         navigateToTab(loanReturnTab || 'contact-detail', 'back');
                         setConfirmConfig(null);
@@ -7017,10 +7075,11 @@
                                                         <input 
                                                             type="text" 
                                                             inputMode="numeric"
+                                                            dir="ltr"
                                                             placeholder="قسط"
                                                             value={displayVal} 
                                                             onChange={(e) => {
-                                                                const raw = e.target.value.replace(/\D/g, '');
+                                                                const raw = parseRawNumber(e.target.value);
                                                                 setLoanForm(prev => ({ ...prev, customInstallmentCount: raw }));
                                                             }}
                                                             onBlur={() => {
@@ -7890,11 +7949,12 @@
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره تماس</label>
                                 <input 
-                                    type="text"
-                                    inputMode="numeric"
+                                    type="tel"
+                                    inputMode="tel"
+                                    dir="ltr"
                                     placeholder="مثلاً: 09121234567"
                                     value={contactWizardForm.phone}
-                                    onChange={(e) => setContactWizardForm(prev => ({ ...prev, phone: e.target.value }))}
+                                    onChange={(e) => setContactWizardForm(prev => ({ ...prev, phone: normalizePhoneNumber(e.target.value) }))}
                                     className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
                                 />
                             </div>
@@ -7911,6 +7971,7 @@
                                 <input 
                                     type="text"
                                     inputMode="numeric"
+                                    dir="ltr"
                                     placeholder="مثلاً: 6037 9975 4321 4582"
                                     value={contactWizardForm.bankCard}
                                     onChange={(e) => {
@@ -7927,9 +7988,10 @@
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره شبا (اختیاری)</label>
                                 <input 
                                     type="text"
+                                    dir="ltr"
                                     placeholder="مثلاً: IR12 0120 0000 0001 2345 6789 01"
                                     value={contactWizardForm.iban}
-                                    onChange={(e) => setContactWizardForm(prev => ({ ...prev, iban: e.target.value }))}
+                                    onChange={(e) => setContactWizardForm(prev => ({ ...prev, iban: normalizeIBAN(e.target.value) }))}
                                     className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
                                 />
                             </div>
@@ -11490,11 +11552,13 @@
                                         className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
                                     />
                                     <input 
-                                        type="text" 
+                                        type="tel" 
+                                        inputMode="tel"
+                                        dir="ltr"
                                         placeholder="شماره تماس" 
                                         value={newContactForm.phone} 
-                                        onChange={(e) => setNewContactForm({...newContactForm, phone: e.target.value})}
-                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                        onChange={(e) => setNewContactForm({...newContactForm, phone: normalizePhoneNumber(e.target.value)})}
+                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono" 
                                     />
                                     <input 
                                         type="text" 
@@ -11505,17 +11569,25 @@
                                     />
                                     <input 
                                         type="text" 
+                                        inputMode="numeric"
+                                        dir="ltr"
                                         placeholder="شماره کارت (اختیاری)" 
                                         value={newContactForm.bankCard} 
-                                        onChange={(e) => setNewContactForm({...newContactForm, bankCard: e.target.value})}
-                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            const formatted = formatCardNumber(val);
+                                            const detectedBank = getBankNameFromCard(val) || newContactForm.bankName;
+                                            setNewContactForm({...newContactForm, bankCard: formatted, bankName: detectedBank});
+                                        }}
+                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono" 
                                     />
                                     <input 
                                         type="text" 
+                                        dir="ltr"
                                         placeholder="شماره شبا (اختیاری)" 
                                         value={newContactForm.iban} 
-                                        onChange={(e) => setNewContactForm({...newContactForm, iban: e.target.value})}
-                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                        onChange={(e) => setNewContactForm({...newContactForm, iban: normalizeIBAN(e.target.value)})}
+                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono" 
                                     />
                                     <div className="flex space-x-2 space-x-reverse pt-2">
                                         <button onClick={handleCreateContact} className="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">ذخیره</button>
@@ -11571,11 +11643,13 @@
                                         className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
                                     />
                                     <input 
-                                        type="text" 
+                                        type="tel" 
+                                        inputMode="tel"
+                                        dir="ltr"
                                         placeholder="شماره تماس" 
                                         value={editContactForm.phone} 
-                                        onChange={(e) => setEditContactForm({...editContactForm, phone: e.target.value})}
-                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                        onChange={(e) => setEditContactForm({...editContactForm, phone: normalizePhoneNumber(e.target.value)})}
+                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono" 
                                     />
                                     <input 
                                         type="text" 
@@ -11586,17 +11660,25 @@
                                     />
                                     <input 
                                         type="text" 
+                                        inputMode="numeric"
+                                        dir="ltr"
                                         placeholder="شماره کارت" 
                                         value={editContactForm.bankCard} 
-                                        onChange={(e) => setEditContactForm({...editContactForm, bankCard: e.target.value})}
-                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            const formatted = formatCardNumber(val);
+                                            const detectedBank = getBankNameFromCard(val) || editContactForm.bankName;
+                                            setEditContactForm({...editContactForm, bankCard: formatted, bankName: detectedBank});
+                                        }}
+                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono" 
                                     />
                                     <input 
                                         type="text" 
+                                        dir="ltr"
                                         placeholder="شماره شبا" 
                                         value={editContactForm.iban} 
-                                        onChange={(e) => setEditContactForm({...editContactForm, iban: e.target.value})}
-                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs" 
+                                        onChange={(e) => setEditContactForm({...editContactForm, iban: normalizeIBAN(e.target.value)})}
+                                        className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono" 
                                     />
                                     <div className="flex space-x-2 space-x-reverse pt-2">
                                         <button onClick={handleUpdateContact} className="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">به‌روزرسانی</button>

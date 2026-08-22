@@ -65,12 +65,13 @@ if (fs.existsSync(versionPath)) {
           releaseDate: vData.releaseDate,
           releaseChannel: "Stable",
           commitHash: `v${pkgVersion.replace(/\./g, '')}b${vData.buildNumber}`,
-          commitMessage: "fix: resolve missing backup logs and bell indicator on dashboard transaction deletion and release v3.2.1",
+          commitMessage: "fix: universal numeric input keyboard modes, arabic digit parsing, and delete backup tracking in v3.2.2",
           changes: [
-            "رفع کامل مشکل عدم ثبت لاگ در نشانگر زنگوله هنگام حذف تراکنش‌ها از صفحه داشبورد و بخش آخرین تراکنش‌ها",
-            "پشتیبانی جامع و دقیق از حذف کلیه انواع تراکنش‌ها شامل اقساط، بازپرداخت‌ها، بدهی‌ها، طلب‌ها و تراکنش‌های عمومی",
-            "به‌روزرسانی خودکار و بلادرنگ مانده وام‌ها و وضعیت مخاطبین پس از حذف تراکنش‌ها",
-            "انتشار رسمی نسخه 3.2.1"
+            "ثبت دقیق و بلادرنگ حذف انواع تراکنش‌ها در نشانگر زنگوله و لیست تغییرات پشتیبان‌گیری",
+            "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا با inputmode عددی)",
+            "تبدیل خودکار و بی‌درنگ ارقام فارسی و عربی به اعداد انگلیسی استاندارد در ورودی‌ها",
+            "تشخیص و فرمت خودکار شماره کارت و شبا در افزودن و ویرایش مخاطبین",
+            "انتشار رسمی نسخه 3.2.2"
           ]
         },
         ...otherHistory
