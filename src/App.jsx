@@ -2860,6 +2860,18 @@
 
             const isRedAmount = tx.isPositive !== undefined ? !tx.isPositive : (tx.type === 'debt' || tx.type === 'demand_repayment' || tx.type === 'expense' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment' && tx.type !== 'income'));
 
+            const highlightClass = (() => {
+                if (!isHighlighted) return '';
+                const isLoanTx = tx.loanId || tx.type === 'loan_installment' || tx.type === 'installment' || tx.type === 'repayment' || tx.installmentNumber;
+                const isDebtTx = tx.type === 'debt' || tx.type === 'debt_repayment';
+                const isDemandTx = tx.type === 'demand' || tx.type === 'demand_repayment';
+
+                if (isLoanTx) return 'tx-highlight-blink-blue';
+                if (isDebtTx) return 'tx-highlight-blink-red';
+                if (isDemandTx) return 'tx-highlight-blink-green';
+                return 'tx-highlight-blink-blue';
+            })();
+
             return (
                 <SwipeToDeleteItem
                     onDelete={(confirmCb) => onDelete && onDelete(tx, confirmCb)}
@@ -2871,9 +2883,7 @@
                             hasShadow 
                                 ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' 
                                 : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'
-                        } rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto ${
-                            isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''
-                        }`}
+                        } rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto ${highlightClass}`}
                     >
                         <div className="flex items-center space-x-2 sm:space-x-3 space-x-reverse min-w-0 flex-1">
                             <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg ${ isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`}>
@@ -3565,26 +3575,27 @@
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.2.2",
-    "buildNumber": 370,
+    "buildNumber": 374,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.2.2",
-    "latestBuild": 370,
+    "latestBuild": 374,
     "isUpdateAvailable": false,
     "history": [
         {
             "version": "3.2.2",
-            "buildNumber": 370,
+            "buildNumber": 374,
             "releaseDate": "2026-08-22",
             "releaseChannel": "Stable",
-            "commitHash": "v322b370",
-            "commitMessage": "fix: universal numeric input keyboard modes, arabic digit parsing, and delete backup tracking in v3.2.2",
+            "commitHash": "v322b374",
+            "commitMessage": "fix: sticky card scroll-then-edit flow, refined 3x gentle glowing border highlight without darkening in v3.2.2",
             "changes": [
+                "حرکت نرم و رفتن کارت استیکی به جایگاه بالای صفحه قبل از ورود به حالت ویرایش و باز شدن کیبورد",
+                "حذف تیرگی اولیه کارت تراکنش و پیاده‌سازی بوردر ضخیم درخشان با ۳ پالس آرام و چشم‌نواز (آبی وام، قرمز بدهی، سبز طلب)",
+                "هم‌اندازه شدن دکمه‌های انصراف و ثبت تغییرات در ماژول کارت‌های استیکی مشابه کارت‌های استک",
                 "ثبت دقیق و بلادرنگ حذف انواع تراکنش‌ها در نشانگر زنگوله و لیست تغییرات پشتیبان‌گیری",
-                "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا با inputmode عددی)",
-                "تبدیل خودکار و بی‌درنگ ارقام فارسی و عربی به اعداد انگلیسی استاندارد در ورودی‌ها",
-                "تشخیص و فرمت خودکار شماره کارت و شبا در افزودن و ویرایش مخاطبین",
+                "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا)",
                 "انتشار رسمی نسخه 3.2.2"
             ]
         },
@@ -4023,7 +4034,7 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 370;
+                const EMBEDDED_BUILD = 373;
                 const EMBEDDED_VERSION = "3.2.2";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
@@ -4935,7 +4946,7 @@
 
                     const clearTimer = setTimeout(() => {
                         setHighlightedTxId(null);
-                    }, 3000);
+                    }, 4000);
 
                     return () => {
                         clearTimeout(timer);
@@ -6519,31 +6530,60 @@
                 const cardElem = document.getElementById(`sticky-card-${card.id}`);
 
                 if (container && cardElem) {
-                    const containerRect = container.getBoundingClientRect();
-                    const cardRect = cardElem.getBoundingClientRect();
-                    const offsetTop = cardRect.top - containerRect.top;
-                    const targetScrollTop = container.scrollTop + offsetTop;
+                    const cards = (typeof getCurrentWizardCards === 'function') ? getCurrentWizardCards() : [];
+                    const cardIndex = cards.findIndex(c => c.id === card.id);
+                    const topOffset = (cardIndex >= 0 ? cardIndex * 8 : 0);
+                    const targetScrollTop = Math.max(0, cardElem.offsetTop - topOffset);
+                    const isAlreadyAtTop = Math.abs(container.scrollTop - targetScrollTop) < 6;
 
+                    // 1. Smoothly glide card to its docked position at the top of the stack
                     container.scrollTo({
-                        top: Math.max(0, targetScrollTop),
+                        top: targetScrollTop,
                         behavior: 'smooth'
                     });
 
+                    // 2. Enter editing mode once the card reaches the top
                     setTimeout(() => {
                         startEditingCard(card);
-                        setTimeout(() => {
-                            const targetInput = cardElem.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly]), select');
-                            if (targetInput) {
-                                try {
-                                    targetInput.focus({ preventScroll: true });
-                                } catch (e) {}
-                            }
-                        }, 60);
-                    }, 260);
+                    }, isAlreadyAtTop ? 20 : 250);
                 } else {
                     startEditingCard(card);
                 }
             };
+
+            // Automatically focus and show keyboard when a sticky card enters edit mode
+            useEffect(() => {
+                if (editingCardId) {
+                    const focusCardInput = () => {
+                        const cardElem = document.getElementById(`sticky-card-${editingCardId}`);
+                        if (cardElem) {
+                            const targetInput = cardElem.querySelector('input[autofocus]') ||
+                                                cardElem.querySelector('input:not([type="hidden"]):not([readonly]):not([type="radio"]):not([type="checkbox"]), textarea:not([readonly]), select');
+                            if (targetInput) {
+                                try {
+                                    targetInput.focus({ preventScroll: true });
+                                    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                                        targetInput.click();
+                                    }
+                                } catch (e) {}
+                            }
+                        }
+                    };
+
+                    focusCardInput();
+                    const r1 = requestAnimationFrame(focusCardInput);
+                    const t1 = setTimeout(focusCardInput, 40);
+                    const t2 = setTimeout(focusCardInput, 150);
+                    const t3 = setTimeout(focusCardInput, 280);
+
+                    return () => {
+                        cancelAnimationFrame(r1);
+                        clearTimeout(t1);
+                        clearTimeout(t2);
+                        clearTimeout(t3);
+                    };
+                }
+            }, [editingCardId]);
 
             const cancelEditingCard = () => {
                 if (cardFormBackup) {
@@ -8438,7 +8478,7 @@
                                                     key={tx.id || idx}
                                                     tx={tx}
                                                     contacts={contacts}
-                                                    isHighlighted={tx.id === highlightedTxId}
+                                                    isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
                                                     onEdit={(txItem) => handleTransactionClick(txItem)}
                                                     onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
                                                 />
@@ -9264,7 +9304,7 @@
                                                                             tx={tx}
                                                                             colorType="rose"
                                                                             hasShadow={true}
-                                                                            isHighlighted={tx.id === highlightedTxId}
+                                                                            isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
                                                                             onEdit={(txItem) => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem)}
                                                                             onDelete={(txItem) => requestDeleteTx(txItem, 'debt')}
                                                                         />
@@ -9378,7 +9418,7 @@
                                                                             tx={tx}
                                                                             colorType="emerald"
                                                                             hasShadow={true}
-                                                                            isHighlighted={tx.id === highlightedTxId}
+                                                                            isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
                                                                             onEdit={(txItem) => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem)}
                                                                             onDelete={(txItem) => requestDeleteTx(txItem, 'demand')}
                                                                         />
@@ -9851,7 +9891,7 @@
                                                                 index={idx}
                                                                 totalCount={repaymentTxs.length}
                                                                 colorType="indigo"
-                                                                isHighlighted={tx.id === highlightedTxId}
+                                                                isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
                                                                 onEdit={(txItem) => openStackWizard('installment', 'edit', txItem)}
                                                                 onDelete={(txItem) => requestDeleteTx(txItem, 'loan_installment')}
                                                             />
@@ -10140,7 +10180,7 @@
                                                         contactName={contactDisplayName}
                                                         contacts={contacts}
                                                      loans={loans}
-                                                        isHighlighted={tx.id === highlightedTxId}
+                                                        isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
                                                         onEdit={(txItem) => openStackWizard(isDebt ? (isRepay ? "debt_repayment" : "debt") : (isRepay ? "demand_repayment" : "demand"), "edit", txItem)}
                                                         onDelete={(txItem) => requestDeleteTx(txItem, isDebt ? "debt" : "demand")}
                                                     />
@@ -10206,7 +10246,7 @@
                                             contacts={contacts}
                                             loans={loans}
                                             hasShadow={true}
-                                            isHighlighted={tx.id === highlightedTxId}
+                                            isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
                                             onEdit={(txItem) => handleTransactionClick(txItem)}
                                             onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
                                         />
@@ -11082,7 +11122,7 @@
                                                                                     e.stopPropagation();
                                                                                     cancelEditingCard();
                                                                                 }}
-                                                                                className="w-1/3 py-2.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-all active:scale-95 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
+                                                                                className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-all active:scale-95 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
                                                                             >
                                                                                 <Icon name="x" className="w-3.5 h-3.5 shrink-0" />
                                                                                 <span>انصراف</span>
@@ -11094,7 +11134,7 @@
                                                                                     e.stopPropagation();
                                                                                     saveEditingCard(card);
                                                                                 }}
-                                                                                className="w-2/3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1.5 space-x-reverse"
+                                                                                className="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1.5 space-x-reverse"
                                                                             >
                                                                                 <Icon name="check" className="w-3.5 h-3.5 shrink-0" />
                                                                                 <span>ثبت تغییرات</span>

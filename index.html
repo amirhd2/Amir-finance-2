@@ -200,17 +200,63 @@
             background: rgba(15, 23, 42, 0.92);
         }
 
-        /* Highlight Blink Animation for Transaction Detail Navigation */
-        @keyframes txHighlightBlink {
-            0% {
-                background-color: rgba(99, 102, 241, 0.15);
+        /* Highlight Blink 3x Animations for Transaction Detail Navigation */
+        @keyframes txHighlightBlinkBlue {
+            0%, 100% {
+                box-shadow: none;
             }
-            100% {
-                background-color: transparent;
+            12%, 46%, 80% {
+                box-shadow: 0 0 0 3.5px #2563eb, 0 0 16px rgba(37, 99, 235, 0.4) !important;
+            }
+            28%, 62%, 96% {
+                box-shadow: none;
             }
         }
+        .tx-highlight-blink-blue {
+            animation: txHighlightBlinkBlue 3.4s ease-in-out forwards !important;
+            border-radius: 1rem !important;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes txHighlightBlinkRed {
+            0%, 100% {
+                box-shadow: none;
+            }
+            12%, 46%, 80% {
+                box-shadow: 0 0 0 3.5px #e11d48, 0 0 16px rgba(225, 29, 72, 0.4) !important;
+            }
+            28%, 62%, 96% {
+                box-shadow: none;
+            }
+        }
+        .tx-highlight-blink-red {
+            animation: txHighlightBlinkRed 3.4s ease-in-out forwards !important;
+            border-radius: 1rem !important;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes txHighlightBlinkGreen {
+            0%, 100% {
+                box-shadow: none;
+            }
+            12%, 46%, 80% {
+                box-shadow: 0 0 0 3.5px #059669, 0 0 16px rgba(5, 150, 105, 0.4) !important;
+            }
+            28%, 62%, 96% {
+                box-shadow: none;
+            }
+        }
+        .tx-highlight-blink-green {
+            animation: txHighlightBlinkGreen 3.4s ease-in-out forwards !important;
+            border-radius: 1rem !important;
+            position: relative;
+            z-index: 10;
+        }
+
         .tx-highlight-blink {
-            animation: txHighlightBlink 1.2s ease-out forwards;
+            animation: txHighlightBlinkBlue 3.4s ease-in-out forwards;
             border-radius: 1rem;
         }
 
@@ -714,7 +760,7 @@
     <div id="root" class="w-full h-full flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=3.2.1-b366"></script>
+    <script src="app.compiled.js?v=3.2.2-b372"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>
