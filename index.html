@@ -200,64 +200,123 @@
             background: rgba(15, 23, 42, 0.92);
         }
 
-        /* Highlight Blink 3x Animations for Transaction Detail Navigation */
-        @keyframes txHighlightBlinkBlue {
-            0%, 100% {
-                box-shadow: none;
-            }
-            12%, 46%, 80% {
-                box-shadow: 0 0 0 3.5px #2563eb, 0 0 16px rgba(37, 99, 235, 0.4) !important;
-            }
-            28%, 62%, 96% {
-                box-shadow: none;
-            }
-        }
-        .tx-highlight-blink-blue {
-            animation: txHighlightBlinkBlue 3.4s ease-in-out forwards !important;
-            border-radius: 1rem !important;
-            position: relative;
-            z-index: 10;
+        /* Premium Transaction Border Focus Moving Light Animations */
+        .tx-focus-container {
+            animation: txFocusFadeOut 1.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        @keyframes txHighlightBlinkRed {
-            0%, 100% {
-                box-shadow: none;
+        @keyframes txFocusFadeOut {
+            0%, 82% {
+                opacity: 1;
             }
-            12%, 46%, 80% {
-                box-shadow: 0 0 0 3.5px #e11d48, 0 0 16px rgba(225, 29, 72, 0.4) !important;
+            100% {
+                opacity: 0;
             }
-            28%, 62%, 96% {
-                box-shadow: none;
-            }
-        }
-        .tx-highlight-blink-red {
-            animation: txHighlightBlinkRed 3.4s ease-in-out forwards !important;
-            border-radius: 1rem !important;
-            position: relative;
-            z-index: 10;
         }
 
-        @keyframes txHighlightBlinkGreen {
-            0%, 100% {
-                box-shadow: none;
-            }
-            12%, 46%, 80% {
-                box-shadow: 0 0 0 3.5px #059669, 0 0 16px rgba(5, 150, 105, 0.4) !important;
-            }
-            28%, 62%, 96% {
-                box-shadow: none;
-            }
-        }
-        .tx-highlight-blink-green {
-            animation: txHighlightBlinkGreen 3.4s ease-in-out forwards !important;
-            border-radius: 1rem !important;
-            position: relative;
-            z-index: 10;
+        .tx-focus-beam-glow {
+            stroke-dasharray: 15 200;
+            animation: txFocusBeamGlow 1.25s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
         }
 
-        .tx-highlight-blink {
-            animation: txHighlightBlinkBlue 3.4s ease-in-out forwards;
-            border-radius: 1rem;
+        @keyframes txFocusBeamGlow {
+            0% {
+                stroke-dashoffset: 15;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.85;
+            }
+            75% {
+                stroke-dashoffset: -85;
+                opacity: 0.9;
+            }
+            90% {
+                stroke-dashoffset: -100;
+                opacity: 0.6;
+            }
+            100% {
+                stroke-dashoffset: -100;
+                opacity: 0;
+            }
+        }
+
+        .tx-focus-beam-core {
+            stroke-dasharray: 12 200;
+            animation: txFocusBeamCore 1.25s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+
+        @keyframes txFocusBeamCore {
+            0% {
+                stroke-dashoffset: 12;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            75% {
+                stroke-dashoffset: -88;
+                opacity: 1;
+            }
+            90% {
+                stroke-dashoffset: -100;
+                opacity: 0.85;
+            }
+            100% {
+                stroke-dashoffset: -100;
+                opacity: 0;
+            }
+        }
+
+        .tx-focus-beam-head {
+            stroke-dasharray: 4 200;
+            animation: txFocusBeamHead 1.25s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+
+        @keyframes txFocusBeamHead {
+            0% {
+                stroke-dashoffset: 4;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            75% {
+                stroke-dashoffset: -96;
+                opacity: 1;
+            }
+            90% {
+                stroke-dashoffset: -100;
+                opacity: 0.85;
+            }
+            100% {
+                stroke-dashoffset: -100;
+                opacity: 0;
+            }
+        }
+
+        .tx-focus-meet-pulse {
+            transform-origin: center;
+            animation: txFocusMeetPulse 1.25s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+
+        @keyframes txFocusMeetPulse {
+            0%, 72% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            82% {
+                opacity: 1;
+                transform: scale(1.15);
+            }
+            92% {
+                opacity: 0.65;
+                transform: scale(1.4);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.6);
+            }
         }
 
         /* Subtle Periodic Bell Wiggle for Backup Required Status */
@@ -760,7 +819,7 @@
     <div id="root" class="w-full h-full flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=3.2.2-b372"></script>
+    <script src="app.compiled.js?v=3.2.2-b375"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>

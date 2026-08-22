@@ -2763,6 +2763,172 @@
             );
         }
 
+        function TxBorderFocusOverlay({ tx, isHighlighted }) {
+            const [dims, setDims] = useState({ width: 0, height: 0 });
+            const [animActive, setAnimActive] = useState(false);
+            const containerRef = useRef(null);
+
+            // Determine category color based on transaction type
+            const isLoanTx = tx.loanId || tx.type === 'loan_installment' || tx.type === 'installment' || tx.type === 'repayment' || tx.installmentNumber;
+            const isDebtTx = tx.type === 'debt' || tx.type === 'debt_repayment';
+            const isDemandTx = tx.type === 'demand' || tx.type === 'demand_repayment';
+
+            // Loan: #3B82F6, Debt: #EF4444, Receivable: #22C55E
+            const colorHex = isLoanTx ? '#3B82F6' : isDebtTx ? '#EF4444' : isDemandTx ? '#22C55E' : '#3B82F6';
+            const lightTint = isLoanTx ? '#DBEAFE' : isDebtTx ? '#FEE2E2' : isDemandTx ? '#DCFCE7' : '#DBEAFE';
+
+            useEffect(() => {
+                if (!isHighlighted) {
+                    setAnimActive(false);
+                    return;
+                }
+
+                const updateDims = () => {
+                    if (containerRef.current && containerRef.current.parentElement) {
+                        const rect = containerRef.current.parentElement.getBoundingClientRect();
+                        if (rect.width > 0 && rect.height > 0) {
+                            setDims({
+                                width: Math.round(rect.width),
+                                height: Math.round(rect.height)
+                            });
+                        }
+                    }
+                };
+
+                updateDims();
+
+                // Wait for page scroll to finish (450ms initial + ~300ms scroll) + ~200ms pause
+                const startTimer = setTimeout(() => {
+                    updateDims();
+                    setAnimActive(true);
+                }, 950);
+
+                // Auto-stop and remove after animation sequence completes (950ms + 1400ms = 2350ms)
+                const stopTimer = setTimeout(() => {
+                    setAnimActive(false);
+                }, 2450);
+
+                return () => {
+                    clearTimeout(startTimer);
+                    clearTimeout(stopTimer);
+                };
+            }, [isHighlighted]);
+
+            if (!isHighlighted || !animActive || dims.width === 0 || dims.height === 0) {
+                return <div ref={containerRef} className="absolute inset-0 pointer-events-none" aria-hidden="true" />;
+            }
+
+            const w = dims.width;
+            const h = dims.height;
+            const r = 16; // 16px radius for rounded-2xl
+
+            // Two symmetrical paths along the exact card border perimeter:
+            // Path 1 (Clockwise): Top-Center -> Top-Right -> Right-Edge -> Bottom-Right -> Bottom-Center
+            const path1 = `M ${w / 2} 1 L ${w - 1 - r} 1 A ${r} ${r} 0 0 1 ${w - 1} ${1 + r} L ${w - 1} ${h - 1 - r} A ${r} ${r} 0 0 1 ${w - 1 - r} ${h - 1} L ${w / 2} ${h - 1}`;
+            
+            // Path 2 (Counter-Clockwise): Top-Center -> Top-Left -> Left-Edge -> Bottom-Left -> Bottom-Center
+            const path2 = `M ${w / 2} 1 L ${1 + r} 1 A ${r} ${r} 0 0 0 1 ${1 + r} L 1 ${h - 1 - r} A ${r} ${r} 0 0 0 ${1 + r} ${h - 1} L ${w / 2} ${h - 1}`;
+
+            return (
+                <div ref={containerRef} className="absolute inset-0 pointer-events-none z-30 overflow-visible" aria-hidden="true">
+                    <svg
+                        width={w}
+                        height={h}
+                        viewBox={`0 0 ${w} ${h}`}
+                        className="absolute inset-0 w-full h-full overflow-visible pointer-events-none tx-focus-container"
+                    >
+                        <defs>
+                            <filter id={`tx-glow-${tx.id}`} x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                                <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                            <radialGradient id={`tx-meet-grad-${tx.id}`} cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stopColor={lightTint} stopOpacity="1" />
+                                <stop offset="35%" stopColor={colorHex} stopOpacity="0.85" />
+                                <stop offset="100%" stopColor={colorHex} stopOpacity="0" />
+                            </radialGradient>
+                        </defs>
+
+                        {/* Soft outer glow layer along clockwise and counter-clockwise paths */}
+                        <path
+                            d={path1}
+                            pathLength="100"
+                            fill="none"
+                            stroke={colorHex}
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            strokeOpacity="0.45"
+                            className="tx-focus-beam-glow"
+                            filter={`url(#tx-glow-${tx.id})`}
+                        />
+                        <path
+                            d={path2}
+                            pathLength="100"
+                            fill="none"
+                            stroke={colorHex}
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            strokeOpacity="0.45"
+                            className="tx-focus-beam-glow"
+                            filter={`url(#tx-glow-${tx.id})`}
+                        />
+
+                        {/* Core focused energy light beams traveling in opposite directions */}
+                        <path
+                            d={path1}
+                            pathLength="100"
+                            fill="none"
+                            stroke={colorHex}
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            className="tx-focus-beam-core"
+                        />
+                        <path
+                            d={path2}
+                            pathLength="100"
+                            fill="none"
+                            stroke={colorHex}
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            className="tx-focus-beam-core"
+                        />
+
+                        {/* Brighter leading edge segment head */}
+                        <path
+                            d={path1}
+                            pathLength="100"
+                            fill="none"
+                            stroke={lightTint}
+                            strokeWidth="1.6"
+                            strokeLinecap="round"
+                            className="tx-focus-beam-head"
+                        />
+                        <path
+                            d={path2}
+                            pathLength="100"
+                            fill="none"
+                            stroke={lightTint}
+                            strokeWidth="1.6"
+                            strokeLinecap="round"
+                            className="tx-focus-beam-head"
+                        />
+
+                        {/* Soft brief glow pulse flare when both beams meet at bottom-center */}
+                        <circle
+                            cx={w / 2}
+                            cy={h - 1}
+                            r="14"
+                            fill={`url(#tx-meet-grad-${tx.id})`}
+                            className="tx-focus-meet-pulse"
+                        />
+                    </svg>
+                </div>
+            );
+        }
+
         function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [], loans = [], isHighlighted = false, hasShadow = true }) {
             const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
 
@@ -2860,18 +3026,6 @@
 
             const isRedAmount = tx.isPositive !== undefined ? !tx.isPositive : (tx.type === 'debt' || tx.type === 'demand_repayment' || tx.type === 'expense' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment' && tx.type !== 'income'));
 
-            const highlightClass = (() => {
-                if (!isHighlighted) return '';
-                const isLoanTx = tx.loanId || tx.type === 'loan_installment' || tx.type === 'installment' || tx.type === 'repayment' || tx.installmentNumber;
-                const isDebtTx = tx.type === 'debt' || tx.type === 'debt_repayment';
-                const isDemandTx = tx.type === 'demand' || tx.type === 'demand_repayment';
-
-                if (isLoanTx) return 'tx-highlight-blink-blue';
-                if (isDebtTx) return 'tx-highlight-blink-red';
-                if (isDemandTx) return 'tx-highlight-blink-green';
-                return 'tx-highlight-blink-blue';
-            })();
-
             return (
                 <SwipeToDeleteItem
                     onDelete={(confirmCb) => onDelete && onDelete(tx, confirmCb)}
@@ -2883,8 +3037,9 @@
                             hasShadow 
                                 ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' 
                                 : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'
-                        } rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto ${highlightClass}`}
+                        } rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto relative overflow-visible`}
                     >
+                        <TxBorderFocusOverlay tx={tx} isHighlighted={isHighlighted} />
                         <div className="flex items-center space-x-2 sm:space-x-3 space-x-reverse min-w-0 flex-1">
                             <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg ${ isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`}>
                                 {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (isRedAmount ? "arrow-up-right" : "arrow-down-left")} className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -3574,28 +3729,44 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.2",
-    "buildNumber": 374,
+    "installedVersion": "3.2.3",
+    "buildNumber": 380,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.2",
-    "latestBuild": 374,
+    "latestVersion": "3.2.3",
+    "latestBuild": 380,
     "isUpdateAvailable": false,
     "history": [
         {
-            "version": "3.2.2",
-            "buildNumber": 374,
+            "version": "3.2.3",
+            "buildNumber": 380,
             "releaseDate": "2026-08-22",
             "releaseChannel": "Stable",
-            "commitHash": "v322b374",
-            "commitMessage": "fix: sticky card scroll-then-edit flow, refined 3x gentle glowing border highlight without darkening in v3.2.2",
+            "commitHash": "v323b380",
+            "commitMessage": "feat: dual opposite moving light segments focus animation and release v3.2.3",
             "changes": [
+                "انیمیشن فوکوس نوری دونقطه‌ای از مرکز بالای کارت در دو جهت ساعت‌گرد و پادساعت‌گرد با ملاقات در مرکز پایین و پالس ملایم نهایی",
+                "تفکیک رنگ هوشمند انیمیشن فوکوس بر اساس نوع تراکنش (آبی برای وام و اقساط، قرمز برای بدهی، سبز برای طلب)",
                 "حرکت نرم و رفتن کارت استیکی به جایگاه بالای صفحه قبل از ورود به حالت ویرایش و باز شدن کیبورد",
-                "حذف تیرگی اولیه کارت تراکنش و پیاده‌سازی بوردر ضخیم درخشان با ۳ پالس آرام و چشم‌نواز (آبی وام، قرمز بدهی، سبز طلب)",
                 "هم‌اندازه شدن دکمه‌های انصراف و ثبت تغییرات در ماژول کارت‌های استیکی مشابه کارت‌های استک",
                 "ثبت دقیق و بلادرنگ حذف انواع تراکنش‌ها در نشانگر زنگوله و لیست تغییرات پشتیبان‌گیری",
                 "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا)",
+                "انتشار رسمی نسخه 3.2.3"
+            ]
+        },
+        {
+            "version": "3.2.2",
+            "buildNumber": 379,
+            "releaseDate": "2026-08-22",
+            "releaseChannel": "Stable",
+            "commitHash": "v322b379",
+            "commitMessage": "fix: universal numeric input keyboard modes, arabic digit parsing, and delete backup tracking in v3.2.2",
+            "changes": [
+                "ثبت دقیق و بلادرنگ حذف انواع تراکنش‌ها در نشانگر زنگوله و لیست تغییرات پشتیبان‌گیری",
+                "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا با inputmode عددی)",
+                "تبدیل خودکار و بی‌درنگ ارقام فارسی و عربی به اعداد انگلیسی استاندارد در ورودی‌ها",
+                "تشخیص و فرمت خودکار شماره کارت و شبا در افزودن و ویرایش مخاطبین",
                 "انتشار رسمی نسخه 3.2.2"
             ]
         },
@@ -4034,7 +4205,7 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 373;
+                const EMBEDDED_BUILD = 379;
                 const EMBEDDED_VERSION = "3.2.2";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');

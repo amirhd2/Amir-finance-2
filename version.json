@@ -1,28 +1,44 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.2.2",
-  "buildNumber": 374,
+  "installedVersion": "3.2.3",
+  "buildNumber": 380,
   "releaseDate": "2026-08-22",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.2.2",
-  "latestBuild": 374,
+  "latestVersion": "3.2.3",
+  "latestBuild": 380,
   "isUpdateAvailable": false,
   "history": [
     {
-      "version": "3.2.2",
-      "buildNumber": 374,
+      "version": "3.2.3",
+      "buildNumber": 380,
       "releaseDate": "2026-08-22",
       "releaseChannel": "Stable",
-      "commitHash": "v322b374",
-      "commitMessage": "fix: sticky card scroll-then-edit flow, refined 3x gentle glowing border highlight without darkening in v3.2.2",
+      "commitHash": "v323b380",
+      "commitMessage": "feat: dual opposite moving light segments focus animation and release v3.2.3",
       "changes": [
+        "انیمیشن فوکوس نوری دونقطه‌ای از مرکز بالای کارت در دو جهت ساعت‌گرد و پادساعت‌گرد با ملاقات در مرکز پایین و پالس ملایم نهایی",
+        "تفکیک رنگ هوشمند انیمیشن فوکوس بر اساس نوع تراکنش (آبی برای وام و اقساط، قرمز برای بدهی، سبز برای طلب)",
         "حرکت نرم و رفتن کارت استیکی به جایگاه بالای صفحه قبل از ورود به حالت ویرایش و باز شدن کیبورد",
-        "حذف تیرگی اولیه کارت تراکنش و پیاده‌سازی بوردر ضخیم درخشان با ۳ پالس آرام و چشم‌نواز (آبی وام، قرمز بدهی، سبز طلب)",
         "هم‌اندازه شدن دکمه‌های انصراف و ثبت تغییرات در ماژول کارت‌های استیکی مشابه کارت‌های استک",
         "ثبت دقیق و بلادرنگ حذف انواع تراکنش‌ها در نشانگر زنگوله و لیست تغییرات پشتیبان‌گیری",
         "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا)",
+        "انتشار رسمی نسخه 3.2.3"
+      ]
+    },
+    {
+      "version": "3.2.2",
+      "buildNumber": 379,
+      "releaseDate": "2026-08-22",
+      "releaseChannel": "Stable",
+      "commitHash": "v322b379",
+      "commitMessage": "fix: universal numeric input keyboard modes, arabic digit parsing, and delete backup tracking in v3.2.2",
+      "changes": [
+        "ثبت دقیق و بلادرنگ حذف انواع تراکنش‌ها در نشانگر زنگوله و لیست تغییرات پشتیبان‌گیری",
+        "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا با inputmode عددی)",
+        "تبدیل خودکار و بی‌درنگ ارقام فارسی و عربی به اعداد انگلیسی استاندارد در ورودی‌ها",
+        "تشخیص و فرمت خودکار شماره کارت و شبا در افزودن و ویرایش مخاطبین",
         "انتشار رسمی نسخه 3.2.2"
       ]
     },
