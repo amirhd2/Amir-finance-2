@@ -1,21 +1,35 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.2.3",
-  "buildNumber": 380,
+  "installedVersion": "3.2.4",
+  "buildNumber": 392,
   "releaseDate": "2026-08-22",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.2.3",
-  "latestBuild": 380,
+  "latestVersion": "3.2.4",
+  "latestBuild": 392,
   "isUpdateAvailable": false,
   "history": [
     {
-      "version": "3.2.3",
-      "buildNumber": 380,
+      "version": "3.2.4",
+      "buildNumber": 392,
       "releaseDate": "2026-08-22",
       "releaseChannel": "Stable",
-      "commitHash": "v323b380",
+      "commitHash": "v324b392",
+      "commitMessage": "feat: redesign settings version card with english typography and release v3.2.4",
+      "changes": [
+        "بازطراحی کارت نسخه در صفحه تنظیمات با عنوان Amir Finance و نمایش ارقام انگلیسی برای نسخه و بیلد",
+        "اصلاح رفتار آکاردئون‌های تنظیمات به حالت تک‌بازشو (Single-Accordion) و پیش‌فرض بسته",
+        "ستون‌بندی مستقل گرید تنظیمات برای صفحات بزرگ و تبلت با حفظ یکپارچگی استایل‌ها",
+        "انتشار رسمی نسخه 3.2.4"
+      ]
+    },
+    {
+      "version": "3.2.3",
+      "buildNumber": 386,
+      "releaseDate": "2026-08-22",
+      "releaseChannel": "Stable",
+      "commitHash": "v323b386",
       "commitMessage": "feat: dual opposite moving light segments focus animation and release v3.2.3",
       "changes": [
         "انیمیشن فوکوس نوری دونقطه‌ای از مرکز بالای کارت در دو جهت ساعت‌گرد و پادساعت‌گرد با ملاقات در مرکز پایین و پالس ملایم نهایی",

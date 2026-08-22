@@ -3729,13 +3729,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.3",
-    "buildNumber": 386,
+    "installedVersion": "3.2.4",
+    "buildNumber": 392,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.3",
-    "latestBuild": 386,
+    "latestVersion": "3.2.4",
+    "latestBuild": 392,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -4195,8 +4195,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 386;
-                const EMBEDDED_VERSION = "3.2.3";
+                const EMBEDDED_BUILD = 392;
+                const EMBEDDED_VERSION = "3.2.4";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -10331,7 +10331,17 @@
                                         </div>
                                     ) : (
                                         <div className="space-y-3">
-                                            {periodTxs.map(tx => renderTransactionItem(tx))}
+                                            {periodTxs.map((tx, idx) => (
+                                                <SwipeableTxCard
+                                                    key={tx.id || idx}
+                                                    tx={tx}
+                                                    contacts={contacts}
+                                                    loans={loans}
+                                                    isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
+                                                    onEdit={(txItem) => handleTransactionClick(txItem)}
+                                                    onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
+                                                />
+                                            ))}
                                         </div>
                                     )}
                                 </section>

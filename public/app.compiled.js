@@ -318,14 +318,56 @@ const toPersianDigits = n => {
   const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
   return String(n).replace(/\d/g, x => farsiDigits[x]);
 };
+const toEnglishDigits = str => {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+};
+const parseRawNumber = val => {
+  if (val === null || val === undefined) return '';
+  const normalized = toEnglishDigits(String(val));
+  return normalized.replace(/\D/g, '');
+};
+const parseRawDecimal = (val, allowNegative = false) => {
+  if (val === null || val === undefined) return '';
+  let s = toEnglishDigits(String(val)).replace(/٫/g, '.').replace(/,/g, '');
+  let isNegative = false;
+  if (allowNegative && (s.startsWith('-') || s.startsWith('−'))) {
+    isNegative = true;
+  }
+  s = s.replace(/[^\d.]/g, '');
+  const parts = s.split('.');
+  let result = parts[0];
+  if (parts.length > 1) {
+    result += '.' + parts.slice(1).join('');
+  }
+  return isNegative && result ? '-' + result : result;
+};
+const formatWithCommas = val => {
+  if (val === null || val === undefined || val === '') return '';
+  const clean = parseRawNumber(val);
+  if (!clean) return '';
+  return Number(clean).toLocaleString('en-US');
+};
 const formatCardNumber = val => {
   if (!val) return '';
-  const clean = String(val).replace(/\D/g, '').slice(0, 16);
+  const clean = parseRawNumber(val).slice(0, 16);
   return clean.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+};
+const normalizePhoneNumber = val => {
+  if (!val) return '';
+  const eng = toEnglishDigits(String(val));
+  const hasPlus = eng.trim().startsWith('+');
+  const clean = eng.replace(/\D/g, '');
+  return hasPlus ? '+' + clean : clean;
+};
+const normalizeIBAN = val => {
+  if (!val) return '';
+  const eng = toEnglishDigits(String(val)).toUpperCase().replace(/[^A-Z0-9]/g, '');
+  return eng.slice(0, 26);
 };
 const getBankNameFromCard = cardNo => {
   if (!cardNo) return '';
-  const clean = String(cardNo).replace(/\D/g, '');
+  const clean = parseRawNumber(cardNo);
   if (clean.length < 6) return '';
   const prefix6 = clean.slice(0, 6);
   const bankMap = {
@@ -346,14 +388,17 @@ const getBankNameFromCard = cardNo => {
     '504172': 'قرض‌الحسنه رسالت',
     '505416': 'بانک گردشگری',
     '606373': 'قرض‌الحسنه مهر ایران',
-    '62.1.7': 'بانک پارسیان',
+    '622106': 'بانک پارسیان',
     '639194': 'بانک پارسیان',
     '505785': 'بانک ایران زمین',
     '636949': 'بانک حکمت ایرانیان',
     '502938': 'بانک دی',
     '603769': 'بانک صادرات',
     '610000': 'بانک صادرات',
-    '589463': 'بانک رفاه کارگران'
+    '589463': 'بانک رفاه کارگران',
+    '627760': 'پست بانک ایران',
+    '585983': 'بانک تجارت',
+    '627353': 'بانک تجارت'
   };
   return bankMap[prefix6] || '';
 };
@@ -389,20 +434,6 @@ const formatDateToNumericJalali = dateStr => {
   const m = String(monthNum).padStart(2, '0');
   const d = String(parsed.day).padStart(2, '0');
   return `${y}/${m}/${d}`;
-};
-const toEnglishDigits = str => {
-  if (!str) return '';
-  return String(str).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-};
-const parseRawNumber = val => {
-  if (val === null || val === undefined) return '';
-  return String(val).replace(/\D/g, '');
-};
-const formatWithCommas = val => {
-  if (val === null || val === undefined || val === '') return '';
-  const clean = String(val).replace(/\D/g, '');
-  if (!clean) return '';
-  return Number(clean).toLocaleString('en-US');
 };
 const numToPersianWords = num => {
   if (num === null || num === undefined || num === '') return '';
@@ -3460,6 +3491,174 @@ function ActiveArchiveSegmentedControl({
     }
   }));
 }
+function TxBorderFocusOverlay({
+  tx,
+  isHighlighted
+}) {
+  const [dims, setDims] = useState({
+    width: 0,
+    height: 0
+  });
+  const [animActive, setAnimActive] = useState(false);
+  const containerRef = useRef(null);
+
+  // Determine category color based on transaction type
+  const isLoanTx = tx.loanId || tx.type === 'loan_installment' || tx.type === 'installment' || tx.type === 'repayment' || tx.installmentNumber;
+  const isDebtTx = tx.type === 'debt' || tx.type === 'debt_repayment';
+  const isDemandTx = tx.type === 'demand' || tx.type === 'demand_repayment';
+
+  // Loan: #3B82F6, Debt: #EF4444, Receivable: #22C55E
+  const colorHex = isLoanTx ? '#3B82F6' : isDebtTx ? '#EF4444' : isDemandTx ? '#22C55E' : '#3B82F6';
+  const lightTint = isLoanTx ? '#DBEAFE' : isDebtTx ? '#FEE2E2' : isDemandTx ? '#DCFCE7' : '#DBEAFE';
+  useEffect(() => {
+    if (!isHighlighted) {
+      setAnimActive(false);
+      return;
+    }
+    const updateDims = () => {
+      if (containerRef.current && containerRef.current.parentElement) {
+        const rect = containerRef.current.parentElement.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          setDims({
+            width: Math.round(rect.width),
+            height: Math.round(rect.height)
+          });
+        }
+      }
+    };
+    updateDims();
+
+    // Wait for page scroll to finish (450ms initial + ~300ms scroll) + ~200ms pause
+    const startTimer = setTimeout(() => {
+      updateDims();
+      setAnimActive(true);
+    }, 950);
+
+    // Auto-stop and remove after animation sequence completes (950ms + 1400ms = 2350ms)
+    const stopTimer = setTimeout(() => {
+      setAnimActive(false);
+    }, 2450);
+    return () => {
+      clearTimeout(startTimer);
+      clearTimeout(stopTimer);
+    };
+  }, [isHighlighted]);
+  if (!isHighlighted || !animActive || dims.width === 0 || dims.height === 0) {
+    return /*#__PURE__*/React.createElement("div", {
+      ref: containerRef,
+      className: "absolute inset-0 pointer-events-none",
+      "aria-hidden": "true"
+    });
+  }
+  const w = dims.width;
+  const h = dims.height;
+  const r = 16; // 16px radius for rounded-2xl
+
+  // Two symmetrical paths along the exact card border perimeter:
+  // Path 1 (Clockwise): Top-Center -> Top-Right -> Right-Edge -> Bottom-Right -> Bottom-Center
+  const path1 = `M ${w / 2} 1 L ${w - 1 - r} 1 A ${r} ${r} 0 0 1 ${w - 1} ${1 + r} L ${w - 1} ${h - 1 - r} A ${r} ${r} 0 0 1 ${w - 1 - r} ${h - 1} L ${w / 2} ${h - 1}`;
+
+  // Path 2 (Counter-Clockwise): Top-Center -> Top-Left -> Left-Edge -> Bottom-Left -> Bottom-Center
+  const path2 = `M ${w / 2} 1 L ${1 + r} 1 A ${r} ${r} 0 0 0 1 ${1 + r} L 1 ${h - 1 - r} A ${r} ${r} 0 0 0 ${1 + r} ${h - 1} L ${w / 2} ${h - 1}`;
+  return /*#__PURE__*/React.createElement("div", {
+    ref: containerRef,
+    className: "absolute inset-0 pointer-events-none z-30 overflow-visible",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: w,
+    height: h,
+    viewBox: `0 0 ${w} ${h}`,
+    className: "absolute inset-0 w-full h-full overflow-visible pointer-events-none tx-focus-container"
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("filter", {
+    id: `tx-glow-${tx.id}`,
+    x: "-20%",
+    y: "-20%",
+    width: "140%",
+    height: "140%"
+  }, /*#__PURE__*/React.createElement("feGaussianBlur", {
+    stdDeviation: "2.5",
+    result: "blur"
+  }), /*#__PURE__*/React.createElement("feMerge", null, /*#__PURE__*/React.createElement("feMergeNode", {
+    in: "blur"
+  }), /*#__PURE__*/React.createElement("feMergeNode", {
+    in: "SourceGraphic"
+  }))), /*#__PURE__*/React.createElement("radialGradient", {
+    id: `tx-meet-grad-${tx.id}`,
+    cx: "50%",
+    cy: "50%",
+    r: "50%"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: lightTint,
+    stopOpacity: "1"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "35%",
+    stopColor: colorHex,
+    stopOpacity: "0.85"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: colorHex,
+    stopOpacity: "0"
+  }))), /*#__PURE__*/React.createElement("path", {
+    d: path1,
+    pathLength: "100",
+    fill: "none",
+    stroke: colorHex,
+    strokeWidth: "4",
+    strokeLinecap: "round",
+    strokeOpacity: "0.45",
+    className: "tx-focus-beam-glow",
+    filter: `url(#tx-glow-${tx.id})`
+  }), /*#__PURE__*/React.createElement("path", {
+    d: path2,
+    pathLength: "100",
+    fill: "none",
+    stroke: colorHex,
+    strokeWidth: "4",
+    strokeLinecap: "round",
+    strokeOpacity: "0.45",
+    className: "tx-focus-beam-glow",
+    filter: `url(#tx-glow-${tx.id})`
+  }), /*#__PURE__*/React.createElement("path", {
+    d: path1,
+    pathLength: "100",
+    fill: "none",
+    stroke: colorHex,
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    className: "tx-focus-beam-core"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: path2,
+    pathLength: "100",
+    fill: "none",
+    stroke: colorHex,
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    className: "tx-focus-beam-core"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: path1,
+    pathLength: "100",
+    fill: "none",
+    stroke: lightTint,
+    strokeWidth: "1.6",
+    strokeLinecap: "round",
+    className: "tx-focus-beam-head"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: path2,
+    pathLength: "100",
+    fill: "none",
+    stroke: lightTint,
+    strokeWidth: "1.6",
+    strokeLinecap: "round",
+    className: "tx-focus-beam-head"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: w / 2,
+    cy: h - 1,
+    r: "14",
+    fill: `url(#tx-meet-grad-${tx.id})`,
+    className: "tx-focus-meet-pulse"
+  })));
+}
 function SwipeableTxCard({
   tx,
   index,
@@ -3573,8 +3772,11 @@ function SwipeableTxCard({
     onCardClick: () => onEdit && onEdit(tx)
   }, /*#__PURE__*/React.createElement("div", {
     id: `tx-card-${tx.id}`,
-    className: `${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto ${isHighlighted ? 'tx-highlight-blink ring-2 ring-indigo-500 shadow-lg' : ''}`
-  }, /*#__PURE__*/React.createElement("div", {
+    className: `${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto relative overflow-visible`
+  }, /*#__PURE__*/React.createElement(TxBorderFocusOverlay, {
+    tx: tx,
+    isHighlighted: isHighlighted
+  }), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center space-x-2 sm:space-x-3 space-x-reverse min-w-0 flex-1"
   }, /*#__PURE__*/React.createElement("div", {
     className: `w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg ${isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`
@@ -4164,20 +4366,36 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.1",
-    "buildNumber": 366,
-    "releaseDate": "2026-08-19",
+    "installedVersion": "3.2.4",
+    "buildNumber": 392,
+    "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.1",
-    "latestBuild": 366,
+    "latestVersion": "3.2.4",
+    "latestBuild": 392,
     "isUpdateAvailable": false,
     "history": [{
-      "version": "3.2.1",
-      "buildNumber": 365,
-      "releaseDate": "2026-08-19",
+      "version": "3.2.3",
+      "buildNumber": 380,
+      "releaseDate": "2026-08-22",
       "releaseChannel": "Stable",
-      "commitHash": "v321b365",
+      "commitHash": "v323b380",
+      "commitMessage": "feat: dual opposite moving light segments focus animation and release v3.2.3",
+      "changes": ["انیمیشن فوکوس نوری دونقطه‌ای از مرکز بالای کارت در دو جهت ساعت‌گرد و پادساعت‌گرد با ملاقات در مرکز پایین و پالس ملایم نهایی", "تفکیک رنگ هوشمند انیمیشن فوکوس بر اساس نوع تراکنش (آبی برای وام و اقساط، قرمز برای بدهی، سبز برای طلب)", "حرکت نرم و رفتن کارت استیکی به جایگاه بالای صفحه قبل از ورود به حالت ویرایش و باز شدن کیبورد", "هم‌اندازه شدن دکمه‌های انصراف و ثبت تغییرات در ماژول کارت‌های استیکی مشابه کارت‌های استک", "ثبت دقیق و بلادرنگ حذف انواع تراکنش‌ها در نشانگر زنگوله و لیست تغییرات پشتیبان‌گیری", "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا)", "انتشار رسمی نسخه 3.2.3"]
+    }, {
+      "version": "3.2.2",
+      "buildNumber": 379,
+      "releaseDate": "2026-08-22",
+      "releaseChannel": "Stable",
+      "commitHash": "v322b379",
+      "commitMessage": "fix: universal numeric input keyboard modes, arabic digit parsing, and delete backup tracking in v3.2.2",
+      "changes": ["ثبت دقیق و بلادرنگ حذف انواع تراکنش‌ها در نشانگر زنگوله و لیست تغییرات پشتیبان‌گیری", "استانداردسازی کی‌بورد عددی در تمامی فرم‌ها (مبالغ، اقساط، شماره کارت و شبا با inputmode عددی)", "تبدیل خودکار و بی‌درنگ ارقام فارسی و عربی به اعداد انگلیسی استاندارد در ورودی‌ها", "تشخیص و فرمت خودکار شماره کارت و شبا در افزودن و ویرایش مخاطبین", "انتشار رسمی نسخه 3.2.2"]
+    }, {
+      "version": "3.2.1",
+      "buildNumber": 367,
+      "releaseDate": "2026-08-22",
+      "releaseChannel": "Stable",
+      "commitHash": "v321b367",
       "commitMessage": "fix: resolve missing backup logs and bell indicator on dashboard transaction deletion and release v3.2.1",
       "changes": ["رفع کامل مشکل عدم ثبت لاگ در نشانگر زنگوله هنگام حذف تراکنش‌ها از صفحه داشبورد و بخش آخرین تراکنش‌ها", "پشتیبانی جامع و دقیق از حذف کلیه انواع تراکنش‌ها شامل اقساط، بازپرداخت‌ها، بدهی‌ها، طلب‌ها و تراکنش‌های عمومی", "به‌روزرسانی خودکار و بلادرنگ مانده وام‌ها و وضعیت مخاطبین پس از حذف تراکنش‌ها", "انتشار رسمی نسخه 3.2.1"]
     }, {
@@ -4383,22 +4601,11 @@ function App() {
   const [swRegistration, setSwRegistration] = useState(null);
   const [hasSWUpdate, setHasSWUpdate] = useState(false);
   const toggleVersionCard = () => {
-    setIsVersionCardExpanded(prev => {
-      const next = !prev;
-      if (next) {
-        setOpenSettingsSection(null);
-      }
-      return next;
-    });
+    setIsVersionCardExpanded(prev => !prev);
   };
+  const [openSettingsSection, setOpenSettingsSection] = useState(null);
   const toggleSettingsSection = sectionName => {
-    setOpenSettingsSection(prev => {
-      const next = prev === sectionName ? null : sectionName;
-      if (next) {
-        setIsVersionCardExpanded(false);
-      }
-      return next;
-    });
+    setOpenSettingsSection(prev => prev === sectionName ? null : sectionName);
   };
 
   // Register Service Worker and monitor updates
@@ -4448,8 +4655,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 366;
-    const EMBEDDED_VERSION = "3.2.1";
+    const EMBEDDED_BUILD = 392;
+    const EMBEDDED_VERSION = "3.2.4";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -4919,17 +5126,17 @@ function App() {
   useEffect(() => {
     if (isInitialMountRef.current) {
       isInitialMountRef.current = false;
-      prevContactsMapRef.current = new Map(contacts.map(c => [c.id, c]));
-      prevLoansMapRef.current = new Map(loans.map(l => [l.id, l]));
-      prevTxsMapRef.current = new Map(transactions.map(t => [t.id, t]));
-      prevPeriodsSetRef.current = new Set(completedPeriods.map(p => p.id || JSON.stringify(p)));
+      prevContactsMapRef.current = new Map(contacts.map(c => [String(c.id), c]));
+      prevLoansMapRef.current = new Map(loans.map(l => [String(l.id), l]));
+      prevTxsMapRef.current = new Map(transactions.map(t => [String(t.id), t]));
+      prevPeriodsSetRef.current = new Set(completedPeriods.map(p => String(p.id || JSON.stringify(p))));
       return;
     }
     if (isRestoringOrClearingRef.current) {
-      prevContactsMapRef.current = new Map(contacts.map(c => [c.id, c]));
-      prevLoansMapRef.current = new Map(loans.map(l => [l.id, l]));
-      prevTxsMapRef.current = new Map(transactions.map(t => [t.id, t]));
-      prevPeriodsSetRef.current = new Set(completedPeriods.map(p => p.id || JSON.stringify(p)));
+      prevContactsMapRef.current = new Map(contacts.map(c => [String(c.id), c]));
+      prevLoansMapRef.current = new Map(loans.map(l => [String(l.id), l]));
+      prevTxsMapRef.current = new Map(transactions.map(t => [String(t.id), t]));
+      prevPeriodsSetRef.current = new Set(completedPeriods.map(p => String(p.id || JSON.stringify(p))));
       return;
     }
     const batchCategoryCounts = {};
@@ -4937,31 +5144,31 @@ function App() {
       if (!label || count <= 0) return;
       batchCategoryCounts[label] = (batchCategoryCounts[label] || 0) + count;
     };
-    const currentTxsMap = new Map(transactions.map(t => [t.id, t]));
-    const currentLoansMap = new Map(loans.map(l => [l.id, l]));
-    const currentContactsMap = new Map(contacts.map(c => [c.id, c]));
-    const currentPeriodsSet = new Set(completedPeriods.map(p => p.id || JSON.stringify(p)));
+    const currentTxsMap = new Map(transactions.map(t => [String(t.id), t]));
+    const currentLoansMap = new Map(loans.map(l => [String(l.id), l]));
+    const currentContactsMap = new Map(contacts.map(c => [String(c.id), c]));
+    const currentPeriodsSet = new Set(completedPeriods.map(p => String(p.id || JSON.stringify(p))));
 
     // 1. Transactions Diffing
-    const addedTxs = transactions.filter(t => !prevTxsMapRef.current.has(t.id));
+    const addedTxs = transactions.filter(t => !prevTxsMapRef.current.has(String(t.id)));
     const deletedTxs = [];
     for (const [id, t] of prevTxsMapRef.current.entries()) {
-      if (!currentTxsMap.has(id)) deletedTxs.push(t);
+      if (!currentTxsMap.has(String(id))) deletedTxs.push(t);
     }
     const editedTxs = transactions.filter(t => {
-      if (!prevTxsMapRef.current.has(t.id)) return false;
-      const prevT = prevTxsMapRef.current.get(t.id);
-      return prevT.amount !== t.amount || prevT.date !== t.date || prevT.note !== t.note || prevT.title !== t.title;
+      if (!prevTxsMapRef.current.has(String(t.id))) return false;
+      const prevT = prevTxsMapRef.current.get(String(t.id));
+      return prevT.amount !== t.amount || prevT.dateStr !== t.dateStr || prevT.date !== t.date || prevT.note !== t.note || prevT.notes !== t.notes || prevT.title !== t.title;
     });
     addedTxs.forEach(t => {
       const type = t.type || '';
-      if (type === 'loan_installment' || type === 'installment' || t.installmentNumber || t.loanId && !type.includes('debt') && !type.includes('demand')) {
+      if (type === 'loan_installment' || type === 'installment' || type === 'repayment' || t.installmentNumber || t.loanId && !type.includes('debt') && !type.includes('demand')) {
         addCat('ثبت قسط جدید');
       } else if (type === 'debt') {
         addCat('ثبت بدهی جدید');
       } else if (type === 'demand') {
         addCat('ثبت طلب جدید');
-      } else if (type === 'debt_repayment' || type === 'demand_repayment' || type === 'repayment') {
+      } else if (type === 'debt_repayment' || type === 'demand_repayment') {
         addCat('ثبت بازپرداخت جدید');
       } else {
         addCat('ثبت تراکنش جدید');
@@ -4969,13 +5176,13 @@ function App() {
     });
     deletedTxs.forEach(t => {
       const type = t.type || '';
-      if (type === 'loan_installment' || type === 'installment' || t.installmentNumber || t.loanId && !type.includes('debt') && !type.includes('demand')) {
+      if (type === 'loan_installment' || type === 'installment' || type === 'repayment' || t.installmentNumber || t.loanId && !type.includes('debt') && !type.includes('demand')) {
         addCat('حذف قسط');
       } else if (type === 'debt') {
         addCat('حذف بدهی');
       } else if (type === 'demand') {
         addCat('حذف طلب');
-      } else if (type === 'debt_repayment' || type === 'demand_repayment' || type === 'repayment') {
+      } else if (type === 'debt_repayment' || type === 'demand_repayment') {
         addCat('حذف بازپرداخت');
       } else {
         addCat('حذف تراکنش');
@@ -4983,13 +5190,13 @@ function App() {
     });
     editedTxs.forEach(t => {
       const type = t.type || '';
-      if (type === 'loan_installment' || type === 'installment' || t.installmentNumber || t.loanId && !type.includes('debt') && !type.includes('demand')) {
+      if (type === 'loan_installment' || type === 'installment' || type === 'repayment' || t.installmentNumber || t.loanId && !type.includes('debt') && !type.includes('demand')) {
         addCat('ویرایش قسط');
       } else if (type === 'debt') {
         addCat('ویرایش بدهی');
       } else if (type === 'demand') {
         addCat('ویرایش طلب');
-      } else if (type === 'debt_repayment' || type === 'demand_repayment' || type === 'repayment') {
+      } else if (type === 'debt_repayment' || type === 'demand_repayment') {
         addCat('ویرایش بازپرداخت');
       } else {
         addCat('ویرایش تراکنش');
@@ -4997,20 +5204,19 @@ function App() {
     });
 
     // 2. Loans Diffing
-    const addedLoans = loans.filter(l => !prevLoansMapRef.current.has(l.id));
+    const addedLoans = loans.filter(l => !prevLoansMapRef.current.has(String(l.id)));
     const deletedLoans = [];
     for (const [id, l] of prevLoansMapRef.current.entries()) {
-      if (!currentLoansMap.has(id)) deletedLoans.push(l);
+      if (!currentLoansMap.has(String(id))) deletedLoans.push(l);
     }
     const editedLoans = loans.filter(l => {
-      if (!prevLoansMapRef.current.has(l.id)) return false;
-      const prevL = prevLoansMapRef.current.get(l.id);
-      // Check if non-derivative fields changed (avoid double counting when only paidInstallments/status updated via tx)
+      if (!prevLoansMapRef.current.has(String(l.id))) return false;
+      const prevL = prevLoansMapRef.current.get(String(l.id));
       const titleChanged = prevL.title !== l.title;
-      const amountChanged = prevL.totalAmount !== l.totalAmount || prevL.amount !== l.amount;
+      const amountChanged = prevL.totalAmount !== l.totalAmount || prevL.amount !== l.amount || prevL.principalAmount !== l.principalAmount || prevL.totalRepayment !== l.totalRepayment;
       const totalInstChanged = prevL.totalInstallments !== l.totalInstallments;
       const contactChanged = prevL.contactId !== l.contactId;
-      const noteChanged = prevL.note !== l.note;
+      const noteChanged = prevL.notes !== l.notes && prevL.note !== l.note;
       return titleChanged || amountChanged || totalInstChanged || contactChanged || noteChanged;
     });
     addedLoans.forEach(l => {
@@ -5045,15 +5251,15 @@ function App() {
     });
 
     // 3. Contacts Diffing
-    const addedContacts = contacts.filter(c => !prevContactsMapRef.current.has(c.id));
+    const addedContacts = contacts.filter(c => !prevContactsMapRef.current.has(String(c.id)));
     const deletedContacts = [];
     for (const [id, c] of prevContactsMapRef.current.entries()) {
-      if (!currentContactsMap.has(id)) deletedContacts.push(c);
+      if (!currentContactsMap.has(String(id))) deletedContacts.push(c);
     }
     const editedContacts = contacts.filter(c => {
-      if (!prevContactsMapRef.current.has(c.id)) return false;
-      const prevC = prevContactsMapRef.current.get(c.id);
-      return prevC.name !== c.name || prevC.phone !== c.phone || prevC.cardNumber !== c.cardNumber || prevC.note !== c.note;
+      if (!prevContactsMapRef.current.has(String(c.id))) return false;
+      const prevC = prevContactsMapRef.current.get(String(c.id));
+      return prevC.firstName !== c.firstName || prevC.lastName !== c.lastName || prevC.phone !== c.phone || prevC.bankName !== c.bankName || prevC.bankCard !== c.bankCard || prevC.cardNumber !== c.cardNumber || prevC.iban !== c.iban || prevC.note !== c.note && prevC.notes !== c.notes;
     });
     addedContacts.forEach(() => addCat('ثبت مخاطب جدید'));
     deletedContacts.forEach(() => addCat('حذف مخاطب'));
@@ -5066,6 +5272,13 @@ function App() {
     }
     if (addedPeriodsCount > 0) {
       addCat('تسویه و بایگانی دوره', addedPeriodsCount);
+    }
+    let deletedPeriodsCount = 0;
+    for (const key of prevPeriodsSetRef.current) {
+      if (!currentPeriodsSet.has(key)) deletedPeriodsCount++;
+    }
+    if (deletedPeriodsCount > 0) {
+      addCat('حذف دوره تسویه‌شده', deletedPeriodsCount);
     }
 
     // Update snapshot refs
@@ -5229,7 +5442,8 @@ function App() {
     if (savedTheme === 'light') return false;
     return typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
-  const [openSettingsSection, setOpenSettingsSection] = useState(null);
+
+  // Settings accordion single-open active section state managed above
   const [allTxsPage, setAllTxsPage] = useState(1);
   const [dynamicPageSize, setDynamicPageSize] = useState(() => {
     if (typeof window === 'undefined') return 8;
@@ -5272,7 +5486,7 @@ function App() {
       }, 450);
       const clearTimer = setTimeout(() => {
         setHighlightedTxId(null);
-      }, 3000);
+      }, 4000);
       return () => {
         clearTimeout(timer);
         clearTimeout(clearTimer);
@@ -5617,28 +5831,28 @@ function App() {
   const performDeleteTx = (txToDelete, txType) => {
     if (!txToDelete) return;
     const effectiveType = txType || txToDelete.type || 'tx';
-    let updatedTxs = transactions.filter(t => t.id !== txToDelete.id);
+    let updatedTxs = transactions.filter(t => String(t.id) !== String(txToDelete.id));
     const periodId = txToDelete.periodId;
     if (periodId) {
-      setCompletedPeriods(prev => prev.filter(p => p.id !== periodId));
-      updatedTxs = updatedTxs.map(t => t.periodId === periodId ? {
+      setCompletedPeriods(prev => prev.filter(p => String(p.id) !== String(periodId)));
+      updatedTxs = updatedTxs.map(t => String(t.periodId) === String(periodId) ? {
         ...t,
         periodId: undefined
       } : t);
-      if (selectedPeriod && selectedPeriod.id === periodId) {
+      if (selectedPeriod && String(selectedPeriod.id) === String(periodId)) {
         setSelectedPeriod(null);
         navigateToTab(loanReturnTab || 'contact-detail', 'back');
       }
     }
     setTransactions(updatedTxs);
-    if (effectiveType === 'loan_installment' || effectiveType === 'installment' || txToDelete.installmentNumber || txToDelete.loanId && !effectiveType.includes('debt') && !effectiveType.includes('demand')) {
-      const targetLoan = loans.find(l => l.id === txToDelete.loanId);
+    if (effectiveType === 'loan_installment' || effectiveType === 'installment' || effectiveType === 'repayment' || txToDelete.installmentNumber || txToDelete.loanId && !effectiveType.includes('debt') && !effectiveType.includes('demand')) {
+      const targetLoan = loans.find(l => String(l.id) === String(txToDelete.loanId));
       if (targetLoan) {
         const deletedAmt = Math.abs(txToDelete.amount || 0);
         const newPaid = Math.max(0, (targetLoan.paidAmount || 0) - deletedAmt);
         const newRemaining = Math.max(0, (targetLoan.totalRepayment || 0) - newPaid);
         const updatedLoans = loans.map(l => {
-          if (l.id === targetLoan.id) {
+          if (String(l.id) === String(targetLoan.id)) {
             return {
               ...l,
               paidAmount: newPaid,
@@ -5648,7 +5862,7 @@ function App() {
           return l;
         });
         setLoans(updatedLoans);
-        if (selectedLoan && selectedLoan.id === targetLoan.id) {
+        if (selectedLoan && String(selectedLoan.id) === String(targetLoan.id)) {
           setSelectedLoan(prev => ({
             ...prev,
             paidAmount: newPaid,
@@ -5661,7 +5875,7 @@ function App() {
     }
     if (effectiveType === 'debt' || effectiveType === 'debt_repayment') {
       if (txToDelete.contactId) {
-        const contactDebts = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
+        const contactDebts = updatedTxs.filter(t => String(t.contactId) === String(txToDelete.contactId) && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
         let netDebt = 0;
         contactDebts.forEach(t => {
           if (t.type === 'debt') netDebt += Math.abs(t.amount);
@@ -5669,7 +5883,7 @@ function App() {
         });
         netDebt = Math.max(0, netDebt);
         const updatedContacts = contacts.map(c => {
-          if (c.id === txToDelete.contactId) {
+          if (String(c.id) === String(txToDelete.contactId)) {
             return {
               ...c,
               totalDebt: netDebt
@@ -5678,7 +5892,7 @@ function App() {
           return c;
         });
         setContacts(updatedContacts);
-        if (selectedContact && selectedContact.id === txToDelete.contactId) {
+        if (selectedContact && String(selectedContact.id) === String(txToDelete.contactId)) {
           setSelectedContact(prev => ({
             ...prev,
             totalDebt: netDebt
@@ -5690,7 +5904,7 @@ function App() {
     }
     if (effectiveType === 'demand' || effectiveType === 'demand_repayment') {
       if (txToDelete.contactId) {
-        const contactDemands = updatedTxs.filter(t => t.contactId === txToDelete.contactId && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
+        const contactDemands = updatedTxs.filter(t => String(t.contactId) === String(txToDelete.contactId) && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
         let netDemand = 0;
         contactDemands.forEach(t => {
           if (t.type === 'demand') netDemand += Math.abs(t.amount);
@@ -5698,7 +5912,7 @@ function App() {
         });
         netDemand = Math.max(0, netDemand);
         const updatedContacts = contacts.map(c => {
-          if (c.id === txToDelete.contactId) {
+          if (String(c.id) === String(txToDelete.contactId)) {
             return {
               ...c,
               totalDemand: netDemand
@@ -5707,7 +5921,7 @@ function App() {
           return c;
         });
         setContacts(updatedContacts);
-        if (selectedContact && selectedContact.id === txToDelete.contactId) {
+        if (selectedContact && String(selectedContact.id) === String(txToDelete.contactId)) {
           setSelectedContact(prev => ({
             ...prev,
             totalDemand: netDemand
@@ -6856,31 +7070,59 @@ function App() {
     const container = editCardsContainerRef.current;
     const cardElem = document.getElementById(`sticky-card-${card.id}`);
     if (container && cardElem) {
-      const containerRect = container.getBoundingClientRect();
-      const cardRect = cardElem.getBoundingClientRect();
-      const offsetTop = cardRect.top - containerRect.top;
-      const targetScrollTop = container.scrollTop + offsetTop;
+      const cards = typeof getCurrentWizardCards === 'function' ? getCurrentWizardCards() : [];
+      const cardIndex = cards.findIndex(c => c.id === card.id);
+      const topOffset = cardIndex >= 0 ? cardIndex * 8 : 0;
+      const targetScrollTop = Math.max(0, cardElem.offsetTop - topOffset);
+      const isAlreadyAtTop = Math.abs(container.scrollTop - targetScrollTop) < 6;
+
+      // 1. Smoothly glide card to its docked position at the top of the stack
       container.scrollTo({
-        top: Math.max(0, targetScrollTop),
+        top: targetScrollTop,
         behavior: 'smooth'
       });
+
+      // 2. Enter editing mode once the card reaches the top
       setTimeout(() => {
         startEditingCard(card);
-        setTimeout(() => {
-          const targetInput = cardElem.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly]), select');
+      }, isAlreadyAtTop ? 20 : 250);
+    } else {
+      startEditingCard(card);
+    }
+  };
+
+  // Automatically focus and show keyboard when a sticky card enters edit mode
+  useEffect(() => {
+    if (editingCardId) {
+      const focusCardInput = () => {
+        const cardElem = document.getElementById(`sticky-card-${editingCardId}`);
+        if (cardElem) {
+          const targetInput = cardElem.querySelector('input[autofocus]') || cardElem.querySelector('input:not([type="hidden"]):not([readonly]):not([type="radio"]):not([type="checkbox"]), textarea:not([readonly]), select');
           if (targetInput) {
             try {
               targetInput.focus({
                 preventScroll: true
               });
+              if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                targetInput.click();
+              }
             } catch (e) {}
           }
-        }, 60);
-      }, 260);
-    } else {
-      startEditingCard(card);
+        }
+      };
+      focusCardInput();
+      const r1 = requestAnimationFrame(focusCardInput);
+      const t1 = setTimeout(focusCardInput, 40);
+      const t2 = setTimeout(focusCardInput, 150);
+      const t3 = setTimeout(focusCardInput, 280);
+      return () => {
+        cancelAnimationFrame(r1);
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
     }
-  };
+  }, [editingCardId]);
   const cancelEditingCard = () => {
     if (cardFormBackup) {
       setLoanForm(cardFormBackup.loanForm);
@@ -7066,11 +7308,11 @@ function App() {
       isDestructive: true,
       onConfirm: () => {
         if (typeof confirmCb === 'function') confirmCb();
-        setContacts(prev => prev.filter(c => c.id !== targetContactId));
-        setLoans(prev => prev.filter(l => l.contactId !== targetContactId));
-        setTransactions(prev => prev.filter(t => t.contactId !== targetContactId));
+        setContacts(prev => prev.filter(c => String(c.id) !== String(targetContactId)));
+        setLoans(prev => prev.filter(l => String(l.contactId) !== String(targetContactId)));
+        setTransactions(prev => prev.filter(t => String(t.contactId) !== String(targetContactId)));
         setShowEditContactModal(false);
-        if (selectedContact && selectedContact.id === targetContactId) {
+        if (selectedContact && String(selectedContact.id) === String(targetContactId)) {
           setSelectedContact(null);
           navigateToTab('contacts', 'back');
         }
@@ -7082,7 +7324,7 @@ function App() {
   };
   const handleDeleteLoanClick = (loan, confirmCb = null) => {
     if (!loan || typeof loan !== 'object') return;
-    const loanTxs = transactions.filter(t => t.loanId === loan.id);
+    const loanTxs = transactions.filter(t => String(t.loanId) === String(loan.id));
     const paymentTxs = loanTxs.filter(t => t.type === 'repayment');
     const totalInstallmentsCount = loan.totalInstallments || loanTxs.length || 0;
     setConfirmConfig({
@@ -7097,8 +7339,8 @@ function App() {
       onConfirm: () => {
         if (typeof confirmCb === 'function') confirmCb();
         const loanIdToDelete = loan.id;
-        setLoans(prev => prev.filter(l => l.id !== loanIdToDelete));
-        setTransactions(prev => prev.filter(t => t.loanId !== loanIdToDelete));
+        setLoans(prev => prev.filter(l => String(l.id) !== String(loanIdToDelete)));
+        setTransactions(prev => prev.filter(t => String(t.loanId) !== String(loanIdToDelete)));
         setSelectedLoan(null);
         navigateToTab(loanReturnTab || 'accounts', 'back');
         setConfirmConfig(null);
@@ -7109,7 +7351,7 @@ function App() {
   };
   const handleDeleteArchivedPeriodClick = period => {
     if (!period) return;
-    let periodTxs = transactions.filter(t => t.periodId === period.id);
+    let periodTxs = transactions.filter(t => String(t.periodId) === String(period.id));
     if (periodTxs.length === 0 && period.transactions && period.transactions.length > 0) {
       periodTxs = period.transactions;
     }
@@ -7127,8 +7369,8 @@ function App() {
       isDestructive: true,
       onConfirm: () => {
         const periodIdToDelete = period.id;
-        setCompletedPeriods(prev => prev.filter(p => p.id !== periodIdToDelete));
-        setTransactions(prev => prev.filter(t => t.periodId !== periodIdToDelete));
+        setCompletedPeriods(prev => prev.filter(p => String(p.id) !== String(periodIdToDelete)));
+        setTransactions(prev => prev.filter(t => String(t.periodId) !== String(periodIdToDelete)));
         setSelectedPeriod(null);
         navigateToTab(loanReturnTab || 'contact-detail', 'back');
         setConfirmConfig(null);
@@ -7396,10 +7638,11 @@ function App() {
         }, /*#__PURE__*/React.createElement("input", {
           type: "text",
           inputMode: "numeric",
+          dir: "ltr",
           placeholder: "\u0642\u0633\u0637",
           value: displayVal,
           onChange: e => {
-            const raw = e.target.value.replace(/\D/g, '');
+            const raw = parseRawNumber(e.target.value);
             setLoanForm(prev => ({
               ...prev,
               customInstallmentCount: raw
@@ -8252,13 +8495,14 @@ function App() {
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
     }, "\u0634\u0645\u0627\u0631\u0647 \u062A\u0645\u0627\u0633"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      inputMode: "numeric",
+      type: "tel",
+      inputMode: "tel",
+      dir: "ltr",
       placeholder: "\u0645\u062B\u0644\u0627\u064B: 09121234567",
       value: contactWizardForm.phone,
       onChange: e => setContactWizardForm(prev => ({
         ...prev,
-        phone: e.target.value
+        phone: normalizePhoneNumber(e.target.value)
       })),
       className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
     })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -8270,6 +8514,7 @@ function App() {
     }, contactWizardForm.bankName)), /*#__PURE__*/React.createElement("input", {
       type: "text",
       inputMode: "numeric",
+      dir: "ltr",
       placeholder: "\u0645\u062B\u0644\u0627\u064B: 6037 9975 4321 4582",
       value: contactWizardForm.bankCard,
       onChange: e => {
@@ -8287,11 +8532,12 @@ function App() {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
     }, "\u0634\u0645\u0627\u0631\u0647 \u0634\u0628\u0627 (\u0627\u062E\u062A\u06CC\u0627\u0631\u06CC)"), /*#__PURE__*/React.createElement("input", {
       type: "text",
+      dir: "ltr",
       placeholder: "\u0645\u062B\u0644\u0627\u064B: IR12 0120 0000 0001 2345 6789 01",
       value: contactWizardForm.iban,
       onChange: e => setContactWizardForm(prev => ({
         ...prev,
-        iban: e.target.value
+        iban: normalizeIBAN(e.target.value)
       })),
       className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
     })))
@@ -8694,7 +8940,7 @@ function App() {
           key: tx.id || idx,
           tx: tx,
           contacts: contacts,
-          isHighlighted: tx.id === highlightedTxId,
+          isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
           onEdit: txItem => handleTransactionClick(txItem),
           onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
         })), transactions.length === 0 && /*#__PURE__*/React.createElement("div", {
@@ -9445,7 +9691,7 @@ function App() {
               tx: tx,
               colorType: "rose",
               hasShadow: true,
-              isHighlighted: tx.id === highlightedTxId,
+              isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
               onEdit: txItem => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem),
               onDelete: txItem => requestDeleteTx(txItem, 'debt')
             });
@@ -9546,7 +9792,7 @@ function App() {
               tx: tx,
               colorType: "emerald",
               hasShadow: true,
-              isHighlighted: tx.id === highlightedTxId,
+              isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
               onEdit: txItem => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem),
               onDelete: txItem => requestDeleteTx(txItem, 'demand')
             });
@@ -10091,7 +10337,7 @@ function App() {
           index: idx,
           totalCount: repaymentTxs.length,
           colorType: "indigo",
-          isHighlighted: tx.id === highlightedTxId,
+          isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
           onEdit: txItem => openStackWizard('installment', 'edit', txItem),
           onDelete: txItem => requestDeleteTx(txItem, 'loan_installment')
         })))) : /*#__PURE__*/React.createElement(motion.div, {
@@ -10366,205 +10612,91 @@ function App() {
           className: `${isDebt ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"} text-xs font-semibold`
         }, periodTxs.length, " \u062A\u0631\u0627\u06A9\u0646\u0634 \u062B\u0628\u062A\u200C\u0634\u062F\u0647")), periodTxs.length === 0 ? /*#__PURE__*/React.createElement("div", {
           className: "bg-white dark:bg-slate-800 p-6 rounded-3xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 card-shadow"
-        }, "\u0647\u0646\u0648\u0632 \u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u062F\u0648\u0631\u0647 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A") : /*#__PURE__*/React.createElement("div", {
+        }, "\u0647\u0646\u0648\u0632 \u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u062F\u0631 \u0627\u06CC\u0646 \u062F\u0648\u0631\u0647 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : /*#__PURE__*/React.createElement("div", {
           className: "space-y-3"
-        }, periodTxs.map((tx, idx) => {
-          const isRepay = tx.type === "debt_repayment" || tx.type === "demand_repayment";
-          return /*#__PURE__*/React.createElement(SwipeableTxCard, {
-            key: tx.id || idx,
-            tx: tx,
-            colorType: isDebt ? "rose" : "emerald",
-            contactName: contactDisplayName,
-            contacts: contacts,
-            loans: loans,
-            isHighlighted: tx.id === highlightedTxId,
-            onEdit: txItem => openStackWizard(isDebt ? isRepay ? "debt_repayment" : "debt" : isRepay ? "demand_repayment" : "demand", "edit", txItem),
-            onDelete: txItem => requestDeleteTx(txItem, isDebt ? "debt" : "demand")
-          });
-        }))), /*#__PURE__*/React.createElement("button", {
-          onClick: () => {
-            const exportObj = {
-              ...selectedPeriod,
-              transactions: periodTxs
-            };
-            openUniversalExportModal("period", exportObj);
-          },
-          className: `w-full py-3.5 sm:py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2.5 text-white shadow-lg active:scale-95 transition-all cursor-pointer ${isDebt ? "bg-rose-600 hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-500 shadow-rose-200 dark:shadow-rose-950/50" : "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-emerald-200 dark:shadow-emerald-950/50"}`
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "file-output",
-          className: "w-5 h-5 text-white"
-        }), /*#__PURE__*/React.createElement("span", null, "\u062E\u0631\u0648\u062C\u06CC \u067E\u0631\u0648\u0646\u062F\u0647 \u062A\u0633\u0648\u06CC\u0647\u200C\u062D\u0633\u0627\u0628")));
-      case 'all-transactions':
-        return /*#__PURE__*/React.createElement("div", {
-          className: "space-y-4 animate-fade-in pb-4"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between py-1.5 mb-3"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center gap-2.5"
-        }, /*#__PURE__*/React.createElement("button", {
-          onClick: onBack ? () => onBack('button') : () => navigateBack('dashboard'),
-          className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform cursor-pointer shrink-0",
-          title: "\u0628\u0627\u0632\u06AF\u0634\u062A"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "arrow-right",
-          className: "w-5 h-5 text-slate-700 dark:text-slate-200"
-        })), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center gap-2"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "receipt",
-          className: "w-7 h-7 text-slate-800 dark:text-slate-100"
-        }), /*#__PURE__*/React.createElement("h1", {
-          className: "text-xl font-bold text-slate-900 dark:text-white"
-        }, "\u0647\u0645\u0647 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"))), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center gap-1.5 bg-indigo-50/80 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-2xl border border-indigo-100 dark:border-indigo-800/60 shadow-2xs shrink-0"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "layers",
-          className: "w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400"
-        }), /*#__PURE__*/React.createElement("span", {
-          className: "text-xs font-extrabold dir-ltr"
-        }, toPersianDigits(transactions.length)), /*#__PURE__*/React.createElement("span", {
-          className: "text-xs font-bold opacity-80"
-        }, "\u062A\u0631\u0627\u06A9\u0646\u0634"))), /*#__PURE__*/React.createElement("div", {
-          className: "space-y-3"
-        }, transactions.slice((allTxsPage - 1) * dynamicPageSize, allTxsPage * dynamicPageSize).map((tx, idx) => /*#__PURE__*/React.createElement(SwipeableTxCard, {
+        }, periodTxs.map((tx, idx) => /*#__PURE__*/React.createElement(SwipeableTxCard, {
           key: tx.id || idx,
           tx: tx,
           contacts: contacts,
           loans: loans,
-          hasShadow: true,
-          isHighlighted: tx.id === highlightedTxId,
+          isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
           onEdit: txItem => handleTransactionClick(txItem),
           onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
-        })), transactions.length === 0 && /*#__PURE__*/React.createElement("div", {
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-8 text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 shadow-sm"
-        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A")), transactions.length > 0 && (() => {
-          const totalPages = Math.max(1, Math.ceil(transactions.length / dynamicPageSize));
-          return /*#__PURE__*/React.createElement("div", {
-            className: "bg-white dark:bg-slate-800 rounded-2xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold"
-          }, /*#__PURE__*/React.createElement("button", {
-            disabled: allTxsPage <= 1,
-            onClick: () => setAllTxsPage(p => Math.max(1, p - 1)),
-            className: `px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all cursor-pointer ${allTxsPage <= 1 ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'}`
-          }, /*#__PURE__*/React.createElement(Icon, {
-            name: "chevron-right",
-            className: "w-4 h-4"
-          }), /*#__PURE__*/React.createElement("span", null, "\u0635\u0641\u062D\u0647 \u0642\u0628\u0644")), /*#__PURE__*/React.createElement("span", {
-            className: "text-slate-600 dark:text-slate-300 font-extrabold px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-700/60"
-          }, "\u0635\u0641\u062D\u0647 ", allTxsPage, " \u0627\u0632 ", totalPages), /*#__PURE__*/React.createElement("button", {
-            disabled: allTxsPage >= totalPages,
-            onClick: () => setAllTxsPage(p => Math.min(totalPages, p + 1)),
-            className: `px-3 py-1.5 rounded-xl border flex items-center space-x-1 space-x-reverse transition-all cursor-pointer ${allTxsPage >= totalPages ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-transparent' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'}`
-          }, /*#__PURE__*/React.createElement("span", null, "\u0635\u0641\u062D\u0647 \u0628\u0639\u062F"), /*#__PURE__*/React.createElement(Icon, {
-            name: "chevron-left",
-            className: "w-4 h-4"
-          })));
-        })());
+        })))));
       case 'settings':
         return /*#__PURE__*/React.createElement("div", {
-          className: "space-y-3.5 animate-fade-in pb-4"
+          className: "w-full max-w-4xl mx-auto px-4 py-4 space-y-4 pb-24"
+        }, /*#__PURE__*/React.createElement("h1", {
+          className: "text-xl font-black text-slate-900 dark:text-white px-1"
+        }, "\u062A\u0646\u0638\u06CC\u0645\u0627\u062A"), /*#__PURE__*/React.createElement("div", {
+          className: "w-full bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-sm"
         }, /*#__PURE__*/React.createElement("div", {
-          onClick: toggleVersionCard,
-          className: "bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-sm border border-slate-100 dark:border-slate-700/60 cursor-pointer transition-all hover:border-indigo-300 dark:hover:border-indigo-800 overflow-hidden relative"
+          className: "flex flex-col sm:flex-row sm:items-center justify-between gap-4"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between py-1"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-3.5 space-x-reverse min-w-0"
+          className: "flex items-center gap-3.5"
         }, /*#__PURE__*/React.createElement(BrandAvatar, {
-          className: "w-[72px] h-[72px] rounded-2xl shrink-0",
-          logoUrl: versionData.appLogo
+          className: "w-14 h-14 rounded-2xl shadow-md border border-slate-100 dark:border-slate-700"
         }), /*#__PURE__*/React.createElement("div", {
-          className: "flex flex-col text-right space-y-1 min-w-0"
+          className: "text-right"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center gap-2"
         }, /*#__PURE__*/React.createElement("h2", {
-          className: "text-base font-black text-slate-900 dark:text-white tracking-tight truncate"
-        }, versionData.appName || "Amir Finance"), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-2 space-x-reverse text-xs"
+          className: "text-base sm:text-lg font-black text-slate-900 dark:text-white"
+        }, "Amir Finance")), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center flex-wrap gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400"
+        }, /*#__PURE__*/React.createElement("span", null, "\u0646\u0633\u062E\u0647 ", /*#__PURE__*/React.createElement("span", {
+          className: "font-mono tracking-tight"
+        }, versionData.installedVersion || '3.2.4')), /*#__PURE__*/React.createElement("span", {
+          className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
+        }), /*#__PURE__*/React.createElement("span", null, "\u0628\u06CC\u0644\u062F ", /*#__PURE__*/React.createElement("span", {
+          className: "font-mono tracking-tight"
+        }, versionData.buildNumber || '387')), versionData.releaseChannel && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+          className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
+        }), /*#__PURE__*/React.createElement("span", {
+          className: "text-indigo-600 dark:text-indigo-400 font-medium"
+        }, versionData.releaseChannel))))), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center gap-2 self-start sm:self-center"
+        }, versionData.isUpdateAvailable ? /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-xl border border-amber-200/80 dark:border-amber-800/50"
         }, /*#__PURE__*/React.createElement("span", {
-          className: "text-slate-600 dark:text-slate-300 font-mono font-medium"
-        }, "\u0646\u0633\u062E\u0647 ", versionData.installedVersion), /*#__PURE__*/React.createElement("span", {
-          className: "text-slate-300 dark:text-slate-600"
-        }, "\u2022"), /*#__PURE__*/React.createElement("span", {
-          className: "text-slate-500 dark:text-slate-400 font-mono bg-slate-100 dark:bg-slate-700/60 px-2 py-0.5 rounded-md text-[11px]"
-        }, "\u0628\u06CC\u0644\u062F ", versionData.buildNumber)), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center pt-0.5"
-        }, versionData.isUpdateAvailable ? /*#__PURE__*/React.createElement("span", {
-          className: "text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0"
+          className: "w-2 h-2 rounded-full bg-amber-500 animate-pulse"
+        }), "\u0628\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC \u062C\u062F\u06CC\u062F \u0622\u0645\u0627\u062F\u0647 \u0627\u0633\u062A") : /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-xl border border-emerald-200/80 dark:border-emerald-800/50"
         }, /*#__PURE__*/React.createElement(Icon, {
-          name: "arrow-up-circle",
-          className: "w-3 h-3"
-        }), /*#__PURE__*/React.createElement("span", null, "\u0628\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC \u0645\u0648\u062C\u0648\u062F")) : /*#__PURE__*/React.createElement("span", {
-          className: "text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-0.5 rounded-full flex items-center space-x-1 space-x-reverse shrink-0"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "check-circle-2",
-          className: "w-3 h-3"
-        }), /*#__PURE__*/React.createElement("span", null, "\u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647"))))), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-1 space-x-reverse shrink-0 self-center pl-1"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: "text-[11px] font-medium text-slate-400 hidden sm:inline"
-        }, isVersionCardExpanded ? 'بستن' : 'جزئیات'), /*#__PURE__*/React.createElement(Icon, {
-          name: "chevron-down",
-          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${isVersionCardExpanded ? 'rotate-180' : 'rotate-0'}`
-        }))), /*#__PURE__*/React.createElement("div", {
-          className: `grid transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${isVersionCardExpanded ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
-          onClick: e => e.stopPropagation()
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "overflow-hidden space-y-3"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "bg-indigo-50/70 dark:bg-indigo-950/40 rounded-2xl p-3.5 border border-indigo-100 dark:border-indigo-900/50 flex flex-col space-y-3"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-2.5 space-x-reverse"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: `w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${versionData.isUpdateAvailable ? 'bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'}`
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: versionData.isUpdateAvailable ? 'arrow-up-circle' : 'check-circle-2',
-          className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
-        }, versionData.isUpdateAvailable ? `نسخه جدیدتر ${versionData.latestVersion} موجود است` : 'برنامه شما کاملاً بروز است'), /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-slate-400 mt-0.5"
-        }, versionData.isUpdateAvailable ? 'امکانات و بهبودهای جدید آماده دریافت است.' : 'شما از آخرین نسخه پایدار Amir Finance استفاده می‌کنید.')))), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-2 space-x-reverse pt-1"
-        }, /*#__PURE__*/React.createElement("button", {
-          onClick: handleCheckForUpdates,
-          disabled: isCheckingUpdate,
-          className: "flex-1 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 space-x-reverse active:scale-95 transition-all shadow-xs"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: isCheckingUpdate ? 'refresh-cw' : 'rotate-cw',
-          className: `w-3.5 h-3.5 ${isCheckingUpdate ? 'animate-spin' : ''}`
-        }), /*#__PURE__*/React.createElement("span", null, isCheckingUpdate ? 'در حال بررسی...' : 'بررسی بروزرسانی')), versionData.isUpdateAvailable && /*#__PURE__*/React.createElement("button", {
+          name: "check",
+          className: "w-3.5 h-3.5"
+        }), "\u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647 \u0646\u0635\u0628 \u0627\u0633\u062A"))), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center flex-wrap gap-2.5 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/60"
+        }, versionData.isUpdateAvailable && /*#__PURE__*/React.createElement("button", {
+          type: "button",
           onClick: handleApplyUpdate,
           disabled: isCheckingUpdate,
-          className: "flex-1 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 space-x-reverse active:scale-95 transition-all shadow-sm"
+          className: "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-500/20 active:scale-95 transition-all disabled:opacity-50"
         }, /*#__PURE__*/React.createElement(Icon, {
           name: "download",
-          className: "w-3.5 h-3.5"
-        }), /*#__PURE__*/React.createElement("span", null, "\u0628\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC")))), /*#__PURE__*/React.createElement("button", {
+          className: "w-4 h-4"
+        }), isCheckingUpdate ? 'در حال نصب...' : 'نصب و بروزرسانی آنی'), /*#__PURE__*/React.createElement("button", {
           type: "button",
-          onClick: () => {
-            setIsChangelogModalOpen(true);
-            setExpandedChangelogVersion(null);
-          },
-          className: "w-full py-3 px-4 bg-indigo-50/80 hover:bg-indigo-100/80 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/50 text-indigo-900 dark:text-indigo-200 rounded-2xl text-xs font-bold transition-all flex items-center justify-between border border-indigo-200/80 dark:border-indigo-800/60 active:scale-98 shadow-2xs font-vazir"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-2.5 space-x-reverse"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "w-7 h-7 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 flex items-center justify-center shrink-0"
+          onClick: handleCheckForUpdates,
+          disabled: isCheckingUpdate,
+          className: "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-700/70 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold active:scale-95 transition-all disabled:opacity-50"
         }, /*#__PURE__*/React.createElement(Icon, {
-          name: "history",
+          name: "refresh-cw",
+          className: `w-4 h-4 ${isCheckingUpdate ? 'animate-spin text-indigo-600 dark:text-indigo-400' : ''}`
+        }), isCheckingUpdate ? 'در حال بررسی...' : 'بررسی بروزرسانی'), /*#__PURE__*/React.createElement("button", {
+          type: "button",
+          onClick: () => setIsChangelogModalOpen(true),
+          className: "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs font-bold border border-indigo-200/60 dark:border-indigo-800/50 active:scale-95 transition-all"
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "sparkles",
           className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("span", null, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647\u200C\u0647\u0627 (Changelog)")), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-1 space-x-reverse text-indigo-600 dark:text-indigo-400"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: "text-[11px] font-bold"
-        }, "\u0645\u0634\u0627\u0647\u062F\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A"), /*#__PURE__*/React.createElement(Icon, {
-          name: "chevron-left",
-          className: "w-4 h-4"
-        })))))), /*#__PURE__*/React.createElement("div", {
+        }), "\u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647\u200C\u0647\u0627"))), /*#__PURE__*/React.createElement("div", {
           className: "space-y-3.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start"
         }, /*#__PURE__*/React.createElement("div", {
+          className: "space-y-3.5 flex flex-col"
+        }, /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('appearance'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10625,8 +10757,98 @@ function App() {
         }, "\u062A\u06CC\u0631\u0647"), theme === 'dark' && /*#__PURE__*/React.createElement("div", {
           className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
         })))))), /*#__PURE__*/React.createElement("div", {
+          onClick: () => toggleSettingsSection('notifications'),
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center space-x-3.5 space-x-reverse"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "bell",
+          className: "w-5 h-5"
+        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+          className: "text-sm font-bold text-slate-900 dark:text-white"
+        }, "\u0627\u0639\u0644\u0627\u0646\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("p", {
+          className: "text-xs text-slate-400 mt-0.5"
+        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u06CC\u0627\u062F\u0622\u0648\u0631\u06CC\u200C\u0647\u0627 \u0648 \u0627\u0639\u0644\u0627\u0646\u200C\u0647\u0627"))), /*#__PURE__*/React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'notifications' ? 'rotate-180' : 'rotate-0'}`
+        })), /*#__PURE__*/React.createElement("div", {
+          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'notifications' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
+          onClick: e => e.stopPropagation()
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "overflow-hidden space-y-2.5"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center justify-between p-3 bg-[#F4F7FC] dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700"
+        }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
+        }, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC \u0633\u0631\u0631\u0633\u06CC\u062F \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/React.createElement("div", {
+          className: "text-[10px] text-slate-400 mt-0.5"
+        }, "\u0647\u0634\u062F\u0627\u0631 \u067E\u06CC\u0634\u200C\u0641\u0631\u0636 \u0642\u0628\u0644 \u0627\u0632 \u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 \u0648\u0627\u0645")), /*#__PURE__*/React.createElement("button", {
+          onClick: () => setEnableReminders(!enableReminders),
+          className: `w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableReminders ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`
+        }, /*#__PURE__*/React.createElement("div", {
+          className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableReminders ? '-translate-x-5' : 'translate-x-0'}`
+        }))), /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center justify-between p-3 bg-[#F4F7FC] dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700"
+        }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
+        }, "\u062E\u0644\u0627\u0635\u0647 \u0631\u0648\u0632\u0627\u0646\u0647 \u062D\u0633\u0627\u0628\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("div", {
+          className: "text-[10px] text-slate-400 mt-0.5"
+        }, "\u0627\u0639\u0644\u0627\u0646 \u0648\u0636\u0639\u06CC\u062A \u06A9\u0644\u06CC \u0627\u0642\u0633\u0627\u0637 \u0648 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627")), /*#__PURE__*/React.createElement("button", {
+          onClick: () => setEnableDailyAlerts(!enableDailyAlerts),
+          className: `w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableDailyAlerts ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`
+        }, /*#__PURE__*/React.createElement("div", {
+          className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableDailyAlerts ? '-translate-x-5' : 'translate-x-0'}`
+        })))))), /*#__PURE__*/React.createElement("div", {
+          onClick: () => toggleSettingsSection('data'),
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center space-x-3.5 space-x-reverse"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "w-10 h-10 rounded-2xl bg-cyan-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "folder",
+          className: "w-5 h-5"
+        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+          className: "text-sm font-bold text-slate-900 dark:text-white"
+        }, "\u062F\u0627\u062F\u0647\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("p", {
+          className: "text-xs text-slate-400 mt-0.5"
+        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u062F\u0627\u062F\u0647\u200C\u0647\u0627 \u0648 \u062D\u0627\u0641\u0638\u0647"))), /*#__PURE__*/React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'data' ? 'rotate-180' : 'rotate-0'}`
+        })), /*#__PURE__*/React.createElement("div", {
+          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'data' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
+          onClick: e => e.stopPropagation()
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "overflow-hidden space-y-2 text-xs"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-slate-500"
+        }, "\u062A\u0639\u062F\u0627\u062F \u0645\u062E\u0627\u0637\u0628\u06CC\u0646:"), /*#__PURE__*/React.createElement("span", {
+          className: "font-bold"
+        }, contacts.length, " \u0645\u0648\u0631\u062F")), /*#__PURE__*/React.createElement("div", {
+          className: "flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-slate-500"
+        }, "\u067E\u0631\u0648\u0646\u062F\u0647\u200C\u0647\u0627\u06CC \u0648\u0627\u0645:"), /*#__PURE__*/React.createElement("span", {
+          className: "font-bold"
+        }, loans.length, " \u0645\u0648\u0631\u062F")), /*#__PURE__*/React.createElement("div", {
+          className: "flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-slate-500"
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u062B\u0628\u062A\u200C\u0634\u062F\u0647:"), /*#__PURE__*/React.createElement("span", {
+          className: "font-bold"
+        }, transactions.length, " \u0645\u0648\u0631\u062F")))))), /*#__PURE__*/React.createElement("div", {
+          className: "space-y-3.5 flex flex-col"
+        }, /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('backup'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10717,54 +10939,8 @@ function App() {
           name: "chevron-left",
           className: "w-4 h-4 text-rose-400/60 scale-90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors shrink-0"
         })))))), /*#__PURE__*/React.createElement("div", {
-          onClick: () => toggleSettingsSection('notifications'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-3.5 space-x-reverse"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "bell",
-          className: "w-5 h-5"
-        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
-          className: "text-sm font-bold text-slate-900 dark:text-white"
-        }, "\u0627\u0639\u0644\u0627\u0646\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("p", {
-          className: "text-xs text-slate-400 mt-0.5"
-        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u06CC\u0627\u062F\u0622\u0648\u0631\u06CC\u200C\u0647\u0627 \u0648 \u0627\u0639\u0644\u0627\u0646\u200C\u0647\u0627"))), /*#__PURE__*/React.createElement(Icon, {
-          name: "chevron-down",
-          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'notifications' ? 'rotate-180' : 'rotate-0'}`
-        })), /*#__PURE__*/React.createElement("div", {
-          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'notifications' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
-          onClick: e => e.stopPropagation()
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "overflow-hidden space-y-2.5"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between p-3 bg-[#F4F7FC] dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700"
-        }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
-        }, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC \u0633\u0631\u0631\u0633\u06CC\u062F \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-slate-400 mt-0.5"
-        }, "\u0647\u0634\u062F\u0627\u0631 \u067E\u06CC\u0634\u200C\u0641\u0631\u0636 \u0642\u0628\u0644 \u0627\u0632 \u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 \u0648\u0627\u0645")), /*#__PURE__*/React.createElement("button", {
-          onClick: () => setEnableReminders(!enableReminders),
-          className: `w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableReminders ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`
-        }, /*#__PURE__*/React.createElement("div", {
-          className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableReminders ? '-translate-x-5' : 'translate-x-0'}`
-        }))), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between p-3 bg-[#F4F7FC] dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700"
-        }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
-        }, "\u062E\u0644\u0627\u0635\u0647 \u0631\u0648\u0632\u0627\u0646\u0647 \u062D\u0633\u0627\u0628\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-slate-400 mt-0.5"
-        }, "\u0627\u0639\u0644\u0627\u0646 \u0648\u0636\u0639\u06CC\u062A \u06A9\u0644\u06CC \u0627\u0642\u0633\u0627\u0637 \u0648 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627")), /*#__PURE__*/React.createElement("button", {
-          onClick: () => setEnableDailyAlerts(!enableDailyAlerts),
-          className: `w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableDailyAlerts ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`
-        }, /*#__PURE__*/React.createElement("div", {
-          className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableDailyAlerts ? '-translate-x-5' : 'translate-x-0'}`
-        })))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('security'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10789,50 +10965,8 @@ function App() {
         }, /*#__PURE__*/React.createElement("p", {
           className: "text-xs text-slate-500 dark:text-slate-400 leading-relaxed"
         }, "\u062A\u0645\u0627\u0645\u06CC \u062F\u0627\u062F\u0647\u200C\u0647\u0627 \u0648 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0634\u0645\u0627 \u0635\u0631\u0641\u0627\u064B \u0631\u0648\u06CC \u062D\u0627\u0641\u0638\u0647 \u062F\u0633\u062A\u06AF\u0627\u0647 \u0630\u062E\u06CC\u0631\u0647 \u0645\u06CC\u200C\u0634\u0648\u0646\u062F \u0648 \u062F\u0627\u0631\u0627\u06CC \u0628\u0627\u0644\u0627\u062A\u0631\u06CC\u0646 \u0633\u0637\u062D \u062D\u0631\u06CC\u0645 \u062E\u0635\u0648\u0635\u06CC \u0645\u06CC\u200C\u0628\u0627\u0634\u0646\u062F.")))), /*#__PURE__*/React.createElement("div", {
-          onClick: () => toggleSettingsSection('data'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center space-x-3.5 space-x-reverse"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "w-10 h-10 rounded-2xl bg-cyan-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "folder",
-          className: "w-5 h-5"
-        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
-          className: "text-sm font-bold text-slate-900 dark:text-white"
-        }, "\u062F\u0627\u062F\u0647\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("p", {
-          className: "text-xs text-slate-400 mt-0.5"
-        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u062F\u0627\u062F\u0647\u200C\u0647\u0627 \u0648 \u062D\u0627\u0641\u0638\u0647"))), /*#__PURE__*/React.createElement(Icon, {
-          name: "chevron-down",
-          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'data' ? 'rotate-180' : 'rotate-0'}`
-        })), /*#__PURE__*/React.createElement("div", {
-          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'data' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
-          onClick: e => e.stopPropagation()
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "overflow-hidden space-y-2 text-xs"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: "text-slate-500"
-        }, "\u062A\u0639\u062F\u0627\u062F \u0645\u062E\u0627\u0637\u0628\u06CC\u0646:"), /*#__PURE__*/React.createElement("span", {
-          className: "font-bold"
-        }, contacts.length, " \u0645\u0648\u0631\u062F")), /*#__PURE__*/React.createElement("div", {
-          className: "flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: "text-slate-500"
-        }, "\u067E\u0631\u0648\u0646\u062F\u0647\u200C\u0647\u0627\u06CC \u0648\u0627\u0645:"), /*#__PURE__*/React.createElement("span", {
-          className: "font-bold"
-        }, loans.length, " \u0645\u0648\u0631\u062F")), /*#__PURE__*/React.createElement("div", {
-          className: "flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: "text-slate-500"
-        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u062B\u0628\u062A\u200C\u0634\u062F\u0647:"), /*#__PURE__*/React.createElement("span", {
-          className: "font-bold"
-        }, transactions.length, " \u0645\u0648\u0631\u062F"))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('about'),
-          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  cursor-pointer transition-all hover:border-indigo-400"
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center justify-between"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10856,7 +10990,7 @@ function App() {
           className: "overflow-hidden space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed"
         }, /*#__PURE__*/React.createElement("p", null, "\u0628\u0631\u0646\u0627\u0645\u0647 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0645\u0627\u0644\u06CC Amir Finance \u0627\u0628\u0632\u0627\u0631\u06CC \u062C\u0647\u062A \u062B\u0628\u062A \u0648 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0648\u0627\u0645\u200C\u0647\u0627\u060C \u0627\u0642\u0633\u0627\u0637\u060C \u0637\u0644\u0628\u200C\u0647\u0627 \u0648 \u0628\u062F\u0647\u06CC\u200C\u0647\u0627\u06CC \u0634\u062E\u0635\u06CC."), /*#__PURE__*/React.createElement("p", {
           className: "text-[11px] text-slate-400"
-        }, "\u0637\u0631\u0627\u062D\u06CC \u0648 \u062A\u0648\u0633\u0639\u0647: Amir Finance"))))));
+        }, "\u0637\u0631\u0627\u062D\u06CC \u0648 \u062A\u0648\u0633\u0639\u0647: Amir Finance")))))));
       default:
         return null;
     }
@@ -11259,7 +11393,7 @@ function App() {
         e.stopPropagation();
         cancelEditingCard();
       },
-      className: "w-1/3 py-2.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-all active:scale-95 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
+      className: "flex-1 py-2.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-all active:scale-95 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
     }, /*#__PURE__*/React.createElement(Icon, {
       name: "x",
       className: "w-3.5 h-3.5 shrink-0"
@@ -11269,7 +11403,7 @@ function App() {
         e.stopPropagation();
         saveEditingCard(card);
       },
-      className: "w-2/3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1.5 space-x-reverse"
+      className: "flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1.5 space-x-reverse"
     }, /*#__PURE__*/React.createElement(Icon, {
       name: "check",
       className: "w-3.5 h-3.5 shrink-0"
@@ -11691,14 +11825,16 @@ function App() {
     }),
     className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
   }), /*#__PURE__*/React.createElement("input", {
-    type: "text",
+    type: "tel",
+    inputMode: "tel",
+    dir: "ltr",
     placeholder: "\u0634\u0645\u0627\u0631\u0647 \u062A\u0645\u0627\u0633",
     value: newContactForm.phone,
     onChange: e => setNewContactForm({
       ...newContactForm,
-      phone: e.target.value
+      phone: normalizePhoneNumber(e.target.value)
     }),
-    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
   }), /*#__PURE__*/React.createElement("input", {
     type: "text",
     placeholder: "\u0646\u0627\u0645 \u0628\u0627\u0646\u06A9 / \u062D\u0633\u0627\u0628 (\u0645\u062B\u0644\u0627\u064B \u0628\u0627\u0646\u06A9 \u0645\u0644\u06CC)",
@@ -11710,22 +11846,31 @@ function App() {
     className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
   }), /*#__PURE__*/React.createElement("input", {
     type: "text",
+    inputMode: "numeric",
+    dir: "ltr",
     placeholder: "\u0634\u0645\u0627\u0631\u0647 \u06A9\u0627\u0631\u062A (\u0627\u062E\u062A\u06CC\u0627\u0631\u06CC)",
     value: newContactForm.bankCard,
-    onChange: e => setNewContactForm({
-      ...newContactForm,
-      bankCard: e.target.value
-    }),
-    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+    onChange: e => {
+      const val = e.target.value;
+      const formatted = formatCardNumber(val);
+      const detectedBank = getBankNameFromCard(val) || newContactForm.bankName;
+      setNewContactForm({
+        ...newContactForm,
+        bankCard: formatted,
+        bankName: detectedBank
+      });
+    },
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
   }), /*#__PURE__*/React.createElement("input", {
     type: "text",
+    dir: "ltr",
     placeholder: "\u0634\u0645\u0627\u0631\u0647 \u0634\u0628\u0627 (\u0627\u062E\u062A\u06CC\u0627\u0631\u06CC)",
     value: newContactForm.iban,
     onChange: e => setNewContactForm({
       ...newContactForm,
-      iban: e.target.value
+      iban: normalizeIBAN(e.target.value)
     }),
-    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
   }), /*#__PURE__*/React.createElement("div", {
     className: "flex space-x-2 space-x-reverse pt-2"
   }, /*#__PURE__*/React.createElement("button", {
@@ -11781,14 +11926,16 @@ function App() {
     }),
     className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
   }), /*#__PURE__*/React.createElement("input", {
-    type: "text",
+    type: "tel",
+    inputMode: "tel",
+    dir: "ltr",
     placeholder: "\u0634\u0645\u0627\u0631\u0647 \u062A\u0645\u0627\u0633",
     value: editContactForm.phone,
     onChange: e => setEditContactForm({
       ...editContactForm,
-      phone: e.target.value
+      phone: normalizePhoneNumber(e.target.value)
     }),
-    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
   }), /*#__PURE__*/React.createElement("input", {
     type: "text",
     placeholder: "\u0646\u0627\u0645 \u0628\u0627\u0646\u06A9 / \u062D\u0633\u0627\u0628 (\u0645\u062B\u0644\u0627\u064B \u0628\u0627\u0646\u06A9 \u0645\u0644\u06CC)",
@@ -11800,22 +11947,31 @@ function App() {
     className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
   }), /*#__PURE__*/React.createElement("input", {
     type: "text",
+    inputMode: "numeric",
+    dir: "ltr",
     placeholder: "\u0634\u0645\u0627\u0631\u0647 \u06A9\u0627\u0631\u062A",
     value: editContactForm.bankCard,
-    onChange: e => setEditContactForm({
-      ...editContactForm,
-      bankCard: e.target.value
-    }),
-    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+    onChange: e => {
+      const val = e.target.value;
+      const formatted = formatCardNumber(val);
+      const detectedBank = getBankNameFromCard(val) || editContactForm.bankName;
+      setEditContactForm({
+        ...editContactForm,
+        bankCard: formatted,
+        bankName: detectedBank
+      });
+    },
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
   }), /*#__PURE__*/React.createElement("input", {
     type: "text",
+    dir: "ltr",
     placeholder: "\u0634\u0645\u0627\u0631\u0647 \u0634\u0628\u0627",
     value: editContactForm.iban,
     onChange: e => setEditContactForm({
       ...editContactForm,
-      iban: e.target.value
+      iban: normalizeIBAN(e.target.value)
     }),
-    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
   }), /*#__PURE__*/React.createElement("div", {
     className: "flex space-x-2 space-x-reverse pt-2"
   }, /*#__PURE__*/React.createElement("button", {
