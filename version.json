@@ -1,21 +1,35 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.2.4",
-  "buildNumber": 392,
-  "releaseDate": "2026-08-22",
+  "installedVersion": "3.2.5",
+  "buildNumber": 394,
+  "releaseDate": "2026-08-23",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.2.4",
-  "latestBuild": 392,
+  "latestVersion": "3.2.5",
+  "latestBuild": 394,
   "isUpdateAvailable": false,
   "history": [
     {
-      "version": "3.2.4",
-      "buildNumber": 392,
-      "releaseDate": "2026-08-22",
+      "version": "3.2.5",
+      "buildNumber": 394,
+      "releaseDate": "2026-08-23",
       "releaseChannel": "Stable",
-      "commitHash": "v324b392",
+      "commitHash": "v325b394",
+      "commitMessage": "feat: redesign settings version card with english typography and release v3.2.4",
+      "changes": [
+        "بازطراحی کارت نسخه در صفحه تنظیمات با عنوان Amir Finance و نمایش ارقام انگلیسی برای نسخه و بیلد",
+        "اصلاح رفتار آکاردئون‌های تنظیمات به حالت تک‌بازشو (Single-Accordion) و پیش‌فرض بسته",
+        "ستون‌بندی مستقل گرید تنظیمات برای صفحات بزرگ و تبلت با حفظ یکپارچگی استایل‌ها",
+        "انتشار رسمی نسخه 3.2.4"
+      ]
+    },
+    {
+      "version": "3.2.4",
+      "buildNumber": 393,
+      "releaseDate": "2026-08-23",
+      "releaseChannel": "Stable",
+      "commitHash": "v324b393",
       "commitMessage": "feat: redesign settings version card with english typography and release v3.2.4",
       "changes": [
         "بازطراحی کارت نسخه در صفحه تنظیمات با عنوان Amir Finance و نمایش ارقام انگلیسی برای نسخه و بیلد",

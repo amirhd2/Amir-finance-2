@@ -4366,13 +4366,13 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.4",
-    "buildNumber": 392,
+    "installedVersion": "3.2.5",
+    "buildNumber": 394,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.4",
-    "latestBuild": 392,
+    "latestVersion": "3.2.5",
+    "latestBuild": 394,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.2.3",
@@ -4655,8 +4655,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 392;
-    const EMBEDDED_VERSION = "3.2.4";
+    const EMBEDDED_BUILD = 394;
+    const EMBEDDED_VERSION = "3.2.5";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -6205,21 +6205,36 @@ function App() {
     }
     setIsFinalSubmitting(false);
     setShowPlusMenu(false);
-    setShowStackWizard(true);
+    if (window.ReactDOM && window.ReactDOM.flushSync) {
+      window.ReactDOM.flushSync(() => {
+        setShowStackWizard(true);
+      });
+      const activeCardNode = document.querySelector('.stack-wizard-overlay .stack-card[data-depth="0"]');
+      if (activeCardNode) {
+        const targetInput = activeCardNode.querySelector('input[autofocus]') || activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
+        if (targetInput) {
+          try {
+            targetInput.focus();
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) targetInput.click();
+          } catch (e) {}
+        }
+      }
+    } else {
+      setShowStackWizard(true);
+    }
   };
   const handlePrevCard = () => {
     if (animatingCard || animatingPrevCard) return;
     if (currentCardIdx > 0) {
       const prevIdx = currentCardIdx - 1;
-      setAnimatingPrevCard(true);
-      setCurrentCardIdx(prevIdx);
-      setTimeout(() => {
-        setAnimatingPrevCard(false);
-      }, 750);
-      requestAnimationFrame(() => {
+      if (window.ReactDOM && window.ReactDOM.flushSync) {
+        window.ReactDOM.flushSync(() => {
+          setAnimatingPrevCard(true);
+          setCurrentCardIdx(prevIdx);
+        });
         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
         if (activeCardNode) {
-          const targetInput = activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
+          const targetInput = activeCardNode.querySelector('input[autofocus]') || activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
           if (targetInput) {
             try {
               targetInput.focus();
@@ -6227,7 +6242,13 @@ function App() {
             } catch (e) {}
           }
         }
-      });
+      } else {
+        setAnimatingPrevCard(true);
+        setCurrentCardIdx(prevIdx);
+      }
+      setTimeout(() => {
+        setAnimatingPrevCard(false);
+      }, 750);
     }
   };
   const handleNextCard = cardsList => {
@@ -6426,15 +6447,14 @@ function App() {
     setValidationErrors({});
     if (currentCardIdx < cardsList.length - 1) {
       const nextIdx = currentCardIdx + 1;
-      setAnimatingCard(true);
-      setCurrentCardIdx(nextIdx);
-      setTimeout(() => {
-        setAnimatingCard(false);
-      }, 850);
-      requestAnimationFrame(() => {
+      if (window.ReactDOM && window.ReactDOM.flushSync) {
+        window.ReactDOM.flushSync(() => {
+          setAnimatingCard(true);
+          setCurrentCardIdx(nextIdx);
+        });
         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
         if (activeCardNode) {
-          const targetInput = activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
+          const targetInput = activeCardNode.querySelector('input[autofocus]') || activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
           if (targetInput) {
             try {
               targetInput.focus();
@@ -6442,7 +6462,13 @@ function App() {
             } catch (e) {}
           }
         }
-      });
+      } else {
+        setAnimatingCard(true);
+        setCurrentCardIdx(nextIdx);
+      }
+      setTimeout(() => {
+        setAnimatingCard(false);
+      }, 850);
     } else {
       setIsFinalSubmitting(true);
       setTimeout(() => {
@@ -10620,7 +10646,7 @@ function App() {
           contacts: contacts,
           loans: loans,
           isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
-          onEdit: txItem => handleTransactionClick(txItem),
+          onEdit: txItem => openStackWizard(txItem.type === 'debt_repayment' || txItem.type === 'demand_repayment' || txItem.type === 'repayment' ? isDebt ? 'debt_repayment' : 'demand_repayment' : isDebt ? 'debt' : 'demand', 'edit', txItem),
           onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
         })))));
       case 'settings':

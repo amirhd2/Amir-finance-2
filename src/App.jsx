@@ -3729,13 +3729,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.4",
-    "buildNumber": 392,
+    "installedVersion": "3.2.5",
+    "buildNumber": 394,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.4",
-    "latestBuild": 392,
+    "latestVersion": "3.2.5",
+    "latestBuild": 394,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -4195,8 +4195,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 392;
-                const EMBEDDED_VERSION = "3.2.4";
+                const EMBEDDED_BUILD = 394;
+                const EMBEDDED_VERSION = "3.2.5";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -5901,23 +5901,38 @@
 
                 setIsFinalSubmitting(false);
                 setShowPlusMenu(false);
-                setShowStackWizard(true);
+                
+                if (window.ReactDOM && window.ReactDOM.flushSync) {
+                    window.ReactDOM.flushSync(() => {
+                        setShowStackWizard(true);
+                    });
+                    const activeCardNode = document.querySelector('.stack-wizard-overlay .stack-card[data-depth="0"]');
+                    if (activeCardNode) {
+                        const targetInput = activeCardNode.querySelector('input[autofocus]') || activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
+                        if (targetInput) {
+                            try {
+                                targetInput.focus();
+                                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) targetInput.click();
+                            } catch(e) {}
+                        }
+                    }
+                } else {
+                    setShowStackWizard(true);
+                }
             };
 
             const handlePrevCard = () => {
                 if (animatingCard || animatingPrevCard) return;
                 if (currentCardIdx > 0) {
                     const prevIdx = currentCardIdx - 1;
-                    setAnimatingPrevCard(true);
-                    setCurrentCardIdx(prevIdx);
-                    setTimeout(() => {
-                        setAnimatingPrevCard(false);
-                    }, 750);
-
-                    requestAnimationFrame(() => {
+                    if (window.ReactDOM && window.ReactDOM.flushSync) {
+                        window.ReactDOM.flushSync(() => {
+                            setAnimatingPrevCard(true);
+                            setCurrentCardIdx(prevIdx);
+                        });
                         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
                         if (activeCardNode) {
-                            const targetInput = activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
+                            const targetInput = activeCardNode.querySelector('input[autofocus]') || activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
                             if (targetInput) {
                                 try {
                                     targetInput.focus();
@@ -5925,7 +5940,13 @@
                                 } catch(e) {}
                             }
                         }
-                    });
+                    } else {
+                        setAnimatingPrevCard(true);
+                        setCurrentCardIdx(prevIdx);
+                    }
+                    setTimeout(() => {
+                        setAnimatingPrevCard(false);
+                    }, 750);
                 }
             };
 
@@ -6113,16 +6134,14 @@
                 setValidationErrors({});
                 if (currentCardIdx < cardsList.length - 1) {
                     const nextIdx = currentCardIdx + 1;
-                    setAnimatingCard(true);
-                    setCurrentCardIdx(nextIdx);
-                    setTimeout(() => {
-                        setAnimatingCard(false);
-                    }, 850);
-
-                    requestAnimationFrame(() => {
+                    if (window.ReactDOM && window.ReactDOM.flushSync) {
+                        window.ReactDOM.flushSync(() => {
+                            setAnimatingCard(true);
+                            setCurrentCardIdx(nextIdx);
+                        });
                         const activeCardNode = document.querySelector(`.stack-card[data-depth="0"]`);
                         if (activeCardNode) {
-                            const targetInput = activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
+                            const targetInput = activeCardNode.querySelector('input[autofocus]') || activeCardNode.querySelector('input:not([type="hidden"]):not([readonly]), textarea:not([readonly])');
                             if (targetInput) {
                                 try {
                                     targetInput.focus();
@@ -6130,7 +6149,13 @@
                                 } catch(e) {}
                             }
                         }
-                    });
+                    } else {
+                        setAnimatingCard(true);
+                        setCurrentCardIdx(nextIdx);
+                    }
+                    setTimeout(() => {
+                        setAnimatingCard(false);
+                    }, 850);
                 } else {
                     setIsFinalSubmitting(true);
                     setTimeout(() => {
@@ -8241,179 +8266,44 @@
                         return (
                             <div className="space-y-3 animate-fade-in">
                                 <div className="flex justify-between items-center pt-0 pb-0 relative">
-                                    {/* Right Side: Additive Backup Warning Indicator + Welcome message & Today's Date */}
-                                    <div className="flex items-center gap-2 sm:gap-2.5">
-                                        {/* Additive Backup Warning Bell Indicator - positioned on the right side of the header texts */}
-                                        <AnimatePresence>
-                                            {backupStatus && backupStatus.unbackedChangesCount > 0 && (
-                                                <motion.div
-                                                    key="dashboard-backup-status-pill"
-                                                    initial={{ opacity: 0, scale: 0.7 }}
-                                                    animate={{ opacity: 1, scale: 1 }}
-                                                    exit={{ opacity: 0, scale: 0.7 }}
-                                                    transition={{ duration: 0.2 }}
-                                                    className="relative shrink-0"
-                                                >
-                                                    <button
-                                                        onClick={() => {
-                                                            setShowBackupPopover(prev => !prev);
-                                                            setBackupError(null);
-                                                        }}
-                                                        className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/50 dark:border-amber-500/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer"
-                                                        title={`${backupStatus.unbackedChangesCount} تغییر جدید بدون پشتیبان`}
-                                                        aria-label="وضعیت پشتیبان‌گیری"
-                                                    >
-                                                        <Icon name="bell" className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBellWiggling ? 'animate-bell-wiggle' : ''}`} />
-                                                        <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] font-bold px-1 rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 leading-none font-sans">
-                                                            {backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount}
-                                                        </span>
-                                                    </button>
-
-                                                    {/* Floating Popover connected to the bell */}
-                                                    <AnimatePresence>
-                                                        {showBackupPopover && (
-                                                            <>
-                                                                {/* Backdrop to close on click outside */}
-                                                                <div 
-                                                                    className="fixed inset-0 z-40"
-                                                                    onClick={() => {
-                                                                        setShowBackupPopover(false);
-                                                                        setBackupError(null);
-                                                                    }}
-                                                                />
-
-                                                                <motion.div
-                                                                    initial={{ opacity: 0, scale: 0.92, y: -6 }}
-                                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                                    exit={{ opacity: 0, scale: 0.92, y: -6 }}
-                                                                    transition={{ type: "spring", duration: 0.25, bounce: 0.15 }}
-                                                                    className="absolute top-11 right-0 w-[285px] sm:w-[310px] max-w-[calc(100vw-32px)] bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-[0_12px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] border border-slate-200/90 dark:border-slate-700/80 z-50 text-right"
-                                                                    dir="rtl"
-                                                                >
-                                                                    {/* Popover Header */}
-                                                                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-700/60">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <div className="w-7 h-7 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                                                                            <Icon name="shield-alert" className="w-4 h-4" />
-                                                                            </div>
-                                                                            <div>
-                                                                                <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100">نیاز به پشتیبان‌گیری</h4>
-                                                                                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">اطلاعات تغییر یافته</span>
-                                                                            </div>
-                                                                        </div>
-                                                                        <button 
-                                                                            onClick={() => {
-                                                                                setShowBackupPopover(false);
-                                                                                setBackupError(null);
-                                                                            }}
-                                                                            className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-700/60 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-colors cursor-pointer"
-                                                                        >
-                                                                            <Icon name="x" className="w-3.5 h-3.5" />
-                                                                        </button>
-                                                                    </div>
-
-                                                                    {/* Popover Body */}
-                                                                    <div className="py-2.5 space-y-2.5">
-                                                                        <div className="bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl p-2.5 border border-amber-200/60 dark:border-amber-800/40">
-                                                                            <p className="text-xs font-bold text-amber-900 dark:text-amber-200">
-                                                                                {backupStatus.unbackedChangesCount} تغییر پس از آخرین نسخه
-                                                                            </p>
-                                                                            <p className="text-[11px] text-amber-700 dark:text-amber-300/90 mt-0.5 leading-relaxed">
-                                                                                جهت حفظ امنیت اطلاعات مالی، فایل پشتیبان تهیه کنید.
-                                                                            </p>
-                                                                        </div>
-
-                                                                        {/* Changes summary by category */}
-                                                                        {backupStatus.categoryCounts && Object.keys(backupStatus.categoryCounts).length > 0 && (
-                                                                            <div className="space-y-1.5 pt-0.5">
-                                                                                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">خلاصه تغییرات ثبت‌شده:</span>
-                                                                                <div className="space-y-1 max-h-32 overflow-y-auto pr-0.5">
-                                                                                    {Object.entries(backupStatus.categoryCounts)
-                                                                                        .filter(([_, count]) => count > 0)
-                                                                                        .map(([categoryLabel, count]) => (
-                                                                                            <div key={categoryLabel} className="flex items-center justify-between text-[11px] py-1 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700/40 text-slate-700 dark:text-slate-200">
-                                                                                                <div className="flex items-center gap-1.5 truncate">
-                                                                                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
-                                                                                                    <span className="truncate font-medium">{categoryLabel}</span>
-                                                                                                </div>
-                                                                                                <span className="font-bold text-amber-600 dark:text-amber-400 shrink-0 mr-2 font-sans">
-                                                                                                    {count} مورد
-                                                                                                </span>
-                                                                                            </div>
-                                                                                        ))}
-                                                                                </div>
-                                                                            </div>
-                                                                        )}
-
-                                                                        {/* Last backup info */}
-                                                                        <div className="pt-1 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/60">
-                                                                            <span>آخرین پشتیبان:</span>
-                                                                            <span className="font-medium text-slate-700 dark:text-slate-200">
-                                                                                {backupStatus.lastBackupFormatted || 'هنوز فایلی ذخیره نشده'}
-                                                                            </span>
-                                                                        </div>
-
-                                                                        {/* Error alert if failed */}
-                                                                        {backupError && (
-                                                                            <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-xl p-2 text-center text-rose-600 dark:text-rose-400 text-xs">
-                                                                                <p className="font-bold">خطا در پشتیبان‌گیری</p>
-                                                                                <p className="text-[10px] mt-0.5">فایل پشتیبان ذخیره نشد. لطفاً مجدداً امتحان کنید.</p>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-
-                                                                    {/* Action button */}
-                                                                    <div className="pt-1">
-                                                                        <button
-                                                                            disabled={isBackingUp}
-                                                                            onClick={async () => {
-                                                                                setIsBackingUp(true);
-                                                                                setBackupError(null);
-                                                                                try {
-                                                                                    const success = handleExportBackup();
-                                                                                    if (success) {
-                                                                                        setShowBackupPopover(false);
-                                                                                    } else {
-                                                                                        setBackupError('خطا در دانلود یا ایجاد فایل');
-                                                                                    }
-                                                                                } catch (err) {
-                                                                                    setBackupError('خطا در پشتیبان‌گیری');
-                                                                                } finally {
-                                                                                    setIsBackingUp(false);
-                                                                                }
-                                                                            }}
-                                                                            className="w-full py-2.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 transition-all disabled:opacity-50 cursor-pointer"
-                                                                        >
-                                                                            {isBackingUp ? (
-                                                                                <>
-                                                                                    <Icon name="loader" className="w-4 h-4 animate-spin" />
-                                                                                    <span>در حال آماده‌سازی فایل...</span>
-                                                                                </>
-                                                                            ) : (
-                                                                                <>
-                                                                                    <Icon name="download" className="w-4 h-4" />
-                                                                                    <span>{backupError ? 'تلاش مجدد' : 'پشتیبان‌گیری اکنون'}</span>
-                                                                                </>
-                                                                            )}
-                                                                        </button>
-                                                                    </div>
-                                                                </motion.div>
-                                                            </>
-                                                        )}
-                                                    </AnimatePresence>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-
-                                        <div className="flex flex-col items-start text-right">
-                                            <p className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight">
-                                                سلام وقت به خیر 👋
-                                            </p>
-                                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right">
-                                                امروز: {getDeviceJalaliDate().day} {getDeviceJalaliDate().month} {getDeviceJalaliDate().year}
-                                            </p>
-                                        </div>
+                                    {/* Right Side: Welcome message & Today's Date */}
+                                    <div className="flex flex-col items-start text-right">
+                                        <p className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight">
+                                            سلام وقت به خیر 👋
+                                        </p>
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right">
+                                            امروز: {getDeviceJalaliDate().day} {getDeviceJalaliDate().month} {getDeviceJalaliDate().year}
+                                        </p>
                                     </div>
+
+                                    {/* Center: Additive Backup Warning Bell Indicator */}
+                                    <AnimatePresence>
+                                        {backupStatus && backupStatus.unbackedChangesCount > 0 && (
+                                            <motion.div
+                                                key="dashboard-backup-status-pill"
+                                                initial={{ opacity: 0, scale: 0.7 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.7 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"
+                                            >
+                                                <button
+                                                    onClick={() => {
+                                                        setShowBackupPopover(true);
+                                                        setBackupError(null);
+                                                    }}
+                                                    className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/50 dark:border-amber-500/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer"
+                                                    title={`${backupStatus.unbackedChangesCount} تغییر جدید بدون پشتیبان`}
+                                                    aria-label="وضعیت پشتیبان‌گیری"
+                                                >
+                                                    <Icon name="bell" className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBellWiggling ? 'animate-bell-wiggle' : ''}`} />
+                                                    <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold px-1 rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 leading-none font-sans">
+                                                        {backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount}
+                                                    </span>
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
 
                                     {/* Left Side: App Icon on far left + Amir Finance & Version immediately next to it */}
                                     <div className="flex items-center gap-2.5" dir="ltr">
@@ -10338,7 +10228,7 @@
                                                     contacts={contacts}
                                                     loans={loans}
                                                     isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
-                                                    onEdit={(txItem) => handleTransactionClick(txItem)}
+                                                    onEdit={(txItem) => openStackWizard(txItem.type === 'debt_repayment' || txItem.type === 'demand_repayment' || txItem.type === 'repayment' ? (isDebt ? 'debt_repayment' : 'demand_repayment') : (isDebt ? 'debt' : 'demand'), 'edit', txItem)}
                                                     onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
                                                 />
                                             ))}
@@ -11908,6 +11798,149 @@
                                     </div>
                                 </motion.div>
                             </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Backup & Pending Changes Bottom Sheet */}
+                    <AnimatePresence>
+                        {showBackupPopover && (
+                            <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-auto">
+                                {/* Backdrop */}
+                                <motion.div
+                                    key="backup-sheet-backdrop"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.25 }}
+                                    className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50"
+                                    onClick={() => {
+                                        setShowBackupPopover(false);
+                                        setBackupError(null);
+                                    }}
+                                />
+
+                                {/* Bottom Sheet Drawer Panel */}
+                                <motion.div
+                                    key="backup-sheet-content"
+                                    initial={{ y: "100%", opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: "100%", opacity: 0 }}
+                                    transition={{ type: "spring", stiffness: 350, damping: 32 }}
+                                    className="relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-t-[32px] p-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] shadow-[0_-12px_40px_rgba(0,0,0,0.22)] dark:shadow-[0_-12px_40px_rgba(0,0,0,0.65)] border-t border-x border-slate-200/90 dark:border-slate-700/80 z-[51] text-right overflow-hidden flex flex-col mx-auto"
+                                    dir="rtl"
+                                >
+                                    {/* Pull Handle Bar */}
+                                    <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full mx-auto mb-3.5 shrink-0" />
+
+                                    {/* Sheet Header */}
+                                    <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60 shrink-0">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                <Icon name="shield-alert" className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100">نیاز به پشتیبان‌گیری</h4>
+                                                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">اطلاعات تغییر یافته</span>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={() => {
+                                                setShowBackupPopover(false);
+                                                setBackupError(null);
+                                            }}
+                                            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700/60 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-colors cursor-pointer active:scale-95"
+                                        >
+                                            <Icon name="x" className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    {/* Sheet Body */}
+                                    <div className="py-3.5 space-y-3 max-h-[55vh] overflow-y-auto pr-0.5">
+                                        <div className="bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl p-3 border border-amber-200/60 dark:border-amber-800/40">
+                                            <p className="text-xs sm:text-sm font-bold text-amber-900 dark:text-amber-200">
+                                                {backupStatus?.unbackedChangesCount || 0} تغییر پس از آخرین نسخه پشتیبان
+                                            </p>
+                                            <p className="text-xs text-amber-700 dark:text-amber-300/90 mt-1 leading-relaxed">
+                                                جهت حفظ امنیت اطلاعات مالی و جلوگیری از پاک شدن داده‌ها، فایل پشتیبان جدید را تهیه و ذخیره نمایید.
+                                            </p>
+                                        </div>
+
+                                        {/* Changes summary by category */}
+                                        {backupStatus?.categoryCounts && Object.keys(backupStatus.categoryCounts).length > 0 && (
+                                            <div className="space-y-2 pt-0.5">
+                                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">خلاصه تغییرات ثبت‌شده:</span>
+                                                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-0.5">
+                                                    {Object.entries(backupStatus.categoryCounts)
+                                                        .filter(([_, count]) => count > 0)
+                                                        .map(([categoryLabel, count]) => (
+                                                            <div key={categoryLabel} className="flex items-center justify-between text-xs py-2 px-3 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700/40 text-slate-700 dark:text-slate-200">
+                                                                <div className="flex items-center gap-2 truncate">
+                                                                    <span className="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
+                                                                    <span className="truncate font-medium">{categoryLabel}</span>
+                                                                </div>
+                                                                <span className="font-bold text-red-600 dark:text-red-400 shrink-0 mr-2 font-sans text-xs">
+                                                                    {count} مورد
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Last backup info */}
+                                        <div className="pt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/60">
+                                            <span>آخرین پشتیبان:</span>
+                                            <span className="font-medium text-slate-700 dark:text-slate-200">
+                                                {backupStatus?.lastBackupFormatted || 'هنوز فایلی ذخیره نشده'}
+                                            </span>
+                                        </div>
+
+                                        {/* Error alert if failed */}
+                                        {backupError && (
+                                            <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-2xl p-2.5 text-center text-rose-600 dark:text-rose-400 text-xs">
+                                                <p className="font-bold">خطا در پشتیبان‌گیری</p>
+                                                <p className="text-[11px] mt-0.5">فایل پشتیبان ذخیره نشد. لطفاً مجدداً امتحان کنید.</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Action button */}
+                                    <div className="pt-2 shrink-0">
+                                        <button
+                                            disabled={isBackingUp}
+                                            onClick={async () => {
+                                                setIsBackingUp(true);
+                                                setBackupError(null);
+                                                try {
+                                                    const success = handleExportBackup();
+                                                    if (success) {
+                                                        setShowBackupPopover(false);
+                                                    } else {
+                                                        setBackupError('خطا در دانلود یا ایجاد فایل');
+                                                    }
+                                                } catch (err) {
+                                                    setBackupError('خطا در پشتیبان‌گیری');
+                                                } finally {
+                                                    setIsBackingUp(false);
+                                                }
+                                            }}
+                                            className="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                                        >
+                                            {isBackingUp ? (
+                                                <>
+                                                    <Icon name="loader" className="w-4.5 h-4.5 animate-spin" />
+                                                    <span>در حال آماده‌سازی فایل...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Icon name="download" className="w-4.5 h-4.5" />
+                                                    <span>{backupError ? 'تلاش مجدد' : 'پشتیبان‌گیری اکنون'}</span>
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            </div>
                         )}
                     </AnimatePresence>
 
