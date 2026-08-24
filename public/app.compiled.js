@@ -3669,10 +3669,45 @@ function SwipeableTxCard({
   contactName,
   contacts = [],
   loans = [],
+  transactions = [],
   isHighlighted = false,
   hasShadow = true
 }) {
   const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
+
+  // Resolve target loan and calculated installment number for loan repayments
+  const isLoanTx = tx.type === 'repayment' || tx.type === 'loan_installment' || tx.type === 'installment' || Boolean(tx.loanId);
+  let targetLoan = null;
+  if (isLoanTx) {
+    targetLoan = tx.loan || (tx.loanId && Array.isArray(loans) && loans.length > 0 ? loans.find(l => Number(l.id) === Number(tx.loanId)) : null);
+    if (!targetLoan && tx.loanId && typeof loans !== 'undefined' && Array.isArray(loans)) {
+      targetLoan = loans.find(l => Number(l.id) === Number(tx.loanId));
+    }
+  }
+  let instNum = null;
+  if (isLoanTx) {
+    if (tx.installmentNum) {
+      instNum = tx.installmentNum;
+    } else if (tx.installmentNumber) {
+      instNum = tx.installmentNumber;
+    } else if (tx.title) {
+      const normalizedTitle = toEnglishDigits(String(tx.title));
+      const match = normalizedTitle.match(/قسط\s*(?:شماره\s*)?(\d+)/i) || normalizedTitle.match(/(\d+)\s*(?:ام)?\s*قسط/i);
+      if (match && match[1]) {
+        instNum = parseInt(match[1], 10);
+      }
+    }
+    if (!instNum && targetLoan && Array.isArray(transactions) && transactions.length > 0) {
+      const loanRepayments = transactions.filter(t => Number(t.loanId) === Number(targetLoan.id) && (t.type === 'repayment' || t.type === 'loan_installment' || t.type === 'installment')).sort((a, b) => (a.id || 0) - (b.id || 0));
+      const idxInLoan = loanRepayments.findIndex(t => t.id === tx.id);
+      if (idxInLoan !== -1) {
+        instNum = idxInLoan + 1;
+      }
+    }
+    if (!instNum && totalCount !== undefined && index !== undefined) {
+      instNum = totalCount - index;
+    }
+  }
   const {
     line1,
     line2,
@@ -3685,14 +3720,8 @@ function SwipeableTxCard({
     }
     let l1 = '';
     let l2 = '';
-    let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : tx.description && tx.description.trim() ? tx.description.trim() : tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده';
-    if (tx.type === 'repayment') {
-      // Look up matching loan object
-      let targetLoan = tx.loan || (tx.loanId && Array.isArray(loans) && loans.length > 0 ? loans.find(l => Number(l.id) === Number(tx.loanId)) : null);
-      if (!targetLoan && tx.loanId && typeof loans !== 'undefined' && Array.isArray(loans)) {
-        targetLoan = loans.find(l => Number(l.id) === Number(tx.loanId));
-      }
-
+    let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : tx.description && tx.description.trim() ? tx.description.trim() : 'توضیحات ثبت نشده';
+    if (isLoanTx) {
       // Get exact loan title from the loans section
       let loanName = targetLoan ? targetLoan.title : tx.loanTitle || (tx.loan ? tx.loan.title : '');
       if (!loanName && tx.title) {
@@ -3706,49 +3735,30 @@ function SwipeableTxCard({
         }
       }
       if (!loanName) loanName = 'وام';
-
-      // Determine installment number
-      let instNum = tx.installmentNum;
-      if (!instNum && tx.title) {
-        const match = tx.title.match(/قسط\s*(?:شماره\s*)?(\d+)/);
-        if (match && match[1]) {
-          instNum = parseInt(match[1], 10);
-        }
-      }
-      if (!instNum && targetLoan && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
-        const loanRepayments = transactions.filter(t => Number(t.loanId) === Number(targetLoan.id) && t.type === 'repayment').sort((a, b) => (a.id || 0) - (b.id || 0));
-        const idxInLoan = loanRepayments.findIndex(t => t.id === tx.id);
-        if (idxInLoan !== -1) {
-          instNum = idxInLoan + 1;
-        }
-      }
-      if (!instNum && totalCount !== undefined && index !== undefined) {
-        instNum = totalCount - index;
-      }
-      l1 = instNum ? `پرداخت قسط شماره ${instNum} - ${loanName}` : `پرداخت قسط - ${loanName}`;
+      let loanNameClean = loanName.replace(/^وام\s*/, '').trim();
+      if (!loanNameClean) loanNameClean = 'بانک';
+      l1 = instNum ? `پرداخت قسط ${instNum} وام ${loanNameClean}` : `پرداخت قسط وام ${loanNameClean}`;
       let contactInfo = rawContactName.trim();
       if (!contactInfo && targetLoan) {
-        if (targetLoan.lender) contactInfo = targetLoan.lender;else if (targetLoan.contactId && Array.isArray(contacts)) {
+        if (targetLoan.contactId && Array.isArray(contacts)) {
           const foundC = contacts.find(c => c.id === targetLoan.contactId);
           if (foundC) contactInfo = `${foundC.firstName || ''} ${foundC.lastName || ''}`.trim();
         }
+        if (!contactInfo && targetLoan.contactName) contactInfo = targetLoan.contactName.trim();
+        if (!contactInfo && targetLoan.lender) contactInfo = targetLoan.lender.trim();
       }
-      l2 = contactInfo ? contactInfo : `اقساط ${loanName}`;
-    } else if (tx.type === 'demand') {
-      l1 = tx.title || 'ثبت طلب جدید';
-      l2 = rawContactName.trim();
-    } else if (tx.type === 'demand_repayment') {
-      l1 = tx.title || 'بازپرداخت طلب';
-      l2 = rawContactName.trim();
+      l2 = contactInfo ? contactInfo : loanName || 'وام';
     } else if (tx.type === 'debt') {
-      let cleanTitle = tx.title || 'ثبت بدهی جدید';
-      if (cleanTitle.startsWith('ثبت قرض / بدهی') || cleanTitle.startsWith('ثبت قرض/بدهی') || cleanTitle.startsWith('ثبت قرض')) {
-        cleanTitle = cleanTitle.replace(/^ثبت\s*قرض\s*\/?\s*بدهی/g, 'ثبت بدهی جدید').replace(/^ثبت\s*قرض/g, 'ثبت بدهی جدید');
-      }
-      l1 = cleanTitle;
+      l1 = 'بدهی جدید ثبت شد';
       l2 = rawContactName.trim();
     } else if (tx.type === 'debt_repayment') {
-      l1 = tx.title || 'بازپرداخت بدهی';
+      l1 = 'بازپرداخت جدید ثبت شد';
+      l2 = rawContactName.trim();
+    } else if (tx.type === 'demand') {
+      l1 = 'طلب جدید ثبت شد';
+      l2 = rawContactName.trim();
+    } else if (tx.type === 'demand_repayment') {
+      l1 = 'بازپرداخت جدید ثبت شد';
       l2 = rawContactName.trim();
     } else if (tx.type === 'income') {
       l1 = tx.title || 'درآمد';
@@ -3766,43 +3776,150 @@ function SwipeableTxCard({
       line3: l3
     };
   })();
-  const isRedAmount = tx.isPositive !== undefined ? !tx.isPositive : tx.type === 'debt' || tx.type === 'demand_repayment' || tx.type === 'expense' || colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment' && tx.type !== 'income';
+  const txVisualConfig = (() => {
+    const type = tx.type;
+    if (type === 'repayment' || type === 'loan_installment' || type === 'installment' || tx.loanId) {
+      return {
+        isLoan: true,
+        iconBg: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/40',
+        iconName: 'receipt',
+        microBadgeIcon: 'check',
+        microBadgeClass: 'bg-indigo-600 text-white',
+        borderAccent: 'border-r-indigo-500 dark:border-r-indigo-400',
+        amountClass: 'text-indigo-700 dark:text-indigo-300',
+        sign: '-'
+      };
+    }
+    if (type === 'demand') {
+      return {
+        isLoan: false,
+        iconBg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/40',
+        iconName: 'arrow-up-right',
+        microBadgeIcon: 'plus',
+        microBadgeClass: 'bg-emerald-600 text-white',
+        borderAccent: 'border-r-emerald-500 dark:border-r-emerald-400',
+        amountClass: 'text-emerald-700 dark:text-emerald-300',
+        sign: '+'
+      };
+    }
+    if (type === 'demand_repayment') {
+      return {
+        isLoan: false,
+        iconBg: 'bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-800/40',
+        iconName: 'check-circle-2',
+        microBadgeIcon: 'check',
+        microBadgeClass: 'bg-teal-600 text-white',
+        borderAccent: 'border-r-teal-500 dark:border-r-teal-400',
+        amountClass: 'text-teal-700 dark:text-teal-300',
+        sign: '+'
+      };
+    }
+    if (type === 'debt') {
+      return {
+        isLoan: false,
+        iconBg: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/40',
+        iconName: 'arrow-down-left',
+        microBadgeIcon: 'minus',
+        microBadgeClass: 'bg-rose-600 text-white',
+        borderAccent: 'border-r-rose-500 dark:border-r-rose-400',
+        amountClass: 'text-rose-700 dark:text-rose-300',
+        sign: '-'
+      };
+    }
+    if (type === 'debt_repayment') {
+      return {
+        isLoan: false,
+        iconBg: 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/40',
+        iconName: 'corner-down-left',
+        microBadgeIcon: 'check',
+        microBadgeClass: 'bg-amber-600 text-white',
+        borderAccent: 'border-r-amber-500 dark:border-r-amber-400',
+        amountClass: 'text-amber-700 dark:text-amber-300',
+        sign: '-'
+      };
+    }
+    if (type === 'income') {
+      return {
+        isLoan: false,
+        iconBg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/40',
+        iconName: 'arrow-down-left',
+        microBadgeIcon: 'plus',
+        microBadgeClass: 'bg-emerald-600 text-white',
+        borderAccent: 'border-r-emerald-500 dark:border-r-emerald-400',
+        amountClass: 'text-emerald-700 dark:text-emerald-300',
+        sign: '+'
+      };
+    }
+    if (type === 'expense') {
+      return {
+        isLoan: false,
+        iconBg: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/40',
+        iconName: 'arrow-up-right',
+        microBadgeIcon: 'minus',
+        microBadgeClass: 'bg-rose-600 text-white',
+        borderAccent: 'border-r-rose-500 dark:border-r-rose-400',
+        amountClass: 'text-rose-700 dark:text-rose-300',
+        sign: '-'
+      };
+    }
+    return {
+      isLoan: false,
+      iconBg: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600',
+      iconName: 'receipt',
+      microBadgeIcon: 'receipt',
+      microBadgeClass: 'bg-slate-600 text-white',
+      borderAccent: 'border-r-slate-400 dark:border-r-slate-500',
+      amountClass: 'text-slate-800 dark:text-slate-100',
+      sign: ''
+    };
+  })();
   return /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
     onDelete: confirmCb => onDelete && onDelete(tx, confirmCb),
     onCardClick: () => onEdit && onEdit(tx)
   }, /*#__PURE__*/React.createElement("div", {
     id: `tx-card-${tx.id}`,
-    className: `${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto relative overflow-visible`
+    className: `${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border border-r-[3.5px] ${txVisualConfig.borderAccent} pl-3 sm:pl-5 pr-2.5 sm:pr-3.5 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto relative overflow-visible`
   }, /*#__PURE__*/React.createElement(TxBorderFocusOverlay, {
     tx: tx,
     isHighlighted: isHighlighted
   }), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center space-x-2 sm:space-x-3 space-x-reverse min-w-0 flex-1"
+    className: "flex items-center space-x-2.5 sm:space-x-3 space-x-reverse min-w-0 flex-1"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg ${isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`
-  }, totalCount ? totalCount - index : /*#__PURE__*/React.createElement(Icon, {
-    name: tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : isRedAmount ? "arrow-up-right" : "arrow-down-left",
-    className: "w-5 h-5 sm:w-6 sm:h-6"
+    className: "relative shrink-0"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: `w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base ${txVisualConfig.iconBg} flex items-center justify-center shadow-xs select-none`
+  }, txVisualConfig.isLoan && instNum ? /*#__PURE__*/React.createElement("span", {
+    className: "font-extrabold font-mono tracking-tight text-indigo-700 dark:text-indigo-300"
+  }, instNum) : /*#__PURE__*/React.createElement(Icon, {
+    name: txVisualConfig.iconName,
+    className: "w-5 h-5 sm:w-5.5 sm:h-5.5"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-1 sm:pl-4 pr-0 sm:pr-1"
+    className: `absolute -top-1 -right-1 w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full ${txVisualConfig.microBadgeClass} border-2 border-white dark:border-slate-800 flex items-center justify-center shadow-xs pointer-events-none`
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: txVisualConfig.microBadgeIcon,
+    className: "w-2.5 h-2.5 stroke-[3]"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-1 sm:pl-3 pr-0"
   }, /*#__PURE__*/React.createElement("h3", {
-    className: "text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug break-words whitespace-normal"
+    className: "text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug truncate"
   }, line1), line2 && /*#__PURE__*/React.createElement("div", {
-    className: "text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 break-words whitespace-normal leading-snug"
+    className: "text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 truncate leading-snug"
   }, line2), /*#__PURE__*/React.createElement("p", {
-    className: "text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 break-words whitespace-normal leading-relaxed mt-0.5"
+    className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 truncate leading-relaxed mt-0.5"
   }, line3))), /*#__PURE__*/React.createElement("div", {
     className: "text-center shrink-0 flex flex-col items-center justify-center min-w-[70px] sm:min-w-[90px] pl-0 sm:pl-1"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `font-bold text-sm sm:text-[15px] leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`
-  }, Math.abs(tx.amount).toLocaleString()), /*#__PURE__*/React.createElement("div", {
-    className: `text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`
+    className: `font-black text-sm sm:text-[15px] leading-tight text-center ${txVisualConfig.amountClass} dir-ltr`
+  }, txVisualConfig.sign && /*#__PURE__*/React.createElement("span", {
+    className: "ml-0.5 text-xs"
+  }, txVisualConfig.sign), Math.abs(tx.amount).toLocaleString()), /*#__PURE__*/React.createElement("div", {
+    className: `text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${txVisualConfig.amountClass}`
   }, "\u062A\u0648\u0645\u0627\u0646"), (() => {
     const rawDate = tx.dateStr || tx.date || tx.receiveDate || tx.startDate || tx.createdAt || '';
     const numericDate = formatDateToNumericJalali(rawDate);
     if (!numericDate || numericDate === '-') return null;
     return /*#__PURE__*/React.createElement("div", {
-      className: "text-[11px] sm:text-sm font-bold text-slate-600 dark:text-slate-300 font-mono mt-0.5 sm:mt-1 text-center whitespace-nowrap"
+      className: "text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 font-mono mt-0.5 text-center whitespace-nowrap"
     }, numericDate);
   })())));
 }
@@ -4366,13 +4483,13 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.5",
-    "buildNumber": 394,
+    "installedVersion": "3.2.6",
+    "buildNumber": 399,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.5",
-    "latestBuild": 394,
+    "latestVersion": "3.2.6",
+    "latestBuild": 399,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.2.3",
@@ -4655,8 +4772,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 394;
-    const EMBEDDED_VERSION = "3.2.5";
+    const EMBEDDED_BUILD = 399;
+    const EMBEDDED_VERSION = "3.2.6";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -5072,6 +5189,63 @@ function App() {
   const isInitialMountRef = useRef(true);
   const isRestoringOrClearingRef = useRef(false);
 
+  // GLOBAL UNDO SYSTEM
+  const appStateRef = useRef({
+    contacts,
+    loans,
+    transactions,
+    completedPeriods,
+    backupStatus
+  });
+  useEffect(() => {
+    appStateRef.current = {
+      contacts,
+      loans,
+      transactions,
+      completedPeriods,
+      backupStatus
+    };
+  }, [contacts, loans, transactions, completedPeriods, backupStatus]);
+  const [undoState, setUndoState] = useState(null);
+  useEffect(() => {
+    if (undoState) {
+      const timer = setTimeout(() => setUndoState(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [undoState]);
+  const triggerUndo = (message, customSnapshot = null) => {
+    setUndoState({
+      message,
+      state: customSnapshot ? {
+        ...customSnapshot
+      } : {
+        ...appStateRef.current
+      },
+      timestamp: Date.now()
+    });
+  };
+  const handleUndo = () => {
+    if (!undoState || !undoState.state) return;
+    const restored = undoState.state;
+    isRestoringOrClearingRef.current = true;
+    setContacts(restored.contacts || []);
+    setLoans(restored.loans || []);
+    setTransactions(restored.transactions || []);
+    setCompletedPeriods(restored.completedPeriods || []);
+    if (restored.backupStatus) {
+      setBackupStatus(restored.backupStatus);
+      try {
+        localStorage.setItem('amir_fin_backup_status_v1', JSON.stringify(restored.backupStatus));
+      } catch (e) {}
+    }
+    prevContactsMapRef.current = new Map((restored.contacts || []).map(c => [String(c.id), c]));
+    prevLoansMapRef.current = new Map((restored.loans || []).map(l => [String(l.id), l]));
+    prevTxsMapRef.current = new Map((restored.transactions || []).map(t => [String(t.id), t]));
+    prevPeriodsSetRef.current = new Set((restored.completedPeriods || []).map(p => String(p.id || JSON.stringify(p))));
+    setUndoState(null);
+    showToast('تغییرات لغو و اطلاعات بازگردانی شد');
+  };
+
   // Entity snapshot maps for precise single-log mutation diffing
   const prevContactsMapRef = useRef(new Map());
   const prevLoansMapRef = useRef(new Map());
@@ -5133,6 +5307,7 @@ function App() {
       return;
     }
     if (isRestoringOrClearingRef.current) {
+      isRestoringOrClearingRef.current = false;
       prevContactsMapRef.current = new Map(contacts.map(c => [String(c.id), c]));
       prevLoansMapRef.current = new Map(loans.map(l => [String(l.id), l]));
       prevTxsMapRef.current = new Map(transactions.map(t => [String(t.id), t]));
@@ -5443,8 +5618,10 @@ function App() {
     return typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  // Settings accordion single-open active section state managed above
+  // All Transactions Subpage State
   const [allTxsPage, setAllTxsPage] = useState(1);
+  const [allTxsSearchQuery, setAllTxsSearchQuery] = useState('');
+  const [allTxsFilterType, setAllTxsFilterType] = useState('all');
   const [dynamicPageSize, setDynamicPageSize] = useState(() => {
     if (typeof window === 'undefined') return 8;
     const h = window.innerHeight;
@@ -5870,7 +6047,7 @@ function App() {
           }));
         }
       }
-      showToast('قسط با موفقیت حذف گردید');
+      triggerUndo('قسط با موفقیت حذف گردید');
       return;
     }
     if (effectiveType === 'debt' || effectiveType === 'debt_repayment') {
@@ -5899,7 +6076,7 @@ function App() {
           }));
         }
       }
-      showToast(periodId ? 'تراکنش حذف شد و بدهی از حالت بایگانی خارج گردید' : effectiveType === 'debt_repayment' ? 'بازپرداخت بدهی با موفقیت حذف شد' : 'تراکنش بدهی با موفقیت حذف گردید');
+      triggerUndo(periodId ? 'تراکنش حذف شد و بدهی از حالت بایگانی خارج گردید' : effectiveType === 'debt_repayment' ? 'بازپرداخت بدهی با موفقیت حذف شد' : 'تراکنش بدهی با موفقیت حذف گردید');
       return;
     }
     if (effectiveType === 'demand' || effectiveType === 'demand_repayment') {
@@ -5928,10 +6105,10 @@ function App() {
           }));
         }
       }
-      showToast(periodId ? 'تراکنش حذف شد و طلب از حالت بایگانی خارج گردید' : effectiveType === 'demand_repayment' ? 'بازپرداخت طلب با موفقیت حذف شد' : 'تراکنش طلب با موفقیت حذف گردید');
+      triggerUndo(periodId ? 'تراکنش حذف شد و طلب از حالت بایگانی خارج گردید' : effectiveType === 'demand_repayment' ? 'بازپرداخت طلب با موفقیت حذف شد' : 'تراکنش طلب با موفقیت حذف گردید');
       return;
     }
-    showToast('تراکنش با موفقیت حذف گردید');
+    triggerUndo('تراکنش با موفقیت حذف گردید');
   };
   const exportPeriodAsPNG = period => {
     if (!period) return;
@@ -6091,13 +6268,14 @@ function App() {
           notes: data.notes || ''
         });
       } else {
-        const passedContactId = data && data.fromFab ? '' : data && data.contactId ? data.contactId : selectedContact ? selectedContact.id : '';
-        const defaultContact = contacts.find(c => c.id === Number(passedContactId));
+        const isFromFab = Boolean(data && data.fromFab || mode === 'add' && currentTab === 'dashboard');
+        const passedContactId = isFromFab ? '' : data && data.contactId ? data.contactId : selectedContact ? selectedContact.id : '';
+        const defaultContact = passedContactId ? contacts.find(c => c.id === Number(passedContactId)) : null;
         const defaultName = defaultContact ? `${defaultContact.firstName} ${defaultContact.lastName}` : '';
         setLoanForm({
           id: null,
           title: '',
-          selectedContactId: passedContactId,
+          selectedContactId: passedContactId || '',
           contactName: defaultName,
           contactSearchQuery: '',
           startDate: todayFormatted,
@@ -6115,19 +6293,20 @@ function App() {
         });
       }
     } else if (type === 'demand' || type === 'debt') {
-      const passedContactId = data && data.fromFab ? '' : data && data.contactId ? data.contactId : selectedContact ? selectedContact.id : '';
+      const isFromFab = Boolean(data && data.fromFab || mode === 'add' && currentTab === 'dashboard');
+      const passedContactId = isFromFab ? '' : data && data.contactId ? data.contactId : selectedContact ? selectedContact.id : '';
       const isEditTx = mode === 'edit' && data && data.id;
       const editAmt = isEditTx ? Math.abs(data.amount || 0) : mode === 'edit' && data && data.amount ? Math.abs(data.amount || 0) : '';
       const editNotes = mode === 'edit' && data && data.notes ? data.notes : '';
       setDemandDebtForm({
         id: isEditTx ? data.id : null,
-        selectedContactId: passedContactId,
+        selectedContactId: passedContactId || '',
         contactSearchQuery: '',
         amount: editAmt,
         notes: editNotes
       });
     } else if (type === 'installment') {
-      const isFromFab = data && data.fromFab;
+      const isFromFab = Boolean(data && data.fromFab || mode === 'add' && currentTab === 'dashboard');
       const isEditTx = mode === 'edit' && data && data.id && data.amount !== undefined;
       const passedLoan = data && data.id && !isEditTx && !isFromFab ? data : null;
       const activeLoans = loans.filter(l => {
@@ -6137,7 +6316,7 @@ function App() {
       });
       const activeTargetLoan = isFromFab ? null : passedLoan || selectedLoan || (selectedContact ? activeLoans.find(l => l.contactId === selectedContact.id) : null) || (activeLoans.length > 0 ? activeLoans[0] : null);
       const editLoanId = isEditTx ? data.loanId || (activeTargetLoan ? activeTargetLoan.id : '') : activeTargetLoan ? activeTargetLoan.id : '';
-      const targetLoan = editLoanId ? loans.find(l => l.id === Number(editLoanId)) || activeTargetLoan : null;
+      const targetLoan = isFromFab ? null : editLoanId ? loans.find(l => l.id === Number(editLoanId)) || activeTargetLoan : null;
       const editAmt = isEditTx ? Math.abs(data.amount || 0) : targetLoan ? targetLoan.installmentAmount : '';
       const editNotes = isEditTx && data && data.notes ? data.notes : '';
       if (isEditTx && data && data.dateStr) {
@@ -6145,12 +6324,16 @@ function App() {
         setPickerDay(parsedDate.day);
         setPickerMonth(parsedDate.month);
         setPickerYear(parsedDate.year);
-      } else {
+      } else if (targetLoan) {
         // Automatically calculate next installment date (or 1st installment date)
         const nextInstDate = getInstallmentNextDueDate(targetLoan, transactions);
         setPickerDay(nextInstDate.day);
         setPickerMonth(nextInstDate.month);
         setPickerYear(nextInstDate.year);
+      } else {
+        setPickerDay(deviceDate.day);
+        setPickerMonth(deviceDate.month);
+        setPickerYear(deviceDate.year);
       }
       setInstallmentForm({
         id: isEditTx ? data.id : null,
@@ -6159,10 +6342,11 @@ function App() {
         notes: editNotes
       });
     } else if (type === 'debt_repayment' || type === 'demand_repayment') {
+      const isFromFab = Boolean(data && data.fromFab || mode === 'add' && currentTab === 'dashboard');
       const isEditTx = mode === 'edit' && data && data.id;
       const editAmt = isEditTx ? Math.abs(data.amount || 0) : '';
       const editNotes = isEditTx && data && data.notes ? data.notes : '';
-      const passedContactId = data && data.fromFab ? '' : data && data.contactId ? data.contactId : selectedContact ? selectedContact.id : '';
+      const passedContactId = isFromFab ? '' : data && data.contactId ? data.contactId : selectedContact ? selectedContact.id : '';
       if (isEditTx && data && data.dateStr) {
         const parsedDate = parseJalaliDateStr(data.dateStr);
         setPickerDay(parsedDate.day);
@@ -6171,7 +6355,7 @@ function App() {
       }
       setDemandDebtForm(prev => ({
         ...prev,
-        selectedContactId: passedContactId,
+        selectedContactId: passedContactId || '',
         contactSearchQuery: ''
       }));
       setRepaymentForm({
@@ -6491,11 +6675,14 @@ function App() {
       const firstInstYear = loanForm.firstInstallmentYear || pickerYear;
       const firstInstallmentDateStr = `${firstInstDay} ${firstInstMonth} ${firstInstYear}`;
       if (wizardMode === 'edit' && loanForm.id) {
+        const existingLoan = loans.find(l => String(l.id) === String(loanForm.id));
+        const oldTitle = existingLoan ? (existingLoan.title || '').trim() : '';
+        const newTitle = (loanForm.title || 'وام جدید').trim();
         const updatedLoans = loans.map(l => {
-          if (l.id === loanForm.id) {
+          if (String(l.id) === String(loanForm.id)) {
             return {
               ...l,
-              title: loanForm.title || 'وام جدید',
+              title: newTitle,
               contactId: loanForm.selectedContactId,
               contactName: loanForm.contactName,
               principalAmount: principal,
@@ -6512,9 +6699,36 @@ function App() {
           return l;
         });
         setLoans(updatedLoans);
-        const currentUpdated = updatedLoans.find(l => l.id === loanForm.id);
+
+        // Propagate loan title updates to all associated transactions (including past installments, dashboard, and all-transactions)
+        setTransactions(prevTxs => prevTxs.map(t => {
+          if (String(t.loanId) === String(loanForm.id)) {
+            let updatedTitle = t.title || '';
+            if (oldTitle && updatedTitle.includes(oldTitle)) {
+              updatedTitle = updatedTitle.split(oldTitle).join(newTitle);
+            } else if (t.installmentNum || t.installmentNumber) {
+              const instN = t.installmentNum || t.installmentNumber;
+              updatedTitle = `پرداخت قسط شماره ${instN} - ${newTitle}`;
+            } else if (t.type === 'repayment') {
+              updatedTitle = `پرداخت قسط - ${newTitle}`;
+            } else if (t.type === 'loan_creation') {
+              updatedTitle = `ثبت وام ${newTitle}`;
+            }
+            return {
+              ...t,
+              loanTitle: newTitle,
+              title: updatedTitle,
+              loan: t.loan ? {
+                ...t.loan,
+                title: newTitle
+              } : t.loan
+            };
+          }
+          return t;
+        }));
+        const currentUpdated = updatedLoans.find(l => String(l.id) === String(loanForm.id));
         if (currentUpdated) setSelectedLoan(currentUpdated);
-        showToast('پرونده وام با موفقیت ویرایش شد');
+        showToast('پرونده وام و تراکنش‌های آن با موفقیت بروزرسانی شد');
       } else {
         const newLoan = {
           id: Date.now(),
@@ -7068,6 +7282,24 @@ function App() {
     setShowUnsavedConfirmDialog(false);
     setShowStackWizard(false);
   };
+  const focusCardElementInput = cardId => {
+    const cardElem = document.getElementById(`sticky-card-${cardId}`);
+    if (cardElem) {
+      const targetInput = cardElem.querySelector('input[autofocus]') || cardElem.querySelector('input:not([type="hidden"]):not([readonly]):not([type="radio"]):not([type="checkbox"]), textarea:not([readonly]), select');
+      if (targetInput) {
+        try {
+          targetInput.focus({
+            preventScroll: true
+          });
+          if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            targetInput.click();
+          }
+        } catch (e) {}
+        return true;
+      }
+    }
+    return false;
+  };
   const startEditingCard = card => {
     setEditingCardId(card.id);
     setCardFormBackup({
@@ -7093,6 +7325,12 @@ function App() {
   };
   const handleStartEditingCard = card => {
     if (editingCardId !== null) return;
+
+    // 1. Immediately enter editing mode synchronously to preserve user gesture context for keyboard
+    startEditingCard(card);
+
+    // 2. Immediately focus the input on the user tap/click stack
+    focusCardElementInput(card.id);
     const container = editCardsContainerRef.current;
     const cardElem = document.getElementById(`sticky-card-${card.id}`);
     if (container && cardElem) {
@@ -7100,20 +7338,12 @@ function App() {
       const cardIndex = cards.findIndex(c => c.id === card.id);
       const topOffset = cardIndex >= 0 ? cardIndex * 8 : 0;
       const targetScrollTop = Math.max(0, cardElem.offsetTop - topOffset);
-      const isAlreadyAtTop = Math.abs(container.scrollTop - targetScrollTop) < 6;
 
-      // 1. Smoothly glide card to its docked position at the top of the stack
+      // 3. Smoothly glide card to its docked position at the top of the stack
       container.scrollTo({
         top: targetScrollTop,
         behavior: 'smooth'
       });
-
-      // 2. Enter editing mode once the card reaches the top
-      setTimeout(() => {
-        startEditingCard(card);
-      }, isAlreadyAtTop ? 20 : 250);
-    } else {
-      startEditingCard(card);
     }
   };
 
@@ -7121,20 +7351,7 @@ function App() {
   useEffect(() => {
     if (editingCardId) {
       const focusCardInput = () => {
-        const cardElem = document.getElementById(`sticky-card-${editingCardId}`);
-        if (cardElem) {
-          const targetInput = cardElem.querySelector('input[autofocus]') || cardElem.querySelector('input:not([type="hidden"]):not([readonly]):not([type="radio"]):not([type="checkbox"]), textarea:not([readonly]), select');
-          if (targetInput) {
-            try {
-              targetInput.focus({
-                preventScroll: true
-              });
-              if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-                targetInput.click();
-              }
-            } catch (e) {}
-          }
-        }
+        focusCardElementInput(editingCardId);
       };
       focusCardInput();
       const r1 = requestAnimationFrame(focusCardInput);
@@ -7343,7 +7560,7 @@ function App() {
           navigateToTab('contacts', 'back');
         }
         setConfirmConfig(null);
-        showToast('مخاطب با موفقیت حذف گردید');
+        triggerUndo('مخاطب با موفقیت حذف گردید');
       },
       onCancel: () => setConfirmConfig(null)
     });
@@ -7370,7 +7587,7 @@ function App() {
         setSelectedLoan(null);
         navigateToTab(loanReturnTab || 'accounts', 'back');
         setConfirmConfig(null);
-        showToast('پرونده وام با موفقیت حذف گردید');
+        triggerUndo('پرونده وام با موفقیت حذف گردید');
       },
       onCancel: () => setConfirmConfig(null)
     });
@@ -7400,7 +7617,7 @@ function App() {
         setSelectedPeriod(null);
         navigateToTab(loanReturnTab || 'contact-detail', 'back');
         setConfirmConfig(null);
-        showToast('تسویه‌حساب آرشیو شده با موفقیت حذف گردید');
+        triggerUndo('تسویه‌حساب آرشیو شده با موفقیت حذف گردید');
       },
       onCancel: () => setConfirmConfig(null)
     });
@@ -8608,8 +8825,12 @@ function App() {
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex justify-between items-center pt-0 pb-0 relative"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center gap-2 sm:gap-2.5"
-        }, /*#__PURE__*/React.createElement(AnimatePresence, null, backupStatus && backupStatus.unbackedChangesCount > 0 && /*#__PURE__*/React.createElement(motion.div, {
+          className: "flex flex-col items-start text-right"
+        }, /*#__PURE__*/React.createElement("p", {
+          className: "text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight"
+        }, "\u0633\u0644\u0627\u0645 \u0648\u0642\u062A \u0628\u0647 \u062E\u06CC\u0631 \uD83D\uDC4B"), /*#__PURE__*/React.createElement("p", {
+          className: "text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right"
+        }, "\u0627\u0645\u0631\u0648\u0632: ", getDeviceJalaliDate().day, " ", getDeviceJalaliDate().month, " ", getDeviceJalaliDate().year)), /*#__PURE__*/React.createElement(AnimatePresence, null, backupStatus && backupStatus.unbackedChangesCount > 0 && /*#__PURE__*/React.createElement(motion.div, {
           key: "dashboard-backup-status-pill",
           initial: {
             opacity: 0,
@@ -8626,10 +8847,10 @@ function App() {
           transition: {
             duration: 0.2
           },
-          className: "relative shrink-0"
+          className: "absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"
         }, /*#__PURE__*/React.createElement("button", {
           onClick: () => {
-            setShowBackupPopover(prev => !prev);
+            setShowBackupPopover(true);
             setBackupError(null);
           },
           className: "relative w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/50 dark:border-amber-500/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer",
@@ -8639,127 +8860,8 @@ function App() {
           name: "bell",
           className: `w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBellWiggling ? 'animate-bell-wiggle' : ''}`
         }), /*#__PURE__*/React.createElement("span", {
-          className: "absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] font-bold px-1 rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 leading-none font-sans"
-        }, backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount)), /*#__PURE__*/React.createElement(AnimatePresence, null, showBackupPopover && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-          className: "fixed inset-0 z-40",
-          onClick: () => {
-            setShowBackupPopover(false);
-            setBackupError(null);
-          }
-        }), /*#__PURE__*/React.createElement(motion.div, {
-          initial: {
-            opacity: 0,
-            scale: 0.92,
-            y: -6
-          },
-          animate: {
-            opacity: 1,
-            scale: 1,
-            y: 0
-          },
-          exit: {
-            opacity: 0,
-            scale: 0.92,
-            y: -6
-          },
-          transition: {
-            type: "spring",
-            duration: 0.25,
-            bounce: 0.15
-          },
-          className: "absolute top-11 right-0 w-[285px] sm:w-[310px] max-w-[calc(100vw-32px)] bg-white dark:bg-slate-800 rounded-3xl p-4 shadow-[0_12px_40px_rgba(0,0,0,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] border border-slate-200/90 dark:border-slate-700/80 z-50 text-right",
-          dir: "rtl"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-700/60"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center gap-2"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "w-7 h-7 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "shield-alert",
-          className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
-          className: "text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100"
-        }, "\u0646\u06CC\u0627\u0632 \u0628\u0647 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646\u200C\u06AF\u06CC\u0631\u06CC"), /*#__PURE__*/React.createElement("span", {
-          className: "text-[10px] text-amber-600 dark:text-amber-400 font-medium"
-        }, "\u0627\u0637\u0644\u0627\u0639\u0627\u062A \u062A\u063A\u06CC\u06CC\u0631 \u06CC\u0627\u0641\u062A\u0647"))), /*#__PURE__*/React.createElement("button", {
-          onClick: () => {
-            setShowBackupPopover(false);
-            setBackupError(null);
-          },
-          className: "w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-700/60 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-colors cursor-pointer"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "x",
-          className: "w-3.5 h-3.5"
-        }))), /*#__PURE__*/React.createElement("div", {
-          className: "py-2.5 space-y-2.5"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl p-2.5 border border-amber-200/60 dark:border-amber-800/40"
-        }, /*#__PURE__*/React.createElement("p", {
-          className: "text-xs font-bold text-amber-900 dark:text-amber-200"
-        }, backupStatus.unbackedChangesCount, " \u062A\u063A\u06CC\u06CC\u0631 \u067E\u0633 \u0627\u0632 \u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647"), /*#__PURE__*/React.createElement("p", {
-          className: "text-[11px] text-amber-700 dark:text-amber-300/90 mt-0.5 leading-relaxed"
-        }, "\u062C\u0647\u062A \u062D\u0641\u0638 \u0627\u0645\u0646\u06CC\u062A \u0627\u0637\u0644\u0627\u0639\u0627\u062A \u0645\u0627\u0644\u06CC\u060C \u0641\u0627\u06CC\u0644 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646 \u062A\u0647\u06CC\u0647 \u06A9\u0646\u06CC\u062F.")), backupStatus.categoryCounts && Object.keys(backupStatus.categoryCounts).length > 0 && /*#__PURE__*/React.createElement("div", {
-          className: "space-y-1.5 pt-0.5"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: "text-[10px] font-bold text-slate-400 dark:text-slate-500"
-        }, "\u062E\u0644\u0627\u0635\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u062B\u0628\u062A\u200C\u0634\u062F\u0647:"), /*#__PURE__*/React.createElement("div", {
-          className: "space-y-1 max-h-32 overflow-y-auto pr-0.5"
-        }, Object.entries(backupStatus.categoryCounts).filter(([_, count]) => count > 0).map(([categoryLabel, count]) => /*#__PURE__*/React.createElement("div", {
-          key: categoryLabel,
-          className: "flex items-center justify-between text-[11px] py-1 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700/40 text-slate-700 dark:text-slate-200"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "flex items-center gap-1.5 truncate"
-        }, /*#__PURE__*/React.createElement("span", {
-          className: "w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"
-        }), /*#__PURE__*/React.createElement("span", {
-          className: "truncate font-medium"
-        }, categoryLabel)), /*#__PURE__*/React.createElement("span", {
-          className: "font-bold text-amber-600 dark:text-amber-400 shrink-0 mr-2 font-sans"
-        }, count, " \u0645\u0648\u0631\u062F"))))), /*#__PURE__*/React.createElement("div", {
-          className: "pt-1 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/60"
-        }, /*#__PURE__*/React.createElement("span", null, "\u0622\u062E\u0631\u06CC\u0646 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646:"), /*#__PURE__*/React.createElement("span", {
-          className: "font-medium text-slate-700 dark:text-slate-200"
-        }, backupStatus.lastBackupFormatted || 'هنوز فایلی ذخیره نشده')), backupError && /*#__PURE__*/React.createElement("div", {
-          className: "bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-xl p-2 text-center text-rose-600 dark:text-rose-400 text-xs"
-        }, /*#__PURE__*/React.createElement("p", {
-          className: "font-bold"
-        }, "\u062E\u0637\u0627 \u062F\u0631 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646\u200C\u06AF\u06CC\u0631\u06CC"), /*#__PURE__*/React.createElement("p", {
-          className: "text-[10px] mt-0.5"
-        }, "\u0641\u0627\u06CC\u0644 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646 \u0630\u062E\u06CC\u0631\u0647 \u0646\u0634\u062F. \u0644\u0637\u0641\u0627\u064B \u0645\u062C\u062F\u062F\u0627\u064B \u0627\u0645\u062A\u062D\u0627\u0646 \u06A9\u0646\u06CC\u062F."))), /*#__PURE__*/React.createElement("div", {
-          className: "pt-1"
-        }, /*#__PURE__*/React.createElement("button", {
-          disabled: isBackingUp,
-          onClick: async () => {
-            setIsBackingUp(true);
-            setBackupError(null);
-            try {
-              const success = handleExportBackup();
-              if (success) {
-                setShowBackupPopover(false);
-              } else {
-                setBackupError('خطا در دانلود یا ایجاد فایل');
-              }
-            } catch (err) {
-              setBackupError('خطا در پشتیبان‌گیری');
-            } finally {
-              setIsBackingUp(false);
-            }
-          },
-          className: "w-full py-2.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 transition-all disabled:opacity-50 cursor-pointer"
-        }, isBackingUp ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Icon, {
-          name: "loader",
-          className: "w-4 h-4 animate-spin"
-        }), /*#__PURE__*/React.createElement("span", null, "\u062F\u0631 \u062D\u0627\u0644 \u0622\u0645\u0627\u062F\u0647\u200C\u0633\u0627\u0632\u06CC \u0641\u0627\u06CC\u0644...")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Icon, {
-          name: "download",
-          className: "w-4 h-4"
-        }), /*#__PURE__*/React.createElement("span", null, backupError ? 'تلاش مجدد' : 'پشتیبان‌گیری اکنون'))))))))), /*#__PURE__*/React.createElement("div", {
-          className: "flex flex-col items-start text-right"
-        }, /*#__PURE__*/React.createElement("p", {
-          className: "text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight"
-        }, "\u0633\u0644\u0627\u0645 \u0648\u0642\u062A \u0628\u0647 \u062E\u06CC\u0631 \uD83D\uDC4B"), /*#__PURE__*/React.createElement("p", {
-          className: "text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right"
-        }, "\u0627\u0645\u0631\u0648\u0632: ", getDeviceJalaliDate().day, " ", getDeviceJalaliDate().month, " ", getDeviceJalaliDate().year))), /*#__PURE__*/React.createElement("div", {
+          className: "absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold px-1 rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 leading-none font-sans"
+        }, backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount)))), /*#__PURE__*/React.createElement("div", {
           className: "flex items-center gap-2.5",
           dir: "ltr"
         }, /*#__PURE__*/React.createElement(BrandAvatar, {
@@ -8821,9 +8923,12 @@ function App() {
           const firstThree = sortedList.slice(0, 3);
           const extraList = sortedList.slice(3);
           const renderReminderCard = item => {
+            const isOverdue = item.daysLeft < 0;
+            const isToday = item.daysLeft === 0;
             let iconName = item.icon || 'landmark';
-            let iconBgClass = item.iconColor || 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
-            const daysBadgeText = item.daysLeft < 0 ? `${Math.abs(item.daysLeft)} روز تأخیر` : item.daysLeft === 0 ? 'امروز سررسید' : `${item.daysLeft} روز مانده`;
+            let iconBgClass = isOverdue ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400' : isToday ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400' : item.iconColor || 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+            const daysBadgeText = isOverdue ? `${Math.abs(item.daysLeft)} روز تأخیر` : isToday ? 'امروز سررسید' : `${item.daysLeft} روز مانده`;
+            const badgeClass = isOverdue ? 'bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/60' : isToday ? 'bg-amber-100/90 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60' : 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-600/50';
             return /*#__PURE__*/React.createElement("div", {
               key: item.id,
               onClick: () => item.loanObj && openLoanDetail(item.loanObj),
@@ -8844,7 +8949,7 @@ function App() {
             }, item.dateStr))), /*#__PURE__*/React.createElement("div", {
               className: "shrink-0"
             }, /*#__PURE__*/React.createElement("span", {
-              className: "px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 inline-block"
+              className: `px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs inline-block ${badgeClass}`
             }, daysBadgeText)));
           };
           return /*#__PURE__*/React.createElement("div", {
@@ -8855,12 +8960,12 @@ function App() {
           }, /*#__PURE__*/React.createElement("div", {
             className: "flex items-center space-x-3 space-x-reverse"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-rose-500 dark:text-rose-400 group-hover:scale-105 transition-transform shrink-0"
+            className: "w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0"
           }, /*#__PURE__*/React.createElement(Icon, {
             name: "calendar-clock",
             className: "w-5.5 h-5.5"
           })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
-            className: "text-sm sm:text-base font-extrabold text-rose-600 dark:text-rose-400 leading-tight"
+            className: "text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight"
           }, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC\u200C\u0647\u0627\u06CC \u0645\u0647\u0645"), /*#__PURE__*/React.createElement("p", {
             className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5"
           }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627"))), /*#__PURE__*/React.createElement("button", {
@@ -8966,6 +9071,8 @@ function App() {
           key: tx.id || idx,
           tx: tx,
           contacts: contacts,
+          loans: loans,
+          transactions: transactions,
           isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
           onEdit: txItem => handleTransactionClick(txItem),
           onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
@@ -9715,6 +9822,8 @@ function App() {
             return /*#__PURE__*/React.createElement(SwipeableTxCard, {
               key: tx.id,
               tx: tx,
+              contacts: contacts,
+              loans: loans,
               colorType: "rose",
               hasShadow: true,
               isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
@@ -9816,6 +9925,8 @@ function App() {
             return /*#__PURE__*/React.createElement(SwipeableTxCard, {
               key: tx.id,
               tx: tx,
+              contacts: contacts,
+              loans: loans,
               colorType: "emerald",
               hasShadow: true,
               isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
@@ -10362,6 +10473,9 @@ function App() {
           tx: tx,
           index: idx,
           totalCount: repaymentTxs.length,
+          contacts: contacts,
+          loans: loans,
+          transactions: transactions,
           colorType: "indigo",
           isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
           onEdit: txItem => openStackWizard('installment', 'edit', txItem),
@@ -10648,7 +10762,13 @@ function App() {
           isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
           onEdit: txItem => openStackWizard(txItem.type === 'debt_repayment' || txItem.type === 'demand_repayment' || txItem.type === 'repayment' ? isDebt ? 'debt_repayment' : 'demand_repayment' : isDebt ? 'debt' : 'demand', 'edit', txItem),
           onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
-        })))));
+        })))), /*#__PURE__*/React.createElement("button", {
+          onClick: () => openUniversalExportModal("period", selectedPeriod),
+          className: `w-full py-3.5 sm:py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2.5 text-white shadow-lg active:scale-95 transition-all cursor-pointer ${isDebt ? "bg-rose-600 hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-500 shadow-rose-200 dark:shadow-rose-950/50" : "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-emerald-200 dark:shadow-emerald-950/50"}`
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: "file-output",
+          className: "w-5 h-5 text-white"
+        }), /*#__PURE__*/React.createElement("span", null, isDebt ? "خروجی گرفتن از گزارش بدهی" : "خروجی گرفتن از گزارش طلب")));
       case 'settings':
         return /*#__PURE__*/React.createElement("div", {
           className: "w-full max-w-4xl mx-auto px-4 py-4 space-y-4 pb-24"
@@ -11017,6 +11137,178 @@ function App() {
         }, /*#__PURE__*/React.createElement("p", null, "\u0628\u0631\u0646\u0627\u0645\u0647 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0645\u0627\u0644\u06CC Amir Finance \u0627\u0628\u0632\u0627\u0631\u06CC \u062C\u0647\u062A \u062B\u0628\u062A \u0648 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0648\u0627\u0645\u200C\u0647\u0627\u060C \u0627\u0642\u0633\u0627\u0637\u060C \u0637\u0644\u0628\u200C\u0647\u0627 \u0648 \u0628\u062F\u0647\u06CC\u200C\u0647\u0627\u06CC \u0634\u062E\u0635\u06CC."), /*#__PURE__*/React.createElement("p", {
           className: "text-[11px] text-slate-400"
         }, "\u0637\u0631\u0627\u062D\u06CC \u0648 \u062A\u0648\u0633\u0639\u0647: Amir Finance")))))));
+      case 'all-transactions':
+        {
+          const handleBack = onBack ? () => onBack('button') : () => navigateToTab('dashboard', 'back');
+
+          // Filter transactions
+          const filteredAllTxs = transactions.filter(tx => {
+            // Type filter
+            if (allTxsFilterType === 'loan_installment') {
+              const isLoanTx = tx.type === 'repayment' || tx.type === 'loan_installment' || tx.type === 'installment' || Boolean(tx.loanId) || Boolean(tx.installmentNumber) || Boolean(tx.installmentNum);
+              if (!isLoanTx) return false;
+            } else if (allTxsFilterType === 'demand') {
+              if (tx.type !== 'demand') return false;
+            } else if (allTxsFilterType === 'demand_repayment') {
+              if (tx.type !== 'demand_repayment') return false;
+            } else if (allTxsFilterType === 'debt') {
+              if (tx.type !== 'debt') return false;
+            } else if (allTxsFilterType === 'debt_repayment') {
+              if (tx.type !== 'debt_repayment') return false;
+            }
+
+            // Search filter
+            if (allTxsSearchQuery && allTxsSearchQuery.trim()) {
+              const q = allTxsSearchQuery.trim().toLowerCase();
+              const contact = contacts.find(c => c.id === tx.contactId);
+              const contactName = contact ? `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase() : '';
+              const targetLoan = loans.find(l => String(l.id) === String(tx.loanId));
+              const loanTitle = (targetLoan ? targetLoan.title : tx.loanTitle || '').toLowerCase();
+              const titleStr = (tx.title || '').toLowerCase();
+              const notesStr = (tx.notes || tx.description || '').toLowerCase();
+              const amtStr = String(Math.abs(tx.amount || 0));
+              const matches = titleStr.includes(q) || notesStr.includes(q) || contactName.includes(q) || loanTitle.includes(q) || amtStr.includes(q);
+              if (!matches) return false;
+            }
+            return true;
+          });
+
+          // Stats
+          const totalCount = filteredAllTxs.length;
+
+          // Pagination
+          const pageSize = dynamicPageSize || 10;
+          const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+          const currentPage = Math.min(Math.max(1, allTxsPage), totalPages);
+          const pagedTxs = filteredAllTxs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+          const filterPills = [{
+            id: 'all',
+            label: 'همه'
+          }, {
+            id: 'loan_installment',
+            label: 'اقساط وام'
+          }, {
+            id: 'demand',
+            label: 'طلب‌ها'
+          }, {
+            id: 'demand_repayment',
+            label: 'بازپرداخت طلب‌ها'
+          }, {
+            id: 'debt',
+            label: 'بدهی‌ها'
+          }, {
+            id: 'debt_repayment',
+            label: 'بازپرداخت بدهی‌ها'
+          }];
+          return /*#__PURE__*/React.createElement("div", {
+            className: "space-y-4 animate-fade-in pb-12"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center justify-between py-1.5 mb-1"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center space-x-2.5 space-x-reverse"
+          }, /*#__PURE__*/React.createElement("button", {
+            onClick: handleBack,
+            className: "w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 active:scale-95 transition-all shadow-sm shrink-0",
+            title: "\u0628\u0627\u0632\u06AF\u0634\u062A"
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "arrow-right",
+            className: "w-5 h-5"
+          })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center space-x-2 space-x-reverse"
+          }, /*#__PURE__*/React.createElement("h1", {
+            className: "text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white"
+          }, "\u0647\u0645\u0647 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("span", {
+            className: "px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/40"
+          }, totalCount)), /*#__PURE__*/React.createElement("p", {
+            className: "text-[11px] text-slate-400 font-medium mt-0.5"
+          }, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u06A9\u0627\u0645\u0644 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0645\u0627\u0644\u06CC \u0648 \u0627\u0642\u0633\u0627\u0637"))), (allTxsSearchQuery || allTxsFilterType !== 'all') && /*#__PURE__*/React.createElement("button", {
+            onClick: () => {
+              setAllTxsSearchQuery('');
+              setAllTxsFilterType('all');
+              setAllTxsPage(1);
+            },
+            className: "text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1.5 rounded-xl border border-indigo-100 dark:border-indigo-800/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-all active:scale-95 shrink-0"
+          }, "\u062D\u0630\u0641 \u0641\u06CC\u0644\u062A\u0631\u0647\u0627")), /*#__PURE__*/React.createElement("div", {
+            className: "relative"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400"
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "search",
+            className: "w-4 h-4"
+          })), /*#__PURE__*/React.createElement("input", {
+            type: "text",
+            value: allTxsSearchQuery,
+            onChange: e => {
+              setAllTxsSearchQuery(e.target.value);
+              setAllTxsPage(1);
+            },
+            placeholder: "\u062C\u0633\u062A\u062C\u0648 \u062F\u0631 \u0639\u0646\u0648\u0627\u0646\u060C \u0645\u062E\u0627\u0637\u0628\u060C \u0646\u0627\u0645 \u0648\u0627\u0645\u060C \u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u06CC\u0627 \u0645\u0628\u0644\u063A...",
+            className: "w-full pr-10 pl-10 py-2.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-sm transition-all"
+          }), allTxsSearchQuery && /*#__PURE__*/React.createElement("button", {
+            onClick: () => {
+              setAllTxsSearchQuery('');
+              setAllTxsPage(1);
+            },
+            className: "absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "x",
+            className: "w-4 h-4"
+          }))), /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center space-x-2 space-x-reverse overflow-x-auto pb-1.5 scrollbar-none -mx-1 px-1"
+          }, filterPills.map(pill => {
+            const isActive = allTxsFilterType === pill.id;
+            return /*#__PURE__*/React.createElement("button", {
+              key: pill.id,
+              onClick: () => {
+                setAllTxsFilterType(pill.id);
+                setAllTxsPage(1);
+              },
+              className: `px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 shrink-0 ${isActive ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600'}`
+            }, pill.label);
+          })), /*#__PURE__*/React.createElement("div", {
+            className: "space-y-2.5"
+          }, pagedTxs.map((tx, idx) => /*#__PURE__*/React.createElement(SwipeableTxCard, {
+            key: tx.id || idx,
+            tx: tx,
+            index: idx,
+            totalCount: pagedTxs.length,
+            contacts: contacts,
+            loans: loans,
+            transactions: transactions,
+            isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
+            onEdit: txItem => handleTransactionClick(txItem),
+            onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
+          })), filteredAllTxs.length === 0 && /*#__PURE__*/React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 rounded-3xl p-8 text-center space-y-3 border border-slate-200/80 dark:border-slate-700/60 shadow-sm my-4"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 dark:text-indigo-400 flex items-center justify-center mx-auto"
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "receipt",
+            className: "w-7 h-7"
+          })), /*#__PURE__*/React.createElement("h3", {
+            className: "text-sm font-bold text-slate-800 dark:text-slate-100"
+          }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u06CC\u0627\u0641\u062A \u0646\u0634\u062F"), /*#__PURE__*/React.createElement("p", {
+            className: "text-xs text-slate-400 max-w-xs mx-auto"
+          }, allTxsSearchQuery || allTxsFilterType !== 'all' ? 'با توجه به فیلترها و جستجوی اعمال‌شده موردی یافت نشد.' : 'هنوز هیچ تراکنشی در سیستم ثبت نشده است.'))), totalPages > 1 && /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center justify-between bg-white dark:bg-slate-800 rounded-2xl p-2.5 border border-slate-200/80 dark:border-slate-700/60 shadow-sm mt-4"
+          }, /*#__PURE__*/React.createElement("button", {
+            disabled: currentPage <= 1,
+            onClick: () => setAllTxsPage(prev => Math.max(1, prev - 1)),
+            className: `px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 space-x-reverse transition-all ${currentPage <= 1 ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 active:scale-95'}`
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "chevron-right",
+            className: "w-4 h-4"
+          }), /*#__PURE__*/React.createElement("span", null, "\u0635\u0641\u062D\u0647 \u0642\u0628\u0644")), /*#__PURE__*/React.createElement("div", {
+            className: "text-xs font-bold text-slate-600 dark:text-slate-300"
+          }, "\u0635\u0641\u062D\u0647 ", currentPage, " \u0627\u0632 ", totalPages), /*#__PURE__*/React.createElement("button", {
+            disabled: currentPage >= totalPages,
+            onClick: () => setAllTxsPage(prev => Math.min(totalPages, prev + 1)),
+            className: `px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 space-x-reverse transition-all ${currentPage >= totalPages ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 active:scale-95'}`
+          }, /*#__PURE__*/React.createElement("span", null, "\u0635\u0641\u062D\u0647 \u0628\u0639\u062F"), /*#__PURE__*/React.createElement(Icon, {
+            name: "chevron-left",
+            className: "w-4 h-4"
+          }))));
+        }
       default:
         return null;
     }
@@ -11190,7 +11482,9 @@ function App() {
   }, /*#__PURE__*/React.createElement("h3", {
     className: "text-center font-extrabold text-slate-900 dark:text-white text-sm mb-0.5"
   }, "\u062B\u0628\u062A \u0648 \u0645\u062F\u06CC\u0631\u06CC\u062A \u062C\u062F\u06CC\u062F"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('contact', 'add')),
+    onClick: () => closePlusMenu(() => openStackWizard('contact', 'add', {
+      fromFab: true
+    })),
     className: "w-full bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8.5 h-8.5 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0"
@@ -11206,7 +11500,9 @@ function App() {
   }, "\u0627\u0641\u0632\u0648\u062F\u0646 \u0634\u062E\u0635 \u062C\u062F\u06CC\u062F \u0628\u0647 \u062F\u0641\u062A\u0631 \u0645\u062E\u0627\u0637\u0628\u06CC\u0646"))), /*#__PURE__*/React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('demand', 'add')),
+    onClick: () => closePlusMenu(() => openStackWizard('demand', 'add', {
+      fromFab: true
+    })),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
@@ -11216,7 +11512,9 @@ function App() {
   })), /*#__PURE__*/React.createElement("span", {
     className: "font-bold text-xs text-slate-800 dark:text-slate-100"
   }, "\u062B\u0628\u062A \u0637\u0644\u0628")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('demand_repayment', 'add')),
+    onClick: () => closePlusMenu(() => openStackWizard('demand_repayment', 'add', {
+      fromFab: true
+    })),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-teal-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0"
@@ -11228,7 +11526,9 @@ function App() {
   }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0637\u0644\u0628"))), /*#__PURE__*/React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('debt', 'add')),
+    onClick: () => closePlusMenu(() => openStackWizard('debt', 'add', {
+      fromFab: true
+    })),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-rose-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-rose-500/15 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0"
@@ -11238,7 +11538,9 @@ function App() {
   })), /*#__PURE__*/React.createElement("span", {
     className: "font-bold text-xs text-slate-800 dark:text-slate-100"
   }, "\u062B\u0628\u062A \u0628\u062F\u0647\u06CC")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('debt_repayment', 'add')),
+    onClick: () => closePlusMenu(() => openStackWizard('debt_repayment', 'add', {
+      fromFab: true
+    })),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-amber-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"
@@ -11250,7 +11552,9 @@ function App() {
   }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0628\u062F\u0647\u06CC"))), /*#__PURE__*/React.createElement("div", {
     className: "grid grid-cols-2 gap-2"
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('loan', 'add')),
+    onClick: () => closePlusMenu(() => openStackWizard('loan', 'add', {
+      fromFab: true
+    })),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
@@ -11260,7 +11564,9 @@ function App() {
   })), /*#__PURE__*/React.createElement("span", {
     className: "font-bold text-xs text-slate-800 dark:text-slate-100"
   }, "\u062B\u0628\u062A \u0648\u0627\u0645")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => closePlusMenu(() => openStackWizard('installment', 'add')),
+    onClick: () => closePlusMenu(() => openStackWizard('installment', 'add', {
+      fromFab: true
+    })),
     className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-purple-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0"
@@ -11610,8 +11916,19 @@ function App() {
       const type = exportModalConfig?.type || 'loan';
       const targetData = exportModalConfig?.data || selectedLoan;
       if (type === 'period') {
-        exportPeriodAsExcel(targetData);
-        showToast('خروجی اکسل دوره با موفقیت دانلود شد');
+        const periodContact = contacts.find(c => c.id === targetData?.contactId) || {
+          firstName: targetData?.contactName || 'مخاطب',
+          lastName: '',
+          phone: targetData?.phone || ''
+        };
+        let fullPeriod = {
+          ...targetData
+        };
+        if (!fullPeriod.transactions || fullPeriod.transactions.length === 0) {
+          fullPeriod.transactions = transactions.filter(t => String(t.periodId) === String(targetData?.id));
+        }
+        exportPeriodAsExcel(fullPeriod, periodContact);
+        showToast('خروجی اکسل با موفقیت دانلود شد');
       } else {
         exportLoanToCSV(targetData, transactions);
         showToast('خروجی اکسل وام با موفقیت دانلود شد');
@@ -11638,8 +11955,19 @@ function App() {
       const type = exportModalConfig?.type || 'loan';
       const targetData = exportModalConfig?.data || selectedLoan;
       if (type === 'period') {
-        exportPeriodAsPNG(targetData);
-        showToast('خروجی تصویر باکیفیت دوره با موفقیت دانلود شد');
+        const periodContact = contacts.find(c => c.id === targetData?.contactId) || {
+          firstName: targetData?.contactName || 'مخاطب',
+          lastName: '',
+          phone: targetData?.phone || ''
+        };
+        let fullPeriod = {
+          ...targetData
+        };
+        if (!fullPeriod.transactions || fullPeriod.transactions.length === 0) {
+          fullPeriod.transactions = transactions.filter(t => String(t.periodId) === String(targetData?.id));
+        }
+        exportPeriodAsPNG(fullPeriod, periodContact);
+        showToast('خروجی تصویر باکیفیت با موفقیت دانلود شد');
       } else {
         exportLoanAsPNG(targetData, transactions);
         showToast('خروجی تصویر باکیفیت وام با موفقیت دانلود شد');
@@ -12150,7 +12478,187 @@ function App() {
     type: "button",
     onClick: () => setIsChangelogModalOpen(false),
     className: "bg-[#f1f5f9] hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-8 py-2 rounded-full text-sm font-bold active:scale-95 transition-all shadow-2xs font-vazir"
-  }, "\u0628\u0633\u062A\u0646"))))), /*#__PURE__*/React.createElement(GlobalConfirmDialog, _extends({
+  }, "\u0628\u0633\u062A\u0646"))))), /*#__PURE__*/React.createElement(AnimatePresence, null, showBackupPopover && /*#__PURE__*/React.createElement("div", {
+    className: "fixed inset-0 z-50 flex items-end justify-center pointer-events-auto"
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    key: "backup-sheet-backdrop",
+    initial: {
+      opacity: 0
+    },
+    animate: {
+      opacity: 1
+    },
+    exit: {
+      opacity: 0
+    },
+    transition: {
+      duration: 0.25
+    },
+    className: "fixed inset-0 bg-black/50 backdrop-blur-xs z-50",
+    onClick: () => {
+      setShowBackupPopover(false);
+      setBackupError(null);
+    }
+  }), /*#__PURE__*/React.createElement(motion.div, {
+    key: "backup-sheet-content",
+    initial: {
+      y: "100%",
+      opacity: 0
+    },
+    animate: {
+      y: 0,
+      opacity: 1
+    },
+    exit: {
+      y: "100%",
+      opacity: 0
+    },
+    transition: {
+      type: "spring",
+      stiffness: 350,
+      damping: 32
+    },
+    className: "relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-t-[32px] p-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] shadow-[0_-12px_40px_rgba(0,0,0,0.22)] dark:shadow-[0_-12px_40px_rgba(0,0,0,0.65)] border-t border-x border-slate-200/90 dark:border-slate-700/80 z-[51] text-right overflow-hidden flex flex-col mx-auto",
+    dir: "rtl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-12 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full mx-auto mb-3.5 shrink-0"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60 shrink-0"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "shield-alert",
+    className: "w-5 h-5"
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
+    className: "text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100"
+  }, "\u0646\u06CC\u0627\u0632 \u0628\u0647 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646\u200C\u06AF\u06CC\u0631\u06CC"), /*#__PURE__*/React.createElement("span", {
+    className: "text-xs text-amber-600 dark:text-amber-400 font-medium"
+  }, "\u0627\u0637\u0644\u0627\u0639\u0627\u062A \u062A\u063A\u06CC\u06CC\u0631 \u06CC\u0627\u0641\u062A\u0647"))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setShowBackupPopover(false);
+      setBackupError(null);
+    },
+    className: "w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700/60 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-colors cursor-pointer active:scale-95"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "x",
+    className: "w-4 h-4"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "py-3.5 space-y-3 max-h-[55vh] overflow-y-auto pr-0.5"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl p-3 border border-amber-200/60 dark:border-amber-800/40"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-xs sm:text-sm font-bold text-amber-900 dark:text-amber-200"
+  }, backupStatus?.unbackedChangesCount || 0, " \u062A\u063A\u06CC\u06CC\u0631 \u067E\u0633 \u0627\u0632 \u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646"), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-amber-700 dark:text-amber-300/90 mt-1 leading-relaxed"
+  }, "\u062C\u0647\u062A \u062D\u0641\u0638 \u0627\u0645\u0646\u06CC\u062A \u0627\u0637\u0644\u0627\u0639\u0627\u062A \u0645\u0627\u0644\u06CC \u0648 \u062C\u0644\u0648\u06AF\u06CC\u0631\u06CC \u0627\u0632 \u067E\u0627\u06A9 \u0634\u062F\u0646 \u062F\u0627\u062F\u0647\u200C\u0647\u0627\u060C \u0641\u0627\u06CC\u0644 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646 \u062C\u062F\u06CC\u062F \u0631\u0627 \u062A\u0647\u06CC\u0647 \u0648 \u0630\u062E\u06CC\u0631\u0647 \u0646\u0645\u0627\u06CC\u06CC\u062F.")), backupStatus?.categoryCounts && Object.keys(backupStatus.categoryCounts).length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2 pt-0.5"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xs font-bold text-slate-500 dark:text-slate-400"
+  }, "\u062E\u0644\u0627\u0635\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u062B\u0628\u062A\u200C\u0634\u062F\u0647:"), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1.5 max-h-40 overflow-y-auto pr-0.5"
+  }, Object.entries(backupStatus.categoryCounts).filter(([_, count]) => count > 0).map(([categoryLabel, count]) => /*#__PURE__*/React.createElement("div", {
+    key: categoryLabel,
+    className: "flex items-center justify-between text-xs py-2 px-3 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700/40 text-slate-700 dark:text-slate-200"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 truncate"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "w-2 h-2 rounded-full bg-red-500 shrink-0"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "truncate font-medium"
+  }, categoryLabel)), /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-red-600 dark:text-red-400 shrink-0 mr-2 font-sans text-xs"
+  }, count, " \u0645\u0648\u0631\u062F"))))), /*#__PURE__*/React.createElement("div", {
+    className: "pt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/60"
+  }, /*#__PURE__*/React.createElement("span", null, "\u0622\u062E\u0631\u06CC\u0646 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646:"), /*#__PURE__*/React.createElement("span", {
+    className: "font-medium text-slate-700 dark:text-slate-200"
+  }, backupStatus?.lastBackupFormatted || 'هنوز فایلی ذخیره نشده')), backupError && /*#__PURE__*/React.createElement("div", {
+    className: "bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-2xl p-2.5 text-center text-rose-600 dark:text-rose-400 text-xs"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "font-bold"
+  }, "\u062E\u0637\u0627 \u062F\u0631 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646\u200C\u06AF\u06CC\u0631\u06CC"), /*#__PURE__*/React.createElement("p", {
+    className: "text-[11px] mt-0.5"
+  }, "\u0641\u0627\u06CC\u0644 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646 \u0630\u062E\u06CC\u0631\u0647 \u0646\u0634\u062F. \u0644\u0637\u0641\u0627\u064B \u0645\u062C\u062F\u062F\u0627\u064B \u0627\u0645\u062A\u062D\u0627\u0646 \u06A9\u0646\u06CC\u062F."))), /*#__PURE__*/React.createElement("div", {
+    className: "pt-2 shrink-0"
+  }, /*#__PURE__*/React.createElement("button", {
+    disabled: isBackingUp,
+    onClick: async () => {
+      setIsBackingUp(true);
+      setBackupError(null);
+      try {
+        const success = handleExportBackup();
+        if (success) {
+          setShowBackupPopover(false);
+        } else {
+          setBackupError('خطا در دانلود یا ایجاد فایل');
+        }
+      } catch (err) {
+        setBackupError('خطا در پشتیبان‌گیری');
+      } finally {
+        setIsBackingUp(false);
+      }
+    },
+    className: "w-full py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 transition-all disabled:opacity-50 cursor-pointer"
+  }, isBackingUp ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Icon, {
+    name: "loader",
+    className: "w-4.5 h-4.5 animate-spin"
+  }), /*#__PURE__*/React.createElement("span", null, "\u062F\u0631 \u062D\u0627\u0644 \u0622\u0645\u0627\u062F\u0647\u200C\u0633\u0627\u0632\u06CC \u0641\u0627\u06CC\u0644...")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Icon, {
+    name: "download",
+    className: "w-4.5 h-4.5"
+  }), /*#__PURE__*/React.createElement("span", null, backupError ? 'تلاش مجدد' : 'پشتیبان‌گیری اکنون'))))))), /*#__PURE__*/React.createElement(AnimatePresence, null, undoState && /*#__PURE__*/React.createElement(motion.div, {
+    key: "undo-snackbar",
+    initial: {
+      y: 50,
+      opacity: 0
+    },
+    animate: {
+      y: 0,
+      opacity: 1
+    },
+    exit: {
+      y: 50,
+      opacity: 0
+    },
+    drag: "x",
+    dragConstraints: {
+      left: -100,
+      right: 100
+    },
+    dragElastic: 0.2,
+    onDragEnd: (e, {
+      offset,
+      velocity
+    }) => {
+      if (Math.abs(offset.x) > 100 || Math.abs(velocity.x) > 500) {
+        setUndoState(null);
+      }
+    },
+    className: "fixed bottom-[calc(env(safe-area-inset-bottom,0px)+4.5rem)] left-0 right-0 z-[100] px-4 pointer-events-none flex justify-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-full max-w-sm bg-slate-900 dark:bg-slate-800 text-white shadow-xl shadow-slate-900/20 dark:shadow-black/40 rounded-2xl p-2.5 flex items-center justify-between pointer-events-auto border border-slate-700 dark:border-slate-600",
+    dir: "rtl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3 overflow-hidden pl-2"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "check-circle",
+    className: "w-5 h-5 shrink-0 text-emerald-400"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-xs sm:text-sm font-medium text-slate-100 truncate pb-0.5"
+  }, undoState.message)), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1 shrink-0 mr-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: handleUndo,
+    className: "px-3 py-1.5 rounded-xl bg-indigo-500/20 text-indigo-300 dark:text-indigo-400 hover:bg-indigo-500/30 active:scale-95 transition-all font-bold text-xs"
+  }, "\u0628\u0627\u0632\u06AF\u0631\u062F\u0627\u0646\u06CC"), /*#__PURE__*/React.createElement("div", {
+    className: "w-[1px] h-4 bg-slate-700 mx-1 shrink-0"
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setUndoState(null),
+    className: "w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors active:scale-95 shrink-0"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "x",
+    className: "w-4 h-4"
+  })))))), /*#__PURE__*/React.createElement(GlobalConfirmDialog, _extends({
     isOpen: !!confirmConfig
   }, confirmConfig)));
 }

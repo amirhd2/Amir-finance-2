@@ -65,12 +65,12 @@ if (fs.existsSync(versionPath)) {
           releaseDate: vData.releaseDate,
           releaseChannel: "Stable",
           commitHash: `v${pkgVersion.replace(/\./g, '')}b${vData.buildNumber}`,
-          commitMessage: "feat: redesign settings version card with english typography and release v3.2.4",
+          commitMessage: "feat: implement corner micro-badge and installment counter inside icon, sync naming in all transactions, release v3.2.6",
           changes: [
-            "بازطراحی کارت نسخه در صفحه تنظیمات با عنوان Amir Finance و نمایش ارقام انگلیسی برای نسخه و بیلد",
-            "اصلاح رفتار آکاردئون‌های تنظیمات به حالت تک‌بازشو (Single-Accordion) و پیش‌فرض بسته",
-            "ستون‌بندی مستقل گرید تنظیمات برای صفحات بزرگ و تبلت با حفظ یکپارچگی استایل‌ها",
-            "انتشار رسمی نسخه 3.2.4"
+            "حذف برچسب‌های کپسولی فشرده‌کننده از خط اول و جایگزینی با نشانگر گوشه‌ای هوشمند (Corner Micro-Badge)",
+            "نمایش شماره قسط وام مستقیماً درون باکس مربعی آیکون (Number-Inside-Box)",
+            "همگام‌سازی کامل شماره اقساط و نام‌گذاری ۳ خطی در صفحه همه تراکنش‌ها دقیقا مطابق صفحه اختصاصی وام",
+            "انتشار رسمی نسخه 3.2.6"
           ]
         },
         ...otherHistory

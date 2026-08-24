@@ -2929,8 +2929,48 @@
             );
         }
 
-        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [], loans = [], isHighlighted = false, hasShadow = true }) {
+        function SwipeableTxCard({ tx, index, totalCount, onEdit, onDelete, colorType = 'indigo', contactName, contacts = [], loans = [], transactions = [], isHighlighted = false, hasShadow = true }) {
             const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
+
+            // Resolve target loan and calculated installment number for loan repayments
+            const isLoanTx = tx.type === 'repayment' || tx.type === 'loan_installment' || tx.type === 'installment' || Boolean(tx.loanId);
+
+            let targetLoan = null;
+            if (isLoanTx) {
+                targetLoan = tx.loan || (tx.loanId && Array.isArray(loans) && loans.length > 0 ? loans.find(l => Number(l.id) === Number(tx.loanId)) : null);
+                if (!targetLoan && tx.loanId && typeof loans !== 'undefined' && Array.isArray(loans)) {
+                    targetLoan = loans.find(l => Number(l.id) === Number(tx.loanId));
+                }
+            }
+
+            let instNum = null;
+            if (isLoanTx) {
+                if (tx.installmentNum) {
+                    instNum = tx.installmentNum;
+                } else if (tx.installmentNumber) {
+                    instNum = tx.installmentNumber;
+                } else if (tx.title) {
+                    const normalizedTitle = toEnglishDigits(String(tx.title));
+                    const match = normalizedTitle.match(/قسط\s*(?:شماره\s*)?(\d+)/i) || normalizedTitle.match(/(\d+)\s*(?:ام)?\s*قسط/i);
+                    if (match && match[1]) {
+                        instNum = parseInt(match[1], 10);
+                    }
+                }
+                
+                if (!instNum && targetLoan && Array.isArray(transactions) && transactions.length > 0) {
+                    const loanRepayments = transactions
+                        .filter(t => Number(t.loanId) === Number(targetLoan.id) && (t.type === 'repayment' || t.type === 'loan_installment' || t.type === 'installment'))
+                        .sort((a, b) => (a.id || 0) - (b.id || 0));
+                    const idxInLoan = loanRepayments.findIndex(t => t.id === tx.id);
+                    if (idxInLoan !== -1) {
+                        instNum = idxInLoan + 1;
+                    }
+                }
+
+                if (!instNum && totalCount !== undefined && index !== undefined) {
+                    instNum = totalCount - index;
+                }
+            }
 
             const { line1, line2, line3 } = (() => {
                 let rawContactName = contactName || tx.contactName || (tx.contact ? `${tx.contact.firstName || ''} ${tx.contact.lastName || ''}`.trim() : (tx.firstName ? `${tx.firstName || ''} ${tx.lastName || ''}`.trim() : ''));
@@ -2941,15 +2981,9 @@
 
                 let l1 = '';
                 let l2 = '';
-                let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : (tx.description && tx.description.trim() ? tx.description.trim() : (tx.type === 'repayment' ? 'پرداخت مستقیم قسط وام' : 'توضیحات ثبت نشده'));
+                let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : (tx.description && tx.description.trim() ? tx.description.trim() : 'توضیحات ثبت نشده');
 
-                if (tx.type === 'repayment') {
-                    // Look up matching loan object
-                    let targetLoan = tx.loan || (tx.loanId && Array.isArray(loans) && loans.length > 0 ? loans.find(l => Number(l.id) === Number(tx.loanId)) : null);
-                    if (!targetLoan && tx.loanId && typeof loans !== 'undefined' && Array.isArray(loans)) {
-                        targetLoan = loans.find(l => Number(l.id) === Number(tx.loanId));
-                    }
-
+                if (isLoanTx) {
                     // Get exact loan title from the loans section
                     let loanName = targetLoan ? targetLoan.title : (tx.loanTitle || (tx.loan ? tx.loan.title : ''));
                     if (!loanName && tx.title) {
@@ -2964,51 +2998,31 @@
                     }
                     if (!loanName) loanName = 'وام';
 
-                    // Determine installment number
-                    let instNum = tx.installmentNum;
-                    if (!instNum && tx.title) {
-                        const match = tx.title.match(/قسط\s*(?:شماره\s*)?(\d+)/);
-                        if (match && match[1]) {
-                            instNum = parseInt(match[1], 10);
-                        }
-                    }
-                    if (!instNum && targetLoan && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
-                        const loanRepayments = transactions.filter(t => Number(t.loanId) === Number(targetLoan.id) && t.type === 'repayment').sort((a, b) => (a.id || 0) - (b.id || 0));
-                        const idxInLoan = loanRepayments.findIndex(t => t.id === tx.id);
-                        if (idxInLoan !== -1) {
-                            instNum = idxInLoan + 1;
-                        }
-                    }
-                    if (!instNum && totalCount !== undefined && index !== undefined) {
-                        instNum = totalCount - index;
-                    }
-
-                    l1 = instNum ? `پرداخت قسط شماره ${instNum} - ${loanName}` : `پرداخت قسط - ${loanName}`;
+                    let loanNameClean = loanName.replace(/^وام\s*/, '').trim();
+                    if (!loanNameClean) loanNameClean = 'بانک';
+                    l1 = instNum ? `پرداخت قسط ${instNum} وام ${loanNameClean}` : `پرداخت قسط وام ${loanNameClean}`;
 
                     let contactInfo = rawContactName.trim();
                     if (!contactInfo && targetLoan) {
-                        if (targetLoan.lender) contactInfo = targetLoan.lender;
-                        else if (targetLoan.contactId && Array.isArray(contacts)) {
+                        if (targetLoan.contactId && Array.isArray(contacts)) {
                             const foundC = contacts.find(c => c.id === targetLoan.contactId);
                             if (foundC) contactInfo = `${foundC.firstName || ''} ${foundC.lastName || ''}`.trim();
                         }
+                        if (!contactInfo && targetLoan.contactName) contactInfo = targetLoan.contactName.trim();
+                        if (!contactInfo && targetLoan.lender) contactInfo = targetLoan.lender.trim();
                     }
-                    l2 = contactInfo ? contactInfo : `اقساط ${loanName}`;
-                } else if (tx.type === 'demand') {
-                    l1 = tx.title || 'ثبت طلب جدید';
-                    l2 = rawContactName.trim();
-                } else if (tx.type === 'demand_repayment') {
-                    l1 = tx.title || 'بازپرداخت طلب';
-                    l2 = rawContactName.trim();
+                    l2 = contactInfo ? contactInfo : (loanName || 'وام');
                 } else if (tx.type === 'debt') {
-                    let cleanTitle = tx.title || 'ثبت بدهی جدید';
-                    if (cleanTitle.startsWith('ثبت قرض / بدهی') || cleanTitle.startsWith('ثبت قرض/بدهی') || cleanTitle.startsWith('ثبت قرض')) {
-                        cleanTitle = cleanTitle.replace(/^ثبت\s*قرض\s*\/?\s*بدهی/g, 'ثبت بدهی جدید').replace(/^ثبت\s*قرض/g, 'ثبت بدهی جدید');
-                    }
-                    l1 = cleanTitle;
+                    l1 = 'بدهی جدید ثبت شد';
                     l2 = rawContactName.trim();
                 } else if (tx.type === 'debt_repayment') {
-                    l1 = tx.title || 'بازپرداخت بدهی';
+                    l1 = 'بازپرداخت جدید ثبت شد';
+                    l2 = rawContactName.trim();
+                } else if (tx.type === 'demand') {
+                    l1 = 'طلب جدید ثبت شد';
+                    l2 = rawContactName.trim();
+                } else if (tx.type === 'demand_repayment') {
+                    l1 = 'بازپرداخت جدید ثبت شد';
                     l2 = rawContactName.trim();
                 } else if (tx.type === 'income') {
                     l1 = tx.title || 'درآمد';
@@ -3024,7 +3038,103 @@
                 return { line1: l1, line2: l2, line3: l3 };
             })();
 
-            const isRedAmount = tx.isPositive !== undefined ? !tx.isPositive : (tx.type === 'debt' || tx.type === 'demand_repayment' || tx.type === 'expense' || (colorType === 'rose' && tx.type !== 'debt_repayment' && tx.type !== 'repayment' && tx.type !== 'income'));
+            const txVisualConfig = (() => {
+                const type = tx.type;
+                if (type === 'repayment' || type === 'loan_installment' || type === 'installment' || tx.loanId) {
+                    return {
+                        isLoan: true,
+                        iconBg: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/40',
+                        iconName: 'receipt',
+                        microBadgeIcon: 'check',
+                        microBadgeClass: 'bg-indigo-600 text-white',
+                        borderAccent: 'border-r-indigo-500 dark:border-r-indigo-400',
+                        amountClass: 'text-indigo-700 dark:text-indigo-300',
+                        sign: '-'
+                    };
+                }
+                if (type === 'demand') {
+                    return {
+                        isLoan: false,
+                        iconBg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/40',
+                        iconName: 'arrow-up-right',
+                        microBadgeIcon: 'plus',
+                        microBadgeClass: 'bg-emerald-600 text-white',
+                        borderAccent: 'border-r-emerald-500 dark:border-r-emerald-400',
+                        amountClass: 'text-emerald-700 dark:text-emerald-300',
+                        sign: '+'
+                    };
+                }
+                if (type === 'demand_repayment') {
+                    return {
+                        isLoan: false,
+                        iconBg: 'bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-800/40',
+                        iconName: 'check-circle-2',
+                        microBadgeIcon: 'check',
+                        microBadgeClass: 'bg-teal-600 text-white',
+                        borderAccent: 'border-r-teal-500 dark:border-r-teal-400',
+                        amountClass: 'text-teal-700 dark:text-teal-300',
+                        sign: '+'
+                    };
+                }
+                if (type === 'debt') {
+                    return {
+                        isLoan: false,
+                        iconBg: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/40',
+                        iconName: 'arrow-down-left',
+                        microBadgeIcon: 'minus',
+                        microBadgeClass: 'bg-rose-600 text-white',
+                        borderAccent: 'border-r-rose-500 dark:border-r-rose-400',
+                        amountClass: 'text-rose-700 dark:text-rose-300',
+                        sign: '-'
+                    };
+                }
+                if (type === 'debt_repayment') {
+                    return {
+                        isLoan: false,
+                        iconBg: 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/40',
+                        iconName: 'corner-down-left',
+                        microBadgeIcon: 'check',
+                        microBadgeClass: 'bg-amber-600 text-white',
+                        borderAccent: 'border-r-amber-500 dark:border-r-amber-400',
+                        amountClass: 'text-amber-700 dark:text-amber-300',
+                        sign: '-'
+                    };
+                }
+                if (type === 'income') {
+                    return {
+                        isLoan: false,
+                        iconBg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/40',
+                        iconName: 'arrow-down-left',
+                        microBadgeIcon: 'plus',
+                        microBadgeClass: 'bg-emerald-600 text-white',
+                        borderAccent: 'border-r-emerald-500 dark:border-r-emerald-400',
+                        amountClass: 'text-emerald-700 dark:text-emerald-300',
+                        sign: '+'
+                    };
+                }
+                if (type === 'expense') {
+                    return {
+                        isLoan: false,
+                        iconBg: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/40',
+                        iconName: 'arrow-up-right',
+                        microBadgeIcon: 'minus',
+                        microBadgeClass: 'bg-rose-600 text-white',
+                        borderAccent: 'border-r-rose-500 dark:border-r-rose-400',
+                        amountClass: 'text-rose-700 dark:text-rose-300',
+                        sign: '-'
+                    };
+                }
+                return {
+                    isLoan: false,
+                    iconBg: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600',
+                    iconName: 'receipt',
+                    microBadgeIcon: 'receipt',
+                    microBadgeClass: 'bg-slate-600 text-white',
+                    borderAccent: 'border-r-slate-400 dark:border-r-slate-500',
+                    amountClass: 'text-slate-800 dark:text-slate-100',
+                    sign: ''
+                };
+            })();
 
             return (
                 <SwipeToDeleteItem
@@ -3037,37 +3147,56 @@
                             hasShadow 
                                 ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' 
                                 : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'
-                        } rounded-2xl border pl-3 sm:pl-5 pr-2.5 sm:pr-4 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto relative overflow-visible`}
+                        } rounded-2xl border border-r-[3.5px] ${txVisualConfig.borderAccent} pl-3 sm:pl-5 pr-2.5 sm:pr-3.5 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto relative overflow-visible`}
                     >
                         <TxBorderFocusOverlay tx={tx} isHighlighted={isHighlighted} />
-                        <div className="flex items-center space-x-2 sm:space-x-3 space-x-reverse min-w-0 flex-1">
-                            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg ${ isRedAmount ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : isRepay ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' : colorType === 'rose' ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-500 dark:text-rose-400' : colorType === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 dark:text-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0`}>
-                                {totalCount ? (totalCount - index) : <Icon name={tx.type === 'demand_repayment' ? "arrow-down-left" : isRepay ? "check-circle-2" : (isRedAmount ? "arrow-up-right" : "arrow-down-left")} className="w-5 h-5 sm:w-6 sm:h-6" />}
+                        <div className="flex items-center space-x-2.5 sm:space-x-3 space-x-reverse min-w-0 flex-1">
+                            {/* Icon / Number Container with Corner Micro-Badge */}
+                            <div className="relative shrink-0">
+                                <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base ${txVisualConfig.iconBg} flex items-center justify-center shadow-xs select-none`}>
+                                    {txVisualConfig.isLoan && instNum ? (
+                                        <span className="font-extrabold font-mono tracking-tight text-indigo-700 dark:text-indigo-300">
+                                            {instNum}
+                                        </span>
+                                    ) : (
+                                        <Icon name={txVisualConfig.iconName} className="w-5 h-5 sm:w-5.5 sm:h-5.5" />
+                                    )}
+                                </div>
+                                {/* Corner Micro-Badge Indicator */}
+                                <div className={`absolute -top-1 -right-1 w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full ${txVisualConfig.microBadgeClass} border-2 border-white dark:border-slate-800 flex items-center justify-center shadow-xs pointer-events-none`}>
+                                    <Icon name={txVisualConfig.microBadgeIcon} className="w-2.5 h-2.5 stroke-[3]" />
+                                </div>
                             </div>
-                            <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-1 sm:pl-4 pr-0 sm:pr-1">
-                                <h3 className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{line1}</h3>
+
+                            {/* 3-Line Structured Text Info */}
+                            <div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-1 sm:pl-3 pr-0">
+                                <h3 className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug truncate">
+                                    {line1}
+                                </h3>
                                 {line2 && (
-                                    <div className="text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 break-words whitespace-normal leading-snug">
+                                    <div className="text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 truncate leading-snug">
                                         {line2}
                                     </div>
                                 )}
-                                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 break-words whitespace-normal leading-relaxed mt-0.5">
+                                <p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 truncate leading-relaxed mt-0.5">
                                     {line3}
                                 </p>
                             </div>
                         </div>
 
+                        {/* Amount, Currency and Date Column */}
                         <div className="text-center shrink-0 flex flex-col items-center justify-center min-w-[70px] sm:min-w-[90px] pl-0 sm:pl-1">
-                            <div className={`font-bold text-sm sm:text-[15px] leading-tight text-center ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                            <div className={`font-black text-sm sm:text-[15px] leading-tight text-center ${txVisualConfig.amountClass} dir-ltr`}>
+                                {txVisualConfig.sign && <span className="ml-0.5 text-xs">{txVisualConfig.sign}</span>}
                                 {Math.abs(tx.amount).toLocaleString()}
                             </div>
-                            <div className={`text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${isRedAmount ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>تومان</div>
+                            <div className={`text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${txVisualConfig.amountClass}`}>تومان</div>
                             {(() => {
                                 const rawDate = tx.dateStr || tx.date || tx.receiveDate || tx.startDate || tx.createdAt || '';
                                 const numericDate = formatDateToNumericJalali(rawDate);
                                 if (!numericDate || numericDate === '-') return null;
                                 return (
-                                    <div className="text-[11px] sm:text-sm font-bold text-slate-600 dark:text-slate-300 font-mono mt-0.5 sm:mt-1 text-center whitespace-nowrap">
+                                    <div className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 font-mono mt-0.5 text-center whitespace-nowrap">
                                         {numericDate}
                                     </div>
                                 );
@@ -3729,13 +3858,13 @@
             const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.5",
-    "buildNumber": 394,
+    "installedVersion": "3.2.6",
+    "buildNumber": 400,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.5",
-    "latestBuild": 394,
+    "latestVersion": "3.2.6",
+    "latestBuild": 400,
     "isUpdateAvailable": false,
     "history": [
         {
@@ -4195,8 +4324,8 @@
                     }
                 }
 
-                const EMBEDDED_BUILD = 394;
-                const EMBEDDED_VERSION = "3.2.5";
+                const EMBEDDED_BUILD = 400;
+                const EMBEDDED_VERSION = "3.2.6";
 
                 let localBuildStr = localStorage.getItem('amir_installed_build');
                 let localVersion = localStorage.getItem('amir_installed_version');
@@ -4622,6 +4751,55 @@
 
             const isInitialMountRef = useRef(true);
             const isRestoringOrClearingRef = useRef(false);
+
+            // GLOBAL UNDO SYSTEM
+            const appStateRef = useRef({ contacts, loans, transactions, completedPeriods, backupStatus });
+            useEffect(() => {
+                appStateRef.current = { contacts, loans, transactions, completedPeriods, backupStatus };
+            }, [contacts, loans, transactions, completedPeriods, backupStatus]);
+
+            const [undoState, setUndoState] = useState(null);
+
+            useEffect(() => {
+                if (undoState) {
+                    const timer = setTimeout(() => setUndoState(null), 5000);
+                    return () => clearTimeout(timer);
+                }
+            }, [undoState]);
+
+            const triggerUndo = (message, customSnapshot = null) => {
+                setUndoState({
+                    message,
+                    state: customSnapshot ? { ...customSnapshot } : { ...appStateRef.current },
+                    timestamp: Date.now()
+                });
+            };
+
+            const handleUndo = () => {
+                if (!undoState || !undoState.state) return;
+                const restored = undoState.state;
+                isRestoringOrClearingRef.current = true;
+
+                setContacts(restored.contacts || []);
+                setLoans(restored.loans || []);
+                setTransactions(restored.transactions || []);
+                setCompletedPeriods(restored.completedPeriods || []);
+
+                if (restored.backupStatus) {
+                    setBackupStatus(restored.backupStatus);
+                    try {
+                        localStorage.setItem('amir_fin_backup_status_v1', JSON.stringify(restored.backupStatus));
+                    } catch (e) {}
+                }
+
+                prevContactsMapRef.current = new Map((restored.contacts || []).map(c => [String(c.id), c]));
+                prevLoansMapRef.current = new Map((restored.loans || []).map(l => [String(l.id), l]));
+                prevTxsMapRef.current = new Map((restored.transactions || []).map(t => [String(t.id), t]));
+                prevPeriodsSetRef.current = new Set((restored.completedPeriods || []).map(p => String(p.id || JSON.stringify(p))));
+
+                setUndoState(null);
+                showToast('تغییرات لغو و اطلاعات بازگردانی شد');
+            };
             
             // Entity snapshot maps for precise single-log mutation diffing
             const prevContactsMapRef = useRef(new Map());
@@ -4689,6 +4867,7 @@
                 }
 
                 if (isRestoringOrClearingRef.current) {
+                    isRestoringOrClearingRef.current = false;
                     prevContactsMapRef.current = new Map(contacts.map(c => [String(c.id), c]));
                     prevLoansMapRef.current = new Map(loans.map(l => [String(l.id), l]));
                     prevTxsMapRef.current = new Map(transactions.map(t => [String(t.id), t]));
@@ -5062,8 +5241,10 @@
                 return typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             });
 
-            // Settings accordion single-open active section state managed above
+            // All Transactions Subpage State
             const [allTxsPage, setAllTxsPage] = useState(1);
+            const [allTxsSearchQuery, setAllTxsSearchQuery] = useState('');
+            const [allTxsFilterType, setAllTxsFilterType] = useState('all');
             const [dynamicPageSize, setDynamicPageSize] = useState(() => {
                 if (typeof window === 'undefined') return 8;
                 const h = window.innerHeight;
@@ -5538,7 +5719,7 @@
                             }));
                         }
                     }
-                    showToast('قسط با موفقیت حذف گردید');
+                    triggerUndo('قسط با موفقیت حذف گردید');
                     return;
                 }
 
@@ -5563,7 +5744,7 @@
                             setSelectedContact(prev => ({ ...prev, totalDebt: netDebt }));
                         }
                     }
-                    showToast(periodId ? 'تراکنش حذف شد و بدهی از حالت بایگانی خارج گردید' : (effectiveType === 'debt_repayment' ? 'بازپرداخت بدهی با موفقیت حذف شد' : 'تراکنش بدهی با موفقیت حذف گردید'));
+                    triggerUndo(periodId ? 'تراکنش حذف شد و بدهی از حالت بایگانی خارج گردید' : (effectiveType === 'debt_repayment' ? 'بازپرداخت بدهی با موفقیت حذف شد' : 'تراکنش بدهی با موفقیت حذف گردید'));
                     return;
                 }
 
@@ -5588,11 +5769,11 @@
                             setSelectedContact(prev => ({ ...prev, totalDemand: netDemand }));
                         }
                     }
-                    showToast(periodId ? 'تراکنش حذف شد و طلب از حالت بایگانی خارج گردید' : (effectiveType === 'demand_repayment' ? 'بازپرداخت طلب با موفقیت حذف شد' : 'تراکنش طلب با موفقیت حذف گردید'));
+                    triggerUndo(periodId ? 'تراکنش حذف شد و طلب از حالت بایگانی خارج گردید' : (effectiveType === 'demand_repayment' ? 'بازپرداخت طلب با موفقیت حذف شد' : 'تراکنش طلب با موفقیت حذف گردید'));
                     return;
                 }
 
-                showToast('تراکنش با موفقیت حذف گردید');
+                triggerUndo('تراکنش با موفقیت حذف گردید');
             };
 
             const exportPeriodAsPNG = (period) => {
@@ -5779,13 +5960,14 @@
                             notes: data.notes || ''
                         });
                     } else {
-                        const passedContactId = (data && data.fromFab) ? '' : ((data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : ''));
-                        const defaultContact = contacts.find(c => c.id === Number(passedContactId));
+                        const isFromFab = Boolean((data && data.fromFab) || (mode === 'add' && currentTab === 'dashboard'));
+                        const passedContactId = isFromFab ? '' : ((data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : ''));
+                        const defaultContact = passedContactId ? contacts.find(c => c.id === Number(passedContactId)) : null;
                         const defaultName = defaultContact ? `${defaultContact.firstName} ${defaultContact.lastName}` : '';
                         setLoanForm({
                             id: null,
                             title: '',
-                            selectedContactId: passedContactId,
+                            selectedContactId: passedContactId || '',
                             contactName: defaultName,
                             contactSearchQuery: '',
                             startDate: todayFormatted,
@@ -5803,20 +5985,21 @@
                         });
                     }
                 } else if (type === 'demand' || type === 'debt') {
-                    const passedContactId = (data && data.fromFab) ? '' : ((data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : ''));
+                    const isFromFab = Boolean((data && data.fromFab) || (mode === 'add' && currentTab === 'dashboard'));
+                    const passedContactId = isFromFab ? '' : ((data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : ''));
                     const isEditTx = mode === 'edit' && data && data.id;
                     const editAmt = isEditTx ? Math.abs(data.amount || 0) : (mode === 'edit' && data && data.amount ? Math.abs(data.amount || 0) : '');
                     const editNotes = (mode === 'edit' && data && data.notes) ? data.notes : '';
 
                     setDemandDebtForm({
                         id: isEditTx ? data.id : null,
-                        selectedContactId: passedContactId,
+                        selectedContactId: passedContactId || '',
                         contactSearchQuery: '',
                         amount: editAmt,
                         notes: editNotes
                     });
                 } else if (type === 'installment') {
-                    const isFromFab = data && data.fromFab;
+                    const isFromFab = Boolean((data && data.fromFab) || (mode === 'add' && currentTab === 'dashboard'));
                     const isEditTx = mode === 'edit' && data && data.id && (data.amount !== undefined);
                     const passedLoan = (data && data.id && !isEditTx && !isFromFab) ? data : null;
                     const activeLoans = loans.filter(l => {
@@ -5827,7 +6010,7 @@
                     const activeTargetLoan = isFromFab ? null : (passedLoan || selectedLoan || (selectedContact ? activeLoans.find(l => l.contactId === selectedContact.id) : null) || (activeLoans.length > 0 ? activeLoans[0] : null));
                     
                     const editLoanId = isEditTx ? (data.loanId || (activeTargetLoan ? activeTargetLoan.id : '')) : (activeTargetLoan ? activeTargetLoan.id : '');
-                    const targetLoan = editLoanId ? (loans.find(l => l.id === Number(editLoanId)) || activeTargetLoan) : null;
+                    const targetLoan = isFromFab ? null : (editLoanId ? (loans.find(l => l.id === Number(editLoanId)) || activeTargetLoan) : null);
                     const editAmt = isEditTx ? Math.abs(data.amount || 0) : (targetLoan ? targetLoan.installmentAmount : '');
                     const editNotes = (isEditTx && data && data.notes) ? data.notes : '';
 
@@ -5836,12 +6019,16 @@
                         setPickerDay(parsedDate.day);
                         setPickerMonth(parsedDate.month);
                         setPickerYear(parsedDate.year);
-                    } else {
+                    } else if (targetLoan) {
                         // Automatically calculate next installment date (or 1st installment date)
                         const nextInstDate = getInstallmentNextDueDate(targetLoan, transactions);
                         setPickerDay(nextInstDate.day);
                         setPickerMonth(nextInstDate.month);
                         setPickerYear(nextInstDate.year);
+                    } else {
+                        setPickerDay(deviceDate.day);
+                        setPickerMonth(deviceDate.month);
+                        setPickerYear(deviceDate.year);
                     }
 
                     setInstallmentForm({
@@ -5851,10 +6038,11 @@
                         notes: editNotes
                     });
                 } else if (type === 'debt_repayment' || type === 'demand_repayment') {
+                    const isFromFab = Boolean((data && data.fromFab) || (mode === 'add' && currentTab === 'dashboard'));
                     const isEditTx = mode === 'edit' && data && data.id;
                     const editAmt = isEditTx ? Math.abs(data.amount || 0) : '';
                     const editNotes = (isEditTx && data && data.notes) ? data.notes : '';
-                    const passedContactId = (data && data.fromFab) ? '' : ((data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : ''));
+                    const passedContactId = isFromFab ? '' : ((data && data.contactId) ? data.contactId : (selectedContact ? selectedContact.id : ''));
 
                     if (isEditTx && data && data.dateStr) {
                         const parsedDate = parseJalaliDateStr(data.dateStr);
@@ -5865,7 +6053,7 @@
 
                     setDemandDebtForm(prev => ({
                         ...prev,
-                        selectedContactId: passedContactId,
+                        selectedContactId: passedContactId || '',
                         contactSearchQuery: ''
                     }));
 
@@ -6182,11 +6370,15 @@
                     const firstInstallmentDateStr = `${firstInstDay} ${firstInstMonth} ${firstInstYear}`;
 
                     if (wizardMode === 'edit' && loanForm.id) {
+                        const existingLoan = loans.find(l => String(l.id) === String(loanForm.id));
+                        const oldTitle = existingLoan ? (existingLoan.title || '').trim() : '';
+                        const newTitle = (loanForm.title || 'وام جدید').trim();
+
                         const updatedLoans = loans.map(l => {
-                            if (l.id === loanForm.id) {
+                            if (String(l.id) === String(loanForm.id)) {
                                 return {
                                     ...l,
-                                    title: loanForm.title || 'وام جدید',
+                                    title: newTitle,
                                     contactId: loanForm.selectedContactId,
                                     contactName: loanForm.contactName,
                                     principalAmount: principal,
@@ -6203,9 +6395,34 @@
                             return l;
                         });
                         setLoans(updatedLoans);
-                        const currentUpdated = updatedLoans.find(l => l.id === loanForm.id);
+
+                        // Propagate loan title updates to all associated transactions (including past installments, dashboard, and all-transactions)
+                        setTransactions(prevTxs => prevTxs.map(t => {
+                            if (String(t.loanId) === String(loanForm.id)) {
+                                let updatedTitle = t.title || '';
+                                if (oldTitle && updatedTitle.includes(oldTitle)) {
+                                    updatedTitle = updatedTitle.split(oldTitle).join(newTitle);
+                                } else if (t.installmentNum || t.installmentNumber) {
+                                    const instN = t.installmentNum || t.installmentNumber;
+                                    updatedTitle = `پرداخت قسط شماره ${instN} - ${newTitle}`;
+                                } else if (t.type === 'repayment') {
+                                    updatedTitle = `پرداخت قسط - ${newTitle}`;
+                                } else if (t.type === 'loan_creation') {
+                                    updatedTitle = `ثبت وام ${newTitle}`;
+                                }
+                                return {
+                                    ...t,
+                                    loanTitle: newTitle,
+                                    title: updatedTitle,
+                                    loan: t.loan ? { ...t.loan, title: newTitle } : t.loan
+                                };
+                            }
+                            return t;
+                        }));
+
+                        const currentUpdated = updatedLoans.find(l => String(l.id) === String(loanForm.id));
                         if (currentUpdated) setSelectedLoan(currentUpdated);
-                        showToast('پرونده وام با موفقیت ویرایش شد');
+                        showToast('پرونده وام و تراکنش‌های آن با موفقیت بروزرسانی شد');
                     } else {
                         const newLoan = {
                             id: Date.now(),
@@ -6695,6 +6912,24 @@
                 setShowStackWizard(false);
             };
 
+            const focusCardElementInput = (cardId) => {
+                const cardElem = document.getElementById(`sticky-card-${cardId}`);
+                if (cardElem) {
+                    const targetInput = cardElem.querySelector('input[autofocus]') ||
+                                        cardElem.querySelector('input:not([type="hidden"]):not([readonly]):not([type="radio"]):not([type="checkbox"]), textarea:not([readonly]), select');
+                    if (targetInput) {
+                        try {
+                            targetInput.focus({ preventScroll: true });
+                            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                                targetInput.click();
+                            }
+                        } catch (e) {}
+                        return true;
+                    }
+                }
+                return false;
+            };
+
             const startEditingCard = (card) => {
                 setEditingCardId(card.id);
                 setCardFormBackup({
@@ -6712,6 +6947,12 @@
             const handleStartEditingCard = (card) => {
                 if (editingCardId !== null) return;
 
+                // 1. Immediately enter editing mode synchronously to preserve user gesture context for keyboard
+                startEditingCard(card);
+
+                // 2. Immediately focus the input on the user tap/click stack
+                focusCardElementInput(card.id);
+
                 const container = editCardsContainerRef.current;
                 const cardElem = document.getElementById(`sticky-card-${card.id}`);
 
@@ -6720,20 +6961,12 @@
                     const cardIndex = cards.findIndex(c => c.id === card.id);
                     const topOffset = (cardIndex >= 0 ? cardIndex * 8 : 0);
                     const targetScrollTop = Math.max(0, cardElem.offsetTop - topOffset);
-                    const isAlreadyAtTop = Math.abs(container.scrollTop - targetScrollTop) < 6;
 
-                    // 1. Smoothly glide card to its docked position at the top of the stack
+                    // 3. Smoothly glide card to its docked position at the top of the stack
                     container.scrollTo({
                         top: targetScrollTop,
                         behavior: 'smooth'
                     });
-
-                    // 2. Enter editing mode once the card reaches the top
-                    setTimeout(() => {
-                        startEditingCard(card);
-                    }, isAlreadyAtTop ? 20 : 250);
-                } else {
-                    startEditingCard(card);
                 }
             };
 
@@ -6741,19 +6974,7 @@
             useEffect(() => {
                 if (editingCardId) {
                     const focusCardInput = () => {
-                        const cardElem = document.getElementById(`sticky-card-${editingCardId}`);
-                        if (cardElem) {
-                            const targetInput = cardElem.querySelector('input[autofocus]') ||
-                                                cardElem.querySelector('input:not([type="hidden"]):not([readonly]):not([type="radio"]):not([type="checkbox"]), textarea:not([readonly]), select');
-                            if (targetInput) {
-                                try {
-                                    targetInput.focus({ preventScroll: true });
-                                    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-                                        targetInput.click();
-                                    }
-                                } catch (e) {}
-                            }
-                        }
+                        focusCardElementInput(editingCardId);
                     };
 
                     focusCardInput();
@@ -6966,7 +7187,7 @@
                             navigateToTab('contacts', 'back');
                         }
                         setConfirmConfig(null);
-                        showToast('مخاطب با موفقیت حذف گردید');
+                        triggerUndo('مخاطب با موفقیت حذف گردید');
                     },
                     onCancel: () => setConfirmConfig(null)
                 });
@@ -6999,7 +7220,7 @@
                         setSelectedLoan(null);
                         navigateToTab(loanReturnTab || 'accounts', 'back');
                         setConfirmConfig(null);
-                        showToast('پرونده وام با موفقیت حذف گردید');
+                        triggerUndo('پرونده وام با موفقیت حذف گردید');
                     },
                     onCancel: () => setConfirmConfig(null)
                 });
@@ -7035,7 +7256,7 @@
                         setSelectedPeriod(null);
                         navigateToTab(loanReturnTab || 'contact-detail', 'back');
                         setConfirmConfig(null);
-                        showToast('تسویه‌حساب آرشیو شده با موفقیت حذف گردید');
+                        triggerUndo('تسویه‌حساب آرشیو شده با موفقیت حذف گردید');
                     },
                     onCancel: () => setConfirmConfig(null)
                 });
@@ -8368,14 +8589,27 @@
                                     const extraList = sortedList.slice(3);
 
                                     const renderReminderCard = (item) => {
-                                        let iconName = item.icon || 'landmark';
-                                        let iconBgClass = item.iconColor || 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+                                        const isOverdue = item.daysLeft < 0;
+                                        const isToday = item.daysLeft === 0;
 
-                                        const daysBadgeText = item.daysLeft < 0 
+                                        let iconName = item.icon || 'landmark';
+                                        let iconBgClass = isOverdue
+                                            ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400'
+                                            : isToday
+                                                ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400'
+                                                : (item.iconColor || 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300');
+
+                                        const daysBadgeText = isOverdue 
                                             ? `${Math.abs(item.daysLeft)} روز تأخیر` 
-                                            : item.daysLeft === 0 
+                                            : isToday 
                                                 ? 'امروز سررسید' 
                                                 : `${item.daysLeft} روز مانده`;
+
+                                        const badgeClass = isOverdue
+                                            ? 'bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/60'
+                                            : isToday
+                                                ? 'bg-amber-100/90 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60'
+                                                : 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-600/50';
 
                                         return (
                                             <div 
@@ -8393,7 +8627,7 @@
                                                     </div>
                                                 </div>
                                                 <div className="shrink-0">
-                                                    <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 inline-block">
+                                                    <span className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs inline-block ${badgeClass}`}>
                                                         {daysBadgeText}
                                                     </span>
                                                 </div>
@@ -8404,15 +8638,15 @@
                                     return (
                                         <div className="bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all space-y-3.5">
                                             <div 
-                                                onClick={() => setExpandedReminders(!expandedReminders)}
+                                                 onClick={() => setExpandedReminders(!expandedReminders)}
                                                 className="flex justify-between items-center cursor-pointer select-none group px-0.5"
                                             >
                                                 <div className="flex items-center space-x-3 space-x-reverse">
-                                                    <div className="w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center text-rose-500 dark:text-rose-400 group-hover:scale-105 transition-transform shrink-0">
+                                                    <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0">
                                                         <Icon name="calendar-clock" className="w-5.5 h-5.5" />
                                                     </div>
                                                     <div>
-                                                        <h3 className="text-sm sm:text-base font-extrabold text-rose-600 dark:text-rose-400 leading-tight">یادآوری‌های مهم</h3>
+                                                        <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight">یادآوری‌های مهم</h3>
                                                         <p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5">نزدیک‌ترین سررسیدها</p>
                                                     </div>
                                                 </div>
@@ -8529,6 +8763,8 @@
                                                     key={tx.id || idx}
                                                     tx={tx}
                                                     contacts={contacts}
+                                                    loans={loans}
+                                                    transactions={transactions}
                                                     isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
                                                     onEdit={(txItem) => handleTransactionClick(txItem)}
                                                     onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
@@ -9353,6 +9589,8 @@
                                                                         <SwipeableTxCard 
                                                                             key={tx.id}
                                                                             tx={tx}
+                                                                            contacts={contacts}
+                                                                            loans={loans}
                                                                             colorType="rose"
                                                                             hasShadow={true}
                                                                             isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
@@ -9467,6 +9705,8 @@
                                                                         <SwipeableTxCard 
                                                                             key={tx.id}
                                                                             tx={tx}
+                                                                            contacts={contacts}
+                                                                            loans={loans}
                                                                             colorType="emerald"
                                                                             hasShadow={true}
                                                                             isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
@@ -9941,6 +10181,9 @@
                                                                 tx={tx}
                                                                 index={idx}
                                                                 totalCount={repaymentTxs.length}
+                                                                contacts={contacts}
+                                                                loans={loans}
+                                                                transactions={transactions}
                                                                 colorType="indigo"
                                                                 isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
                                                                 onEdit={(txItem) => openStackWizard('installment', 'edit', txItem)}
@@ -10235,6 +10478,19 @@
                                         </div>
                                     )}
                                 </section>
+
+                                {/* Archived Period Export Button */}
+                                <button 
+                                    onClick={() => openUniversalExportModal("period", selectedPeriod)}
+                                    className={`w-full py-3.5 sm:py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2.5 text-white shadow-lg active:scale-95 transition-all cursor-pointer ${
+                                        isDebt 
+                                            ? "bg-rose-600 hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-500 shadow-rose-200 dark:shadow-rose-950/50" 
+                                            : "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-emerald-200 dark:shadow-emerald-950/50"
+                                    }`}
+                                >
+                                    <Icon name="file-output" className="w-5 h-5 text-white" />
+                                    <span>{isDebt ? "خروجی گرفتن از گزارش بدهی" : "خروجی گرفتن از گزارش طلب"}</span>
+                                </button>
                             </div>
                         );
                     case 'settings':
@@ -10609,6 +10865,222 @@
                                 </div>
                             </div>
                         );
+                    case 'all-transactions': {
+                        const handleBack = onBack ? () => onBack('button') : (() => navigateToTab('dashboard', 'back'));
+                        
+                        // Filter transactions
+                        const filteredAllTxs = transactions.filter(tx => {
+                            // Type filter
+                            if (allTxsFilterType === 'loan_installment') {
+                                const isLoanTx = tx.type === 'repayment' || tx.type === 'loan_installment' || tx.type === 'installment' || Boolean(tx.loanId) || Boolean(tx.installmentNumber) || Boolean(tx.installmentNum);
+                                if (!isLoanTx) return false;
+                            } else if (allTxsFilterType === 'demand') {
+                                if (tx.type !== 'demand') return false;
+                            } else if (allTxsFilterType === 'demand_repayment') {
+                                if (tx.type !== 'demand_repayment') return false;
+                            } else if (allTxsFilterType === 'debt') {
+                                if (tx.type !== 'debt') return false;
+                            } else if (allTxsFilterType === 'debt_repayment') {
+                                if (tx.type !== 'debt_repayment') return false;
+                            }
+
+                            // Search filter
+                            if (allTxsSearchQuery && allTxsSearchQuery.trim()) {
+                                const q = allTxsSearchQuery.trim().toLowerCase();
+                                const contact = contacts.find(c => c.id === tx.contactId);
+                                const contactName = contact ? `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase() : '';
+                                const targetLoan = loans.find(l => String(l.id) === String(tx.loanId));
+                                const loanTitle = (targetLoan ? targetLoan.title : (tx.loanTitle || '')).toLowerCase();
+                                const titleStr = (tx.title || '').toLowerCase();
+                                const notesStr = (tx.notes || tx.description || '').toLowerCase();
+                                const amtStr = String(Math.abs(tx.amount || 0));
+
+                                const matches = titleStr.includes(q) || 
+                                                notesStr.includes(q) || 
+                                                contactName.includes(q) || 
+                                                loanTitle.includes(q) || 
+                                                amtStr.includes(q);
+                                if (!matches) return false;
+                            }
+
+                            return true;
+                        });
+
+                        // Stats
+                        const totalCount = filteredAllTxs.length;
+
+                        // Pagination
+                        const pageSize = dynamicPageSize || 10;
+                        const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+                        const currentPage = Math.min(Math.max(1, allTxsPage), totalPages);
+                        const pagedTxs = filteredAllTxs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+                        const filterPills = [
+                            { id: 'all', label: 'همه' },
+                            { id: 'loan_installment', label: 'اقساط وام' },
+                            { id: 'demand', label: 'طلب‌ها' },
+                            { id: 'demand_repayment', label: 'بازپرداخت طلب‌ها' },
+                            { id: 'debt', label: 'بدهی‌ها' },
+                            { id: 'debt_repayment', label: 'بازپرداخت بدهی‌ها' }
+                        ];
+
+                        return (
+                            <div className="space-y-4 animate-fade-in pb-12">
+                                {/* Header */}
+                                <div className="flex items-center justify-between py-1.5 mb-1">
+                                    <div className="flex items-center space-x-2.5 space-x-reverse">
+                                        <button 
+                                            onClick={handleBack}
+                                            className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 active:scale-95 transition-all shadow-sm shrink-0"
+                                            title="بازگشت"
+                                        >
+                                            <Icon name="arrow-right" className="w-5 h-5" />
+                                        </button>
+                                        <div>
+                                            <div className="flex items-center space-x-2 space-x-reverse">
+                                                <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">همه تراکنش‌ها</h1>
+                                                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/40">
+                                                    {totalCount}
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 font-medium mt-0.5">تاریخچه کامل تراکنش‌های مالی و اقساط</p>
+                                        </div>
+                                    </div>
+
+                                    {(allTxsSearchQuery || allTxsFilterType !== 'all') && (
+                                        <button
+                                            onClick={() => {
+                                                setAllTxsSearchQuery('');
+                                                setAllTxsFilterType('all');
+                                                setAllTxsPage(1);
+                                            }}
+                                            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1.5 rounded-xl border border-indigo-100 dark:border-indigo-800/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-all active:scale-95 shrink-0"
+                                        >
+                                            حذف فیلترها
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Search Bar */}
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                                        <Icon name="search" className="w-4 h-4" />
+                                    </div>
+                                    <input 
+                                        type="text"
+                                        value={allTxsSearchQuery}
+                                        onChange={(e) => {
+                                            setAllTxsSearchQuery(e.target.value);
+                                            setAllTxsPage(1);
+                                        }}
+                                        placeholder="جستجو در عنوان، مخاطب، نام وام، توضیحات یا مبلغ..."
+                                        className="w-full pr-10 pl-10 py-2.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-sm transition-all"
+                                    />
+                                    {allTxsSearchQuery && (
+                                        <button 
+                                            onClick={() => {
+                                                setAllTxsSearchQuery('');
+                                                setAllTxsPage(1);
+                                            }}
+                                            className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                        >
+                                            <Icon name="x" className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Filter Pills */}
+                                <div className="flex items-center space-x-2 space-x-reverse overflow-x-auto pb-1.5 scrollbar-none -mx-1 px-1">
+                                    {filterPills.map(pill => {
+                                        const isActive = allTxsFilterType === pill.id;
+                                        return (
+                                            <button
+                                                key={pill.id}
+                                                onClick={() => {
+                                                    setAllTxsFilterType(pill.id);
+                                                    setAllTxsPage(1);
+                                                }}
+                                                className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 shrink-0 ${
+                                                    isActive 
+                                                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20' 
+                                                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600'
+                                                }`}
+                                            >
+                                                {pill.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Transactions List */}
+                                <div className="space-y-2.5">
+                                    {pagedTxs.map((tx, idx) => (
+                                        <SwipeableTxCard
+                                            key={tx.id || idx}
+                                            tx={tx}
+                                            index={idx}
+                                            totalCount={pagedTxs.length}
+                                            contacts={contacts}
+                                            loans={loans}
+                                            transactions={transactions}
+                                            isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)}
+                                            onEdit={(txItem) => handleTransactionClick(txItem)}
+                                            onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)}
+                                        />
+                                    ))}
+
+                                    {filteredAllTxs.length === 0 && (
+                                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 text-center space-y-3 border border-slate-200/80 dark:border-slate-700/60 shadow-sm my-4">
+                                            <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 dark:text-indigo-400 flex items-center justify-center mx-auto">
+                                                <Icon name="receipt" className="w-7 h-7" />
+                                            </div>
+                                            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">تراکنشی یافت نشد</h3>
+                                            <p className="text-xs text-slate-400 max-w-xs mx-auto">
+                                                {allTxsSearchQuery || allTxsFilterType !== 'all'
+                                                    ? 'با توجه به فیلترها و جستجوی اعمال‌شده موردی یافت نشد.'
+                                                    : 'هنوز هیچ تراکنشی در سیستم ثبت نشده است.'}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Pagination Controls */}
+                                {totalPages > 1 && (
+                                    <div className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-2xl p-2.5 border border-slate-200/80 dark:border-slate-700/60 shadow-sm mt-4">
+                                        <button 
+                                            disabled={currentPage <= 1}
+                                            onClick={() => setAllTxsPage(prev => Math.max(1, prev - 1))}
+                                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 space-x-reverse transition-all ${
+                                                currentPage <= 1 
+                                                    ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed' 
+                                                    : 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 active:scale-95'
+                                            }`}
+                                        >
+                                            <Icon name="chevron-right" className="w-4 h-4" />
+                                            <span>صفحه قبل</span>
+                                        </button>
+
+                                        <div className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                                            صفحه {currentPage} از {totalPages}
+                                        </div>
+
+                                        <button 
+                                            disabled={currentPage >= totalPages}
+                                            onClick={() => setAllTxsPage(prev => Math.min(totalPages, prev + 1))}
+                                            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 space-x-reverse transition-all ${
+                                                currentPage >= totalPages 
+                                                    ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed' 
+                                                    : 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 active:scale-95'
+                                            }`}
+                                        >
+                                            <span>صفحه بعد</span>
+                                            <Icon name="chevron-left" className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    }
                     default:
                         return null;
                 }
@@ -10790,7 +11262,7 @@
 
                                     {/* مخاطب جدید */}
                                     <button 
-                                        onClick={() => closePlusMenu(() => openStackWizard('contact', 'add'))}
+                                        onClick={() => closePlusMenu(() => openStackWizard('contact', 'add', { fromFab: true }))}
                                         className="w-full bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-3 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all">
                                         <div className="w-8.5 h-8.5 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                                             <Icon name="user-plus" className="w-4 h-4" />
@@ -10804,7 +11276,7 @@
                                     {/* طلب / بازپرداخت طلب */}
                                     <div className="grid grid-cols-2 gap-2">
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('demand', 'add'))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('demand', 'add', { fromFab: true }))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                                 <Icon name="arrow-up-right" className="w-4 h-4" />
@@ -10813,7 +11285,7 @@
                                         </button>
 
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('demand_repayment', 'add'))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('demand_repayment', 'add', { fromFab: true }))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-teal-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
                                                 <Icon name="check-circle-2" className="w-4 h-4" />
@@ -10825,7 +11297,7 @@
                                     {/* بدهی / بازپرداخت بدهی */}
                                     <div className="grid grid-cols-2 gap-2">
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('debt', 'add'))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('debt', 'add', { fromFab: true }))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-rose-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
                                                 <Icon name="arrow-down-left" className="w-4 h-4" />
@@ -10834,7 +11306,7 @@
                                         </button>
 
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('debt_repayment', 'add'))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('debt_repayment', 'add', { fromFab: true }))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-amber-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                                                 <Icon name="corner-down-left" className="w-4 h-4" />
@@ -10846,7 +11318,7 @@
                                     {/* وام / پرداخت قسط */}
                                     <div className="grid grid-cols-2 gap-2">
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('loan', 'add'))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('loan', 'add', { fromFab: true }))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                                                 <Icon name="landmark" className="w-4 h-4" />
@@ -10855,7 +11327,7 @@
                                         </button>
 
                                         <button 
-                                            onClick={() => closePlusMenu(() => openStackWizard('installment', 'add'))}
+                                            onClick={() => closePlusMenu(() => openStackWizard('installment', 'add', { fromFab: true }))}
                                             className="bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-purple-400 active:scale-[0.97] transition-all">
                                             <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
                                                 <Icon name="receipt" className="w-4 h-4" />
@@ -11249,8 +11721,17 @@
                                                 const type = exportModalConfig?.type || 'loan';
                                                 const targetData = exportModalConfig?.data || selectedLoan;
                                                 if (type === 'period') {
-                                                    exportPeriodAsExcel(targetData);
-                                                    showToast('خروجی اکسل دوره با موفقیت دانلود شد');
+                                                    const periodContact = contacts.find(c => c.id === targetData?.contactId) || {
+                                                        firstName: targetData?.contactName || 'مخاطب',
+                                                        lastName: '',
+                                                        phone: targetData?.phone || ''
+                                                    };
+                                                    let fullPeriod = { ...targetData };
+                                                    if (!fullPeriod.transactions || fullPeriod.transactions.length === 0) {
+                                                        fullPeriod.transactions = transactions.filter(t => String(t.periodId) === String(targetData?.id));
+                                                    }
+                                                    exportPeriodAsExcel(fullPeriod, periodContact);
+                                                    showToast('خروجی اکسل با موفقیت دانلود شد');
                                                 } else {
                                                     exportLoanToCSV(targetData, transactions);
                                                     showToast('خروجی اکسل وام با موفقیت دانلود شد');
@@ -11276,8 +11757,17 @@
                                                 const type = exportModalConfig?.type || 'loan';
                                                 const targetData = exportModalConfig?.data || selectedLoan;
                                                 if (type === 'period') {
-                                                    exportPeriodAsPNG(targetData);
-                                                    showToast('خروجی تصویر باکیفیت دوره با موفقیت دانلود شد');
+                                                    const periodContact = contacts.find(c => c.id === targetData?.contactId) || {
+                                                        firstName: targetData?.contactName || 'مخاطب',
+                                                        lastName: '',
+                                                        phone: targetData?.phone || ''
+                                                    };
+                                                    let fullPeriod = { ...targetData };
+                                                    if (!fullPeriod.transactions || fullPeriod.transactions.length === 0) {
+                                                        fullPeriod.transactions = transactions.filter(t => String(t.periodId) === String(targetData?.id));
+                                                    }
+                                                    exportPeriodAsPNG(fullPeriod, periodContact);
+                                                    showToast('خروجی تصویر باکیفیت با موفقیت دانلود شد');
                                                 } else {
                                                     exportLoanAsPNG(targetData, transactions);
                                                     showToast('خروجی تصویر باکیفیت وام با موفقیت دانلود شد');
@@ -11941,6 +12431,51 @@
                                     </div>
                                 </motion.div>
                             </div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Global Undo Snackbar */}
+                    <AnimatePresence>
+                        {undoState && (
+                            <motion.div
+                                key="undo-snackbar"
+                                initial={{ y: 50, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: 50, opacity: 0 }}
+                                drag="x"
+                                dragConstraints={{ left: -100, right: 100 }}
+                                dragElastic={0.2}
+                                onDragEnd={(e, { offset, velocity }) => {
+                                    if (Math.abs(offset.x) > 100 || Math.abs(velocity.x) > 500) {
+                                        setUndoState(null);
+                                    }
+                                }}
+                                className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+4.5rem)] left-0 right-0 z-[100] px-4 pointer-events-none flex justify-center"
+                            >
+                                <div className="w-full max-w-sm bg-slate-900 dark:bg-slate-800 text-white shadow-xl shadow-slate-900/20 dark:shadow-black/40 rounded-2xl p-2.5 flex items-center justify-between pointer-events-auto border border-slate-700 dark:border-slate-600" dir="rtl">
+                                    <div className="flex items-center gap-3 overflow-hidden pl-2">
+                                        <Icon name="check-circle" className="w-5 h-5 shrink-0 text-emerald-400" />
+                                        <span className="text-xs sm:text-sm font-medium text-slate-100 truncate pb-0.5">
+                                            {undoState.message}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0 mr-2">
+                                        <button 
+                                            onClick={handleUndo}
+                                            className="px-3 py-1.5 rounded-xl bg-indigo-500/20 text-indigo-300 dark:text-indigo-400 hover:bg-indigo-500/30 active:scale-95 transition-all font-bold text-xs"
+                                        >
+                                            بازگردانی
+                                        </button>
+                                        <div className="w-[1px] h-4 bg-slate-700 mx-1 shrink-0"></div>
+                                        <button 
+                                            onClick={() => setUndoState(null)}
+                                            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors active:scale-95 shrink-0"
+                                        >
+                                            <Icon name="x" className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
                         )}
                     </AnimatePresence>
 
