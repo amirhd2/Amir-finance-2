@@ -1,21 +1,35 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.2.6",
-  "buildNumber": 400,
-  "releaseDate": "2026-08-24",
+  "installedVersion": "3.2.7",
+  "buildNumber": 421,
+  "releaseDate": "2026-08-26",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.2.6",
-  "latestBuild": 400,
+  "latestVersion": "3.2.7",
+  "latestBuild": 421,
   "isUpdateAvailable": false,
   "history": [
     {
+      "version": "3.2.7",
+      "buildNumber": 421,
+      "releaseDate": "2026-08-26",
+      "releaseChannel": "Stable",
+      "commitHash": "v327b421",
+      "commitMessage": "feat: implement corner micro-badge and installment counter inside icon, sync naming in all transactions, release v3.2.6",
+      "changes": [
+        "حذف برچسب‌های کپسولی فشرده‌کننده از خط اول و جایگزینی با نشانگر گوشه‌ای هوشمند (Corner Micro-Badge)",
+        "نمایش شماره قسط وام مستقیماً درون باکس مربعی آیکون (Number-Inside-Box)",
+        "همگام‌سازی کامل شماره اقساط و نام‌گذاری ۳ خطی در صفحه همه تراکنش‌ها دقیقا مطابق صفحه اختصاصی وام",
+        "انتشار رسمی نسخه 3.2.6"
+      ]
+    },
+    {
       "version": "3.2.6",
-      "buildNumber": 400,
+      "buildNumber": 402,
       "releaseDate": "2026-08-24",
       "releaseChannel": "Stable",
-      "commitHash": "v326b400",
+      "commitHash": "v326b402",
       "commitMessage": "feat: implement corner micro-badge and installment counter inside icon, sync naming in all transactions, release v3.2.6",
       "changes": [
         "حذف برچسب‌های کپسولی فشرده‌کننده از خط اول و جایگزینی با نشانگر گوشه‌ای هوشمند (Corner Micro-Badge)",

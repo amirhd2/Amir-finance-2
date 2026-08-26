@@ -89,6 +89,17 @@ function syncPublicFiles() {
   if (fs.existsSync(vendorSrc)) {
     fs.cpSync(vendorSrc, vendorDest, { recursive: true });
   }
+
+  // Copy src/assets folder recursively if exists
+  const srcAssets = path.join(process.cwd(), 'src', 'assets');
+  if (fs.existsSync(srcAssets)) {
+    fs.cpSync(srcAssets, path.join(publicDir, 'src', 'assets'), { recursive: true });
+    fs.cpSync(srcAssets, path.join(publicDir, 'assets'), { recursive: true });
+    const fontsSrc = path.join(srcAssets, 'fonts');
+    if (fs.existsSync(fontsSrc)) {
+      fs.cpSync(fontsSrc, path.join(publicDir, 'fonts'), { recursive: true });
+    }
+  }
 }
 
 function compileApp() {

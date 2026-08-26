@@ -313,6 +313,12 @@ const parseJalaliDateStr = dateStr => {
   }
   return defaultDate;
 };
+let globalNumberFormat = 'latin';
+try {
+  if (typeof window !== 'undefined') {
+    globalNumberFormat = localStorage.getItem('amir_fin_num_format') || 'latin';
+  }
+} catch (e) {}
 const toPersianDigits = n => {
   if (n === undefined || n === null) return '';
   const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
@@ -321,6 +327,23 @@ const toPersianDigits = n => {
 const toEnglishDigits = str => {
   if (str === null || str === undefined) return '';
   return String(str).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+};
+const toAppDigits = n => {
+  if (n === undefined || n === null) return '';
+  if (globalNumberFormat === 'persian') {
+    return toPersianDigits(n);
+  }
+  return toEnglishDigits(String(n));
+};
+const formatAppNumber = val => {
+  if (val === null || val === undefined || val === '') return '';
+  const strVal = String(val);
+  const isNegative = strVal.startsWith('-') || strVal.startsWith('−');
+  const clean = parseRawNumber(strVal);
+  if (!clean && clean !== '0' && clean !== 0) return '';
+  const formatted = Number(clean).toLocaleString('en-US');
+  const resultWithDigits = globalNumberFormat === 'persian' ? toPersianDigits(formatted) : formatted;
+  return isNegative ? `-${resultWithDigits}` : resultWithDigits;
 };
 const parseRawNumber = val => {
   if (val === null || val === undefined) return '';
@@ -345,8 +368,9 @@ const parseRawDecimal = (val, allowNegative = false) => {
 const formatWithCommas = val => {
   if (val === null || val === undefined || val === '') return '';
   const clean = parseRawNumber(val);
-  if (!clean) return '';
-  return Number(clean).toLocaleString('en-US');
+  if (!clean && clean !== '0' && clean !== 0) return '';
+  const formatted = Number(clean).toLocaleString('en-US');
+  return globalNumberFormat === 'persian' ? toPersianDigits(formatted) : formatted;
 };
 const formatCardNumber = val => {
   if (!val) return '';
@@ -420,10 +444,10 @@ const formatDateToNumericJalali = dateStr => {
     const today = getDeviceJalaliDate();
     const m = String(jalaliMonths.indexOf(today.month) + 1).padStart(2, '0');
     const d = String(today.day).padStart(2, '0');
-    return `${today.year}/${m}/${d}`;
+    return `${toAppDigits(today.year)}/${toAppDigits(m)}/${toAppDigits(d)}`;
   }
   const parsed = parseJalaliDateStr(dateStr);
-  if (!parsed || !parsed.year) return dateStr;
+  if (!parsed || !parsed.year) return toAppDigits(dateStr);
   let monthNum = 1;
   if (typeof parsed.month === 'string' && jalaliMonths.includes(parsed.month)) {
     monthNum = jalaliMonths.indexOf(parsed.month) + 1;
@@ -433,7 +457,7 @@ const formatDateToNumericJalali = dateStr => {
   const y = String(parsed.year);
   const m = String(monthNum).padStart(2, '0');
   const d = String(parsed.day).padStart(2, '0');
-  return `${y}/${m}/${d}`;
+  return `${toAppDigits(y)}/${toAppDigits(m)}/${toAppDigits(d)}`;
 };
 const numToPersianWords = num => {
   if (num === null || num === undefined || num === '') return '';
@@ -520,7 +544,7 @@ const getInstallmentDueDate = (loan, instNum) => {
   const targetMonthName = jalaliMonths[targetMonthIdx];
   const maxDays = getJalaliDaysInMonth(targetMonthIdx + 1, targetYear);
   const targetDay = Math.min(dueDay, maxDays);
-  const dateStr = `${targetDay} ${targetMonthName} ${targetYear}`;
+  const dateStr = `${toAppDigits(targetDay)} ${targetMonthName} ${toAppDigits(targetYear)}`;
   const daysLeft = getDaysDiffFromToday(targetYear, targetMonthIdx + 1, targetDay);
   return {
     dateStr,
@@ -637,12 +661,12 @@ const exportLoanAsPNG = (loan, txList) => {
 
     // Title & Info
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 22px Tahoma, sans-serif';
+    ctx.font = 'bold 22px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText(`صورت‌حساب پرونده وام: ${loan.title || ''}`, width - 35, 48);
     ctx.fillStyle = '#64748b';
-    ctx.font = '13px Tahoma, sans-serif';
-    ctx.fillText(`نام مخاطب / طرف حساب: ${loan.contactName || ''}    •    شماره تماس: ${loan.phone || '-'}`, width - 35, 75);
+    ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
+    ctx.fillText(`نام مخاطب / طرف حساب: ${loan.contactName || ''}    •    شماره تماس: ${loan.phone ? toAppDigits(loan.phone) : '-'}`, width - 35, 75);
 
     // Card background
     ctx.fillStyle = '#f8fafc';
@@ -651,23 +675,23 @@ const exportLoanAsPNG = (loan, txList) => {
     ctx.strokeStyle = '#cbd5e1';
     ctx.stroke();
     ctx.fillStyle = '#334155';
-    ctx.font = '13px Tahoma, sans-serif';
+    ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
 
     // Row 1
-    ctx.fillText(`اصل مبلغ وام: ${(loan.principalAmount || 0).toLocaleString()} تومان`, width - 60, 125);
-    ctx.fillText(`پرداختی تا امروز: ${(loan.paidAmount || 0).toLocaleString()} تومان`, width / 2 - 20, 125);
+    ctx.fillText(`اصل مبلغ وام: ${formatAppNumber(loan.principalAmount || 0)} تومان`, width - 60, 125);
+    ctx.fillText(`پرداختی تا امروز: ${formatAppNumber(loan.paidAmount || 0)} تومان`, width / 2 - 20, 125);
 
     // Row 2
-    ctx.fillText(`مبلغ کل بازپرداخت: ${(loan.totalRepayment || 0).toLocaleString()} تومان`, width - 60, 158);
-    ctx.fillText(`مبلغ باقی‌مانده: ${(loan.remainingAmount || 0).toLocaleString()} تومان`, width / 2 - 20, 158);
+    ctx.fillText(`مبلغ کل بازپرداخت: ${formatAppNumber(loan.totalRepayment || 0)} تومان`, width - 60, 158);
+    ctx.fillText(`مبلغ باقی‌مانده: ${formatAppNumber(loan.remainingAmount || 0)} تومان`, width / 2 - 20, 158);
 
     // Row 3
-    ctx.fillText(`موعد اقساط: روز ${loan.dueDayOfMonth || 1}ام هر ماه`, width - 60, 190);
-    ctx.fillText(`اقساط پرداخت‌شده: ${paidInst} از ${totalInst} قسط`, width / 2 - 20, 190);
+    ctx.fillText(`موعد اقساط: روز ${toAppDigits(loan.dueDayOfMonth || 1)}ام هر ماه`, width - 60, 190);
+    ctx.fillText(`اقساط پرداخت‌شده: ${toAppDigits(paidInst)} از ${toAppDigits(totalInst)} قسط`, width / 2 - 20, 190);
 
     // Section header
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 15px Tahoma, sans-serif';
+    ctx.font = 'bold 15px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.fillText('ریز سوابق پرداخت اقساط', width - 35, 242);
 
     // Table Header
@@ -675,7 +699,7 @@ const exportLoanAsPNG = (loan, txList) => {
     ctx.fillStyle = '#4f46e5';
     ctx.fillRect(35, tableTop, width - 70, 38);
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 12px Tahoma, sans-serif';
+    ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.fillText('ردیف', width - 60, tableTop + 24);
     ctx.fillText('عنوان / بابت', width - 140, tableTop + 24);
     ctx.fillText('تاریخ پرداخت', width - 420, tableTop + 24);
@@ -685,7 +709,7 @@ const exportLoanAsPNG = (loan, txList) => {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(35, currentY, width - 70, 44);
       ctx.fillStyle = '#94a3b8';
-      ctx.font = '13px Tahoma, sans-serif';
+      ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
       ctx.fillText('هیچ قسطی تاکنون برای این وام ثبت نشده است', width / 2 + 100, currentY + 28);
       currentY += 44;
     } else {
@@ -695,13 +719,13 @@ const exportLoanAsPNG = (loan, txList) => {
         ctx.strokeStyle = '#f1f5f9';
         ctx.strokeRect(35, currentY, width - 70, rowHeight);
         ctx.fillStyle = '#334155';
-        ctx.font = '12px Tahoma, sans-serif';
-        ctx.fillText(String(idx + 1), width - 60, currentY + 26);
+        ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        ctx.fillText(String(toAppDigits(idx + 1)), width - 60, currentY + 26);
         ctx.fillText(tx.title || 'پرداخت قسط', width - 140, currentY + 26);
         ctx.fillText(formatDateToNumericJalali(tx.dateStr), width - 420, currentY + 26);
         ctx.fillStyle = '#16a34a';
-        ctx.font = 'bold 12px Tahoma, sans-serif';
-        ctx.fillText(Number(tx.amount || 0).toLocaleString(), width - 620, currentY + 26);
+        ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        ctx.fillText(formatAppNumber(tx.amount || 0), width - 620, currentY + 26);
         currentY += rowHeight;
       });
     }
@@ -710,7 +734,7 @@ const exportLoanAsPNG = (loan, txList) => {
     const nowJalali = getDeviceJalaliDate();
     const reportDateStr = formatDateToNumericJalali(`${nowJalali.day} ${nowJalali.month} ${nowJalali.year}`);
     ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px Tahoma, sans-serif';
+    ctx.font = '11px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.fillText(`تاریخ صدور گزارش: ${reportDateStr}    •    برنامه مدیریت مالی شخصی`, width - 35, currentY + 30);
     const imageURI = canvas.toDataURL('image/png');
     const link = document.createElement('a');
@@ -753,12 +777,12 @@ const exportPeriodAsPNG = (period, contact) => {
 
     // Title & Info
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 22px Tahoma, sans-serif';
+    ctx.font = 'bold 22px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText(`گزارش پرونده تسویه‌حساب آرشیو شده`, width - 35, 48);
     ctx.fillStyle = '#64748b';
-    ctx.font = '13px Tahoma, sans-serif';
-    ctx.fillText(`طرف حساب: ${contactName}    •    شماره تماس: ${phone}`, width - 35, 75);
+    ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
+    ctx.fillText(`طرف حساب: ${contactName}    •    شماره تماس: ${toAppDigits(phone)}`, width - 35, 75);
 
     // Card background
     ctx.fillStyle = '#f8fafc';
@@ -767,17 +791,17 @@ const exportPeriodAsPNG = (period, contact) => {
     ctx.strokeStyle = '#cbd5e1';
     ctx.stroke();
     ctx.fillStyle = '#334155';
-    ctx.font = '13px Tahoma, sans-serif';
+    ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
     const startStr = formatDateToNumericJalali(period.startDate) || '-';
     const endStr = formatDateToNumericJalali(period.endDate) || '-';
     ctx.fillText(`تاریخ شروع دوره: ${startStr}`, width - 60, 125);
     ctx.fillText(`تاریخ تسویه نهایی: ${endStr}`, width / 2 - 20, 125);
     ctx.fillText(`نوع پرونده: ${isDebt ? 'تسویه بدهی (پرداخت‌شده)' : 'تسویه طلب (دریافت‌شده)'}`, width - 60, 160);
-    ctx.fillText(`مبلغ کل تسویه‌شده: ${Number(period.totalAmount || 0).toLocaleString()} تومان`, width / 2 - 20, 160);
+    ctx.fillText(`مبلغ کل تسویه‌شده: ${formatAppNumber(period.totalAmount || 0)} تومان`, width / 2 - 20, 160);
 
     // Section header
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 15px Tahoma, sans-serif';
+    ctx.font = 'bold 15px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.fillText('ریز تراکنش‌ها و دریافتی/پرداختی‌های این دوره', width - 35, 222);
 
     // Table Header
@@ -785,7 +809,7 @@ const exportPeriodAsPNG = (period, contact) => {
     ctx.fillStyle = isDebt ? '#e11d48' : '#10b981';
     ctx.fillRect(35, tableTop, width - 70, 38);
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 12px Tahoma, sans-serif';
+    ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.fillText('ردیف', width - 60, tableTop + 24);
     ctx.fillText('عنوان تراکنش', width - 140, tableTop + 24);
     ctx.fillText('تاریخ', width - 420, tableTop + 24);
@@ -795,7 +819,7 @@ const exportPeriodAsPNG = (period, contact) => {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(35, currentY, width - 70, 44);
       ctx.fillStyle = '#94a3b8';
-      ctx.font = '13px Tahoma, sans-serif';
+      ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
       ctx.fillText('هیچ تراکنشی در این دوره ثبت نشده است', width / 2 + 100, currentY + 28);
       currentY += 44;
     } else {
@@ -805,13 +829,13 @@ const exportPeriodAsPNG = (period, contact) => {
         ctx.strokeStyle = '#f1f5f9';
         ctx.strokeRect(35, currentY, width - 70, rowHeight);
         ctx.fillStyle = '#334155';
-        ctx.font = '12px Tahoma, sans-serif';
-        ctx.fillText(String(idx + 1), width - 60, currentY + 26);
+        ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        ctx.fillText(String(toAppDigits(idx + 1)), width - 60, currentY + 26);
         ctx.fillText(tx.title || (isDebt ? 'بازپرداخت بدهی' : 'دریافت طلب'), width - 140, currentY + 26);
         ctx.fillText(formatDateToNumericJalali(tx.dateStr), width - 420, currentY + 26);
         ctx.fillStyle = isDebt ? '#e11d48' : '#10b981';
-        ctx.font = 'bold 12px Tahoma, sans-serif';
-        ctx.fillText(Number(Math.abs(tx.amount || 0)).toLocaleString(), width - 620, currentY + 26);
+        ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        ctx.fillText(formatAppNumber(Math.abs(tx.amount || 0)), width - 620, currentY + 26);
         currentY += rowHeight;
       });
     }
@@ -820,7 +844,7 @@ const exportPeriodAsPNG = (period, contact) => {
     const nowJalali = getDeviceJalaliDate();
     const reportDateStr = formatDateToNumericJalali(`${nowJalali.day} ${nowJalali.month} ${nowJalali.year}`);
     ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px Tahoma, sans-serif';
+    ctx.font = '11px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.fillText(`تاریخ صدور گزارش: ${reportDateStr}    •    برنامه مدیریت مالی شخصی`, width - 35, currentY + 30);
     const imageURI = canvas.toDataURL('image/png');
     const link = document.createElement('a');
@@ -915,12 +939,12 @@ const exportLoanAsPDF = (loan, txList) => {
 
                         <div class="card">
                             <div class="grid">
-                                <div class="grid-item"><span class="label">اصل مبلغ وام:</span> <span class="value">${(loan.principalAmount || 0).toLocaleString()} تومان</span></div>
-                                <div class="grid-item"><span class="label">پرداختی تا امروز:</span> <span class="value" style="color:#16a34a">${(loan.paidAmount || 0).toLocaleString()} تومان</span></div>
-                                <div class="grid-item"><span class="label">کل مبلغ بازپرداخت:</span> <span class="value">${(loan.totalRepayment || 0).toLocaleString()} تومان</span></div>
-                                <div class="grid-item"><span class="label">باقی‌مانده:</span> <span class="value" style="color:#ef4444">${(loan.remainingAmount || 0).toLocaleString()} تومان</span></div>
-                                <div class="grid-item"><span class="label">موعد اقساط:</span> <span class="value">روز ${loan.dueDayOfMonth || 1}ام هر ماه</span></div>
-                                <div class="grid-item"><span class="label">تعداد اقساط پرداخت‌شده:</span> <span class="value">${paidInst} از ${totalInst} قسط</span></div>
+                                <div class="grid-item"><span class="label">اصل مبلغ وام:</span> <span class="value">${formatAppNumber(loan.principalAmount || 0)} تومان</span></div>
+                                <div class="grid-item"><span class="label">پرداختی تا امروز:</span> <span class="value" style="color:#16a34a">${formatAppNumber(loan.paidAmount || 0)} تومان</span></div>
+                                <div class="grid-item"><span class="label">کل مبلغ بازپرداخت:</span> <span class="value">${formatAppNumber(loan.totalRepayment || 0)} تومان</span></div>
+                                <div class="grid-item"><span class="label">باقی‌مانده:</span> <span class="value" style="color:#ef4444">${formatAppNumber(loan.remainingAmount || 0)} تومان</span></div>
+                                <div class="grid-item"><span class="label">موعد اقساط:</span> <span class="value">روز ${toAppDigits(loan.dueDayOfMonth || 1)}ام هر ماه</span></div>
+                                <div class="grid-item"><span class="label">تعداد اقساط پرداخت‌شده:</span> <span class="value">${toAppDigits(paidInst)} از ${toAppDigits(totalInst)} قسط</span></div>
                             </div>
                         </div>
 
@@ -939,17 +963,17 @@ const exportLoanAsPDF = (loan, txList) => {
                                     <tr><td colspan="4" style="text-align:center; color:#94a3b8;">هیچ قسطی تاکنون ثبت نشده است</td></tr>
                                 ` : repayments.map((tx, i) => `
                                     <tr>
-                                        <td>${i + 1}</td>
+                                        <td>${toAppDigits(i + 1)}</td>
                                         <td>${tx.title || 'پرداخت قسط'} ${tx.notes ? ' - ' + tx.notes : ''}</td>
-                                        <td>${tx.dateStr || '-'}</td>
-                                        <td class="amount">${Number(tx.amount || 0).toLocaleString()}</td>
+                                        <td>${formatDateToNumericJalali(tx.dateStr) || '-'}</td>
+                                        <td class="amount">${formatAppNumber(tx.amount || 0)}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
                         </table>
 
                         <div class="footer">
-                            تاریخ صدور گزارش: ${nowJalali.day} ${nowJalali.month} ${nowJalali.year}
+                            تاریخ صدور گزارش: ${toAppDigits(nowJalali.day)} ${nowJalali.month} ${toAppDigits(nowJalali.year)}
                         </div>
                         </body></html>`;
     const win = printIframe.contentWindow || printIframe.contentDocument;
@@ -2919,19 +2943,19 @@ function FullJalaliDatePicker({
       length: daysInMonth
     }, (_, i) => ({
       value: i + 1,
-      display: toPersianDigits(i + 1)
+      display: toAppDigits(i + 1)
     }));
   }, [daysInMonth]);
   const monthItems = useMemo(() => {
     return monthNames.map((mName, i) => ({
       value: mName,
-      display: `${mName} - ${toPersianDigits(i + 1)}`
+      display: `${mName} - ${toAppDigits(i + 1)}`
     }));
   }, [monthNames]);
   const yearItems = useMemo(() => {
     return years.map(y => ({
       value: y,
-      display: toPersianDigits(y)
+      display: toAppDigits(y)
     }));
   }, [years]);
   const selectedDayIdx = Math.max(0, Math.min(numericDay - 1, dayItems.length - 1));
@@ -2958,7 +2982,7 @@ function FullJalaliDatePicker({
     className: "text-xs font-medium text-slate-500 dark:text-slate-400"
   }, "\u062A\u0627\u0631\u06CC\u062E \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647:"), /*#__PURE__*/React.createElement("span", {
     className: "text-xs sm:text-sm font-bold text-indigo-600 dark:text-blue-400 tracking-tight"
-  }, toPersianDigits(numericDay), " ", monthStr, " ", toPersianDigits(numericYear))), /*#__PURE__*/React.createElement("button", {
+  }, toAppDigits(numericDay), " ", monthStr, " ", toAppDigits(numericYear))), /*#__PURE__*/React.createElement("button", {
     type: "button",
     onClick: handleToday,
     className: "py-1 px-2.5 bg-indigo-50 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition text-xs font-semibold rounded-xl text-indigo-600 dark:text-slate-200 border border-indigo-200 dark:border-slate-700/50 flex items-center space-x-1 space-x-reverse shrink-0 cursor-pointer"
@@ -3028,7 +3052,7 @@ function IOSWheelPicker({
   const formattedItems = useMemo(() => {
     return items.map(it => ({
       value: it,
-      display: typeof it === 'number' ? toPersianDigits(it) : String(it)
+      display: typeof it === 'number' ? toAppDigits(it) : String(it)
     }));
   }, [items]);
   const selectedIndex = Math.max(0, items.indexOf(selectedValue));
@@ -3477,13 +3501,13 @@ function ActiveArchiveSegmentedControl({
     className: `py-1 px-2 text-center text-xs transition-colors duration-200 cursor-pointer flex items-center justify-center gap-1.5 ${isRightActive ? `font-extrabold ${themeConfig.activeTextColor}` : 'font-medium text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`
   }, /*#__PURE__*/React.createElement("span", null, activeLabel), /*#__PURE__*/React.createElement("span", {
     className: "dir-ltr text-[11px] font-bold"
-  }, "(", toPersianDigits(activeCount), ")")), /*#__PURE__*/React.createElement("button", {
+  }, "(", toAppDigits(activeCount), ")")), /*#__PURE__*/React.createElement("button", {
     type: "button",
     onClick: () => onChange('archived'),
     className: `py-1 px-2 text-center text-xs transition-colors duration-200 cursor-pointer flex items-center justify-center gap-1.5 ${isLeftActive ? `font-extrabold ${themeConfig.activeTextColor}` : 'font-medium text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`
   }, /*#__PURE__*/React.createElement("span", null, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC"), /*#__PURE__*/React.createElement("span", {
     className: "dir-ltr text-[11px] font-bold"
-  }, "(", toPersianDigits(archiveCount), ")"))), /*#__PURE__*/React.createElement("div", {
+  }, "(", toAppDigits(archiveCount), ")"))), /*#__PURE__*/React.createElement("div", {
     className: `absolute bottom-0 h-[2.5px] rounded-full transition-all duration-200 ease-out z-20 ${themeConfig.underlineBg}`,
     style: {
       width: '50%',
@@ -3737,7 +3761,7 @@ function SwipeableTxCard({
       if (!loanName) loanName = 'وام';
       let loanNameClean = loanName.replace(/^وام\s*/, '').trim();
       if (!loanNameClean) loanNameClean = 'بانک';
-      l1 = instNum ? `پرداخت قسط ${instNum} وام ${loanNameClean}` : `پرداخت قسط وام ${loanNameClean}`;
+      l1 = instNum ? `پرداخت قسط ${toAppDigits(instNum)} وام ${loanNameClean}` : `پرداخت قسط وام ${loanNameClean}`;
       let contactInfo = rawContactName.trim();
       if (!contactInfo && targetLoan) {
         if (targetLoan.contactId && Array.isArray(contacts)) {
@@ -3787,7 +3811,7 @@ function SwipeableTxCard({
         microBadgeClass: 'bg-indigo-600 text-white',
         borderAccent: 'border-r-indigo-500 dark:border-r-indigo-400',
         amountClass: 'text-indigo-700 dark:text-indigo-300',
-        sign: '-'
+        sign: ''
       };
     }
     if (type === 'demand') {
@@ -3883,14 +3907,14 @@ function SwipeableTxCard({
     tx: tx,
     isHighlighted: isHighlighted
   }), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center space-x-2.5 sm:space-x-3 space-x-reverse min-w-0 flex-1"
+    className: "flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1"
   }, /*#__PURE__*/React.createElement("div", {
     className: "relative shrink-0"
   }, /*#__PURE__*/React.createElement("div", {
     className: `w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base ${txVisualConfig.iconBg} flex items-center justify-center shadow-xs select-none`
   }, txVisualConfig.isLoan && instNum ? /*#__PURE__*/React.createElement("span", {
     className: "font-extrabold font-mono tracking-tight text-indigo-700 dark:text-indigo-300"
-  }, instNum) : /*#__PURE__*/React.createElement(Icon, {
+  }, toAppDigits(instNum)) : /*#__PURE__*/React.createElement(Icon, {
     name: txVisualConfig.iconName,
     className: "w-5 h-5 sm:w-5.5 sm:h-5.5"
   })), /*#__PURE__*/React.createElement("div", {
@@ -3899,7 +3923,7 @@ function SwipeableTxCard({
     name: txVisualConfig.microBadgeIcon,
     className: "w-2.5 h-2.5 stroke-[3]"
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-1 sm:pl-3 pr-0"
+    className: "min-w-0 flex-1 text-right flex flex-col gap-0.5"
   }, /*#__PURE__*/React.createElement("h3", {
     className: "text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug truncate"
   }, line1), line2 && /*#__PURE__*/React.createElement("div", {
@@ -3909,10 +3933,10 @@ function SwipeableTxCard({
   }, line3))), /*#__PURE__*/React.createElement("div", {
     className: "text-center shrink-0 flex flex-col items-center justify-center min-w-[70px] sm:min-w-[90px] pl-0 sm:pl-1"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `font-black text-sm sm:text-[15px] leading-tight text-center ${txVisualConfig.amountClass} dir-ltr`
+    className: `font-black text-sm sm:text-[15px] leading-tight text-center ${txVisualConfig.amountClass} dir-ltr font-mono font-numeric`
   }, txVisualConfig.sign && /*#__PURE__*/React.createElement("span", {
     className: "ml-0.5 text-xs"
-  }, txVisualConfig.sign), Math.abs(tx.amount).toLocaleString()), /*#__PURE__*/React.createElement("div", {
+  }, txVisualConfig.sign), formatAppNumber(Math.abs(tx.amount))), /*#__PURE__*/React.createElement("div", {
     className: `text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${txVisualConfig.amountClass}`
   }, "\u062A\u0648\u0645\u0627\u0646"), (() => {
     const rawDate = tx.dateStr || tx.date || tx.receiveDate || tx.startDate || tx.createdAt || '';
@@ -4009,6 +4033,801 @@ function StackCardItem({
     className: "flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
   }, /*#__PURE__*/React.createElement("span", null, index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'))));
 }
+function ContactAvatar({
+  contact,
+  id,
+  name,
+  avatar,
+  className = "w-10 h-10 text-xs sm:text-sm",
+  iconClassName = "w-5 h-5"
+}) {
+  const contactAvatar = avatar || contact && contact.avatar;
+  const contactId = id || contact && contact.id || 0;
+  const contactName = name || (contact ? `${contact.firstName || ''} ${contact.lastName || ''}` : '');
+  const bgClass = getAvatarColor(contactId, contactName);
+  if (contactAvatar) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: `rounded-full flex-shrink-0 overflow-hidden shadow-xs border border-white/10 ${className}`
+    }, /*#__PURE__*/React.createElement("img", {
+      src: contactAvatar,
+      alt: contactName,
+      className: "w-full h-full object-cover"
+    }));
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: `rounded-full ${bgClass} flex-shrink-0 flex items-center justify-center text-white font-bold shadow-xs ${className}`
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "user",
+    className: `${iconClassName} text-white/95`
+  }));
+}
+const LOAN_ICON_CATEGORIES = [{
+  id: 'all',
+  label: 'همه'
+}, {
+  id: 'finance',
+  label: 'بانک و مالی'
+}, {
+  id: 'vehicles',
+  label: 'خودرو و نقلیه'
+}, {
+  id: 'housing',
+  label: 'مسکن و املاک'
+}, {
+  id: 'shopping',
+  label: 'کالا و دیجیتال'
+}, {
+  id: 'work',
+  label: 'کار و آموزش'
+}, {
+  id: 'family',
+  label: 'خانواده و سلامت'
+}, {
+  id: 'general',
+  label: 'عمومی و شخصی'
+}];
+const LOAN_ICONS_LIST = [
+// Finance & Bank
+{
+  name: 'landmark',
+  label: 'بانک و موسسه',
+  category: 'finance',
+  keywords: 'بانک موسسه مالی شعبه قرض الحسنه صندوق'
+}, {
+  name: 'banknote',
+  label: 'اسکناس و پول',
+  category: 'finance',
+  keywords: 'اسکناس پول نقد تومان ریال سرمایه'
+}, {
+  name: 'credit-card',
+  label: 'کارت بانکی',
+  category: 'finance',
+  keywords: 'کارت عابربانک حساب بانکی واریز'
+}, {
+  name: 'wallet',
+  label: 'کیف پول',
+  category: 'finance',
+  keywords: 'کیف پول جیب پس انداز موجودی'
+}, {
+  name: 'coins',
+  label: 'سکه‌ها و طلا',
+  category: 'finance',
+  keywords: 'سکه طلا نقره ارز سرمایه گذاری'
+}, {
+  name: 'piggy-bank',
+  label: 'قلک پس‌انداز',
+  category: 'finance',
+  keywords: 'قلک پس انداز اندوخته ذخیره'
+}, {
+  name: 'scale',
+  label: 'ترازوی حساب',
+  category: 'finance',
+  keywords: 'ترازو تعادل عدالت قسط حقوقی'
+}, {
+  name: 'receipt',
+  label: 'فاکتور و رسید',
+  category: 'finance',
+  keywords: 'رسید فاکتور قبض پرداخت بدهی'
+}, {
+  name: 'badge-percent',
+  label: 'سود و کارمزد',
+  category: 'finance',
+  keywords: 'درصد سود کارمزد بهره تخفیف'
+}, {
+  name: 'circle-dollar-sign',
+  label: 'ارز و دلار',
+  category: 'finance',
+  keywords: 'دلار ارز یورو تومان مالی'
+}, {
+  name: 'calculator',
+  label: 'ماشین حساب',
+  category: 'finance',
+  keywords: 'حسابداری ماشین حساب محاسبات قسط'
+}, {
+  name: 'vault',
+  label: 'گاوصندوق',
+  category: 'finance',
+  keywords: 'گاوصندوق امن صندوق امانات طلا'
+}, {
+  name: 'gem',
+  label: 'طلا و جواهرات',
+  category: 'finance',
+  keywords: 'الماس جواهر طلا نگین ارزشمند'
+},
+// Vehicles
+{
+  name: 'car',
+  label: 'خودرو سواری',
+  category: 'vehicles',
+  keywords: 'ماشین خودرو سواری پژو پراید ایرانخودرو سایپا'
+}, {
+  name: 'truck',
+  label: 'کامیون و باربری',
+  category: 'vehicles',
+  keywords: 'کامیون وانت بار تریلی خاور حمل'
+}, {
+  name: 'bus',
+  label: 'اتوبوس و سرویس',
+  category: 'vehicles',
+  keywords: 'اتوبوس مینی بوس ون سرویس مسافرتی'
+}, {
+  name: 'bike',
+  label: 'موتور و دوچرخه',
+  category: 'vehicles',
+  keywords: 'موتور سیکلت دوچرخه موتور اسکوتر'
+}, {
+  name: 'plane',
+  label: 'هواپیما و پرواز',
+  category: 'vehicles',
+  keywords: 'هواپیما پرواز سفر گردشگری بلیط'
+}, {
+  name: 'ship',
+  label: 'کشتی و قایق',
+  category: 'vehicles',
+  keywords: 'کشتی قایق لنج دریایی باربری'
+}, {
+  name: 'fuel',
+  label: 'سوخت و بنزین',
+  category: 'vehicles',
+  keywords: 'بنزین گازوییل گاز پمپ سوخت خودرو'
+}, {
+  name: 'train',
+  label: 'قطار و مترو',
+  category: 'vehicles',
+  keywords: 'قطار ریل مترو مسافرت حمل'
+}, {
+  name: 'gauge',
+  label: 'کیلومتر و سرعت',
+  category: 'vehicles',
+  keywords: 'کیلومتر سرعت سنج فنی تعمیرات'
+},
+// Housing & Real Estate
+{
+  name: 'home',
+  label: 'خانه و مسکن',
+  category: 'housing',
+  keywords: 'خانه منزل مسکن آپارتمان رهن اجاره خرید'
+}, {
+  name: 'building',
+  label: 'ساختمان و برج',
+  category: 'housing',
+  keywords: 'ساختمان برج مجتمع سازمانی تجاری'
+}, {
+  name: 'building-2',
+  label: 'مجتمع مسکونی',
+  category: 'housing',
+  keywords: 'مجتمع شهرک آپارتمان پروژه ساخت'
+}, {
+  name: 'warehouse',
+  label: 'انبار و سوله',
+  category: 'housing',
+  keywords: 'انبار سوله کارگاه ذخیره سازی کارخانه'
+}, {
+  name: 'key',
+  label: 'کلید ملک',
+  category: 'housing',
+  keywords: 'کلید خرید خانه رهن تحویل سند'
+}, {
+  name: 'hammer',
+  label: 'ساخت و بازسازی',
+  category: 'housing',
+  keywords: 'چکش تعمیرات بازسازی ساخت نوسازی'
+}, {
+  name: 'wrench',
+  label: 'ابزار و تاسیسات',
+  category: 'housing',
+  keywords: 'آچار تاسیسات لوله کشی ابزار فنی'
+}, {
+  name: 'trees',
+  label: 'باغ و ویلا',
+  category: 'housing',
+  keywords: 'باغ ویلا زمین کشاورزی باغچه شمال'
+}, {
+  name: 'bed',
+  label: 'سرویس خواب',
+  category: 'housing',
+  keywords: 'تخت خواب اتاق مبلمان جهیزیه'
+}, {
+  name: 'bath',
+  label: 'تجهیزات منزل',
+  category: 'housing',
+  keywords: 'حمام سرویس شیرآلات دکوراسیون'
+},
+// Shopping & Tech
+{
+  name: 'shopping-bag',
+  label: 'خرید و پوشاک',
+  category: 'shopping',
+  keywords: 'خرید لباس بازار فروشگاه کیسه'
+}, {
+  name: 'shopping-cart',
+  label: 'سبد خرید',
+  category: 'shopping',
+  keywords: 'سبد خرید سوپرمارکت سفارش کالا'
+}, {
+  name: 'gift',
+  label: 'هدیه و کادو',
+  category: 'shopping',
+  keywords: 'کادو هدیه جایزه عیدی سورپرایز'
+}, {
+  name: 'tag',
+  label: 'تخفیف و کالا',
+  category: 'shopping',
+  keywords: 'اتیکت قیمت برچسب حراج جنس'
+}, {
+  name: 'smartphone',
+  label: 'موبایل و گوشی',
+  category: 'shopping',
+  keywords: 'گوشی موبایل آیفون سامسونگ تبلت تلفن'
+}, {
+  name: 'laptop',
+  label: 'لپ‌تاپ و رایانه',
+  category: 'shopping',
+  keywords: 'لپ تاپ کامپیوتر سیستم پی سی مک'
+}, {
+  name: 'tv',
+  label: 'تلویزیون و صوتی',
+  category: 'shopping',
+  keywords: 'تلویزیون مانیتور سینما خانگی نمایشگر'
+}, {
+  name: 'camera',
+  label: 'دوربین عکاسی',
+  category: 'shopping',
+  keywords: 'دوربین فیلمبرداری عکاسی لنز آتلیه'
+}, {
+  name: 'watch',
+  label: 'ساعت هوشمند',
+  category: 'shopping',
+  keywords: 'ساعت مچی اکسسوری اپل واچ'
+}, {
+  name: 'shirt',
+  label: 'پوشاک و لباس',
+  category: 'shopping',
+  keywords: 'لباس پیراهن پوشاک مد بوتیک'
+}, {
+  name: 'headphones',
+  label: 'لوازم دیجیتال',
+  category: 'shopping',
+  keywords: 'هدفون هندزفری اسپیکر صوتی موسیقی'
+}, {
+  name: 'package',
+  label: 'بسته و محموله',
+  category: 'shopping',
+  keywords: 'بسته جعبه کارتن پست بار کالا'
+},
+// Work & Education
+{
+  name: 'graduation-cap',
+  label: 'تحصیل و دانشگاه',
+  category: 'work',
+  keywords: 'دانشگاه شهریه دانشجو درس کنکور مدرسه کلاه'
+}, {
+  name: 'book-open',
+  label: 'کتاب و آموزش',
+  category: 'work',
+  keywords: 'کتاب دوره کلاس تدریس جزوه مطالعه'
+}, {
+  name: 'briefcase',
+  label: 'کسب‌وکار و شغل',
+  category: 'work',
+  keywords: 'کیف کار شغل استخدام اداری بیزینس شرکت'
+}, {
+  name: 'award',
+  label: 'پاداش و موفقیت',
+  category: 'work',
+  keywords: 'مدال جایزه رتبه برتر افتخار تقدیر'
+}, {
+  name: 'file-text',
+  label: 'قرارداد و پرونده',
+  category: 'work',
+  keywords: 'قرارداد پرونده مدارک سند برگه چک'
+}, {
+  name: 'folder',
+  label: 'پوشه اسناد',
+  category: 'work',
+  keywords: 'پوشه بایگانی اسناد مدارک بایگانی'
+}, {
+  name: 'printer',
+  label: 'لوازم اداری',
+  category: 'work',
+  keywords: 'پرینتر چاپگر کپی دفتر کار لوازم'
+},
+// Family & Health
+{
+  name: 'heart-pulse',
+  label: 'درمان و سلامت',
+  category: 'family',
+  keywords: 'قلب پزشکی درمان بیمارستان سلامتی دارو عمل جراحی'
+}, {
+  name: 'baby',
+  label: 'فرزند و کودک',
+  category: 'family',
+  keywords: 'نوزاد بچه فرزند سیسمونی زایمان تولد'
+}, {
+  name: 'users',
+  label: 'خانواده و فامیل',
+  category: 'family',
+  keywords: 'خانواده جمع دوستان فامیل دورهمی'
+}, {
+  name: 'user',
+  label: 'شخصی و انفرادی',
+  category: 'family',
+  keywords: 'شخصی فرد مخاطب قرض شخصی فردی'
+}, {
+  name: 'shield-check',
+  label: 'بیمه و ضمانت',
+  category: 'family',
+  keywords: 'بیمه ضمانت گارانتی امنیت سپر'
+}, {
+  name: 'activity',
+  label: 'ورزش و سلامت',
+  category: 'family',
+  keywords: 'ورزش باشگاه سلامت فعالیت چکاپ'
+},
+// General & Lifestyle
+{
+  name: 'sparkles',
+  label: 'ویژه و ستاره‌دار',
+  category: 'general',
+  keywords: 'درخشان ستاره شانس اکسترا خاص ویژه'
+}, {
+  name: 'sun',
+  label: 'فصل و روشنایی',
+  category: 'general',
+  keywords: 'خورشید تابستان تعطیلات روشنایی روز'
+}, {
+  name: 'coffee',
+  label: 'کافه و نوشیدنی',
+  category: 'general',
+  keywords: 'کافه قهوه چای خوراک رستوران مهمانی'
+}, {
+  name: 'utensils',
+  label: 'رستوران و غذا',
+  category: 'general',
+  keywords: 'غذا قاشق چنگال ناهار شام ضیافت'
+}, {
+  name: 'plane-takeoff',
+  label: 'سفر و گردشگری',
+  category: 'general',
+  keywords: 'مسافرت تفریح تور پرواز خارج'
+}, {
+  name: 'compass',
+  label: 'هدف و مسیر',
+  category: 'general',
+  keywords: 'جهت یاب مسیر برنامه ریزی آینده'
+}, {
+  name: 'flame',
+  label: 'اضطراری و فوری',
+  category: 'general',
+  keywords: 'فوری ضروری آتش اورژانسی داغ'
+}, {
+  name: 'trophy',
+  label: 'جام و دستاورد',
+  category: 'general',
+  keywords: 'جام مسابقه پیروزی دستاورد برنده'
+}, {
+  name: 'star',
+  label: 'ستاره طلایی',
+  category: 'general',
+  keywords: 'ستاره برگزیده مهم امتیاز عالی'
+}, {
+  name: 'heart',
+  label: 'ازدواج و جهیزیه',
+  category: 'general',
+  keywords: 'ازدواج عروسی جهیزیه عشق همسر عقد'
+}, {
+  name: 'zap',
+  label: 'برق و انرژی',
+  category: 'general',
+  keywords: 'انرژی رعد برق شتاب فوری سریع'
+}, {
+  name: 'crown',
+  label: 'لوکس و طلایی',
+  category: 'general',
+  keywords: 'تاج پادشاهی لوکس وی آی پی درجه یک'
+}];
+function LoanIconPickerModal({
+  isOpen,
+  selectedIcon = 'landmark',
+  onSelect = () => {},
+  onClose = () => {}
+}) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const filteredIcons = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return LOAN_ICONS_LIST.filter(item => {
+      const matchCategory = selectedCategory === 'all' || item.category === selectedCategory;
+      if (!matchCategory) return false;
+      if (!q) return true;
+      return item.label.toLowerCase().includes(q) || item.keywords.toLowerCase().includes(q) || item.name.toLowerCase().includes(q);
+    });
+  }, [searchQuery, selectedCategory]);
+  return /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/React.createElement(motion.div, {
+    key: "loan-icon-picker-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    key: "loan-icon-picker-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      transformOrigin: "center center"
+    },
+    onClick: e => e.stopPropagation(),
+    className: "w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] p-4 sm:p-5 space-y-3.5 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto shrink-0"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between shrink-0"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-right"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-extrabold text-slate-900 dark:text-white text-base"
+  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0622\u06CC\u06A9\u0648\u0646 \u0648\u0627\u0645"), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-slate-400 mt-0.5"
+  }, "\u06CC\u06A9 \u0622\u06CC\u06A9\u0648\u0646 \u0645\u062A\u0646\u0627\u0633\u0628 \u0628\u0627 \u0645\u0648\u0636\u0648\u0639 \u067E\u0631\u0648\u0646\u062F\u0647 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F")), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: onClose,
+    className: "w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center transition-colors"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "x",
+    className: "w-4 h-4"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "relative shrink-0"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "search",
+    className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    placeholder: "\u062C\u0633\u062A\u062C\u0648\u06CC \u0622\u06CC\u06A9\u0648\u0646 (\u0645\u062B\u0644\u0627\u064B: \u062E\u0648\u062F\u0631\u0648\u060C \u0645\u0633\u06A9\u0646\u060C \u0637\u0644\u0627\u060C \u0633\u0641\u0631)...",
+    value: searchQuery,
+    onChange: e => setSearchQuery(e.target.value),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-8 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  }), searchQuery && /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setSearchQuery(''),
+    className: "absolute left-3 top-3 text-slate-400 hover:text-slate-600"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "x",
+    className: "w-3.5 h-3.5"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 overflow-x-auto pb-1 hide-scrollbar shrink-0 text-xs"
+  }, LOAN_ICON_CATEGORIES.map(cat => {
+    const isActive = selectedCategory === cat.id;
+    return /*#__PURE__*/React.createElement("button", {
+      key: cat.id,
+      type: "button",
+      onClick: () => setSelectedCategory(cat.id),
+      className: `px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all cursor-pointer ${isActive ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`
+    }, cat.label);
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar min-h-[220px] max-h-[320px] p-1"
+  }, filteredIcons.length > 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-4 sm:grid-cols-5 gap-2.5"
+  }, filteredIcons.map(item => {
+    const isSelected = selectedIcon === item.name;
+    return /*#__PURE__*/React.createElement("button", {
+      key: item.name,
+      type: "button",
+      onClick: () => onSelect(item.name),
+      className: `flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all cursor-pointer group active:scale-95 ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-500 dark:border-indigo-500 ring-2 ring-indigo-500/30 text-indigo-600 dark:text-indigo-300 shadow-xs' : 'bg-[#F4F7FC]/70 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50/40'}`
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mb-1.5 transition-transform group-hover:scale-110"
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: item.name,
+      className: "w-6 h-6"
+    })), /*#__PURE__*/React.createElement("span", {
+      className: "text-[10px] font-bold truncate max-w-full text-center leading-tight"
+    }, item.label));
+  })) : /*#__PURE__*/React.createElement("div", {
+    className: "text-center py-10 text-xs text-slate-400"
+  }, "\u0622\u06CC\u06A9\u0648\u0646\u06CC \u0628\u0627 \u0627\u06CC\u0646 \u0645\u0634\u062E\u0635\u0627\u062A \u06CC\u0627\u0641\u062A \u0646\u0634\u062F")))));
+}
+function ContactImageCropperModal({
+  isOpen,
+  imageSrc,
+  onConfirm = () => {},
+  onCancel = () => {}
+}) {
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({
+    x: 0,
+    y: 0
+  });
+  const [rotation, setRotation] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef({
+    x: 0,
+    y: 0
+  });
+  const panStartRef = useRef({
+    x: 0,
+    y: 0
+  });
+  const imgRef = useRef(null);
+  useEffect(() => {
+    if (isOpen) {
+      setZoom(1);
+      setPan({
+        x: 0,
+        y: 0
+      });
+      setRotation(0);
+    }
+  }, [isOpen, imageSrc]);
+  const handleMouseDown = e => {
+    e.preventDefault();
+    setIsDragging(true);
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY
+    };
+    panStartRef.current = {
+      ...pan
+    };
+  };
+  const handleMouseMove = e => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartRef.current.x;
+    const dy = e.clientY - dragStartRef.current.y;
+    setPan({
+      x: panStartRef.current.x + dx,
+      y: panStartRef.current.y + dy
+    });
+  };
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+  const handleTouchStart = e => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      dragStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      };
+      panStartRef.current = {
+        ...pan
+      };
+    }
+  };
+  const handleTouchMove = e => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - dragStartRef.current.x;
+    const dy = e.touches[0].clientY - dragStartRef.current.y;
+    setPan({
+      x: panStartRef.current.x + dx,
+      y: panStartRef.current.y + dy
+    });
+  };
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+  const handleConfirmCrop = () => {
+    if (!imgRef.current) return;
+    const canvas = document.createElement('canvas');
+    const size = 320;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, size, size);
+    ctx.save();
+
+    // Center point
+    ctx.translate(size / 2, size / 2);
+    ctx.rotate(rotation * Math.PI / 180);
+    ctx.scale(zoom, zoom);
+    const img = imgRef.current;
+    const aspect = (img.naturalWidth || 1) / (img.naturalHeight || 1);
+    let drawW = size;
+    let drawH = size;
+    if (aspect >= 1) {
+      drawW = size * aspect;
+    } else {
+      drawH = size / aspect;
+    }
+
+    // Viewport size in preview is 240px
+    const scaleFactor = size / 240;
+    ctx.drawImage(img, -drawW / 2 + pan.x * scaleFactor, -drawH / 2 + pan.y * scaleFactor, drawW, drawH);
+    ctx.restore();
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    onConfirm(dataUrl);
+  };
+  return /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/React.createElement(motion.div, {
+    key: "contact-image-cropper-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4",
+    onClick: onCancel
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    key: "contact-image-cropper-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      transformOrigin: "center center"
+    },
+    onClick: e => e.stopPropagation(),
+    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", {
+    className: "font-extrabold text-slate-900 dark:text-white text-base"
+  }, "\u062A\u0646\u0638\u06CC\u0645 \u0648 \u0628\u0631\u0634 \u062A\u0635\u0648\u06CC\u0631 \u0645\u062E\u0627\u0637\u0628"), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-slate-400 mt-0.5"
+  }, "\u062A\u0635\u0648\u06CC\u0631 \u0631\u0627 \u062D\u0631\u06A9\u062A \u062F\u0627\u062F\u0647 \u0648 \u0628\u0627 \u0627\u0646\u062F\u0627\u0632\u0647 \u062F\u0644\u062E\u0648\u0627\u0647 \u062A\u0646\u0638\u06CC\u0645 \u06A9\u0646\u06CC\u062F")), /*#__PURE__*/React.createElement("div", {
+    className: "relative w-60 h-60 mx-auto rounded-2xl bg-slate-950 overflow-hidden cursor-grab active:cursor-grabbing border border-slate-700 select-none shadow-inner",
+    onMouseDown: handleMouseDown,
+    onMouseMove: handleMouseMove,
+    onMouseUp: handleMouseUp,
+    onMouseLeave: handleMouseUp,
+    onTouchStart: handleTouchStart,
+    onTouchMove: handleTouchMove,
+    onTouchEnd: handleTouchEnd
+  }, imageSrc && /*#__PURE__*/React.createElement("img", {
+    ref: imgRef,
+    src: imageSrc,
+    alt: "Crop target",
+    draggable: false,
+    style: {
+      transform: `translate(${pan.x}px, ${pan.y}px) rotate(${rotation}deg) scale(${zoom})`,
+      transformOrigin: 'center center',
+      transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+    },
+    className: "w-full h-full object-contain pointer-events-none"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "absolute inset-0 pointer-events-none flex items-center justify-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-48 h-48 rounded-full border-2 border-white/80 border-dashed shadow-[0_0_0_9999px_rgba(15,23,42,0.65)] ring-1 ring-indigo-500/50"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-2.5 pt-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3 px-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setZoom(z => Math.max(0.6, z - 0.15)),
+    className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 active:scale-95 shrink-0",
+    title: "\u06A9\u0648\u0686\u06A9\u200C\u0646\u0645\u0627\u06CC\u06CC"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "minus",
+    className: "w-4 h-4"
+  })), /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    min: "0.6",
+    max: "3.5",
+    step: "0.05",
+    value: zoom,
+    onChange: e => setZoom(parseFloat(e.target.value)),
+    className: "flex-1 accent-indigo-600 cursor-pointer"
+  }), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setZoom(z => Math.min(3.5, z + 0.15)),
+    className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 active:scale-95 shrink-0",
+    title: "\u0628\u0632\u0631\u06AF\u200C\u0646\u0645\u0627\u06CC\u06CC"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "plus",
+    className: "w-4 h-4"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-center gap-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setRotation(r => (r + 90) % 360),
+    className: "py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "rotate-cw",
+    className: "w-3.5 h-3.5"
+  }), /*#__PURE__*/React.createElement("span", null, "\u0686\u0631\u062E\u0634 \u06F9\u06F0\xB0")), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => {
+      setZoom(1);
+      setPan({
+        x: 0,
+        y: 0
+      });
+      setRotation(0);
+    },
+    className: "py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "rotate-ccw",
+    className: "w-3.5 h-3.5"
+  }), /*#__PURE__*/React.createElement("span", null, "\u062A\u0646\u0638\u06CC\u0645 \u0645\u062C\u062F\u062F")))), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 pt-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: onCancel,
+    className: "flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all active:scale-95"
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641"), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: handleConfirmCrop,
+    className: "flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "check",
+    className: "w-4 h-4"
+  }), /*#__PURE__*/React.createElement("span", null, "\u062A\u0627\u06CC\u06CC\u062F \u0648 \u0630\u062E\u06CC\u0631\u0647 \u062A\u0635\u0648\u06CC\u0631"))))));
+}
+function LoanIconSelectorModal({
+  isOpen,
+  onClose,
+  onSelect,
+  selectedIcon
+}) {
+  const loanIconsList = ['landmark', 'home', 'car', 'shopping-bag', 'smartphone', 'briefcase', 'heart', 'star', 'credit-card', 'dollar-sign', 'gift', 'award', 'monitor', 'camera', 'headphones', 'book', 'plane', 'truck', 'tool', 'zap', 'building', 'wallet', 'piggy-bank', 'graduation-cap', 'utensils', 'music', 'video', 'watch'];
+  return /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/React.createElement(motion.div, {
+    key: "loan-icon-selector-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    key: "loan-icon-selector-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    onClick: e => e.stopPropagation(),
+    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-extrabold text-slate-900 dark:text-white text-base"
+  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0622\u06CC\u06A9\u0648\u0646 \u0648\u0627\u0645"), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-slate-400 mt-0.5"
+  }, "\u06CC\u06A9 \u0622\u06CC\u06A9\u0648\u0646 \u0645\u0631\u062A\u0628\u0637 \u0628\u0627 \u0645\u0648\u0636\u0648\u0639 \u0648\u0627\u0645 \u062E\u0648\u062F \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F")), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-4 sm:grid-cols-5 gap-3 max-h-64 overflow-y-auto p-1 hide-scrollbar"
+  }, loanIconsList.map(icon => /*#__PURE__*/React.createElement("button", {
+    key: icon,
+    type: "button",
+    onClick: () => {
+      onSelect(icon);
+      onClose();
+    },
+    className: `w-full aspect-square rounded-2xl flex items-center justify-center transition-all ${selectedIcon === icon ? 'bg-indigo-600 text-white shadow-md scale-105' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:scale-105 border border-slate-200 dark:border-slate-700/50'}`
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: icon,
+    className: "w-6 h-6"
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "pt-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: onClose,
+    className: "w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all active:scale-95"
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641")))));
+}
 function ContactSelectorCard({
   contacts = [],
   selectedContactId,
@@ -4044,13 +4863,15 @@ function ContactSelectorCard({
       className: "bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-500 rounded-2xl p-3.5 flex items-center justify-between shadow-xs"
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex items-center space-x-3 space-x-reverse"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: `w-10 h-10 rounded-full ${getAvatarColor(selectedC.id, selectedC.firstName + selectedC.lastName)} text-white font-bold text-sm flex items-center justify-center shadow-xs`
-    }, selectedC.firstName.charAt(0)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement(ContactAvatar, {
+      contact: selectedC,
+      className: "w-10 h-10",
+      iconClassName: "w-5 h-5"
+    }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       className: "text-xs font-bold text-indigo-950 dark:text-indigo-100"
     }, selectedC.firstName, " ", selectedC.lastName), /*#__PURE__*/React.createElement("div", {
       className: "text-[10px] text-indigo-600 dark:text-indigo-300 font-mono"
-    }, selectedC.phone || 'بدون شماره تماس'))), /*#__PURE__*/React.createElement("button", {
+    }, selectedC.phone ? toAppDigits(selectedC.phone) : 'بدون شماره تماس'))), /*#__PURE__*/React.createElement("button", {
       type: "button",
       onClick: () => setIsExpanded(true),
       className: "text-xs font-bold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-indigo-900/80 px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 active:scale-95 transition-all"
@@ -4084,13 +4905,15 @@ function ContactSelectorCard({
       className: `p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 dark:border-indigo-600 font-bold text-indigo-700 dark:text-indigo-300' : 'bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300'}`
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex items-center space-x-2.5 space-x-reverse"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: `w-8 h-8 rounded-full ${getAvatarColor(c.id, c.firstName + c.lastName)} text-white font-bold text-xs flex items-center justify-center`
-    }, c.firstName.charAt(0)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement(ContactAvatar, {
+      contact: c,
+      className: "w-8 h-8",
+      iconClassName: "w-4 h-4"
+    }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       className: "text-xs"
     }, c.firstName, " ", c.lastName), /*#__PURE__*/React.createElement("div", {
       className: "text-[10px] text-slate-400"
-    }, c.phone))), isSelected && /*#__PURE__*/React.createElement(Icon, {
+    }, c.phone ? toAppDigits(c.phone) : ''))), isSelected && /*#__PURE__*/React.createElement(Icon, {
       name: "check-circle-2",
       className: "w-5 h-5 text-indigo-600 dark:text-indigo-400"
     }));
@@ -4161,8 +4984,8 @@ function LoanSelectorCard({
         }
       }
     }
-    const nextDueDateFormatted = nextDueDate ? `${nextDueDate.year}/${String(monthNum).padStart(2, '0')}/${String(nextDueDate.day).padStart(2, '0')}` : '-';
-    const instAmountFormatted = Number(selectedLoanObj.installmentAmount || 0).toLocaleString();
+    const nextDueDateFormatted = nextDueDate ? `${toAppDigits(nextDueDate.year)}/${toAppDigits(String(monthNum).padStart(2, '0'))}/${toAppDigits(String(nextDueDate.day).padStart(2, '0'))}` : '-';
+    const instAmountFormatted = formatAppNumber(selectedLoanObj.installmentAmount || 0);
     const editingTx = editingTxId ? transactions.find(t => t.id === editingTxId) : null;
     const isEditingMode = wizardMode === 'edit' || !!editingTx;
     let displayInstNum = nextInstNum;
@@ -4170,8 +4993,8 @@ function LoanSelectorCard({
     let displayAmount = instAmountFormatted;
     if (isEditingMode && editingTx) {
       displayInstNum = getInstallmentNumberForTx(editingTx, repaymentTxs);
-      displayDateStr = formatDateToNumericJalali(editingTx.dateStr) || editingTx.dateStr;
-      displayAmount = Number(editingTx.amount || 0).toLocaleString();
+      displayDateStr = formatDateToNumericJalali(editingTx.dateStr) || toAppDigits(editingTx.dateStr);
+      displayAmount = formatAppNumber(editingTx.amount || 0);
     }
     return /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
@@ -4195,10 +5018,10 @@ function LoanSelectorCard({
     }, /*#__PURE__*/React.createElement("span", {
       className: "text-[10px] text-indigo-100 font-bold"
     }, isEditingMode ? 'ویرایش قسط' : 'قسط شماره'), /*#__PURE__*/React.createElement("span", {
-      className: "text-3xl font-black tracking-tight leading-none my-1 text-white"
-    }, displayInstNum), /*#__PURE__*/React.createElement("span", {
+      className: "text-3xl font-black tracking-tight leading-none my-1 text-white font-mono"
+    }, toAppDigits(displayInstNum)), /*#__PURE__*/React.createElement("span", {
       className: "text-[11px] text-indigo-200 font-bold"
-    }, "\u0627\u0632 ", totalInst))), /*#__PURE__*/React.createElement("div", {
+    }, "\u0627\u0632 ", toAppDigits(totalInst)))), /*#__PURE__*/React.createElement("div", {
       className: "pt-3 border-t border-indigo-400/30 space-y-2 dir-rtl"
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex items-center justify-between"
@@ -4212,7 +5035,7 @@ function LoanSelectorCard({
     }, /*#__PURE__*/React.createElement("span", {
       className: "text-xs text-indigo-200 font-medium"
     }, "\u0645\u0628\u0644\u063A \u0642\u0633\u0637:"), /*#__PURE__*/React.createElement("span", {
-      className: "text-base font-black text-amber-300"
+      className: "text-base font-black text-amber-300 font-mono"
     }, displayAmount, " \u062A\u0648\u0645\u0627\u0646")))), isExpanded ? /*#__PURE__*/React.createElement("div", {
       className: "space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800"
     }, /*#__PURE__*/React.createElement("div", {
@@ -4243,8 +5066,8 @@ function LoanSelectorCard({
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       className: "text-xs font-bold text-slate-900 dark:text-white"
     }, l.title), /*#__PURE__*/React.createElement("div", {
-      className: "text-[10px] text-slate-400"
-    }, l.installmentAmount ? l.installmentAmount.toLocaleString() : 0, " \u062A\u0648\u0645\u0627\u0646 \u062F\u0631 \u0645\u0627\u0647")), /*#__PURE__*/React.createElement(Icon, {
+      className: "text-[10px] text-slate-400 font-mono"
+    }, l.installmentAmount ? formatAppNumber(l.installmentAmount) : 0, " \u062A\u0648\u0645\u0627\u0646 \u062F\u0631 \u0645\u0627\u0647")), /*#__PURE__*/React.createElement(Icon, {
       name: "chevron-left",
       className: "w-4 h-4 text-slate-400"
     }))) : /*#__PURE__*/React.createElement("div", {
@@ -4296,8 +5119,8 @@ function LoanSelectorCard({
     }, cName))), /*#__PURE__*/React.createElement("div", {
       className: "text-left ltr"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "text-xs font-bold text-indigo-600 dark:text-indigo-400"
-    }, l.installmentAmount ? l.installmentAmount.toLocaleString() : '-', " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
+      className: "text-xs font-bold text-indigo-600 dark:text-indigo-400 font-mono"
+    }, l.installmentAmount ? formatAppNumber(l.installmentAmount) : '-', " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
       className: "text-[9px] text-slate-400"
     }, "\u0645\u0628\u0644\u063A \u0642\u0633\u0637")));
   }) : /*#__PURE__*/React.createElement("div", {
@@ -4483,13 +5306,13 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.6",
-    "buildNumber": 399,
+    "installedVersion": "3.2.7",
+    "buildNumber": 421,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.6",
-    "latestBuild": 399,
+    "latestVersion": "3.2.7",
+    "latestBuild": 421,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.2.3",
@@ -4772,8 +5595,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 399;
-    const EMBEDDED_VERSION = "3.2.6";
+    const EMBEDDED_BUILD = 421;
+    const EMBEDDED_VERSION = "3.2.7";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -5008,6 +5831,7 @@ function App() {
   const [loanForm, setLoanForm] = useState({
     id: null,
     title: '',
+    icon: 'landmark',
     selectedContactId: '',
     contactName: '',
     contactSearchQuery: '',
@@ -5024,6 +5848,7 @@ function App() {
     customReminderDate: '',
     notes: ''
   });
+  const [showLoanIconSelector, setShowLoanIconSelector] = useState(false);
   const [demandDebtForm, setDemandDebtForm] = useState({
     id: null,
     selectedContactId: '',
@@ -5072,8 +5897,11 @@ function App() {
     phone: '',
     bankName: '',
     bankCard: '',
-    iban: ''
+    iban: '',
+    profileImage: null
   });
+  const [showContactImageCropper, setShowContactImageCropper] = useState(false);
+  const [contactImageCropperSrc, setContactImageCropperSrc] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportModalConfig, setExportModalConfig] = useState(null);
   const openUniversalExportModal = (type, data) => {
@@ -5611,6 +6439,45 @@ function App() {
       return 'system';
     }
   });
+  const [numberFormat, setNumberFormat] = useState(() => {
+    try {
+      const saved = localStorage.getItem('amir_fin_num_format');
+      if (saved) {
+        globalNumberFormat = saved;
+        return saved;
+      }
+    } catch (e) {}
+    return 'latin';
+  });
+  const handleSetNumberFormat = newFormat => {
+    setNumberFormat(newFormat);
+    globalNumberFormat = newFormat;
+    try {
+      localStorage.setItem('amir_fin_num_format', newFormat);
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-number-format', newFormat);
+        if (newFormat === 'persian') {
+          document.documentElement.classList.add('num-format-persian');
+          document.body.classList.add('num-format-persian');
+        } else {
+          document.documentElement.classList.remove('num-format-persian');
+          document.body.classList.remove('num-format-persian');
+        }
+      }
+    } catch (e) {}
+  };
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-number-format', numberFormat);
+      if (numberFormat === 'persian') {
+        document.documentElement.classList.add('num-format-persian');
+        document.body.classList.add('num-format-persian');
+      } else {
+        document.documentElement.classList.remove('num-format-persian');
+        document.body.classList.remove('num-format-persian');
+      }
+    }
+  }, [numberFormat]);
   const [isDark, setIsDark] = useState(() => {
     const savedTheme = typeof window !== 'undefined' ? localStorage.getItem('amir_fin_theme') || 'system' : 'system';
     if (savedTheme === 'dark') return true;
@@ -5986,7 +6853,7 @@ function App() {
   };
   const requestDeleteTx = (txItem, type, confirmCb = null) => {
     if (!txItem) return;
-    const amtFormatted = Math.abs(txItem.amount || 0).toLocaleString('fa-IR');
+    const amtFormatted = formatAppNumber(Math.abs(txItem.amount || 0));
     const titleStr = txItem.title || (type === 'loan_installment' ? 'پرداخت قسط' : type === 'debt' ? 'تراکنش بدهی' : 'تراکنش طلب');
     setConfirmConfig({
       title: 'حذف تراکنش',
@@ -6130,11 +6997,11 @@ function App() {
       ctx.fillStyle = isDebt ? '#e11d48' : '#059669';
       ctx.fillRect(0, 0, width, 12);
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 22px Tahoma, sans-serif';
+      ctx.font = 'bold 22px Vazir, Vazirmatn, Tahoma, sans-serif';
       ctx.textAlign = 'right';
       ctx.fillText(`صورت‌حساب دوره تسویه‌شده ${isDebt ? 'قرض / بدهی' : 'طلب'}`, width - 35, 52);
       ctx.fillStyle = '#64748b';
-      ctx.font = '13px Tahoma, sans-serif';
+      ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
       ctx.fillText(`نام مخاطب: ${period.contactName || ''}    •    بازه زمانی: از ${formatDateToNumericJalali(period.startDate)} تا ${formatDateToNumericJalali(period.endDate)}`, width - 35, 78);
       ctx.fillStyle = isDebt ? '#fff1f2' : '#ecfdf5';
       drawRoundRect(ctx, 35, 96, width - 70, 100, 14);
@@ -6142,16 +7009,16 @@ function App() {
       ctx.strokeStyle = isDebt ? '#fecdd3' : '#a7f3d0';
       ctx.stroke();
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 16px Tahoma, sans-serif';
-      ctx.fillText(`مبلغ کل دوره: ${Number(period.totalAmount || 0).toLocaleString()} تومان`, width - 60, 132);
+      ctx.font = 'bold 16px Vazir, Vazirmatn, Tahoma, sans-serif';
+      ctx.fillText(`مبلغ کل دوره: ${formatAppNumber(period.totalAmount || 0)} تومان`, width - 60, 132);
       ctx.fillStyle = isDebt ? '#be123c' : '#047857';
-      ctx.font = 'bold 14px Tahoma, sans-serif';
+      ctx.font = 'bold 14px Vazir, Vazirmatn, Tahoma, sans-serif';
       ctx.fillText(`وضعیت: تسویه‌شده و کامل (مانده: ۰ تومان)`, width - 60, 168);
       const tableTop = 216;
       ctx.fillStyle = isDebt ? '#e11d48' : '#059669';
       ctx.fillRect(35, tableTop, width - 70, 38);
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 12px Tahoma, sans-serif';
+      ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
       ctx.fillText('ردیف', width - 60, tableTop + 24);
       ctx.fillText('شرح / عنوان تراکنش', width - 140, tableTop + 24);
       ctx.fillText('تاریخ', width - 420, tableTop + 24);
@@ -6161,7 +7028,7 @@ function App() {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(35, currentY, width - 70, 44);
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '13px Tahoma, sans-serif';
+        ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
         ctx.fillText('هیچ تراکنشی در این دوره ثبت نشده است', width / 2 + 80, currentY + 28);
         currentY += 44;
       } else {
@@ -6171,21 +7038,21 @@ function App() {
           ctx.strokeStyle = '#f1f5f9';
           ctx.strokeRect(35, currentY, width - 70, rowHeight);
           ctx.fillStyle = '#334155';
-          ctx.font = '12px Tahoma, sans-serif';
-          ctx.fillText(String(idx + 1), width - 60, currentY + 26);
+          ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
+          ctx.fillText(String(toAppDigits(idx + 1)), width - 60, currentY + 26);
           ctx.fillText(tx.title || 'تراکنش', width - 140, currentY + 26);
           ctx.fillText(formatDateToNumericJalali(tx.dateStr), width - 420, currentY + 26);
           const isRepay = tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
           ctx.fillStyle = isRepay ? '#16a34a' : '#e11d48';
-          ctx.font = 'bold 12px Tahoma, sans-serif';
-          ctx.fillText(Number(Math.abs(tx.amount) || 0).toLocaleString(), width - 620, currentY + 26);
+          ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
+          ctx.fillText(formatAppNumber(Math.abs(tx.amount) || 0), width - 620, currentY + 26);
           currentY += rowHeight;
         });
       }
       const nowJalali = getDeviceJalaliDate();
       const periodDateStr = formatDateToNumericJalali(`${nowJalali.day} ${nowJalali.month} ${nowJalali.year}`);
       ctx.fillStyle = '#94a3b8';
-      ctx.font = '11px Tahoma, sans-serif';
+      ctx.font = '11px Vazir, Vazirmatn, Tahoma, sans-serif';
       ctx.fillText(`تاریخ صدور: ${periodDateStr}    •    برنامه مدیریت مالی شخصی`, width - 35, currentY + 32);
       const imageURI = canvas.toDataURL('image/png');
       const link = document.createElement('a');
@@ -6251,6 +7118,7 @@ function App() {
         setLoanForm({
           id: data.id,
           title: data.title || '',
+          icon: data.icon || 'landmark',
           selectedContactId: data.contactId || '',
           contactName: data.contactName || '',
           contactSearchQuery: '',
@@ -6275,6 +7143,7 @@ function App() {
         setLoanForm({
           id: null,
           title: '',
+          icon: 'landmark',
           selectedContactId: passedContactId || '',
           contactName: defaultName,
           contactSearchQuery: '',
@@ -6373,7 +7242,8 @@ function App() {
           phone: data.phone || '',
           bankName: data.bankName || '',
           bankCard: data.bankCard || '',
-          iban: data.iban || ''
+          iban: data.iban || '',
+          profileImage: data.profileImage || null
         });
       } else {
         setContactWizardForm({
@@ -6383,7 +7253,8 @@ function App() {
           phone: '',
           bankName: '',
           bankCard: '',
-          iban: ''
+          iban: '',
+          profileImage: null
         });
       }
     }
@@ -6564,7 +7435,7 @@ function App() {
           const loanTotal = targetLoan.totalRepayment > 0 ? targetLoan.totalRepayment : targetLoan.principalAmount;
           const loanRemaining = Math.max(0, loanTotal - loanPaidExceptCurrent);
           if (inputAmt > loanRemaining) {
-            triggerCardError('inst_amount', `مبلغ پرداختی نمی‌تواند از مانده وام (${loanRemaining.toLocaleString()} تومان) بیشتر باشد`);
+            triggerCardError('inst_amount', `مبلغ پرداختی نمی‌تواند از مانده وام (${formatAppNumber(loanRemaining)} تومان) بیشتر باشد`);
             return;
           }
         }
@@ -6589,7 +7460,7 @@ function App() {
         const editingTxAmt = editingTx ? Math.abs(editingTx.amount || 0) : 0;
         const totalDebt = (targetContact ? targetContact.totalDebt || 0 : 0) + editingTxAmt;
         if (inputAmt > totalDebt) {
-          triggerCardError('debt_repay_amount', `مبلغ پرداختی نمی‌تواند از کل بدهی (${totalDebt.toLocaleString()} تومان) بیشتر باشد`);
+          triggerCardError('debt_repay_amount', `مبلغ پرداختی نمی‌تواند از کل بدهی (${formatAppNumber(totalDebt)} تومان) بیشتر باشد`);
           return;
         }
       }
@@ -6613,7 +7484,7 @@ function App() {
         const editingTxAmt = editingTx ? Math.abs(editingTx.amount || 0) : 0;
         const totalDemand = (targetContact ? targetContact.totalDemand || 0 : 0) + editingTxAmt;
         if (inputAmt > totalDemand) {
-          triggerCardError('demand_repay_amount', `مبلغ دریافتی نمی‌تواند از کل طلب (${totalDemand.toLocaleString()} تومان) بیشتر باشد`);
+          triggerCardError('demand_repay_amount', `مبلغ دریافتی نمی‌تواند از کل طلب (${formatAppNumber(totalDemand)} تومان) بیشتر باشد`);
           return;
         }
       }
@@ -6683,6 +7554,7 @@ function App() {
             return {
               ...l,
               title: newTitle,
+              icon: loanForm.icon,
               contactId: loanForm.selectedContactId,
               contactName: loanForm.contactName,
               principalAmount: principal,
@@ -6733,6 +7605,7 @@ function App() {
         const newLoan = {
           id: Date.now(),
           title: loanForm.title || 'وام جدید',
+          icon: loanForm.icon,
           contactId: loanForm.selectedContactId,
           contactName: loanForm.contactName,
           phone: selectedContact ? selectedContact.phone : '09120000000',
@@ -7240,7 +8113,8 @@ function App() {
               phone: ph,
               bankName: bName,
               bankCard: card,
-              iban: ib
+              iban: ib,
+              profileImage: contactWizardForm.profileImage
             };
           }
           return c;
@@ -7258,6 +8132,7 @@ function App() {
           bankName: bName,
           bankCard: card,
           iban: ib,
+          profileImage: contactWizardForm.profileImage,
           totalDemand: 0,
           totalDebt: 0,
           monthlyInstallment: 0,
@@ -7657,7 +8532,9 @@ function App() {
       className: "space-y-4"
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
-    }, "\u0639\u0646\u0648\u0627\u0646 \u0648\u0627\u0645"), /*#__PURE__*/React.createElement("input", {
+    }, "\u0639\u0646\u0648\u0627\u0646 \u0648\u0627\u0645"), /*#__PURE__*/React.createElement("div", {
+      className: "flex gap-2"
+    }, /*#__PURE__*/React.createElement("input", {
       type: "text",
       placeholder: "\u0645\u062B\u0644\u0627\u064B: \u0648\u0627\u0645 \u062E\u0631\u06CC\u062F \u062E\u0648\u062F\u0631\u0648\u060C \u0648\u0627\u0645 \u0645\u0633\u06A9\u0646",
       value: loanForm.title,
@@ -7677,8 +8554,15 @@ function App() {
           });
         }
       },
-      className: `w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-xs focus:outline-none transition-all ${validationErrors.loan_title ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'}`
-    }), validationErrors.loan_title && /*#__PURE__*/React.createElement("p", {
+      className: `flex-1 min-w-0 bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-xs focus:outline-none transition-all ${validationErrors.loan_title ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'}`
+    }), /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      onClick: () => setShowLoanIconSelector(true),
+      className: "w-[46px] h-[46px] bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all shrink-0"
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: loanForm.icon || 'landmark',
+      className: "w-5 h-5"
+    }))), validationErrors.loan_title && /*#__PURE__*/React.createElement("p", {
       className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
     }, /*#__PURE__*/React.createElement(Icon, {
       name: "alert-circle",
@@ -7766,8 +8650,8 @@ function App() {
     }), /*#__PURE__*/React.createElement("span", null, validationErrors.principal_amount)), loanForm.principalAmount && Number(loanForm.principalAmount) > 0 && /*#__PURE__*/React.createElement("div", {
       className: "space-y-1.5 mt-2"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "text-xs text-indigo-600 font-bold text-left ltr"
-    }, Number(loanForm.principalAmount).toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
+      className: "text-xs text-indigo-600 font-bold text-left ltr font-mono"
+    }, formatAppNumber(loanForm.principalAmount), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
       className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40"
     }, numToPersianWords(loanForm.principalAmount))))
   }, {
@@ -7807,8 +8691,8 @@ function App() {
     }), /*#__PURE__*/React.createElement("span", null, validationErrors.total_repayment)), loanForm.totalRepayment && Number(loanForm.totalRepayment) > 0 && /*#__PURE__*/React.createElement("div", {
       className: "space-y-1.5 mt-2"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "text-xs text-indigo-600 font-bold text-left ltr"
-    }, Number(loanForm.totalRepayment).toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
+      className: "text-xs text-indigo-600 font-bold text-left ltr font-mono"
+    }, formatAppNumber(loanForm.totalRepayment), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
       className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40"
     }, numToPersianWords(loanForm.totalRepayment))))
   }, {
@@ -7943,7 +8827,7 @@ function App() {
           className: "w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0"
         }), /*#__PURE__*/React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647 (\u0627\u0636\u0627\u0641\u0647):")), /*#__PURE__*/React.createElement("span", {
           className: "font-mono text-xs dir-ltr font-black text-blue-700 dark:text-blue-300"
-        }, "+", diff.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646")) : /*#__PURE__*/React.createElement("div", {
+        }, "+", formatAppNumber(diff), " \u062A\u0648\u0645\u0627\u0646")) : /*#__PURE__*/React.createElement("div", {
           className: "p-2.5 bg-rose-50 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800 flex items-center justify-between shadow-2xs"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex items-center space-x-1.5 space-x-reverse"
@@ -7952,7 +8836,7 @@ function App() {
           className: "w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0"
         }), /*#__PURE__*/React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647 (\u06A9\u0633\u0631\u06CC):")), /*#__PURE__*/React.createElement("span", {
           className: "font-mono text-xs dir-ltr font-black text-rose-600 dark:text-rose-400"
-        }, diff.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646")));
+        }, formatAppNumber(diff), " \u062A\u0648\u0645\u0627\u0646")));
       }
       return null;
     })())
@@ -8159,8 +9043,8 @@ function App() {
     }), /*#__PURE__*/React.createElement("span", null, validationErrors.demand_amount)), demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && /*#__PURE__*/React.createElement("div", {
       className: "space-y-1.5 mt-2"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "text-xs text-emerald-600 font-bold text-left ltr"
-    }, Number(demandDebtForm.amount).toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
+      className: "text-xs text-emerald-600 font-bold text-left ltr font-numeric"
+    }, formatAppNumber(demandDebtForm.amount), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
       className: "p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40"
     }, numToPersianWords(demandDebtForm.amount))))
   }, {
@@ -8390,8 +9274,8 @@ function App() {
       }), /*#__PURE__*/React.createElement("span", null, validationErrors.inst_amount)), inputAmt > 0 && /*#__PURE__*/React.createElement("div", {
         className: "space-y-1.5 mt-2"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "text-xs text-indigo-600 font-bold text-left ltr"
-      }, inputAmt.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
+        className: "text-xs text-indigo-600 font-bold text-left ltr font-numeric"
+      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
         className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40"
       }, numToPersianWords(installmentForm.amount))), targetLoan && /*#__PURE__*/React.createElement("div", {
         className: "p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700"
@@ -8401,12 +9285,12 @@ function App() {
         className: "text-slate-500 dark:text-slate-400 font-medium"
       }, "\u06A9\u0644 \u0645\u0627\u0646\u062F\u0647 \u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u0648\u0627\u0645:"), /*#__PURE__*/React.createElement("span", {
         className: "font-extrabold text-slate-800 dark:text-slate-200 font-mono"
-      }, loanRemaining.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/React.createElement("div", {
+      }, formatAppNumber(loanRemaining), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/React.createElement("div", {
         className: "p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse"
       }, /*#__PURE__*/React.createElement(Icon, {
         name: "alert-circle",
         className: "w-4 h-4 shrink-0"
-      }), /*#__PURE__*/React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u0645\u0627\u0646\u062F\u0647 \u06A9\u0644 \u0648\u0627\u0645 (", loanRemaining.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
+      }), /*#__PURE__*/React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u0645\u0627\u0646\u062F\u0647 \u06A9\u0644 \u0648\u0627\u0645 (", formatAppNumber(loanRemaining), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
     }
   }, {
     id: 'inst_notes',
@@ -8493,8 +9377,8 @@ function App() {
       }), /*#__PURE__*/React.createElement("span", null, validationErrors.debt_repay_amount)), inputAmt > 0 && /*#__PURE__*/React.createElement("div", {
         className: "space-y-1.5 mt-2"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "text-xs text-rose-500 font-bold text-left ltr"
-      }, inputAmt.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
+        className: "text-xs text-rose-500 font-bold text-left ltr font-numeric"
+      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
         className: "p-2.5 bg-rose-50/80 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40"
       }, numToPersianWords(repaymentForm.amount))), /*#__PURE__*/React.createElement("div", {
         className: "p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700"
@@ -8504,12 +9388,12 @@ function App() {
         className: "text-slate-500 dark:text-slate-400 font-medium"
       }, "\u06A9\u0644 \u0628\u062F\u0647\u06CC \u0628\u0647 \u0627\u06CC\u0646 \u0645\u062E\u0627\u0637\u0628:"), /*#__PURE__*/React.createElement("span", {
         className: "font-extrabold text-slate-800 dark:text-slate-200 font-mono"
-      }, totalDebt.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/React.createElement("div", {
+      }, formatAppNumber(totalDebt), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/React.createElement("div", {
         className: "p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse"
       }, /*#__PURE__*/React.createElement(Icon, {
         name: "alert-circle",
         className: "w-4 h-4 shrink-0"
-      }), /*#__PURE__*/React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u06A9\u0644 \u0628\u062F\u0647\u06CC (", totalDebt.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
+      }), /*#__PURE__*/React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u06A9\u0644 \u0628\u062F\u0647\u06CC (", formatAppNumber(totalDebt), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
     }
   }, {
     id: 'debt_repay_date',
@@ -8613,8 +9497,8 @@ function App() {
       }), /*#__PURE__*/React.createElement("span", null, validationErrors.demand_repay_amount)), inputAmt > 0 && /*#__PURE__*/React.createElement("div", {
         className: "space-y-1.5 mt-2"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "text-xs text-emerald-600 font-bold text-left ltr"
-      }, inputAmt.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
+        className: "text-xs text-emerald-600 font-bold text-left ltr font-numeric"
+      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/React.createElement("div", {
         className: "p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40"
       }, numToPersianWords(repaymentForm.amount))), /*#__PURE__*/React.createElement("div", {
         className: "p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700"
@@ -8624,12 +9508,12 @@ function App() {
         className: "text-slate-500 dark:text-slate-400 font-medium font-sans"
       }, "\u06A9\u0644 \u0637\u0644\u0628 \u0627\u0632 \u0627\u06CC\u0646 \u0645\u062E\u0627\u0637\u0628:"), /*#__PURE__*/React.createElement("span", {
         className: "font-extrabold text-slate-800 dark:text-slate-200 font-mono"
-      }, totalDemand.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/React.createElement("div", {
+      }, formatAppNumber(totalDemand), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/React.createElement("div", {
         className: "p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse"
       }, /*#__PURE__*/React.createElement(Icon, {
         name: "alert-circle",
         className: "w-4 h-4 shrink-0"
-      }), /*#__PURE__*/React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u06A9\u0644 \u0637\u0644\u0628 (", totalDemand.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
+      }), /*#__PURE__*/React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u06A9\u0644 \u0637\u0644\u0628 (", formatAppNumber(totalDemand), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
     }
   }, {
     id: 'demand_repay_date',
@@ -8673,17 +9557,44 @@ function App() {
       className: "space-y-4"
     }, /*#__PURE__*/React.createElement("div", {
       className: "flex flex-col items-center justify-center pt-1 pb-2"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "relative w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg ring-4 ring-indigo-500/15 dark:ring-indigo-400/20"
-    }, contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? /*#__PURE__*/React.createElement("span", {
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "relative w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg ring-4 ring-indigo-500/15 dark:ring-indigo-400/20 cursor-pointer group"
+    }, /*#__PURE__*/React.createElement("input", {
+      type: "file",
+      accept: "image/*",
+      className: "hidden",
+      onChange: e => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = ev => {
+            setContactImageCropperSrc(ev.target.result);
+            setShowContactImageCropper(true);
+          };
+          reader.readAsDataURL(file);
+        }
+        e.target.value = '';
+      }
+    }), contactWizardForm.profileImage ? /*#__PURE__*/React.createElement("div", {
+      className: "w-full h-full rounded-full overflow-hidden"
+    }, /*#__PURE__*/React.createElement("img", {
+      src: contactWizardForm.profileImage,
+      alt: "profile",
+      className: "w-full h-full object-cover"
+    })) : contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? /*#__PURE__*/React.createElement("span", {
       className: "text-2xl font-black tracking-tight"
     }, (contactWizardForm.firstName.trim()[0] || '') + (contactWizardForm.lastName.trim()[0] || '')) : /*#__PURE__*/React.createElement(Icon, {
       name: "user-plus",
       className: "w-9 h-9 opacity-90"
     }), /*#__PURE__*/React.createElement("div", {
-      className: "absolute -bottom-0.5 -right-0.5 w-7 h-7 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm"
+      className: "absolute inset-0 bg-black/40 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
     }, /*#__PURE__*/React.createElement(Icon, {
-      name: "user",
+      name: "camera",
+      className: "w-6 h-6 text-white"
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "absolute -bottom-0.5 -right-0.5 w-7 h-7 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm z-10"
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: contactWizardForm.profileImage ? "camera" : "user",
       className: "w-3.5 h-3.5"
     }))), /*#__PURE__*/React.createElement("span", {
       className: "text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2"
@@ -8830,7 +9741,7 @@ function App() {
           className: "text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight"
         }, "\u0633\u0644\u0627\u0645 \u0648\u0642\u062A \u0628\u0647 \u062E\u06CC\u0631 \uD83D\uDC4B"), /*#__PURE__*/React.createElement("p", {
           className: "text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right"
-        }, "\u0627\u0645\u0631\u0648\u0632: ", getDeviceJalaliDate().day, " ", getDeviceJalaliDate().month, " ", getDeviceJalaliDate().year)), /*#__PURE__*/React.createElement(AnimatePresence, null, backupStatus && backupStatus.unbackedChangesCount > 0 && /*#__PURE__*/React.createElement(motion.div, {
+        }, "\u0627\u0645\u0631\u0648\u0632: ", toAppDigits(getDeviceJalaliDate().day), " ", getDeviceJalaliDate().month, " ", toAppDigits(getDeviceJalaliDate().year))), /*#__PURE__*/React.createElement(AnimatePresence, null, backupStatus && backupStatus.unbackedChangesCount > 0 && /*#__PURE__*/React.createElement(motion.div, {
           key: "dashboard-backup-status-pill",
           initial: {
             opacity: 0,
@@ -8861,7 +9772,7 @@ function App() {
           className: `w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBellWiggling ? 'animate-bell-wiggle' : ''}`
         }), /*#__PURE__*/React.createElement("span", {
           className: "absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold px-1 rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 leading-none font-sans"
-        }, backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount)))), /*#__PURE__*/React.createElement("div", {
+        }, toAppDigits(backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount))))), /*#__PURE__*/React.createElement("div", {
           className: "flex items-center gap-2.5",
           dir: "ltr"
         }, /*#__PURE__*/React.createElement(BrandAvatar, {
@@ -8873,40 +9784,35 @@ function App() {
           className: "text-[15px] sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight font-sans tracking-wide"
         }, "Amir Finance"), /*#__PURE__*/React.createElement("span", {
           className: "text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
-        }, "\u0646\u0633\u062E\u0647 ", versionData.installedVersion || '3.2.0')))), (() => {
+        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.2.0'))))), (() => {
           const loanReminders = loans.map(loan => {
             const nextDueInfo = getLoanNextDueInfo(loan, transactions);
             if (nextDueInfo.isCompleted) return null;
-            let iconName = 'landmark';
-            let iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
-            const titleLower = (loan.title || '').toLowerCase();
-            if (titleLower.includes('خودرو') || titleLower.includes('ماشین') || titleLower.includes('car')) {
-              iconName = 'car';
+            let iconName = loan.icon || 'landmark';
+            if (!loan.icon) {
+              const titleLower = (loan.title || '').toLowerCase();
+              if (titleLower.includes('خودرو') || titleLower.includes('ماشین') || titleLower.includes('car')) {
+                iconName = 'car';
+              } else if (titleLower.includes('مسکن') || titleLower.includes('خانه') || titleLower.includes('ملک') || titleLower.includes('آپارتمان')) {
+                iconName = 'home';
+              } else if (titleLower.includes('رضایی') || titleLower.includes('شخصی') || titleLower.includes('بازپرداخت') || titleLower.includes('پرداخت')) {
+                iconName = 'user';
+              } else {
+                const hash = String(loan.id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                const icons = ['car', 'user', 'home', 'credit-card'];
+                iconName = icons[hash % icons.length];
+              }
+            }
+            let iconBgClass = '';
+            const daysLeft = nextDueInfo.daysLeft;
+            if (daysLeft < 0) {
               iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
-            } else if (titleLower.includes('مسکن') || titleLower.includes('خانه') || titleLower.includes('ملک') || titleLower.includes('آپارتمان')) {
-              iconName = 'home';
-              iconBgClass = 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-500 dark:text-emerald-400';
-            } else if (titleLower.includes('رضایی') || titleLower.includes('شخصی') || titleLower.includes('بازپرداخت') || titleLower.includes('پرداخت')) {
-              iconName = 'user';
-              iconBgClass = 'bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400';
+            } else if (daysLeft === 0) {
+              iconBgClass = 'bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-500';
+            } else if (daysLeft < 6) {
+              iconBgClass = 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-500 dark:text-yellow-400';
             } else {
-              const hash = String(loan.id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-              const variants = [{
-                bg: 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400',
-                icon: 'car'
-              }, {
-                bg: 'bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400',
-                icon: 'user'
-              }, {
-                bg: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-500 dark:text-emerald-400',
-                icon: 'home'
-              }, {
-                bg: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 dark:text-indigo-400',
-                icon: 'credit-card'
-              }];
-              const choice = variants[hash % variants.length];
-              iconName = choice.icon;
-              iconBgClass = choice.bg;
+              iconBgClass = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
             }
             return {
               id: `loan-${loan.id}`,
@@ -8925,10 +9831,24 @@ function App() {
           const renderReminderCard = item => {
             const isOverdue = item.daysLeft < 0;
             const isToday = item.daysLeft === 0;
+            const isSoon = item.daysLeft > 0 && item.daysLeft < 6;
             let iconName = item.icon || 'landmark';
-            let iconBgClass = isOverdue ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400' : isToday ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400' : item.iconColor || 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
-            const daysBadgeText = isOverdue ? `${Math.abs(item.daysLeft)} روز تأخیر` : isToday ? 'امروز سررسید' : `${item.daysLeft} روز مانده`;
-            const badgeClass = isOverdue ? 'bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/60' : isToday ? 'bg-amber-100/90 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60' : 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-600/50';
+            let iconBgClass = '';
+            let badgeClass = '';
+            if (isOverdue) {
+              iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+              badgeClass = 'bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/60';
+            } else if (isToday) {
+              iconBgClass = 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400';
+              badgeClass = 'bg-indigo-100/90 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/60';
+            } else if (isSoon) {
+              iconBgClass = 'bg-orange-50 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400';
+              badgeClass = 'bg-orange-100/90 dark:bg-orange-950/80 text-orange-700 dark:text-orange-300 border border-orange-200/80 dark:border-orange-800/60';
+            } else {
+              iconBgClass = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
+              badgeClass = 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-600/50';
+            }
+            const daysBadgeText = isOverdue ? `${toAppDigits(Math.abs(item.daysLeft))} روز تأخیر` : isToday ? 'امروز سررسید' : `${toAppDigits(item.daysLeft)} روز مانده`;
             return /*#__PURE__*/React.createElement("div", {
               key: item.id,
               onClick: () => item.loanObj && openLoanDetail(item.loanObj),
@@ -8994,51 +9914,65 @@ function App() {
             setAccountsSubTab('loans');
             navigateToTab('accounts', 'forward');
           },
-          className: "bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center"
+          className: "relative bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm"
+          className: "flex items-center justify-between w-full"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-xs sm:text-[13px] font-bold text-white/95"
+        }, "\u0648\u0627\u0645\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("div", {
+          className: "w-5 h-5 rounded-lg bg-white/20 text-white flex items-center justify-center backdrop-blur-xs group-hover:scale-110 transition-transform"
         }, /*#__PURE__*/React.createElement(Icon, {
           name: "landmark",
-          className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold"
-        }, "\u0648\u0627\u0645\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-white/80 mt-1"
-        }, loans.length, " \u067E\u0631\u0648\u0646\u062F\u0647")), /*#__PURE__*/React.createElement("div", {
+          className: "w-3 h-3"
+        }))), /*#__PURE__*/React.createElement("div", {
+          className: "flex flex-col items-start justify-end mt-1.5"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "text-[15px] sm:text-base font-black tracking-tight leading-none text-white font-mono font-numeric"
+        }, toAppDigits(loans.length)), /*#__PURE__*/React.createElement("div", {
+          className: "text-[9px] sm:text-[10px] text-indigo-100 font-medium mt-0.5"
+        }, "\u0648\u0627\u0645 \u0641\u0639\u0627\u0644"))), /*#__PURE__*/React.createElement("div", {
           onClick: () => {
             setAccountsSubTab('debts');
             navigateToTab('accounts', 'forward');
           },
-          className: "bg-gradient-to-br from-rose-500 to-red-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center"
+          className: "relative bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm"
+          className: "flex items-center justify-between w-full"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-xs sm:text-[13px] font-bold text-white/95"
+        }, "\u0628\u062F\u0647\u06CC"), /*#__PURE__*/React.createElement("div", {
+          className: "w-5 h-5 rounded-lg bg-white/20 text-white flex items-center justify-center backdrop-blur-xs group-hover:scale-110 transition-transform"
         }, /*#__PURE__*/React.createElement(Icon, {
           name: "arrow-down-left",
-          className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold"
-        }, "\u0628\u062F\u0647\u06CC"), /*#__PURE__*/React.createElement("div", {
-          className: "text-[11px] font-extrabold mt-1"
-        }, totalDebt.toLocaleString()), /*#__PURE__*/React.createElement("div", {
-          className: "text-[9px] text-white/70"
-        }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/React.createElement("div", {
+          className: "w-3 h-3"
+        }))), /*#__PURE__*/React.createElement("div", {
+          className: "flex flex-col items-start justify-end mt-1.5"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
+        }, formatAppNumber(totalDebt)), /*#__PURE__*/React.createElement("div", {
+          className: "text-[9px] sm:text-[10px] text-rose-100 font-medium mt-0.5"
+        }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
           onClick: () => {
             setAccountsSubTab('demands');
             navigateToTab('accounts', 'forward');
           },
-          className: "bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center"
+          className: "relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
         }, /*#__PURE__*/React.createElement("div", {
-          className: "w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm"
+          className: "flex items-center justify-between w-full"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-xs sm:text-[13px] font-bold text-white/95"
+        }, "\u0637\u0644\u0628"), /*#__PURE__*/React.createElement("div", {
+          className: "w-5 h-5 rounded-lg bg-white/20 text-white flex items-center justify-center backdrop-blur-xs group-hover:scale-110 transition-transform"
         }, /*#__PURE__*/React.createElement(Icon, {
           name: "arrow-up-right",
-          className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold"
-        }, "\u0637\u0644\u0628"), /*#__PURE__*/React.createElement("div", {
-          className: "text-[11px] font-extrabold mt-1"
-        }, totalDemand.toLocaleString()), /*#__PURE__*/React.createElement("div", {
-          className: "text-[9px] text-white/70"
-        }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
+          className: "w-3 h-3"
+        }))), /*#__PURE__*/React.createElement("div", {
+          className: "flex flex-col items-start justify-end mt-1.5"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
+        }, formatAppNumber(totalDemand)), /*#__PURE__*/React.createElement("div", {
+          className: "text-[9px] sm:text-[10px] text-emerald-100 font-medium mt-0.5"
+        }, "\u062A\u0648\u0645\u0627\u0646")))), /*#__PURE__*/React.createElement("div", {
           ref: recentTxsAccordionRef,
           className: "bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all"
         }, /*#__PURE__*/React.createElement("div", {
@@ -9100,14 +10034,7 @@ function App() {
           className: "w-7 h-7 text-slate-800 dark:text-slate-100"
         }), /*#__PURE__*/React.createElement("h1", {
           className: "text-xl font-bold text-slate-900 dark:text-white"
-        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u062D\u0633\u0627\u0628\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("button", {
-          onClick: () => setIsAddTxOpen(true),
-          className: "w-11 h-11 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white shadow-md active:scale-95 transition-all shrink-0",
-          title: "\u0627\u0641\u0632\u0648\u062F\u0646 \u062D\u0633\u0627\u0628 / \u062A\u0631\u0627\u06A9\u0646\u0634 \u062C\u062F\u06CC\u062F"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "plus",
-          className: "w-6 h-6"
-        }))), /*#__PURE__*/React.createElement("div", {
+        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u062D\u0633\u0627\u0628\u200C\u0647\u0627"))), /*#__PURE__*/React.createElement("div", {
           className: "flex items-center gap-3 mb-3"
         }, /*#__PURE__*/React.createElement("div", {
           className: "flex-1 relative"
@@ -9182,7 +10109,7 @@ function App() {
             }, /*#__PURE__*/React.createElement("div", {
               className: "w-14 h-14 bg-indigo-50/50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-blue-500 dark:text-blue-400 shrink-0"
             }, /*#__PURE__*/React.createElement(Icon, {
-              name: "landmark",
+              name: loan.icon || 'landmark',
               className: "w-8 h-8 text-blue-500 dark:text-blue-400"
             })), /*#__PURE__*/React.createElement("div", {
               className: "flex-1 text-right flex flex-col gap-1 pl-4 pr-2"
@@ -9193,8 +10120,8 @@ function App() {
             }, loan.contactName || "بانک")), /*#__PURE__*/React.createElement("div", {
               className: "text-left shrink-0 flex flex-col items-center"
             }, /*#__PURE__*/React.createElement("div", {
-              className: "font-bold text-base leading-none line-through text-slate-400"
-            }, loan.principalAmount.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+              className: "font-bold text-base leading-none line-through text-slate-400 font-mono font-numeric"
+            }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/React.createElement("div", {
               className: "text-slate-400 text-xs"
             }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
               className: "flex justify-center"
@@ -9218,7 +10145,7 @@ function App() {
             }, /*#__PURE__*/React.createElement("div", {
               className: "w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 shadow-inner"
             }, /*#__PURE__*/React.createElement(Icon, {
-              name: "landmark",
+              name: loan.icon || 'landmark',
               className: "w-6 h-6"
             })), /*#__PURE__*/React.createElement("div", {
               className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
@@ -9229,8 +10156,8 @@ function App() {
             }, loan.contactName || "بانک")), /*#__PURE__*/React.createElement("div", {
               className: "text-left shrink-0 flex flex-col items-center"
             }, /*#__PURE__*/React.createElement("div", {
-              className: "text-indigo-600 dark:text-indigo-400 font-bold text-base leading-none"
-            }, loan.principalAmount.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+              className: "text-indigo-600 dark:text-indigo-400 font-bold text-base leading-none font-mono font-numeric"
+            }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/React.createElement("div", {
               className: "text-indigo-600 dark:text-indigo-400 text-[10px] mt-1 font-medium"
             }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
               className: "flex flex-col gap-2"
@@ -9238,17 +10165,17 @@ function App() {
               className: "flex items-center justify-between w-full bg-[#F4F7FC] dark:bg-slate-900/50 rounded-xl px-3 py-1.5 border border-slate-200/50 dark:border-slate-700/50"
             }, /*#__PURE__*/React.createElement("span", {
               className: "text-slate-500 dark:text-slate-400 font-medium text-xs"
-            }, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 ", nextDueInfo.paidInst + 1), /*#__PURE__*/React.createElement("span", {
-              className: "text-indigo-600 dark:text-indigo-400 font-bold text-xs"
-            }, nextDueInfo.nextDueDateStr)), /*#__PURE__*/React.createElement("div", {
+            }, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 ", toAppDigits(nextDueInfo.paidInst + 1)), /*#__PURE__*/React.createElement("span", {
+              className: "text-indigo-600 dark:text-indigo-400 font-bold text-xs font-mono"
+            }, formatDateToNumericJalali(nextDueInfo.nextDueDateStr) || toAppDigits(nextDueInfo.nextDueDateStr))), /*#__PURE__*/React.createElement("div", {
               className: "w-full flex flex-col gap-1.5 px-1 mt-1"
             }, /*#__PURE__*/React.createElement("div", {
               className: "flex justify-between items-center text-[10px] font-bold"
             }, /*#__PURE__*/React.createElement("span", {
               className: "text-emerald-600 dark:text-emerald-400"
-            }, nextDueInfo.paidInst, " \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/React.createElement("span", {
+            }, toAppDigits(nextDueInfo.paidInst), " \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/React.createElement("span", {
               className: "text-slate-400 dark:text-slate-500"
-            }, "\u0645\u0627\u0646\u062F\u0647 ", nextDueInfo.remainingInst)), /*#__PURE__*/React.createElement("div", {
+            }, "\u0645\u0627\u0646\u062F\u0647 ", toAppDigits(nextDueInfo.remainingInst))), /*#__PURE__*/React.createElement("div", {
               className: "w-full h-2.5 bg-slate-100 dark:bg-slate-800/80 rounded-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-700/80 flex"
             }, /*#__PURE__*/React.createElement("div", {
               className: "h-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 rounded-full transition-all duration-500",
@@ -9298,8 +10225,8 @@ function App() {
           }, contact.note || "طلب شخصی")), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none"
-          }, contact.totalDemand.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+            className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(contact.totalDemand)), /*#__PURE__*/React.createElement("div", {
             className: "text-emerald-600 dark:text-emerald-400 text-xs"
           }, "\u062A\u0648\u0645\u0627\u0646"))))));
         }))), (accountsSubTab === 'all' || accountsSubTab === 'debts' || accountsSubTab === 'archived') && filteredAccountsDebts.length > 0 && /*#__PURE__*/React.createElement("div", {
@@ -9343,8 +10270,8 @@ function App() {
           }, contact.note || "بدهی شخصی")), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none"
-          }, contact.totalDebt.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+            className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(contact.totalDebt)), /*#__PURE__*/React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 text-xs"
           }, "\u062A\u0648\u0645\u0627\u0646"))))));
         }))), filteredAccountsLoans.length === 0 && filteredAccountsDemands.length === 0 && filteredAccountsDebts.length === 0 && /*#__PURE__*/React.createElement("div", {
@@ -9440,6 +10367,80 @@ function App() {
           const hasActiveDemand = contact.totalDemand > 0;
           const hasSettledDebt = getSettledPeriodCount(contact.id, 'debt') > 0;
           const hasActiveDebt = contact.totalDebt > 0;
+          const colorMappings = {
+            'bg-blue-600': {
+              bg: 'bg-gradient-to-br from-blue-50/80 to-indigo-50/30 dark:from-blue-950/20 dark:to-indigo-950/10',
+              border: 'border-blue-200/80 dark:border-slate-700/60 hover:border-blue-400 dark:hover:border-blue-600',
+              watermark: 'users',
+              watermarkColor: 'text-blue-500 dark:text-blue-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-blue-500/15'
+            },
+            'bg-amber-600': {
+              bg: 'bg-gradient-to-br from-amber-50/80 to-orange-50/30 dark:from-amber-950/20 dark:to-orange-950/10',
+              border: 'border-amber-200/80 dark:border-slate-700/60 hover:border-amber-400 dark:hover:border-amber-600',
+              watermark: 'star',
+              watermarkColor: 'text-amber-500 dark:text-amber-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-amber-500/15'
+            },
+            'bg-emerald-600': {
+              bg: 'bg-gradient-to-br from-emerald-50/80 to-teal-50/30 dark:from-emerald-950/20 dark:to-teal-950/10',
+              border: 'border-emerald-200/80 dark:border-slate-700/60 hover:border-emerald-400 dark:hover:border-emerald-600',
+              watermark: 'briefcase',
+              watermarkColor: 'text-emerald-500 dark:text-emerald-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-emerald-500/15'
+            },
+            'bg-indigo-600': {
+              bg: 'bg-gradient-to-br from-indigo-50/80 to-purple-50/30 dark:from-indigo-950/20 dark:to-purple-950/10',
+              border: 'border-indigo-200/80 dark:border-slate-700/60 hover:border-indigo-400 dark:hover:border-indigo-600',
+              watermark: 'landmark',
+              watermarkColor: 'text-indigo-500 dark:text-indigo-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-indigo-500/15'
+            },
+            'bg-teal-600': {
+              bg: 'bg-gradient-to-br from-teal-50/80 to-emerald-50/30 dark:from-teal-950/20 dark:to-emerald-950/10',
+              border: 'border-teal-200/80 dark:border-slate-700/60 hover:border-teal-400 dark:hover:border-teal-600',
+              watermark: 'shield',
+              watermarkColor: 'text-teal-500 dark:text-teal-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-teal-500/15'
+            },
+            'bg-rose-600': {
+              bg: 'bg-gradient-to-br from-rose-50/80 to-pink-50/30 dark:from-rose-950/20 dark:to-pink-950/10',
+              border: 'border-rose-200/80 dark:border-slate-700/60 hover:border-rose-400 dark:hover:border-rose-600',
+              watermark: 'heart',
+              watermarkColor: 'text-rose-500 dark:text-rose-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-rose-500/15'
+            },
+            'bg-purple-600': {
+              bg: 'bg-gradient-to-br from-purple-50/80 to-fuchsia-50/30 dark:from-purple-950/20 dark:to-fuchsia-950/10',
+              border: 'border-purple-200/80 dark:border-slate-700/60 hover:border-purple-400 dark:hover:border-purple-600',
+              watermark: 'award',
+              watermarkColor: 'text-purple-500 dark:text-purple-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-purple-500/15'
+            },
+            'bg-cyan-600': {
+              bg: 'bg-gradient-to-br from-cyan-50/80 to-blue-50/30 dark:from-cyan-950/20 dark:to-blue-950/10',
+              border: 'border-cyan-200/80 dark:border-slate-700/60 hover:border-cyan-400 dark:hover:border-cyan-600',
+              watermark: 'anchor',
+              watermarkColor: 'text-cyan-500 dark:text-cyan-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-cyan-500/15'
+            },
+            'bg-orange-600': {
+              bg: 'bg-gradient-to-br from-orange-50/80 to-amber-50/30 dark:from-orange-950/20 dark:to-amber-950/10',
+              border: 'border-orange-200/80 dark:border-slate-700/60 hover:border-orange-400 dark:hover:border-orange-600',
+              watermark: 'sun',
+              watermarkColor: 'text-orange-500 dark:text-orange-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-orange-500/15'
+            },
+            'bg-violet-600': {
+              bg: 'bg-gradient-to-br from-violet-50/80 to-purple-50/30 dark:from-violet-950/20 dark:to-purple-950/10',
+              border: 'border-violet-200/80 dark:border-slate-700/60 hover:border-violet-400 dark:hover:border-violet-600',
+              watermark: 'hexagon',
+              watermarkColor: 'text-violet-500 dark:text-violet-400 opacity-[0.04] dark:opacity-[0.03]',
+              ring: 'ring-4 ring-violet-500/15'
+            }
+          };
+          const avatarBg = getAvatarColor(contact.id, contact.firstName + contact.lastName);
+          const theme = colorMappings[avatarBg] || colorMappings['bg-indigo-600'];
           return /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
             key: contact.id,
             onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
@@ -9449,58 +10450,84 @@ function App() {
               openContactDetail(contact, f, 'contacts');
             }
           }, /*#__PURE__*/React.createElement("div", {
-            className: "bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-slate-200/80 dark:border-slate-700/60 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm hover:border-indigo-400 transition-all cursor-pointer "
+            className: `relative overflow-hidden bg-white dark:bg-slate-800 ${theme.bg} rounded-2xl sm:rounded-[24px] border p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-sm ${theme.border} transition-all cursor-pointer group`
           }, /*#__PURE__*/React.createElement("div", {
-            className: "flex flex-col gap-3"
+            className: `absolute -bottom-6 -right-6 pointer-events-none transition-transform group-hover:scale-110 duration-500 ${theme.watermarkColor}`
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: theme.watermark,
+            className: "w-36 h-36"
+          })), /*#__PURE__*/React.createElement("div", {
+            className: "relative z-10 flex flex-col gap-5"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "flex flex-row items-center justify-between"
+            className: "flex flex-row items-start justify-between"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "flex items-center gap-3"
+            className: "flex items-center gap-4"
           }, /*#__PURE__*/React.createElement("div", {
-            className: `rounded-full ${getAvatarColor(contact.id, contact.firstName + contact.lastName)} flex-shrink-0 flex items-center justify-center text-white font-bold w-10 h-10 text-xs sm:text-sm shadow-xs`
-          }, contact.firstName.charAt(0), " ", contact.lastName.charAt(0)), /*#__PURE__*/React.createElement("span", {
-            className: "text-slate-900 dark:text-white font-bold text-sm sm:text-base"
-          }, contact.firstName, " ", contact.lastName)), /*#__PURE__*/React.createElement("span", {
-            className: "text-slate-400 dark:text-slate-500 tracking-wider font-mono text-xs dir-ltr"
-          }, contact.phone)), /*#__PURE__*/React.createElement("div", {
-            className: "flex gap-2 justify-start w-full"
+            className: `rounded-full ${avatarBg} ${theme.ring} flex-shrink-0 flex items-center justify-center text-white font-bold w-12 h-12 text-sm sm:text-base shadow-sm overflow-hidden transition-transform group-hover:scale-105`
+          }, contact.profileImage ? /*#__PURE__*/React.createElement("img", {
+            src: contact.profileImage,
+            alt: `${contact.firstName} ${contact.lastName}`,
+            className: "w-full h-full object-cover"
+          }) : /*#__PURE__*/React.createElement(React.Fragment, null, contact.firstName.charAt(0), " ", contact.lastName.charAt(0))), /*#__PURE__*/React.createElement("div", {
+            className: "flex flex-col"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-900 dark:text-white font-extrabold text-base sm:text-lg tracking-tight"
+          }, contact.firstName, " ", contact.lastName), /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-500 dark:text-slate-400 tracking-wider font-mono text-xs dir-ltr mt-0.5"
+          }, contact.phone)))), /*#__PURE__*/React.createElement("div", {
+            className: "flex gap-2.5 justify-between w-full"
           }, /*#__PURE__*/React.createElement("button", {
             onClick: e => {
               e.stopPropagation();
               openContactDetail(contact, 'loans', 'contacts');
             },
-            className: `relative flex-1 rounded-2xl h-8 text-xs font-medium transition-all flex items-center justify-center gap-1 ${hasActiveLoan ? 'bg-blue-600 text-white shadow-sm active:scale-95' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-default'}`
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveLoan ? 'bg-blue-50/90 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 shadow-sm active:scale-95 border border-blue-200 dark:border-blue-800/50 hover:bg-blue-100' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
           }, hasSettledLoan && /*#__PURE__*/React.createElement("div", {
-            className: "absolute right-1.5 w-[14px] h-[14px] rounded-full border border-current flex items-center justify-center shrink-0 opacity-90"
+            className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
           }, /*#__PURE__*/React.createElement(Icon, {
             name: "check",
             className: "w-2.5 h-2.5",
-            strokeWidth: 3
-          })), /*#__PURE__*/React.createElement("span", null, "\u0648\u0627\u0645")), /*#__PURE__*/React.createElement("button", {
+            strokeWidth: 3.5
+          })), /*#__PURE__*/React.createElement(Icon, {
+            name: "landmark",
+            className: `w-4.5 h-4.5 ${hasActiveLoan ? 'text-blue-600 dark:text-blue-400' : 'opacity-60'}`
+          }), /*#__PURE__*/React.createElement("span", {
+            className: "text-[11px] font-bold leading-none"
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("button", {
             onClick: e => {
               e.stopPropagation();
               openContactDetail(contact, 'demands', 'contacts');
             },
-            className: `relative flex-1 rounded-2xl h-8 text-xs font-medium transition-all flex items-center justify-center gap-1 ${hasActiveDemand ? 'bg-emerald-600 text-white shadow-sm active:scale-95' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-default'}`
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDemand ? 'bg-emerald-50/90 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 shadow-sm active:scale-95 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
           }, hasSettledDemand && /*#__PURE__*/React.createElement("div", {
-            className: "absolute right-1.5 w-[14px] h-[14px] rounded-full border border-current flex items-center justify-center shrink-0 opacity-90"
+            className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
           }, /*#__PURE__*/React.createElement(Icon, {
             name: "check",
             className: "w-2.5 h-2.5",
-            strokeWidth: 3
-          })), /*#__PURE__*/React.createElement("span", null, "\u0637\u0644\u0628")), /*#__PURE__*/React.createElement("button", {
+            strokeWidth: 3.5
+          })), /*#__PURE__*/React.createElement(Icon, {
+            name: "arrow-down-left",
+            className: `w-4.5 h-4.5 ${hasActiveDemand ? 'text-emerald-600 dark:text-emerald-400' : 'opacity-60'}`
+          }), /*#__PURE__*/React.createElement("span", {
+            className: "text-[11px] font-bold leading-none"
+          }, "\u0637\u0644\u0628\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("button", {
             onClick: e => {
               e.stopPropagation();
               openContactDetail(contact, 'debts', 'contacts');
             },
-            className: `relative flex-1 rounded-2xl h-8 text-xs font-medium transition-all flex items-center justify-center gap-1 ${hasActiveDebt ? 'bg-rose-600 text-white shadow-sm active:scale-95' : 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-default'}`
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDebt ? 'bg-rose-50/90 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 shadow-sm active:scale-95 border border-rose-200 dark:border-rose-800/50 hover:bg-rose-100' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
           }, hasSettledDebt && /*#__PURE__*/React.createElement("div", {
-            className: "absolute right-1.5 w-[14px] h-[14px] rounded-full border border-current flex items-center justify-center shrink-0 opacity-90"
+            className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
           }, /*#__PURE__*/React.createElement(Icon, {
             name: "check",
             className: "w-2.5 h-2.5",
-            strokeWidth: 3
-          })), /*#__PURE__*/React.createElement("span", null, "\u0628\u062F\u0647\u06CC"))))));
+            strokeWidth: 3.5
+          })), /*#__PURE__*/React.createElement(Icon, {
+            name: "arrow-up-right",
+            className: `w-4.5 h-4.5 ${hasActiveDebt ? 'text-rose-600 dark:text-rose-400' : 'opacity-60'}`
+          }), /*#__PURE__*/React.createElement("span", {
+            className: "text-[11px] font-bold leading-none"
+          }, "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627"))))));
         })));
       case 'contact-detail':
         if (!selectedContact) return null;
@@ -9570,8 +10597,12 @@ function App() {
           }, /*#__PURE__*/React.createElement("div", {
             className: "flex gap-3 items-center min-w-0"
           }, /*#__PURE__*/React.createElement("div", {
-            className: `w-12 h-12 rounded-full ${cardTheme.avatarClass} flex items-center justify-center font-bold text-lg shadow-md shrink-0`
-          }, contactInitials || '؟'), /*#__PURE__*/React.createElement("div", {
+            className: `w-12 h-12 rounded-full overflow-hidden ${cardTheme.avatarClass} flex items-center justify-center font-bold text-lg shadow-md shrink-0`
+          }, selectedContact.profileImage ? /*#__PURE__*/React.createElement("img", {
+            src: selectedContact.profileImage,
+            alt: `${selectedContact.firstName} ${selectedContact.lastName}`,
+            className: "w-full h-full object-cover"
+          }) : contactInitials || '؟'), /*#__PURE__*/React.createElement("div", {
             className: "min-w-0 flex-1"
           }, /*#__PURE__*/React.createElement("h2", {
             className: `text-base sm:text-lg font-bold leading-tight truncate ${cardTheme.nameClass}`
@@ -9630,47 +10661,71 @@ function App() {
           className: "space-y-2.5"
         }, /*#__PURE__*/React.createElement("div", {
           className: "grid grid-cols-3 gap-2.5"
-        }, /*#__PURE__*/React.createElement("div", {
-          onClick: () => setProfileFilter(prev => prev === 'loans' ? 'all' : 'loans'),
-          className: `bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center ${profileFilter === 'loans' ? 'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900 scale-[1.02]' : ''}`
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "landmark",
-          className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold"
-        }, "\u0648\u0627\u0645\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("div", {
-          className: "text-[10px] text-white/80 mt-1"
-        }, loans.filter(l => l.contactId === selectedContact.id).length, " \u067E\u0631\u0648\u0646\u062F\u0647")), /*#__PURE__*/React.createElement("div", {
-          onClick: () => setProfileFilter(prev => prev === 'debts' ? 'all' : 'debts'),
-          className: `bg-gradient-to-br from-rose-500 to-red-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center ${profileFilter === 'debts' ? 'ring-2 ring-rose-500 ring-offset-2 dark:ring-offset-slate-900 scale-[1.02]' : ''}`
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "arrow-down-left",
-          className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold"
-        }, "\u0628\u062F\u0647\u06CC"), /*#__PURE__*/React.createElement("div", {
-          className: "text-[11px] font-extrabold mt-1"
-        }, (selectedContact.totalDebt || 0).toLocaleString()), /*#__PURE__*/React.createElement("div", {
-          className: "text-[9px] text-white/70"
-        }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/React.createElement("div", {
-          onClick: () => setProfileFilter(prev => prev === 'demands' ? 'all' : 'demands'),
-          className: `bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl p-3 shadow-md cursor-pointer hover:shadow-lg transition-all active:scale-95 text-center ${profileFilter === 'demands' ? 'ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900 scale-[1.02]' : ''}`
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "w-7 h-7 rounded-xl bg-white/20 text-white flex items-center justify-center mx-auto mb-1.5 backdrop-blur-sm"
-        }, /*#__PURE__*/React.createElement(Icon, {
-          name: "arrow-up-right",
-          className: "w-4 h-4"
-        })), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs font-bold"
-        }, "\u0637\u0644\u0628"), /*#__PURE__*/React.createElement("div", {
-          className: "text-[11px] font-extrabold mt-1"
-        }, (selectedContact.totalDemand || 0).toLocaleString()), /*#__PURE__*/React.createElement("div", {
-          className: "text-[9px] text-white/70"
-        }, "\u062A\u0648\u0645\u0627\u0646"))), profileFilter === 'loans' && /*#__PURE__*/React.createElement("div", {
+        }, (() => {
+          const contactLoansCount = loans.filter(l => l.contactId === selectedContact.id).length;
+          const isActive = profileFilter === 'loans';
+          return /*#__PURE__*/React.createElement("div", {
+            onClick: () => setProfileFilter(prev => prev === 'loans' ? 'all' : 'loans'),
+            className: `relative bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-indigo-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-xs sm:text-[13px] font-bold text-white/95"
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("div", {
+            className: `w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-indigo-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "landmark",
+            className: "w-3 h-3"
+          }))), /*#__PURE__*/React.createElement("div", {
+            className: "flex flex-col items-start justify-end mt-1.5"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "text-[15px] sm:text-base font-black tracking-tight leading-none text-white font-mono font-numeric"
+          }, toAppDigits(contactLoansCount)), /*#__PURE__*/React.createElement("div", {
+            className: "text-[9px] sm:text-[10px] text-indigo-100 font-medium mt-0.5"
+          }, contactLoansCount === 0 ? 'بدون وام' : 'وام فعال')));
+        })(), (() => {
+          const isActive = profileFilter === 'debts';
+          return /*#__PURE__*/React.createElement("div", {
+            onClick: () => setProfileFilter(prev => prev === 'debts' ? 'all' : 'debts'),
+            className: `relative bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-rose-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-rose-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-xs sm:text-[13px] font-bold text-white/95"
+          }, "\u0628\u062F\u0647\u06CC"), /*#__PURE__*/React.createElement("div", {
+            className: `w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-rose-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "arrow-down-left",
+            className: "w-3 h-3"
+          }))), /*#__PURE__*/React.createElement("div", {
+            className: "flex flex-col items-start justify-end mt-1.5"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
+          }, formatAppNumber(selectedContact.totalDebt || 0)), /*#__PURE__*/React.createElement("div", {
+            className: "text-[9px] sm:text-[10px] text-rose-100 font-medium mt-0.5"
+          }, "\u062A\u0648\u0645\u0627\u0646")));
+        })(), (() => {
+          const isActive = profileFilter === 'demands';
+          return /*#__PURE__*/React.createElement("div", {
+            onClick: () => setProfileFilter(prev => prev === 'demands' ? 'all' : 'demands'),
+            className: `relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-emerald-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-emerald-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-xs sm:text-[13px] font-bold text-white/95"
+          }, "\u0637\u0644\u0628"), /*#__PURE__*/React.createElement("div", {
+            className: `w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-emerald-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "arrow-up-right",
+            className: "w-3 h-3"
+          }))), /*#__PURE__*/React.createElement("div", {
+            className: "flex flex-col items-start justify-end mt-1.5"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
+          }, formatAppNumber(selectedContact.totalDemand || 0)), /*#__PURE__*/React.createElement("div", {
+            className: "text-[9px] sm:text-[10px] text-emerald-100 font-medium mt-0.5"
+          }, "\u062A\u0648\u0645\u0627\u0646")));
+        })()), profileFilter === 'loans' && /*#__PURE__*/React.createElement("div", {
           className: "grid grid-cols-2 gap-2 animate-fade-in pt-1"
         }, /*#__PURE__*/React.createElement("button", {
           onClick: () => openStackWizard('loan', 'add'),
@@ -9728,7 +10783,7 @@ function App() {
             className: "space-y-2.5"
           }, /*#__PURE__*/React.createElement(ActiveArchiveSegmentedControl, {
             activeLabel: "\u0648\u0627\u0645\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
-            activeCount: activeLoans.length,
+            activeCount: toAppDigits(activeLoans.length),
             archiveCount: closedLoans.length,
             currentFilter: contactLoansSubFilter,
             onChange: setContactLoansSubFilter,
@@ -9742,7 +10797,7 @@ function App() {
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
           }, /*#__PURE__*/React.createElement(Icon, {
-            name: "landmark",
+            name: loan.icon || 'landmark',
             className: "w-6 h-6"
           })), /*#__PURE__*/React.createElement("div", {
             className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
@@ -9750,11 +10805,13 @@ function App() {
             className: "text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal"
           }, loan.title), /*#__PURE__*/React.createElement("p", {
             className: "text-xs text-slate-500 dark:text-slate-400 whitespace-normal"
-          }, "\u0627\u0642\u0633\u0627\u0637: ", loan.installmentAmount.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
+          }, "\u0627\u0642\u0633\u0627\u0637: ", /*#__PURE__*/React.createElement("span", {
+            className: "font-mono font-numeric"
+          }, formatAppNumber(loan.installmentAmount)), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "font-bold text-base leading-none text-indigo-600 dark:text-indigo-400"
-          }, loan.principalAmount.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+            className: "font-bold text-base leading-none text-indigo-600 dark:text-indigo-400 font-mono font-numeric"
+          }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/React.createElement("div", {
             className: "text-xs text-indigo-600 dark:text-indigo-400"
           }, "\u062A\u0648\u0645\u0627\u0646")))) : /*#__PURE__*/React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
@@ -9778,8 +10835,8 @@ function App() {
           }, "\u062A\u0633\u0648\u06CC\u0647 \u06A9\u0627\u0645\u0644 \u0634\u062F"))), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "font-bold text-base leading-none text-slate-500"
-          }, loan.principalAmount.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+            className: "font-bold text-base leading-none text-slate-500 font-mono font-numeric"
+          }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/React.createElement("div", {
             className: "text-xs text-slate-500"
           }, "\u062A\u0648\u0645\u0627\u0646")))) : /*#__PURE__*/React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
@@ -9854,8 +10911,8 @@ function App() {
           }, selectedContact.note || 'توضیحات ثبت نشده')), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none"
-          }, selectedContact.totalDebt.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+            className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(selectedContact.totalDebt)), /*#__PURE__*/React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 text-xs"
           }, "\u062A\u0648\u0645\u0627\u0646"))))) : /*#__PURE__*/React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
@@ -9881,8 +10938,8 @@ function App() {
           }, formatDateToNumericJalali(period.startDate), " \u062A\u0627 ", formatDateToNumericJalali(period.endDate))), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none"
-          }, Number(period.totalAmount || 0).toLocaleString()), /*#__PURE__*/React.createElement("div", {
+            className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(period.totalAmount || 0)), /*#__PURE__*/React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 text-xs"
           }, "\u062A\u0648\u0645\u0627\u0646")))))) : /*#__PURE__*/React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
@@ -9957,8 +11014,8 @@ function App() {
           }, selectedContact.note || `طلب از ${selectedContact.firstName} ${selectedContact.lastName}`)), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none"
-          }, selectedContact.totalDemand.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+            className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(selectedContact.totalDemand)), /*#__PURE__*/React.createElement("div", {
             className: "text-emerald-600 dark:text-emerald-400 text-xs"
           }, "\u062A\u0648\u0645\u0627\u0646"))))) : /*#__PURE__*/React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
@@ -9984,8 +11041,8 @@ function App() {
           }, formatDateToNumericJalali(period.startDate), " \u062A\u0627 ", formatDateToNumericJalali(period.endDate))), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none"
-          }, Number(period.totalAmount || 0).toLocaleString()), /*#__PURE__*/React.createElement("div", {
+            className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(period.totalAmount || 0)), /*#__PURE__*/React.createElement("div", {
             className: "text-emerald-600 dark:text-emerald-400 text-xs"
           }, "\u062A\u0648\u0645\u0627\u0646")))))) : /*#__PURE__*/React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
@@ -10057,18 +11114,10 @@ function App() {
           className: "flex items-start gap-3 min-w-0 flex-1"
         }, /*#__PURE__*/React.createElement("div", {
           className: "bg-white/15 backdrop-blur-md p-2.5 rounded-2xl border border-white/20 shrink-0 mt-0.5"
-        }, /*#__PURE__*/React.createElement("svg", {
-          className: "h-5 w-5 sm:h-6 sm:w-6 text-indigo-200",
-          fill: "none",
-          stroke: "currentColor",
-          viewBox: "0 0 24 24",
-          xmlns: "http://www.w3.org/2000/svg"
-        }, /*#__PURE__*/React.createElement("path", {
-          d: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4m-5 10h.01M15 7h.01M15 14h.01M15 18h.01M9 18h.01",
-          strokeLinecap: "round",
-          strokeLinejoin: "round",
-          strokeWidth: "2"
-        }))), /*#__PURE__*/React.createElement("div", {
+        }, /*#__PURE__*/React.createElement(Icon, {
+          name: selectedLoan.icon || 'landmark',
+          className: "w-5 h-5 sm:w-6 sm:h-6 text-indigo-200"
+        })), /*#__PURE__*/React.createElement("div", {
           className: "min-w-0 flex-1"
         }, /*#__PURE__*/React.createElement("h2", {
           className: "text-base sm:text-lg font-bold text-white break-words leading-snug"
@@ -10083,10 +11132,10 @@ function App() {
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-xs text-indigo-200 font-medium"
         }, "\u0645\u0627\u0646\u062F\u0647 \u0648\u0627\u0645"), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-baseline gap-1.5 font-mono"
+          className: "flex items-baseline gap-1.5 font-mono font-numeric"
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-xl sm:text-2xl font-black text-white"
-        }, selectedLoan.remainingAmount.toLocaleString()), /*#__PURE__*/React.createElement("span", {
+        }, formatAppNumber(selectedLoan.remainingAmount)), /*#__PURE__*/React.createElement("span", {
           className: "text-xs text-indigo-200 font-normal"
         }, "\u062A\u0648\u0645\u0627\u0646")))), /*#__PURE__*/React.createElement("div", {
           className: "pt-2 relative z-10 space-y-1.5"
@@ -10096,7 +11145,7 @@ function App() {
           className: "text-indigo-200"
         }, "\u067E\u06CC\u0634\u0631\u0641\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/React.createElement("span", {
           className: "text-emerald-300 font-bold"
-        }, paidInst, " \u0627\u0632 ", totalInst, " \u0642\u0633\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647")), /*#__PURE__*/React.createElement("div", {
+        }, toAppDigits(paidInst), " \u0627\u0632 ", toAppDigits(totalInst), " \u0642\u0633\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647")), /*#__PURE__*/React.createElement("div", {
           className: "w-full bg-white/15 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10"
         }, /*#__PURE__*/React.createElement("div", {
           className: "bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500 shadow-xs",
@@ -10124,8 +11173,8 @@ function App() {
         }))), /*#__PURE__*/React.createElement("div", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
         }, "\u0645\u0628\u0644\u063A \u0627\u0635\u0644 \u0648\u0627\u0645"), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs sm:text-sm font-bold text-green-600 dark:text-green-400 font-mono mt-0.5 break-words max-w-full text-center leading-tight"
-        }, selectedLoan.principalAmount.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+          className: "text-xs sm:text-sm font-bold text-green-600 dark:text-green-400 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
+        }, formatAppNumber(selectedLoan.principalAmount)), /*#__PURE__*/React.createElement("div", {
           className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
         }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/React.createElement("div", {
           className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
@@ -10145,8 +11194,8 @@ function App() {
         }))), /*#__PURE__*/React.createElement("div", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
         }, "\u0645\u0628\u0644\u063A \u0647\u0631 \u0642\u0633\u0637"), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono mt-0.5 break-words max-w-full text-center leading-tight"
-        }, installmentAmount.toLocaleString()), /*#__PURE__*/React.createElement("div", {
+          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
+        }, formatAppNumber(installmentAmount)), /*#__PURE__*/React.createElement("div", {
           className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
         }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/React.createElement("div", {
           className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
@@ -10166,10 +11215,10 @@ function App() {
         }))), /*#__PURE__*/React.createElement("div", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
         }, "\u0642\u0633\u0637 \u0628\u0639\u062F\u06CC"), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono mt-0.5 break-words max-w-full text-center leading-tight"
+          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
         }, nextDueInfo.isCompleted ? 'تکمیل' : formatDateToNumericJalali(nextDueInfo.nextDueDateStr)), /*#__PURE__*/React.createElement("div", {
           className: "text-[9px] text-indigo-600 dark:text-indigo-400 font-medium mt-0.5 text-center leading-tight break-words"
-        }, nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? `${Math.abs(nextDueInfo.daysLeft)} روز تاخیر در پرداخت` : nextDueInfo.daysLeft === 0 ? 'امروز سررسید قسط' : `${nextDueInfo.daysLeft} روز مانده تا سررسید`))), /*#__PURE__*/React.createElement("div", {
+        }, nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? `${toAppDigits(Math.abs(nextDueInfo.daysLeft))} روز تاخیر در پرداخت` : nextDueInfo.daysLeft === 0 ? 'امروز سررسید قسط' : `${toAppDigits(nextDueInfo.daysLeft)} روز مانده تا سررسید`))), /*#__PURE__*/React.createElement("div", {
           className: "bg-white dark:bg-slate-800 rounded-3xl p-4 card-shadow border border-slate-100 dark:border-slate-700/60 space-y-3",
           "data-purpose": "loan-details-grid"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10194,8 +11243,8 @@ function App() {
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
         }, "\u0645\u0628\u0644\u063A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u06A9\u0644"), /*#__PURE__*/React.createElement("span", {
-          className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono leading-tight block mt-0.5"
-        }, selectedLoan.totalRepayment.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
+          className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono font-numeric leading-tight block mt-0.5"
+        }, formatAppNumber(selectedLoan.totalRepayment), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
         }, /*#__PURE__*/React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
@@ -10215,8 +11264,8 @@ function App() {
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
         }, "\u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u062A\u0627 \u0627\u0645\u0631\u0648\u0632"), /*#__PURE__*/React.createElement("span", {
-          className: "text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono leading-tight block mt-0.5"
-        }, selectedLoan.paidAmount.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
+          className: "text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono font-numeric leading-tight block mt-0.5"
+        }, formatAppNumber(selectedLoan.paidAmount), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
         }, /*#__PURE__*/React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0"
@@ -10237,7 +11286,7 @@ function App() {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
         }, "\u062A\u0639\u062F\u0627\u062F \u06A9\u0644 \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/React.createElement("span", {
           className: "text-xs font-bold text-gray-800 dark:text-slate-200 leading-tight block mt-0.5"
-        }, totalInst, " \u0642\u0633\u0637"))), /*#__PURE__*/React.createElement("div", {
+        }, toAppDigits(totalInst), " \u0642\u0633\u0637"))), /*#__PURE__*/React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
         }, /*#__PURE__*/React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0"
@@ -10257,8 +11306,8 @@ function App() {
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
         }, "\u0628\u0627\u0642\u06CC\u200C\u0645\u0627\u0646\u062F\u0647"), /*#__PURE__*/React.createElement("span", {
-          className: "text-xs font-extrabold text-rose-500 dark:text-rose-400 font-mono leading-tight block mt-0.5"
-        }, selectedLoan.remainingAmount.toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
+          className: "text-xs font-extrabold text-rose-500 dark:text-rose-400 font-mono font-numeric leading-tight block mt-0.5"
+        }, formatAppNumber(selectedLoan.remainingAmount), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
         }, /*#__PURE__*/React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0"
@@ -10278,7 +11327,7 @@ function App() {
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
         }, "\u062A\u0627\u0631\u06CC\u062E \u062F\u0631\u06CC\u0627\u0641\u062A \u0648\u0627\u0645"), /*#__PURE__*/React.createElement("span", {
-          className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono leading-tight block mt-0.5 text-right"
+          className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono font-numeric leading-tight block mt-0.5 text-right"
         }, formatDateToNumericJalali(selectedLoan.receiveDate || selectedLoan.startDate)))), /*#__PURE__*/React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10299,7 +11348,7 @@ function App() {
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
         }, "\u062A\u0627\u0631\u06CC\u062E \u0634\u0631\u0648\u0639 \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/React.createElement("span", {
-          className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono leading-tight block mt-0.5 text-right"
+          className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono font-numeric leading-tight block mt-0.5 text-right"
         }, formatDateToNumericJalali(getLoanNextDueInfo(selectedLoan, []).nextDueDateStr || selectedLoan.startDate)))), /*#__PURE__*/React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
         }, /*#__PURE__*/React.createElement("div", {
@@ -10321,7 +11370,7 @@ function App() {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
         }, "\u0645\u0648\u0639\u062F \u0642\u0633\u0637 \u062F\u0631 \u0647\u0631 \u0645\u0627\u0647"), /*#__PURE__*/React.createElement("span", {
           className: "text-xs font-bold text-blue-600 dark:text-blue-400 leading-tight block mt-0.5"
-        }, "\u0631\u0648\u0632 ", selectedLoan.dueDayOfMonth, " \u0645\u0627\u0647"))), /*#__PURE__*/React.createElement("div", {
+        }, "\u0631\u0648\u0632 ", toAppDigits(selectedLoan.dueDayOfMonth), " \u0645\u0627\u0647"))), /*#__PURE__*/React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
         }, /*#__PURE__*/React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
@@ -10342,7 +11391,7 @@ function App() {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
         }, "\u0627\u0642\u0633\u0627\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/React.createElement("span", {
           className: "text-xs font-bold text-gray-800 dark:text-slate-200 leading-tight block mt-0.5"
-        }, paidInst, " \u0642\u0633\u0637")))), /*#__PURE__*/React.createElement("div", {
+        }, toAppDigits(paidInst), " \u0642\u0633\u0637")))), /*#__PURE__*/React.createElement("div", {
           className: "p-3 bg-blue-50/70 dark:bg-indigo-950/40 rounded-2xl flex items-center gap-3 border border-blue-100/80 dark:border-indigo-900/40"
         }, /*#__PURE__*/React.createElement("div", {
           className: "bg-white dark:bg-indigo-900/60 p-2 rounded-xl text-blue-600 dark:text-blue-300 shrink-0"
@@ -10380,17 +11429,17 @@ function App() {
           d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 4.36 6 6.92 6 10v5l-2 2v1h16v-1l-2-2z"
         }))), !nextDueInfo.isCompleted && /*#__PURE__*/React.createElement("span", {
           className: "absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-800"
-        }, nextDueInfo.daysLeft < 0 ? Math.abs(nextDueInfo.daysLeft) : nextDueInfo.daysLeft)), /*#__PURE__*/React.createElement("div", {
+        }, toAppDigits(nextDueInfo.daysLeft < 0 ? Math.abs(nextDueInfo.daysLeft) : nextDueInfo.daysLeft))), /*#__PURE__*/React.createElement("div", {
           className: "min-w-0"
         }, /*#__PURE__*/React.createElement("h3", {
           className: "text-sm font-bold text-amber-800 dark:text-amber-200"
         }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u06CC\u0627\u062F\u0622\u0648\u0631\u06CC"), /*#__PURE__*/React.createElement("p", {
           className: "text-xs text-amber-700 dark:text-amber-300 mt-1 leading-snug"
-        }, nextDueInfo.isCompleted ? 'کلیه اقساط پرداخت شده‌اند' : `قسط شماره ${nextDueInfo.nextDueNum}`, !nextDueInfo.isCompleted && /*#__PURE__*/React.createElement("br", null), !nextDueInfo.isCompleted && formatDateToNumericJalali(nextDueInfo.nextDueDateStr)))), /*#__PURE__*/React.createElement("div", {
+        }, nextDueInfo.isCompleted ? 'کلیه اقساط پرداخت شده‌اند' : `قسط شماره ${toAppDigits(nextDueInfo.nextDueNum)}`, !nextDueInfo.isCompleted && /*#__PURE__*/React.createElement("br", null), !nextDueInfo.isCompleted && formatDateToNumericJalali(nextDueInfo.nextDueDateStr)))), /*#__PURE__*/React.createElement("div", {
           className: "text-center shrink-0"
         }, /*#__PURE__*/React.createElement("div", {
-          className: `text-xl sm:text-2xl font-black ${nextDueInfo.isCompleted ? 'text-emerald-600 dark:text-emerald-400' : nextDueInfo.daysLeft < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400'}`
-        }, nextDueInfo.isCompleted ? 'تکمیل' : `${Math.abs(nextDueInfo.daysLeft)} روز`), /*#__PURE__*/React.createElement("div", {
+          className: `text-xl sm:text-2xl font-black font-mono font-numeric ${nextDueInfo.isCompleted ? 'text-emerald-600 dark:text-emerald-400' : nextDueInfo.daysLeft < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400'}`
+        }, nextDueInfo.isCompleted ? 'تکمیل' : `${toAppDigits(Math.abs(nextDueInfo.daysLeft))} روز`), /*#__PURE__*/React.createElement("div", {
           className: `text-[10px] sm:text-xs font-bold mt-0.5 ${nextDueInfo.isCompleted ? 'text-emerald-700 dark:text-emerald-300' : nextDueInfo.daysLeft < 0 ? 'text-rose-700 dark:text-rose-300' : 'text-amber-700 dark:text-amber-300'}`
         }, nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? 'تاخیر در پرداخت' : 'مانده تا سررسید'), /*#__PURE__*/React.createElement("div", {
           className: "mt-2 bg-white/60 dark:bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px] text-amber-800 dark:text-amber-200 flex items-center gap-1 justify-center"
@@ -10434,8 +11483,8 @@ function App() {
           name: "check-circle-2",
           className: "w-4 h-4"
         }), /*#__PURE__*/React.createElement("span", null, "\u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/React.createElement("span", {
-          className: `text-[10px] px-1.5 py-0.5 rounded-full font-mono ${loanTabFilter === 'paid' ? 'bg-white/20 text-white' : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`
-        }, repaymentTxs.length)), /*#__PURE__*/React.createElement("button", {
+          className: `text-[10px] px-1.5 py-0.5 rounded-full font-mono font-numeric ${loanTabFilter === 'paid' ? 'bg-white/20 text-white' : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`
+        }, toAppDigits(repaymentTxs.length))), /*#__PURE__*/React.createElement("button", {
           type: "button",
           onClick: () => setLoanTabFilter('unpaid'),
           className: `flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${loanTabFilter === 'unpaid' ? 'bg-amber-600 dark:bg-amber-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`
@@ -10443,8 +11492,8 @@ function App() {
           name: "clock",
           className: "w-4 h-4"
         }), /*#__PURE__*/React.createElement("span", null, "\u067E\u0631\u062F\u0627\u062E\u062A \u0646\u0634\u062F\u0647"), /*#__PURE__*/React.createElement("span", {
-          className: `text-[10px] px-1.5 py-0.5 rounded-full font-mono ${loanTabFilter === 'unpaid' ? 'bg-white/20 text-white' : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`
-        }, Math.max(0, totalInst - repaymentTxs.length)))), /*#__PURE__*/React.createElement(AnimatePresence, {
+          className: `text-[10px] px-1.5 py-0.5 rounded-full font-mono font-numeric ${loanTabFilter === 'unpaid' ? 'bg-white/20 text-white' : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`
+        }, toAppDigits(Math.max(0, totalInst - repaymentTxs.length))))), /*#__PURE__*/React.createElement(AnimatePresence, {
           mode: "wait"
         }, loanTabFilter === 'paid' ? /*#__PURE__*/React.createElement(motion.div, {
           key: "paid-list",
@@ -10527,11 +11576,11 @@ function App() {
             className: "flex items-center gap-3 min-w-0"
           }, /*#__PURE__*/React.createElement("div", {
             className: "w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200/60 dark:border-amber-800/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-bold text-xs"
-          }, /*#__PURE__*/React.createElement("span", null, "#", item.instNum)), /*#__PURE__*/React.createElement("div", {
+          }, /*#__PURE__*/React.createElement("span", null, "#", toAppDigits(item.instNum))), /*#__PURE__*/React.createElement("div", {
             className: "min-w-0"
           }, /*#__PURE__*/React.createElement("div", {
             className: "font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 truncate"
-          }, "\u0642\u0633\u0637 ", item.instNum, " \u0627\u0632 ", totalInst), /*#__PURE__*/React.createElement("div", {
+          }, "\u0642\u0633\u0637 ", toAppDigits(item.instNum), " \u0627\u0632 ", toAppDigits(totalInst)), /*#__PURE__*/React.createElement("div", {
             className: "text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1"
           }, /*#__PURE__*/React.createElement(Icon, {
             name: "calendar",
@@ -10539,12 +11588,12 @@ function App() {
           }), /*#__PURE__*/React.createElement("span", null, "\u0645\u0648\u0639\u062F: ", formatDateToNumericJalali(item.dateStr))))), /*#__PURE__*/React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-end gap-1"
           }, /*#__PURE__*/React.createElement("div", {
-            className: "font-mono font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 dir-ltr"
-          }, formatWithCommas(installmentAmount), " ", /*#__PURE__*/React.createElement("span", {
+            className: "font-mono font-numeric font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 dir-ltr"
+          }, formatAppNumber(installmentAmount), " ", /*#__PURE__*/React.createElement("span", {
             className: "font-sans text-[10px] text-slate-500"
           }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/React.createElement("span", {
             className: `text-[10px] font-bold px-2 py-0.5 rounded-full ${item.daysLeft < 0 ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800' : item.daysLeft === 0 ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`
-          }, item.daysLeft < 0 ? `${Math.abs(item.daysLeft)} روز تاخیر` : item.daysLeft === 0 ? 'سررسید امروز' : `${item.daysLeft} روز مانده`)))));
+          }, item.daysLeft < 0 ? `${toAppDigits(Math.abs(item.daysLeft))} روز تاخیر` : item.daysLeft === 0 ? 'سررسید امروز' : `${toAppDigits(item.daysLeft)} روز مانده`)))));
         })()))), /*#__PURE__*/React.createElement("button", {
           onClick: () => openUniversalExportModal("loan", selectedLoan),
           className: "w-full py-3.5 sm:py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-lg shadow-blue-200 dark:shadow-blue-950/50 active:scale-95 transition-all cursor-pointer"
@@ -10645,10 +11694,10 @@ function App() {
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-xs text-white/80 font-medium"
         }, isDebt ? "مبلغ کل بدهی تسویه‌شده" : "مبلغ کل طلب تسویه‌شده"), /*#__PURE__*/React.createElement("div", {
-          className: "flex items-baseline gap-1.5 font-mono"
+          className: "flex items-baseline gap-1.5 font-mono font-numeric"
         }, /*#__PURE__*/React.createElement("span", {
           className: "text-xl sm:text-2xl font-black text-white"
-        }, Number(totalAmt).toLocaleString()), /*#__PURE__*/React.createElement("span", {
+        }, formatAppNumber(totalAmt)), /*#__PURE__*/React.createElement("span", {
           className: "text-xs text-white/80 font-normal"
         }, "\u062A\u0648\u0645\u0627\u0646")))), /*#__PURE__*/React.createElement("div", {
           className: "pt-2 relative z-10 space-y-1.5"
@@ -10683,8 +11732,8 @@ function App() {
         }))), /*#__PURE__*/React.createElement("div", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
         }, "\u062A\u0639\u062F\u0627\u062F \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono mt-0.5 break-words max-w-full text-center leading-tight"
-        }, periodTxs.length), /*#__PURE__*/React.createElement("div", {
+          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
+        }, toAppDigits(periodTxs.length)), /*#__PURE__*/React.createElement("div", {
           className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
         }, "\u0645\u0648\u0631\u062F \u062B\u0628\u062A \u0634\u062F\u0647")), /*#__PURE__*/React.createElement("div", {
           className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
@@ -10704,7 +11753,7 @@ function App() {
         }))), /*#__PURE__*/React.createElement("div", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
         }, "\u062A\u0627\u0631\u06CC\u062E \u0634\u0631\u0648\u0639"), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono mt-0.5 break-words max-w-full text-center leading-tight"
+          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
         }, formatDateToNumericJalali(selectedPeriod.startDate) || "نامشخص"), /*#__PURE__*/React.createElement("div", {
           className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
         }, "\u0627\u0641\u062A\u062A\u0627\u062D \u067E\u0631\u0648\u0646\u062F\u0647")), /*#__PURE__*/React.createElement("div", {
@@ -10725,7 +11774,7 @@ function App() {
         }))), /*#__PURE__*/React.createElement("div", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
         }, "\u062A\u0627\u0631\u06CC\u062E \u062A\u0633\u0648\u06CC\u0647"), /*#__PURE__*/React.createElement("div", {
-          className: "text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-0.5 break-words max-w-full text-center leading-tight"
+          className: "text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
         }, formatDateToNumericJalali(selectedPeriod.endDate) || "امروز"), /*#__PURE__*/React.createElement("div", {
           className: "text-[9px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5 text-center leading-tight break-words"
         }, "\u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647"))), /*#__PURE__*/React.createElement("section", {
@@ -10750,7 +11799,7 @@ function App() {
           className: "font-bold text-gray-800 dark:text-gray-100"
         }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("span", {
           className: `${isDebt ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"} text-xs font-semibold`
-        }, periodTxs.length, " \u062A\u0631\u0627\u06A9\u0646\u0634 \u062B\u0628\u062A\u200C\u0634\u062F\u0647")), periodTxs.length === 0 ? /*#__PURE__*/React.createElement("div", {
+        }, toAppDigits(periodTxs.length), " \u062A\u0631\u0627\u06A9\u0646\u0634 \u062B\u0628\u062A\u200C\u0634\u062F\u0647")), periodTxs.length === 0 ? /*#__PURE__*/React.createElement("div", {
           className: "bg-white dark:bg-slate-800 p-6 rounded-3xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 card-shadow"
         }, "\u0647\u0646\u0648\u0632 \u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u062F\u0631 \u0627\u06CC\u0646 \u062F\u0648\u0631\u0647 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : /*#__PURE__*/React.createElement("div", {
           className: "space-y-3"
@@ -10771,7 +11820,7 @@ function App() {
         }), /*#__PURE__*/React.createElement("span", null, isDebt ? "خروجی گرفتن از گزارش بدهی" : "خروجی گرفتن از گزارش طلب")));
       case 'settings':
         return /*#__PURE__*/React.createElement("div", {
-          className: "w-full max-w-4xl mx-auto px-4 py-4 space-y-4 pb-24"
+          className: "w-full max-w-4xl mx-auto space-y-3.5 pb-24 animate-fade-in"
         }, /*#__PURE__*/React.createElement("h1", {
           className: "text-xl font-black text-slate-900 dark:text-white px-1"
         }, "\u062A\u0646\u0638\u06CC\u0645\u0627\u062A"), /*#__PURE__*/React.createElement("div", {
@@ -10792,11 +11841,11 @@ function App() {
           className: "flex items-center flex-wrap gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400"
         }, /*#__PURE__*/React.createElement("span", null, "\u0646\u0633\u062E\u0647 ", /*#__PURE__*/React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, versionData.installedVersion || '3.2.4')), /*#__PURE__*/React.createElement("span", {
+        }, toAppDigits(versionData.installedVersion || "3.2.4"))), /*#__PURE__*/React.createElement("span", {
           className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
         }), /*#__PURE__*/React.createElement("span", null, "\u0628\u06CC\u0644\u062F ", /*#__PURE__*/React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, versionData.buildNumber || '387')), versionData.releaseChannel && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+        }, toAppDigits(versionData.buildNumber || "387"))), versionData.releaseChannel && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
           className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
         }), /*#__PURE__*/React.createElement("span", {
           className: "text-indigo-600 dark:text-indigo-400 font-medium"
@@ -10863,8 +11912,10 @@ function App() {
           className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'appearance' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
           onClick: e => e.stopPropagation()
         }, /*#__PURE__*/React.createElement("div", {
-          className: "overflow-hidden space-y-2.5"
-        }, /*#__PURE__*/React.createElement("div", {
+          className: "overflow-hidden space-y-3"
+        }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-200 mb-2 px-1"
+        }, "\u067E\u0648\u0633\u062A\u0647 \u0628\u0631\u0646\u0627\u0645\u0647"), /*#__PURE__*/React.createElement("div", {
           className: "grid grid-cols-3 gap-2 bg-slate-100 dark:bg-slate-900/60 p-1.5 rounded-[20px]"
         }, /*#__PURE__*/React.createElement("button", {
           type: "button",
@@ -10902,7 +11953,39 @@ function App() {
           className: "text-xs scale-90"
         }, "\u062A\u06CC\u0631\u0647"), theme === 'dark' && /*#__PURE__*/React.createElement("div", {
           className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
-        })))))), /*#__PURE__*/React.createElement("div", {
+        })))), /*#__PURE__*/React.createElement("div", {
+          className: "pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "flex items-center justify-between px-1"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
+        }, "\u0646\u0648\u0639 \u0646\u0645\u0627\u06CC\u0634 \u0627\u0631\u0642\u0627\u0645 \u0645\u0627\u0644\u06CC \u0648 \u0641\u0648\u0646\u062A \u0627\u0639\u062F\u0627\u062F"), /*#__PURE__*/React.createElement("span", {
+          className: "text-[11px] text-slate-400 font-mono"
+        }, "\u0645\u0628\u0627\u0644\u063A \u0648 \u0622\u0645\u0627\u0631")), /*#__PURE__*/React.createElement("div", {
+          className: "grid grid-cols-2 gap-2 bg-slate-100 dark:bg-slate-900/60 p-1.5 rounded-[20px]"
+        }, /*#__PURE__*/React.createElement("button", {
+          type: "button",
+          onClick: () => handleSetNumberFormat('latin'),
+          id: "num-format-latin",
+          className: `flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${numberFormat === 'latin' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'}`
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-sm font-black mb-0.5 tracking-tight font-mono font-numeric"
+        }, "123,456"), /*#__PURE__*/React.createElement("span", {
+          className: "text-xs scale-90"
+        }, "\u0627\u0631\u0642\u0627\u0645 \u0644\u0627\u062A\u06CC\u0646 (\u0627\u0646\u06AF\u0644\u06CC\u0633\u06CC)"), numberFormat === 'latin' && /*#__PURE__*/React.createElement("div", {
+          className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
+        })), /*#__PURE__*/React.createElement("button", {
+          type: "button",
+          onClick: () => handleSetNumberFormat('persian'),
+          id: "num-format-persian",
+          className: `flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${numberFormat === 'persian' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'}`
+        }, /*#__PURE__*/React.createElement("span", {
+          className: "text-sm font-black mb-0.5 tracking-tight font-mono font-numeric"
+        }, "\u06F1\u06F2\u06F3,\u06F4\u06F5\u06F6"), /*#__PURE__*/React.createElement("span", {
+          className: "text-xs scale-90"
+        }, "\u0627\u0631\u0642\u0627\u0645 \u0641\u0627\u0631\u0633\u06CC \u062E\u0648\u0627\u0646\u0627"), numberFormat === 'persian' && /*#__PURE__*/React.createElement("div", {
+          className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
+        }))))))), /*#__PURE__*/React.createElement("div", {
           onClick: () => toggleSettingsSection('notifications'),
           className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
         }, /*#__PURE__*/React.createElement("div", {
@@ -11300,7 +12383,7 @@ function App() {
             className: "w-4 h-4"
           }), /*#__PURE__*/React.createElement("span", null, "\u0635\u0641\u062D\u0647 \u0642\u0628\u0644")), /*#__PURE__*/React.createElement("div", {
             className: "text-xs font-bold text-slate-600 dark:text-slate-300"
-          }, "\u0635\u0641\u062D\u0647 ", currentPage, " \u0627\u0632 ", totalPages), /*#__PURE__*/React.createElement("button", {
+          }, "\u0635\u0641\u062D\u0647 ", toAppDigits(currentPage), " \u0627\u0632 ", toAppDigits(totalPages)), /*#__PURE__*/React.createElement("button", {
             disabled: currentPage >= totalPages,
             onClick: () => setAllTxsPage(prev => Math.min(totalPages, prev + 1)),
             className: `px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 space-x-reverse transition-all ${currentPage >= totalPages ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 active:scale-95'}`
@@ -11761,7 +12844,7 @@ function App() {
       className: "flex items-center space-x-2 space-x-reverse"
     }, /*#__PURE__*/React.createElement("span", {
       className: "text-xs font-extrabold text-slate-500 dark:text-slate-400"
-    }, "\u06A9\u0627\u0631\u062A ", index + 1, " \u0627\u0632 ", activeCards.length, ": ", card.title), isModified && /*#__PURE__*/React.createElement("span", {
+    }, "\u06A9\u0627\u0631\u062A ", toAppDigits(index + 1), " \u0627\u0632 ", toAppDigits(activeCards.length), ": ", card.title), isModified && /*#__PURE__*/React.createElement("span", {
       className: "inline-flex items-center gap-1 bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-emerald-500/30"
     }, /*#__PURE__*/React.createElement(Icon, {
       name: "check",
@@ -12401,16 +13484,16 @@ function App() {
               jy,
               jm
             } = gregorianToJalali(y, m, d);
-            dateDisplay = `(${jalaliMonths[jm - 1]} ${toPersianDigits(jy)})`;
+            dateDisplay = `(${jalaliMonths[jm - 1]} ${toAppDigits(jy)})`;
           } else {
-            dateDisplay = `(${jalaliMonths[m - 1] || m} ${toPersianDigits(y)})`;
+            dateDisplay = `(${jalaliMonths[m - 1] || m} ${toAppDigits(y)})`;
           }
         } else {
-          dateDisplay = `(${toPersianDigits(ver.releaseDate)})`;
+          dateDisplay = `(${toAppDigits(ver.releaseDate)})`;
         }
       }
     } catch (e) {
-      dateDisplay = ver.releaseDate ? `(${toPersianDigits(ver.releaseDate)})` : '';
+      dateDisplay = ver.releaseDate ? `(${toAppDigits(ver.releaseDate)})` : '';
     }
     return /*#__PURE__*/React.createElement("div", {
       key: ver.version || idx,
@@ -12434,7 +13517,7 @@ function App() {
       className: "flex items-center space-x-2 space-x-reverse flex-wrap gap-1.5 min-w-0"
     }, /*#__PURE__*/React.createElement("span", {
       className: "font-bold text-sm sm:text-base text-slate-900 dark:text-white font-vazir"
-    }, "\u0646\u0633\u062E\u0647 ", toPersianDigits(ver.version)), isLatest && /*#__PURE__*/React.createElement("span", {
+    }, "\u0646\u0633\u062E\u0647 ", toAppDigits(ver.version)), isLatest && /*#__PURE__*/React.createElement("span", {
       className: "text-[11px] font-bold bg-[#d1fae5] text-[#047857] dark:bg-emerald-900/60 dark:text-emerald-300 px-2.5 py-0.5 rounded-full whitespace-nowrap font-vazir"
     }, "\u062C\u062F\u06CC\u062F\u062A\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647"), dateDisplay && /*#__PURE__*/React.createElement("span", {
       className: "text-xs text-slate-400 dark:text-slate-500 font-medium font-vazir"
@@ -12550,7 +13633,7 @@ function App() {
     className: "bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl p-3 border border-amber-200/60 dark:border-amber-800/40"
   }, /*#__PURE__*/React.createElement("p", {
     className: "text-xs sm:text-sm font-bold text-amber-900 dark:text-amber-200"
-  }, backupStatus?.unbackedChangesCount || 0, " \u062A\u063A\u06CC\u06CC\u0631 \u067E\u0633 \u0627\u0632 \u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646"), /*#__PURE__*/React.createElement("p", {
+  }, toAppDigits(backupStatus?.unbackedChangesCount || 0), " \u062A\u063A\u06CC\u06CC\u0631 \u067E\u0633 \u0627\u0632 \u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646"), /*#__PURE__*/React.createElement("p", {
     className: "text-xs text-amber-700 dark:text-amber-300/90 mt-1 leading-relaxed"
   }, "\u062C\u0647\u062A \u062D\u0641\u0638 \u0627\u0645\u0646\u06CC\u062A \u0627\u0637\u0644\u0627\u0639\u0627\u062A \u0645\u0627\u0644\u06CC \u0648 \u062C\u0644\u0648\u06AF\u06CC\u0631\u06CC \u0627\u0632 \u067E\u0627\u06A9 \u0634\u062F\u0646 \u062F\u0627\u062F\u0647\u200C\u0647\u0627\u060C \u0641\u0627\u06CC\u0644 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646 \u062C\u062F\u06CC\u062F \u0631\u0627 \u062A\u0647\u06CC\u0647 \u0648 \u0630\u062E\u06CC\u0631\u0647 \u0646\u0645\u0627\u06CC\u06CC\u062F.")), backupStatus?.categoryCounts && Object.keys(backupStatus.categoryCounts).length > 0 && /*#__PURE__*/React.createElement("div", {
     className: "space-y-2 pt-0.5"
@@ -12606,7 +13689,30 @@ function App() {
   }), /*#__PURE__*/React.createElement("span", null, "\u062F\u0631 \u062D\u0627\u0644 \u0622\u0645\u0627\u062F\u0647\u200C\u0633\u0627\u0632\u06CC \u0641\u0627\u06CC\u0644...")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Icon, {
     name: "download",
     className: "w-4.5 h-4.5"
-  }), /*#__PURE__*/React.createElement("span", null, backupError ? 'تلاش مجدد' : 'پشتیبان‌گیری اکنون'))))))), /*#__PURE__*/React.createElement(AnimatePresence, null, undoState && /*#__PURE__*/React.createElement(motion.div, {
+  }), /*#__PURE__*/React.createElement("span", null, backupError ? 'تلاش مجدد' : 'پشتیبان‌گیری اکنون'))))))), /*#__PURE__*/React.createElement(LoanIconSelectorModal, {
+    isOpen: showLoanIconSelector,
+    onClose: () => setShowLoanIconSelector(false),
+    onSelect: icon => setLoanForm(prev => ({
+      ...prev,
+      icon
+    })),
+    selectedIcon: loanForm.icon
+  }), /*#__PURE__*/React.createElement(ContactImageCropperModal, {
+    isOpen: showContactImageCropper,
+    imageSrc: contactImageCropperSrc,
+    onConfirm: croppedImage => {
+      setContactWizardForm(prev => ({
+        ...prev,
+        profileImage: croppedImage
+      }));
+      setShowContactImageCropper(false);
+      setContactImageCropperSrc(null);
+    },
+    onCancel: () => {
+      setShowContactImageCropper(false);
+      setContactImageCropperSrc(null);
+    }
+  }), /*#__PURE__*/React.createElement(AnimatePresence, null, undoState && /*#__PURE__*/React.createElement(motion.div, {
     key: "undo-snackbar",
     initial: {
       y: 50,

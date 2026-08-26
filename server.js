@@ -73,6 +73,37 @@ app.use('/public', express.static(path.join(rootPath, 'public')));
 app.use(express.static(path.join(rootPath, 'public')));
 app.use(express.static(rootPath));
 
+// Guard font requests so they are served with correct MIME type and caching
+app.use((req, res, next) => {
+  if (req.path.match(/\.(woff2|woff|ttf|otf|eot)$/i)) {
+    const cleanPath = req.path.replace(/^\//, '');
+    const possiblePaths = [
+      path.join(rootPath, 'public', cleanPath),
+      path.join(rootPath, cleanPath),
+      path.join(rootPath, 'public', path.basename(req.path)),
+      path.join(rootPath, path.basename(req.path)),
+      path.join(rootPath, 'src/assets/fonts', path.basename(req.path)),
+      path.join(rootPath, 'public/src/assets/fonts', path.basename(req.path)),
+      path.join(rootPath, 'public/vendor/fonts', path.basename(req.path))
+    ];
+
+    let mimeType = 'font/ttf';
+    if (req.path.endsWith('.woff2')) mimeType = 'font/woff2';
+    else if (req.path.endsWith('.woff')) mimeType = 'font/woff';
+    else if (req.path.endsWith('.otf')) mimeType = 'font/otf';
+    else if (req.path.endsWith('.eot')) mimeType = 'application/vnd.ms-fontobject';
+
+    for (const p of possiblePaths) {
+      if (fs.existsSync(p)) {
+        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        return res.sendFile(p);
+      }
+    }
+  }
+  next();
+});
+
 // Guard image requests so they never fall through to index.html
 app.use((req, res, next) => {
   if (req.path.match(/\.(png|jpg|jpeg|svg|ico|webp|gif)$/i)) {

@@ -117,6 +117,15 @@
                 }
                 origError.apply(console, arguments);
             };
+
+            // Early Number Format sync
+            try {
+                var savedNumFormat = localStorage.getItem('amir_fin_num_format') || 'latin';
+                document.documentElement.setAttribute('data-number-format', savedNumFormat);
+                if (savedNumFormat === 'persian') {
+                    document.documentElement.classList.add('num-format-persian');
+                }
+            } catch(e) {}
         })();
     </script>
     
@@ -129,7 +138,10 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Vazirmatn', 'sans-serif'],
+                        sans: ['Vazirmatn', 'Vazir', 'sans-serif'],
+                        mono: ['Vazir', 'Vazirmatn', 'ui-monospace', 'monospace'],
+                        numeric: ['Vazir', 'Vazirmatn', 'sans-serif'],
+                        vazir: ['Vazir', 'Vazirmatn', 'sans-serif'],
                     },
                     colors: {
                         brand: {
@@ -145,6 +157,41 @@
         }
     </script>
     <style>
+        /* Custom Persian Numbers Font */
+        @font-face {
+            font-family: 'Vazir';
+            src: url('./src/assets/fonts/Vazir.ttf') format('truetype'),
+                 url('/src/assets/fonts/Vazir.ttf') format('truetype'),
+                 url('./assets/fonts/Vazir.ttf') format('truetype'),
+                 url('./fonts/Vazir.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Vazir';
+            src: url('./src/assets/fonts/Vazir.ttf') format('truetype'),
+                 url('/src/assets/fonts/Vazir.ttf') format('truetype'),
+                 url('./assets/fonts/Vazir.ttf') format('truetype'),
+                 url('./fonts/Vazir.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'VazirDigits';
+            src: url('./src/assets/fonts/Vazir.ttf') format('truetype'),
+                 url('/src/assets/fonts/Vazir.ttf') format('truetype'),
+                 url('./assets/fonts/Vazir.ttf') format('truetype'),
+                 url('./fonts/Vazir.ttf') format('truetype');
+            unicode-range: U+06F0-06F9, U+0660-0669, U+060C, U+066B, U+066C;
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
         html, body {
             width: 100%;
             height: 100%;
@@ -171,7 +218,7 @@
         }
         
         body {
-            font-family: 'Vazirmatn', sans-serif;
+            font-family: 'Vazirmatn', 'VazirDigits', 'Vazir', sans-serif;
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none;
             user-select: none;
@@ -184,6 +231,31 @@
         /* Prevent auto-zoom on mobile focus */
         input, textarea, select {
             font-size: 16px !important;
+        }
+        .font-numeric, .tabular-nums, .font-mono, [class*="font-mono"], [class*="font-numeric"], [class*="font-vazir"] {
+            font-family: 'Vazir', 'VazirDigits', 'Vazirmatn', sans-serif !important;
+            font-variant-numeric: tabular-nums lining-nums;
+            -webkit-font-feature-settings: "tnum" 1, "lnum" 1;
+            font-feature-settings: "tnum" 1, "lnum" 1;
+        }
+
+        /* Full Persian Number Mode Typography */
+        [data-number-format="persian"],
+        .num-format-persian {
+            font-family: 'Vazirmatn', 'VazirDigits', 'Vazir', sans-serif;
+        }
+
+        [data-number-format="persian"] .font-numeric,
+        [data-number-format="persian"] .font-mono,
+        [data-number-format="persian"] .font-sans,
+        [data-number-format="persian"] input,
+        [data-number-format="persian"] select,
+        .num-format-persian .font-numeric,
+        .num-format-persian .font-mono,
+        .num-format-persian .font-sans,
+        .num-format-persian input,
+        .num-format-persian select {
+            font-feature-settings: "tnum" 1, "lnum" 1;
         }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
@@ -819,7 +891,7 @@
     <div id="root" class="w-full h-full flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=3.2.6-b400"></script>
+    <script src="app.compiled.js?v=3.2.7-b421"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>

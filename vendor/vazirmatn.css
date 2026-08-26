@@ -70,3 +70,38 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* Custom Vazir TrueType Font */
+@font-face {
+  font-family: 'Vazir';
+  src: url('../src/assets/fonts/Vazir.ttf') format('truetype'),
+       url('../assets/fonts/Vazir.ttf') format('truetype'),
+       url('../fonts/Vazir.ttf') format('truetype'),
+       url('./fonts/Vazir.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazir';
+  src: url('../src/assets/fonts/Vazir.ttf') format('truetype'),
+       url('../assets/fonts/Vazir.ttf') format('truetype'),
+       url('../fonts/Vazir.ttf') format('truetype'),
+       url('./fonts/Vazir.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VazirDigits';
+  src: url('../src/assets/fonts/Vazir.ttf') format('truetype'),
+       url('../assets/fonts/Vazir.ttf') format('truetype'),
+       url('../fonts/Vazir.ttf') format('truetype'),
+       url('./fonts/Vazir.ttf') format('truetype');
+  unicode-range: U+06F0-06F9, U+0660-0669, U+060C, U+066B, U+066C;
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}

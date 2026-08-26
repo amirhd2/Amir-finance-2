@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amir-finance-v3.2.6-b400';
+const CACHE_NAME = 'amir-finance-v3.2.7-b421';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -45,7 +45,10 @@ const ASSETS_TO_CACHE = [
   './vendor/fonts/webfonts/Vazirmatn-SemiBold.woff2',
   './vendor/fonts/webfonts/Vazirmatn-Bold.woff2',
   './vendor/fonts/webfonts/Vazirmatn-ExtraBold.woff2',
-  './vendor/fonts/webfonts/Vazirmatn-Black.woff2'
+  './vendor/fonts/webfonts/Vazirmatn-Black.woff2',
+  './src/assets/fonts/Vazir.ttf',
+  './assets/fonts/Vazir.ttf',
+  './fonts/Vazir.ttf'
 ];
 
 self.addEventListener('install', (event) => {
