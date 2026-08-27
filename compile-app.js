@@ -90,6 +90,19 @@ function syncPublicFiles() {
     fs.cpSync(vendorSrc, vendorDest, { recursive: true });
   }
 
+  // Copy mockups folder if exists
+  const mockupsSrc = path.join(process.cwd(), 'src', 'assets', 'images');
+  if (fs.existsSync(mockupsSrc)) {
+    const mockupsDest = path.join(publicDir, 'mockups');
+    fs.mkdirSync(mockupsDest, { recursive: true });
+    for (const item of ['option1.jpg', 'option2.jpg', 'option3.jpg']) {
+      const s = path.join(mockupsSrc, item);
+      if (fs.existsSync(s)) {
+        fs.copyFileSync(s, path.join(mockupsDest, item));
+      }
+    }
+  }
+
   // Copy src/assets folder recursively if exists
   const srcAssets = path.join(process.cwd(), 'src', 'assets');
   if (fs.existsSync(srcAssets)) {

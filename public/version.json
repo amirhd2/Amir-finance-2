@@ -1,21 +1,21 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.2.7",
-  "buildNumber": 421,
-  "releaseDate": "2026-08-26",
+  "installedVersion": "3.2.8",
+  "buildNumber": 458,
+  "releaseDate": "2026-08-27",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.2.7",
-  "latestBuild": 421,
+  "latestVersion": "3.2.8",
+  "latestBuild": 458,
   "isUpdateAvailable": false,
   "history": [
     {
       "version": "3.2.7",
-      "buildNumber": 421,
-      "releaseDate": "2026-08-26",
+      "buildNumber": 451,
+      "releaseDate": "2026-08-27",
       "releaseChannel": "Stable",
-      "commitHash": "v327b421",
+      "commitHash": "v327b451",
       "commitMessage": "feat: implement corner micro-badge and installment counter inside icon, sync naming in all transactions, release v3.2.6",
       "changes": [
         "حذف برچسب‌های کپسولی فشرده‌کننده از خط اول و جایگزینی با نشانگر گوشه‌ای هوشمند (Corner Micro-Badge)",
@@ -265,6 +265,23 @@
         "همگام‌سازی دقیق نسخه نصب‌شده با سرور و بارگذاری سریع بدون نیاز به کش قدیمی",
         "تراز دقیق نوار ناوبری پایین صفحه با لبه استاندارد دستگاه",
         "بهینه‌سازی نهایی کارکرد آفلاین PWA"
+      ]
+    }
+  ],
+  "versionHistory": [
+    {
+      "version": "3.2.8",
+      "buildNumber": 458,
+      "releaseDate": "2026-08-27",
+      "releaseChannel": "Stable",
+      "commitHash": "v328b458",
+      "commitMessage": "feat: comprehensive contact photo & loan icon backup audit, enhanced loan icon catalog with 90+ categorized icons, and release v3.2.8",
+      "changes": [
+        "بررسی جامع و اعتبارسنجی ۱۰۰٪ جریان‌های پشتیبان‌گیری، بازیابی و حذف داده برای تصاویر مخاطبین و آیکون‌های وام",
+        "توسعه اساسی پالت آیکون‌های وام به بیش از ۹۰ آیکون متنوع و تخصصی با دسته‌بندی موضوعی (بانکی، نقلیه، مسکن، خرید، کار، خانواده و عمومی)",
+        "افزودن قابلیت جستجوی زنده در موضوعات و کلمات کلیدی آیکون‌های وام",
+        "اصلاح و جایگزینی کامل آیکون خالی/سفید با آیکون‌های استاندارد Lucide",
+        "بهبود هماهنگی نام‌گذاری ۳ خطی تراکنش‌ها و ارتقای یکپارچه به نسخه 3.2.8"
       ]
     }
   ]
