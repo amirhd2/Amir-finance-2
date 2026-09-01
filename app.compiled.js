@@ -1,4 +1,12 @@
-function _extends2() { return _extends2 = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends2.apply(null, arguments); }
+function _extends2() {
+  return _extends2 = Object.assign ? Object.assign.bind() : function (n) {
+    for (var e = 1; e < arguments.length; e++) {
+      var t = arguments[e];
+      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+    }
+    return n;
+  }, _extends2.apply(null, arguments);
+}
 function _extends() {
   return _extends = Object.assign ? Object.assign.bind() : function (n) {
     for (var e = 1; e < arguments.length; e++) {
@@ -62,28 +70,23 @@ class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
         className: "min-h-screen w-full flex flex-col items-center justify-center p-6 bg-slate-950 text-white text-center font-vazir dir-rtl"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "text-5xl mb-4 animate-bounce"
-      }, "\u26A1"),
-      /*#__PURE__*/
+      }, "\u26A1"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("h2", {
         className: "text-lg font-bold mb-2 text-slate-100"
-      }, "\u0631\u0627\u0647\u200C\u0627\u0646\u062F\u0627\u0632\u06CC \u0645\u062C\u062F\u062F \u0627\u0645\u06CC\u0631 \u0641\u0627\u06CC\u0646\u0646\u0633"),
-      /*#__PURE__*/
+      }, "\u0631\u0627\u0647\u200C\u0627\u0646\u062F\u0627\u0632\u06CC \u0645\u062C\u062F\u062F \u0627\u0645\u06CC\u0631 \u0641\u0627\u06CC\u0646\u0646\u0633"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("p", {
         className: "text-xs text-slate-400 mb-6 max-w-xs leading-relaxed"
-      }, this.state.error ? String(this.state.error) : 'نسخه جدید برنامه آماده است. جهت بارگذاری دکمه زیر را لمس کنید.'),
-      /*#__PURE__*/
+      }, this.state.error ? String(this.state.error) : 'نسخه جدید برنامه آماده است. جهت بارگذاری دکمه زیر را لمس کنید.'), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "flex gap-3"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("button", {
         onClick: () => {
@@ -94,8 +97,7 @@ class ErrorBoundary extends Component {
           window.location.reload();
         },
         className: "bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all cursor-pointer"
-      }, "\u0648\u0631\u0648\u062F \u0628\u0647 \u0628\u0631\u0646\u0627\u0645\u0647"),
-      /*#__PURE__*/
+      }, "\u0648\u0631\u0648\u062F \u0628\u0647 \u0628\u0631\u0646\u0627\u0645\u0647"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("button", {
         onClick: () => {
@@ -2463,8 +2465,7 @@ function PullToRefresh({
       WebkitOverflowScrolling: 'touch',
       overscrollBehaviorY: 'contain'
     }
-  }, (pullY > 0 || isRefreshing || isExiting) &&
-  /*#__PURE__*/
+  }, (pullY > 0 || isRefreshing || isExiting) && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "absolute left-1/2 -translate-x-1/2 z-40 pointer-events-none flex items-center justify-center",
@@ -2475,18 +2476,15 @@ function PullToRefresh({
       transition: isDraggingRef.current ? 'none' : 'transform 320ms cubic-bezier(0.32, 0.72, 0, 1), opacity 200ms ease',
       willChange: 'transform, opacity'
     }
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400"
-  }, isRefreshing ?
-  /*#__PURE__*/
+  }, isRefreshing ? /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "w-5 h-5 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin shrink-0"
-  }) :
-  /*#__PURE__*/
+  }) : /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center justify-center",
@@ -2494,14 +2492,12 @@ function PullToRefresh({
       transform: `rotate(${rotation}deg)`,
       transition: isDraggingRef.current ? 'none' : 'transform 200ms ease-out'
     }
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "refresh-cw",
     className: "w-4 h-4 text-indigo-600 dark:text-indigo-400"
-  })))),
-  /*#__PURE__*/
+  })))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "w-full min-h-full",
@@ -2745,39 +2741,33 @@ function SwipeBackWrapper({
   };
   return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
     className: `app-viewport fixed inset-0 w-full h-full overflow-hidden bg-[#F4F7FC] dark:bg-slate-950 z-30 ${className}`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     ref: page1Ref,
     className: "page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-hidden overscroll-x-none w-full h-full"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 min-h-full"
-  }, underlyingContent)),
-  /*#__PURE__*/
+  }, underlyingContent)), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     ref: overlayRef,
     className: "backdrop-overlay"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     ref: page2Ref,
     className: "page-view z-20 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden"
-  }, onRefresh ?
-  /*#__PURE__*/
+  }, onRefresh ? /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(PullToRefresh, {
     onRefresh: onRefresh,
     className: "w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20"
   }, typeof children === 'function' ? children({
     onBack: handleHeaderBack
-  }) : children) :
-  /*#__PURE__*/
+  }) : children) : /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "w-full h-full overflow-y-auto overflow-x-hidden overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20"
@@ -2937,22 +2927,19 @@ function WheelColumn({
     className: `${flexClass} h-full overflow-y-scroll no-scrollbar wheel-scroll relative cursor-grab active:cursor-grabbing`,
     tabIndex: 0,
     "aria-label": ariaLabel
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     style: {
       height: `${SPACER_HEIGHT}px`
     },
     className: "w-full shrink-0"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     ref: containerRef,
     className: "w-full"
-  }, items.map((item, idx) =>
-  /*#__PURE__*/
+  }, items.map((item, idx) => /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     key: idx,
@@ -2968,8 +2955,7 @@ function WheelColumn({
       if (onSelectIndex) onSelectIndex(idx);
     },
     className: "wheel-item h-[44px] flex items-center justify-center font-normal text-base text-slate-400 dark:text-slate-400"
-  }, item.display))),
-  /*#__PURE__*/
+  }, item.display))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     style: {
@@ -3049,60 +3035,49 @@ function FullJalaliDatePicker({
   };
   return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
     className: "w-full space-y-3 select-none"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center justify-between px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-xs"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center space-x-2 space-x-reverse"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "text-xs font-medium text-slate-500 dark:text-slate-400"
-  }, "\u062A\u0627\u0631\u06CC\u062E \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647:"),
-  /*#__PURE__*/
+  }, "\u062A\u0627\u0631\u06CC\u062E \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647:"), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "text-xs sm:text-sm font-bold text-indigo-600 dark:text-blue-400 tracking-tight"
-  }, toAppDigits(numericDay), " ", monthStr, " ", toAppDigits(numericYear))),
-  /*#__PURE__*/
+  }, toAppDigits(numericDay), " ", monthStr, " ", toAppDigits(numericYear))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: handleToday,
     className: "py-1 px-2.5 bg-indigo-50 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition text-xs font-semibold rounded-xl text-indigo-600 dark:text-slate-200 border border-indigo-200 dark:border-slate-700/50 flex items-center space-x-1 space-x-reverse shrink-0 cursor-pointer"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "clock",
     className: "w-3.5 h-3.5 text-indigo-500 dark:text-blue-400"
-  }),
+  }), /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("span", null, "\u0627\u0645\u0631\u0648\u0632"))),
-  /*#__PURE__*/
+  React.createElement("span", null, "\u0627\u0645\u0631\u0648\u0632"))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative w-full h-[210px] bg-[#F4F7FC]/70 dark:bg-slate-950/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/50 flex shadow-inner"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "absolute left-2 right-2 top-1/2 -translate-y-1/2 h-[44px] bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-md rounded-xl pointer-events-none border border-slate-300/60 dark:border-slate-700/50 shadow-xs z-10"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative w-full h-full wheel-mask flex z-20",
     dir: "ltr"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(WheelColumn, {
     items: yearItems,
@@ -3119,8 +3094,7 @@ function FullJalaliDatePicker({
     },
     flexClass: "flex-1",
     ariaLabel: " "
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(WheelColumn, {
     items: monthItems,
@@ -3137,8 +3111,7 @@ function FullJalaliDatePicker({
     },
     flexClass: "flex-[1.3]",
     ariaLabel: " "
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(WheelColumn, {
     items: dayItems,
@@ -3172,28 +3145,23 @@ function IOSWheelPicker({
   const selectedIndex = Math.max(0, items.indexOf(selectedValue));
   return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
     className: "flex flex-col items-center flex-1 min-w-0 select-none"
-  }, label &&
-  /*#__PURE__*/
+  }, label && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1"
-  }, label),
-  /*#__PURE__*/
+  }, label), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative w-full h-[180px] bg-[#F4F7FC]/70 dark:bg-slate-950/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/50 flex"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[44px] bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-md rounded-xl pointer-events-none border border-slate-300/60 dark:border-slate-700/50 z-10"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative w-full h-full wheel-mask flex z-20"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(WheelColumn, {
     items: formattedItems,
@@ -3219,8 +3187,7 @@ function GlobalConfirmDialog({
   onCancel = () => {},
   allowBackdropClose = true
 }) {
-  return /*#__PURE__*/ /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen &&
-  /*#__PURE__*/
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.div, {
     key: "global-confirm-backdrop",
@@ -3239,8 +3206,7 @@ function GlobalConfirmDialog({
       }
     },
     className: "fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.div, {
     key: "global-confirm-modal",
@@ -3262,69 +3228,56 @@ function GlobalConfirmDialog({
       damping: 25
     },
     className: "bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl w-full max-w-xs sm:max-w-sm rounded-[28px] p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700/80"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: `w-14 h-14 rounded-full ${iconBgColor} mx-auto flex items-center justify-center shadow-sm active:scale-95 transition-transform duration-200`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: iconName,
     className: "w-7 h-7"
-  })),
-  /*#__PURE__*/
+  })), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "space-y-1.5"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("h4", {
     className: "text-base font-extrabold text-slate-900 dark:text-white"
-  }, title),
-  /*#__PURE__*/
+  }, title), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("p", {
     className: "text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium"
-  }, message), details && details.length > 0 &&
-  /*#__PURE__*/
+  }, message), details && details.length > 0 && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "mt-3 p-3 bg-[#F4F7FC] dark:bg-slate-900/80 rounded-2xl border border-slate-100 dark:border-slate-700/60 text-right space-y-1.5 text-xs"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "text-[11px] font-bold text-slate-400 dark:text-slate-500 block mb-1"
-  }, "\u0645\u0648\u0627\u0631\u062F \u062F\u0631 \u062D\u0627\u0644 \u062D\u0630\u0641:"), details.map((item, idx) =>
-  /*#__PURE__*/
+  }, "\u0645\u0648\u0627\u0631\u062F \u062F\u0631 \u062D\u0627\u0644 \u062D\u0630\u0641:"), details.map((item, idx) => /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     key: idx,
     className: "flex items-center space-x-2 space-x-reverse text-slate-700 dark:text-slate-300 font-bold"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"
-  }),
+  }), /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("span", null, item))))),
-  /*#__PURE__*/
+  React.createElement("span", null, item))))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex space-x-2.5 space-x-reverse pt-2"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     onClick: onConfirm,
     className: `flex-1 font-extrabold py-3 rounded-2xl text-xs shadow-md active:scale-[0.95] transition-all duration-150 ${isDestructive ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-500/20' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'}`
-  }, confirmLabel),
-  /*#__PURE__*/
+  }, confirmLabel), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     onClick: onCancel,
@@ -3576,8 +3529,7 @@ function SwipeToDeleteItem({
       touchAction: 'pan-y'
     },
     className: `relative transition-[max-height,opacity,transform] duration-300 overflow-hidden rounded-2xl ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' : 'max-h-[500px] opacity-100 my-0.5 swipe-container-safe'} ${className}`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     ref: btnRef,
@@ -3596,19 +3548,16 @@ function SwipeToDeleteItem({
       e.stopPropagation();
       triggerDeleteModal();
     }
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center justify-center w-full h-full"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "trash-2",
     className: "w-5 h-5 text-white shrink-0"
-  }))),
-  /*#__PURE__*/
+  }))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     ref: cardRef,
@@ -3705,74 +3654,60 @@ function ActiveArchiveSegmentedControl({
   const isLeftActive = currentFilter === 'archived';
   return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
     className: "w-full relative my-2.5 select-none flex items-center justify-between gap-2 border-b border-slate-200/80 dark:border-slate-700/60 pb-2"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center gap-1 bg-slate-100 dark:bg-slate-800/90 p-1 rounded-2xl text-xs font-bold border border-slate-200/70 dark:border-slate-700/50"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: () => onChange('active'),
     className: `py-1.5 px-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${isRightActive ? `bg-white dark:bg-slate-700 ${themeConfig.activeTextColor} shadow-xs font-black` : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium'}`
-  },
+  }, /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("span", null, activeLabel),
-  /*#__PURE__*/
+  React.createElement("span", null, activeLabel), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "dir-ltr text-[11px] font-extrabold opacity-80"
-  }, "(", toAppDigits(activeCount), ")")),
-  /*#__PURE__*/
+  }, "(", toAppDigits(activeCount), ")")), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: () => onChange('archived'),
     className: `py-1.5 px-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${isLeftActive ? `bg-white dark:bg-slate-700 ${themeConfig.activeTextColor} shadow-xs font-black` : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium'}`
-  },
+  }, /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("span", null, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC"),
-  /*#__PURE__*/
+  React.createElement("span", null, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC"), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "dir-ltr text-[11px] font-extrabold opacity-80"
-  }, "(", toAppDigits(archiveCount), ")"))), actions && actions.length > 0 &&
-  /*#__PURE__*/
+  }, "(", toAppDigits(archiveCount), ")"))), actions && actions.length > 0 && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative",
     ref: dropdownRef
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: () => setIsMenuOpen(!isMenuOpen),
     className: `py-1.5 px-3 rounded-full bg-gradient-to-r ${themeConfig.btnGradient} text-white font-extrabold text-xs shadow-sm hover:shadow-md active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "plus",
     className: "w-3.5 h-3.5"
-  }),
+  }), /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("span", null, "\u062B\u0628\u062A \u062C\u062F\u06CC\u062F"),
-  /*#__PURE__*/
+  React.createElement("span", null, "\u062B\u0628\u062A \u062C\u062F\u06CC\u062F"), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "chevron-down",
     className: `w-3 h-3 transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`
-  })),
+  })), /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement(AnimatePresence, null, isMenuOpen &&
-  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, isMenuOpen && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.div, {
     key: "actions-dropdown-menu",
@@ -3796,8 +3731,7 @@ function ActiveArchiveSegmentedControl({
       ease: "easeOut"
     },
     className: "absolute left-0 top-full z-50 min-w-[170px] bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200/90 dark:border-slate-700/80 p-1.5 space-y-1 overflow-hidden"
-  }, actions.map((act, idx) =>
-  /*#__PURE__*/
+  }, actions.map((act, idx) => /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     key: idx,
@@ -3807,19 +3741,16 @@ function ActiveArchiveSegmentedControl({
       act.onClick();
     },
     className: "w-full py-2 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/80 text-slate-800 dark:text-slate-100 text-xs font-bold flex items-center gap-2.5 transition-colors text-right cursor-pointer group"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: `w-6 h-6 rounded-lg ${themeConfig.badgeBg} flex items-center justify-center shrink-0`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: act.icon || 'plus',
     className: "w-3.5 h-3.5"
-  })),
-  /*#__PURE__*/
+  })), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "truncate"
@@ -3898,19 +3829,16 @@ function TxBorderFocusOverlay({
     ref: containerRef,
     className: "absolute inset-0 pointer-events-none z-30 overflow-visible",
     "aria-hidden": "true"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("svg", {
     width: w,
     height: h,
     viewBox: `0 0 ${w} ${h}`,
     className: "absolute inset-0 w-full h-full overflow-visible pointer-events-none tx-focus-container"
-  },
+  }, /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("defs", null,
-  /*#__PURE__*/
+  React.createElement("defs", null, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("filter", {
     id: `tx-glow-${tx.id}`,
@@ -3918,56 +3846,47 @@ function TxBorderFocusOverlay({
     y: "-20%",
     width: "140%",
     height: "140%"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("feGaussianBlur", {
     stdDeviation: "2.5",
     result: "blur"
-  }),
+  }), /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("feMerge", null,
-  /*#__PURE__*/
+  React.createElement("feMerge", null, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("feMergeNode", {
     in: "blur"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("feMergeNode", {
     in: "SourceGraphic"
-  }))),
-  /*#__PURE__*/
+  }))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("radialGradient", {
     id: `tx-meet-grad-${tx.id}`,
     cx: "50%",
     cy: "50%",
     r: "50%"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("stop", {
     offset: "0%",
     stopColor: lightTint,
     stopOpacity: "1"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("stop", {
     offset: "35%",
     stopColor: colorHex,
     stopOpacity: "0.85"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("stop", {
     offset: "100%",
     stopColor: colorHex,
     stopOpacity: "0"
-  }))),
-  /*#__PURE__*/
+  }))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("path", {
     d: path1,
@@ -3979,8 +3898,7 @@ function TxBorderFocusOverlay({
     strokeOpacity: "0.45",
     className: "tx-focus-beam-glow",
     filter: `url(#tx-glow-${tx.id})`
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("path", {
     d: path2,
@@ -3992,8 +3910,7 @@ function TxBorderFocusOverlay({
     strokeOpacity: "0.45",
     className: "tx-focus-beam-glow",
     filter: `url(#tx-glow-${tx.id})`
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("path", {
     d: path1,
@@ -4003,8 +3920,7 @@ function TxBorderFocusOverlay({
     strokeWidth: "2.2",
     strokeLinecap: "round",
     className: "tx-focus-beam-core"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("path", {
     d: path2,
@@ -4014,8 +3930,7 @@ function TxBorderFocusOverlay({
     strokeWidth: "2.2",
     strokeLinecap: "round",
     className: "tx-focus-beam-core"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("path", {
     d: path1,
@@ -4025,8 +3940,7 @@ function TxBorderFocusOverlay({
     strokeWidth: "1.6",
     strokeLinecap: "round",
     className: "tx-focus-beam-head"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("path", {
     d: path2,
@@ -4036,8 +3950,7 @@ function TxBorderFocusOverlay({
     strokeWidth: "1.6",
     strokeLinecap: "round",
     className: "tx-focus-beam-head"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("circle", {
     cx: w / 2,
@@ -4264,92 +4177,75 @@ function SwipeableTxCard({
   return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
     onDelete: confirmCb => onDelete && onDelete(tx, confirmCb),
     onCardClick: () => onEdit && onEdit(tx)
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     id: `tx-card-${tx.id}`,
     className: `${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border border-r-[3.5px] ${txVisualConfig.borderAccent} pl-3 sm:pl-5 pr-2.5 sm:pr-3.5 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto relative overflow-visible`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(TxBorderFocusOverlay, {
     tx: tx,
     isHighlighted: isHighlighted
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative shrink-0"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: `w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base ${txVisualConfig.iconBg} flex items-center justify-center shadow-xs select-none`
-  }, txVisualConfig.isLoan && instNum ?
-  /*#__PURE__*/
+  }, txVisualConfig.isLoan && instNum ? /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "font-extrabold font-mono tracking-tight text-indigo-700 dark:text-indigo-300"
-  }, toAppDigits(instNum)) :
-  /*#__PURE__*/
+  }, toAppDigits(instNum)) : /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: txVisualConfig.iconName,
     className: "w-5 h-5 sm:w-5.5 sm:h-5.5"
-  })),
-  /*#__PURE__*/
+  })), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: `absolute -top-1 -right-1 w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full ${txVisualConfig.microBadgeClass} border-2 border-white dark:border-slate-800 flex items-center justify-center shadow-xs pointer-events-none`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: txVisualConfig.microBadgeIcon,
     className: "w-2.5 h-2.5 stroke-[3]"
-  }))),
-  /*#__PURE__*/
+  }))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "min-w-0 flex-1 text-right flex flex-col gap-0.5"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("h3", {
     className: "text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug truncate"
-  }, line1), line2 &&
-  /*#__PURE__*/
+  }, line1), line2 && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 truncate leading-snug"
-  }, line2),
-  /*#__PURE__*/
+  }, line2), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("p", {
     className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 truncate leading-relaxed mt-0.5"
-  }, line3))),
-  /*#__PURE__*/
+  }, line3))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "text-center shrink-0 flex flex-col items-center justify-center min-w-[70px] sm:min-w-[90px] pl-0 sm:pl-1"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: `font-black text-sm sm:text-[15px] leading-tight text-center ${txVisualConfig.amountClass} dir-ltr font-mono font-numeric`
-  }, txVisualConfig.sign &&
-  /*#__PURE__*/
+  }, txVisualConfig.sign && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "ml-0.5 text-xs"
-  }, txVisualConfig.sign), formatAppNumber(Math.abs(tx.amount))),
-  /*#__PURE__*/
+  }, txVisualConfig.sign), formatAppNumber(Math.abs(tx.amount))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: `text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${txVisualConfig.amountClass}`
@@ -4419,8 +4315,7 @@ function StackCardItem({
     key: card.id,
     "data-depth": depthAttr,
     className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex-1 py-2 overflow-y-auto overflow-x-hidden overscroll-x-none hide-scrollbar touch-pan-y",
@@ -4435,37 +4330,31 @@ function StackCardItem({
         }
       }
     }
-  }, card.render()),
-  /*#__PURE__*/
+  }, card.render()), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse h-12"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: !isFirstCard ? handlePrevCard : undefined,
     disabled: isFirstCard,
     className: `flex-1 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center space-x-1 space-x-reverse ${isFirstCard ? 'bg-slate-100 dark:bg-slate-800/60 text-slate-300 dark:text-slate-600 border border-slate-200/50 dark:border-slate-700/50 cursor-not-allowed opacity-40 pointer-events-none' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 cursor-pointer opacity-100 active:scale-95 shadow-2xs'}`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "arrow-right",
     className: "w-3.5 h-3.5 shrink-0"
-  }),
+  }), /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("span", null, "\u0645\u0631\u062D\u0644\u0647 \u0642\u0628\u0644\u06CC")),
-  /*#__PURE__*/
+  React.createElement("span", null, "\u0645\u0631\u062D\u0644\u0647 \u0642\u0628\u0644\u06CC")), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: handleNextCard,
     className: "flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", null, index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'))));
 }
@@ -4484,8 +4373,7 @@ function ContactAvatar({
   if (contactAvatar) {
     return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
       className: `rounded-full flex-shrink-0 overflow-hidden shadow-xs border border-white/10 ${className}`
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("img", {
       src: contactAvatar,
@@ -4495,8 +4383,7 @@ function ContactAvatar({
   }
   return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
     className: `rounded-full ${bgClass} flex-shrink-0 flex items-center justify-center text-white font-bold shadow-xs ${className}`
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "user",
@@ -4905,8 +4792,7 @@ function LoanIconPickerModal({
       return item.label.toLowerCase().includes(q) || item.keywords.toLowerCase().includes(q) || item.name.toLowerCase().includes(q);
     });
   }, [searchQuery, selectedCategory]);
-  return /*#__PURE__*/ /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen &&
-  /*#__PURE__*/
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.div, {
     key: "loan-icon-picker-backdrop",
@@ -4916,8 +4802,7 @@ function LoanIconPickerModal({
     exit: "exit",
     className: "absolute inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4",
     onClick: onClose
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.div, {
     key: "loan-icon-picker-panel",
@@ -4930,57 +4815,47 @@ function LoanIconPickerModal({
     },
     onClick: e => e.stopPropagation(),
     className: "w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] p-4 sm:p-5 space-y-3.5 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto shrink-0"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center justify-between shrink-0"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "text-right"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("h3", {
     className: "font-extrabold text-slate-900 dark:text-white text-base"
-  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0622\u06CC\u06A9\u0648\u0646 \u0648\u0627\u0645"),
-  /*#__PURE__*/
+  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0622\u06CC\u06A9\u0648\u0646 \u0648\u0627\u0645"), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("p", {
     className: "text-xs text-slate-400 mt-0.5"
-  }, "\u06CC\u06A9 \u0622\u06CC\u06A9\u0648\u0646 \u0645\u062A\u0646\u0627\u0633\u0628 \u0628\u0627 \u0645\u0648\u0636\u0648\u0639 \u067E\u0631\u0648\u0646\u062F\u0647 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F")),
-  /*#__PURE__*/
+  }, "\u06CC\u06A9 \u0622\u06CC\u06A9\u0648\u0646 \u0645\u062A\u0646\u0627\u0633\u0628 \u0628\u0627 \u0645\u0648\u0636\u0648\u0639 \u067E\u0631\u0648\u0646\u062F\u0647 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F")), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: onClose,
     className: "w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center transition-colors"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "x",
     className: "w-4 h-4"
-  }))),
-  /*#__PURE__*/
+  }))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative shrink-0"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "search",
     className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("input", {
     type: "text",
@@ -4988,21 +4863,18 @@ function LoanIconPickerModal({
     value: searchQuery,
     onChange: e => setSearchQuery(e.target.value),
     className: "w-full bg-[#F4F7FC] dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-8 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-  }), searchQuery &&
-  /*#__PURE__*/
+  }), searchQuery && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: () => setSearchQuery(''),
     className: "absolute left-3 top-3 text-slate-400 hover:text-slate-600"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "x",
     className: "w-3.5 h-3.5"
-  }))),
-  /*#__PURE__*/
+  }))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center gap-1.5 overflow-x-auto pb-1 hide-scrollbar shrink-0 text-xs"
@@ -5014,13 +4886,11 @@ function LoanIconPickerModal({
       onClick: () => setSelectedCategory(cat.id),
       className: `px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all cursor-pointer ${isActive ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`
     }, cat.label);
-  })),
-  /*#__PURE__*/
+  })), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar min-h-[220px] max-h-[320px] p-1"
-  }, filteredIcons.length > 0 ?
-  /*#__PURE__*/
+  }, filteredIcons.length > 0 ? /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "grid grid-cols-4 sm:grid-cols-5 gap-2.5"
@@ -5031,25 +4901,21 @@ function LoanIconPickerModal({
       type: "button",
       onClick: () => onSelect(item.name),
       className: `flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all cursor-pointer group active:scale-95 ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-500 dark:border-indigo-500 ring-2 ring-indigo-500/30 text-indigo-600 dark:text-indigo-300 shadow-xs' : 'bg-[#F4F7FC]/70 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50/40'}`
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mb-1.5 transition-transform group-hover:scale-110"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: item.name,
       className: "w-6 h-6"
-    })),
-    /*#__PURE__*/
+    })), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-[10px] font-bold truncate max-w-full text-center leading-tight"
     }, item.label));
-  })) :
-  /*#__PURE__*/
+  })) : /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "text-center py-10 text-xs text-slate-400"
@@ -5181,8 +5047,7 @@ function ContactImageCropperModal({
     const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
     onConfirm(dataUrl);
   };
-  return /*#__PURE__*/ /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen &&
-  /*#__PURE__*/
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.div, {
     key: "contact-image-cropper-backdrop",
@@ -5192,8 +5057,7 @@ function ContactImageCropperModal({
     exit: "exit",
     className: "absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4",
     onClick: onCancel
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.div, {
     key: "contact-image-cropper-panel",
@@ -5206,26 +5070,21 @@ function ContactImageCropperModal({
     },
     onClick: e => e.stopPropagation(),
     className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl text-center"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
-  }),
+  }), /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("div", null,
-  /*#__PURE__*/
+  React.createElement("div", null, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("h3", {
     className: "font-extrabold text-slate-900 dark:text-white text-base"
-  }, "\u062A\u0646\u0638\u06CC\u0645 \u0648 \u0628\u0631\u0634 \u062A\u0635\u0648\u06CC\u0631 \u0645\u062E\u0627\u0637\u0628"),
-  /*#__PURE__*/
+  }, "\u062A\u0646\u0638\u06CC\u0645 \u0648 \u0628\u0631\u0634 \u062A\u0635\u0648\u06CC\u0631 \u0645\u062E\u0627\u0637\u0628"), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("p", {
     className: "text-xs text-slate-400 mt-0.5"
-  }, "\u062A\u0635\u0648\u06CC\u0631 \u0631\u0627 \u062D\u0631\u06A9\u062A \u062F\u0627\u062F\u0647 \u0648 \u0628\u0627 \u0627\u0646\u062F\u0627\u0632\u0647 \u062F\u0644\u062E\u0648\u0627\u0647 \u062A\u0646\u0638\u06CC\u0645 \u06A9\u0646\u06CC\u062F")),
-  /*#__PURE__*/
+  }, "\u062A\u0635\u0648\u06CC\u0631 \u0631\u0627 \u062D\u0631\u06A9\u062A \u062F\u0627\u062F\u0647 \u0648 \u0628\u0627 \u0627\u0646\u062F\u0627\u0632\u0647 \u062F\u0644\u062E\u0648\u0627\u0647 \u062A\u0646\u0638\u06CC\u0645 \u06A9\u0646\u06CC\u062F")), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative w-60 h-60 mx-auto rounded-2xl bg-slate-950 overflow-hidden cursor-grab active:cursor-grabbing border border-slate-700 select-none shadow-inner",
@@ -5236,8 +5095,7 @@ function ContactImageCropperModal({
     onTouchStart: handleTouchStart,
     onTouchMove: handleTouchMove,
     onTouchEnd: handleTouchEnd
-  }, imageSrc &&
-  /*#__PURE__*/
+  }, imageSrc && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("img", {
     ref: imgRef,
@@ -5250,42 +5108,35 @@ function ContactImageCropperModal({
       transition: isDragging ? 'none' : 'transform 0.1s ease-out'
     },
     className: "w-full h-full object-contain pointer-events-none"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "absolute inset-0 pointer-events-none flex items-center justify-center"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "w-48 h-48 rounded-full border-2 border-white/80 border-dashed shadow-[0_0_0_9999px_rgba(15,23,42,0.65)] ring-1 ring-indigo-500/50"
-  }))),
-  /*#__PURE__*/
+  }))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "space-y-2.5 pt-1"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center gap-3 px-2"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: () => setZoom(z => Math.max(0.6, z - 0.15)),
     className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 active:scale-95 shrink-0",
     title: ""
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "minus",
     className: "w-4 h-4"
-  })),
-  /*#__PURE__*/
+  })), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("input", {
     type: "range",
@@ -5295,43 +5146,36 @@ function ContactImageCropperModal({
     value: zoom,
     onChange: e => setZoom(parseFloat(e.target.value)),
     className: "flex-1 accent-indigo-600 cursor-pointer"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: () => setZoom(z => Math.min(3.5, z + 0.15)),
     className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 active:scale-95 shrink-0",
     title: ""
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "plus",
     className: "w-4 h-4"
-  }))),
-  /*#__PURE__*/
+  }))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center justify-center gap-2"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: () => setRotation(r => (r + 90) % 360),
     className: "py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "rotate-cw",
     className: "w-3.5 h-3.5"
-  }),
+  }), /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("span", null, "\u0686\u0631\u062E\u0634 \u06F9\u06F0\xB0")),
-  /*#__PURE__*/
+  React.createElement("span", null, "\u0686\u0631\u062E\u0634 \u06F9\u06F0\xB0")), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
@@ -5344,42 +5188,35 @@ function ContactImageCropperModal({
       setRotation(0);
     },
     className: "py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "rotate-ccw",
     className: "w-3.5 h-3.5"
-  }),
+  }), /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement("span", null, "\u062A\u0646\u0638\u06CC\u0645 \u0645\u062C\u062F\u062F")))),
-  /*#__PURE__*/
+  React.createElement("span", null, "\u062A\u0646\u0638\u06CC\u0645 \u0645\u062C\u062F\u062F")))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "flex items-center gap-2 pt-2"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: onCancel,
     className: "flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all active:scale-95"
-  }, "\u0627\u0646\u0635\u0631\u0627\u0641"),
-  /*#__PURE__*/
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641"), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("button", {
     type: "button",
     onClick: handleConfirmCrop,
     className: "flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "check",
     className: "w-4 h-4"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", null, "\u062A\u0627\u06CC\u06CC\u062F \u0648 \u0630\u062E\u06CC\u0631\u0647 \u062A\u0635\u0648\u06CC\u0631"))))));
 }
@@ -6019,43 +5856,35 @@ function ContactSelectorCard({
   if (selectedC && !isExpanded) {
     return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-600 dark:text-slate-300 font-bold"
-    }, "\u0645\u062E\u0627\u0637\u0628 \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647:"),
-    /*#__PURE__*/
+    }, "\u0645\u062E\u0627\u0637\u0628 \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-500 rounded-2xl p-3.5 flex items-center justify-between shadow-xs"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex items-center space-x-3 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(ContactAvatar, {
       contact: selectedC,
       className: "w-10 h-10",
       iconClassName: "w-5 h-5"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs font-bold text-indigo-950 dark:text-indigo-100"
-    }, selectedC.firstName, " ", selectedC.lastName),
-    /*#__PURE__*/
+    }, selectedC.firstName, " ", selectedC.lastName), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-[10px] text-indigo-600 dark:text-indigo-300 font-mono"
-    }, selectedC.phone ? toAppDigits(selectedC.phone) : 'بدون شماره تماس'))),
-    /*#__PURE__*/
+    }, selectedC.phone ? toAppDigits(selectedC.phone) : 'بدون شماره تماس'))), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("button", {
       type: "button",
@@ -6065,24 +5894,20 @@ function ContactSelectorCard({
   }
   return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
     className: "space-y-3"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("label", {
     className: "block text-xs text-slate-600 dark:text-slate-300 font-bold"
-  }, "\u0645\u062E\u0627\u0637\u0628 \u062E\u0648\u062F \u0631\u0627 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F:"),
-  /*#__PURE__*/
+  }, "\u0645\u062E\u0627\u0637\u0628 \u062E\u0648\u062F \u0631\u0627 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F:"), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "search",
     className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("input", {
     type: "text",
@@ -6090,8 +5915,7 @@ function ContactSelectorCard({
     value: searchQuery,
     onChange: e => setSearchQuery(e.target.value),
     className: `w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 ${error ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:ring-indigo-500'}`
-  })),
-  /*#__PURE__*/
+  })), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: `max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
@@ -6104,56 +5928,46 @@ function ContactSelectorCard({
         setIsExpanded(false);
       },
       className: `p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 dark:border-indigo-600 font-bold text-indigo-700 dark:text-indigo-300' : 'bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300'}`
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex items-center space-x-2.5 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(ContactAvatar, {
       contact: c,
       className: "w-8 h-8",
       iconClassName: "w-4 h-4"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs"
-    }, c.firstName, " ", c.lastName),
-    /*#__PURE__*/
+    }, c.firstName, " ", c.lastName), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-[10px] text-slate-400"
-    }, c.phone ? toAppDigits(c.phone) : ''))), isSelected &&
-    /*#__PURE__*/
+    }, c.phone ? toAppDigits(c.phone) : ''))), isSelected && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "check-circle-2",
       className: "w-5 h-5 text-indigo-600 dark:text-indigo-400"
     }));
-  }) :
-  /*#__PURE__*/
+  }) : /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "text-center py-6 text-xs text-slate-400"
-  }, "\u0645\u062E\u0627\u0637\u0628\u06CC \u062C\u0647\u062A \u0627\u0646\u062A\u062E\u0627\u0628 \u06CC\u0627\u0641\u062A \u0646\u0634\u062F.")), error &&
-  /*#__PURE__*/
+  }, "\u0645\u062E\u0627\u0637\u0628\u06CC \u062C\u0647\u062A \u0627\u0646\u062A\u062E\u0627\u0628 \u06CC\u0627\u0641\u062A \u0646\u0634\u062F.")), error && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("p", {
     className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "alert-circle",
     className: "w-3.5 h-3.5 shrink-0"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", null, error)));
 }
@@ -6229,136 +6043,110 @@ function LoanSelectorCard({
     }
     return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-900 text-white rounded-2xl p-4 shadow-lg border border-indigo-500/30 space-y-3.5"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex items-center justify-between"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-1"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-[11px] text-indigo-200 font-bold flex items-center space-x-1 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "landmark",
       className: "w-4 h-4 text-indigo-300"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("span", null, isEditingMode ? 'ویرایش قسط پرونده:' : 'پرونده وام انتخاب‌شده:')),
-    /*#__PURE__*/
+    React.createElement("span", null, isEditingMode ? 'ویرایش قسط پرونده:' : 'پرونده وام انتخاب‌شده:')), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-sm font-extrabold text-white"
-    }, selectedLoanObj.title),
-    /*#__PURE__*/
+    }, selectedLoanObj.title), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs text-indigo-100 font-medium"
-    }, "\u0637\u0631\u0641 \u062D\u0633\u0627\u0628: ", contactName)),
-    /*#__PURE__*/
+    }, "\u0637\u0631\u0641 \u062D\u0633\u0627\u0628: ", contactName)), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex flex-col items-center justify-center bg-white/20 backdrop-blur-md border border-white/40 rounded-2xl px-4 py-3 shadow-inner text-white dir-rtl shrink-0 min-w-[100px]"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-[10px] text-indigo-100 font-bold"
-    }, isEditingMode ? 'ویرایش قسط' : 'قسط شماره'),
-    /*#__PURE__*/
+    }, isEditingMode ? 'ویرایش قسط' : 'قسط شماره'), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-3xl font-black tracking-tight leading-none my-1 text-white font-mono"
-    }, toAppDigits(displayInstNum)),
-    /*#__PURE__*/
+    }, toAppDigits(displayInstNum)), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-[11px] text-indigo-200 font-bold"
-    }, "\u0627\u0632 ", toAppDigits(totalInst)))),
-    /*#__PURE__*/
+    }, "\u0627\u0632 ", toAppDigits(totalInst)))), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "pt-3 border-t border-indigo-400/30 space-y-2 dir-rtl"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex items-center justify-between"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-xs text-indigo-200 font-medium"
-    }, isEditingMode ? 'تاریخ ثبت‌شده این قسط:' : 'تاریخ پرداخت این قسط:'),
-    /*#__PURE__*/
+    }, isEditingMode ? 'تاریخ ثبت‌شده این قسط:' : 'تاریخ پرداخت این قسط:'), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-sm font-extrabold text-white bg-white/15 px-3 py-1 rounded-xl border border-white/20 font-mono tracking-wider whitespace-nowrap",
       dir: "ltr"
-    }, displayDateStr)),
-    /*#__PURE__*/
+    }, displayDateStr)), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex items-center justify-between"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-xs text-indigo-200 font-medium"
-    }, "\u0645\u0628\u0644\u063A \u0642\u0633\u0637:"),
-    /*#__PURE__*/
+    }, "\u0645\u0628\u0644\u063A \u0642\u0633\u0637:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-base font-black text-amber-300 font-mono"
-    }, displayAmount, " \u062A\u0648\u0645\u0627\u0646")))), isExpanded ?
-    /*#__PURE__*/
+    }, displayAmount, " \u062A\u0648\u0645\u0627\u0646")))), isExpanded ? /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex justify-between items-center"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-xs font-bold text-slate-700 dark:text-slate-300"
-    }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0648\u0627\u0645 \u062F\u06CC\u06AF\u0631:"),
-    /*#__PURE__*/
+    }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0648\u0627\u0645 \u062F\u06CC\u06AF\u0631:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("button", {
       type: "button",
       onClick: () => setIsExpanded(false),
       className: "text-[11px] font-bold text-slate-500 hover:underline"
-    }, "\u0628\u0633\u062A\u0646 \u0645\u0646\u0648")),
-    /*#__PURE__*/
+    }, "\u0628\u0633\u062A\u0646 \u0645\u0646\u0648")), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "relative"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "search",
       className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
-    }),
-    /*#__PURE__*/
+    }), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -6366,80 +6154,66 @@ function LoanSelectorCard({
       value: searchQuery,
       onChange: e => setSearchQuery(e.target.value),
       className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none"
-    })),
-    /*#__PURE__*/
+    })), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "max-h-44 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1"
-    }, filtered.length > 0 ? filtered.map(l =>
-    /*#__PURE__*/
+    }, filtered.length > 0 ? filtered.map(l => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       key: l.id,
       onClick: () => handleSelect(l),
       className: "p-2.5 rounded-xl border bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 flex justify-between items-center cursor-pointer hover:border-indigo-400"
-    },
+    }, /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs font-bold text-slate-900 dark:text-white"
-    }, l.title),
-    /*#__PURE__*/
+    }, l.title), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-[10px] text-slate-400 font-mono"
-    }, l.installmentAmount ? formatAppNumber(l.installmentAmount) : 0, " \u062A\u0648\u0645\u0627\u0646 \u062F\u0631 \u0645\u0627\u0647")),
-    /*#__PURE__*/
+    }, l.installmentAmount ? formatAppNumber(l.installmentAmount) : 0, " \u062A\u0648\u0645\u0627\u0646 \u062F\u0631 \u0645\u0627\u0647")), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "chevron-left",
       className: "w-4 h-4 text-slate-400"
-    }))) :
-    /*#__PURE__*/
+    }))) : /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-center py-4 text-xs text-slate-400"
-    }, "\u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u06CC\u0627\u0641\u062A \u0646\u0634\u062F"))) :
-    /*#__PURE__*/
+    }, "\u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u06CC\u0627\u0641\u062A \u0646\u0634\u062F"))) : /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("button", {
       type: "button",
       onClick: () => setIsExpanded(true),
       className: "w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "repeat",
       className: "w-3.5 h-3.5 text-indigo-600"
-    }),
-    /*#__PURE__*/
+    }), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", null, "\u062A\u063A\u06CC\u06CC\u0631 \u0648\u0627\u0645 \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647")));
   }
   return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
     className: "space-y-3"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("label", {
     className: "block text-xs font-bold text-slate-700 dark:text-slate-300"
-  }, "\u06CC\u06A9 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644 \u062C\u0647\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F:"),
-  /*#__PURE__*/
+  }, "\u06CC\u06A9 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644 \u062C\u0647\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F:"), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "relative"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "search",
     className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("input", {
     type: "text",
@@ -6447,8 +6221,7 @@ function LoanSelectorCard({
     value: searchQuery,
     onChange: e => setSearchQuery(e.target.value),
     className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
-  })),
-  /*#__PURE__*/
+  })), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: `max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
@@ -6459,69 +6232,56 @@ function LoanSelectorCard({
       key: l.id,
       onClick: () => handleSelect(l),
       className: "p-3 rounded-2xl border bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 flex items-center justify-between cursor-pointer hover:border-indigo-500 transition-all shadow-2xs"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex items-center space-x-3 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "landmark",
       className: "w-4 h-4"
-    })),
+    })), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs font-bold text-slate-900 dark:text-white"
-    }, l.title),
-    /*#__PURE__*/
+    }, l.title), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-[10px] text-slate-400"
-    }, cName))),
-    /*#__PURE__*/
+    }, cName))), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-left ltr"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs font-bold text-indigo-600 dark:text-indigo-400 font-mono"
-    }, l.installmentAmount ? formatAppNumber(l.installmentAmount) : '-', " \u062A\u0648\u0645\u0627\u0646"),
-    /*#__PURE__*/
+    }, l.installmentAmount ? formatAppNumber(l.installmentAmount) : '-', " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-[9px] text-slate-400"
     }, "\u0645\u0628\u0644\u063A \u0642\u0633\u0637")));
-  }) :
-  /*#__PURE__*/
+  }) : /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
     className: "text-center py-6 text-xs text-slate-400"
-  }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u062C\u0647\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 \u06CC\u0627\u0641\u062A \u0646\u0634\u062F.")), error &&
-  /*#__PURE__*/
+  }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u062C\u0647\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 \u06CC\u0627\u0641\u062A \u0646\u0634\u062F.")), error && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("p", {
     className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-  },
-  /*#__PURE__*/
+  }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: "alert-circle",
     className: "w-3.5 h-3.5 shrink-0"
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", null, error)));
 }
@@ -6545,8 +6305,7 @@ const BrandAvatar = ({
   if (srcIndex >= sources.length) {
     return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
       className: `rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white font-black flex items-center justify-center shadow-sm border border-indigo-400/30 shrink-0 ${className}`
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-sm font-black tracking-tight"
@@ -6591,11 +6350,9 @@ function NavRippleButton({
     onPointerDown: handlePointerDown,
     onClick: onClick,
     className: `relative overflow-hidden flex flex-col items-center justify-center w-14 h-12 rounded-2xl transition-all duration-200 select-none cursor-pointer ${isActive ? 'text-indigo-600 dark:text-indigo-400 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`
-  },
+  }, /*#__PURE__*/
   /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement(AnimatePresence, null, ripples.map(ripple =>
-  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, ripples.map(ripple => /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.span, {
     key: ripple.id,
@@ -6622,14 +6379,12 @@ function NavRippleButton({
       width: ripple.size,
       height: ripple.size
     }
-  }))),
-  /*#__PURE__*/
+  }))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(Icon, {
     name: iconName,
     className: `w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`
-  }),
-  /*#__PURE__*/
+  }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("span", {
     className: "text-[10px] mt-0.5 font-medium tracking-tight"
@@ -6680,6 +6435,29 @@ function App() {
     setCurrentTab('contact-detail');
   };
   const [toastMessage, setToastMessage] = useState('');
+  const [gdriveSyncState, setGdriveSyncState] = useState({
+    isSignedIn: false,
+    isSyncing: false,
+    syncStatus: 'idle',
+    lastSyncTime: null
+  });
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.GoogleDriveSync && typeof window.GoogleDriveSync.subscribe === 'function') {
+      const unsub = window.GoogleDriveSync.subscribe(state => {
+        setGdriveSyncState(state);
+      });
+      return () => unsub();
+    }
+  }, []);
+  useEffect(() => {
+    const handleRemoteUpdated = () => {
+      if (typeof handleRefreshData === 'function') {
+        handleRefreshData();
+      }
+    };
+    window.addEventListener('gdrive-remote-updated', handleRemoteUpdated);
+    return () => window.removeEventListener('gdrive-remote-updated', handleRemoteUpdated);
+  }, []);
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   // Page Slide Transition Animation Variants (Matching reference code smooth slide & fade)
   const pageSlideVariants = {
@@ -7361,6 +7139,16 @@ function App() {
   const handleRefreshData = async tabName => {
     try {
       isRestoringOrClearingRef.current = true;
+      let syncResult = null;
+      if (typeof window !== 'undefined' && window.GoogleDriveSync && typeof window.GoogleDriveSync.forceSync === 'function') {
+        try {
+          syncResult = await window.GoogleDriveSync.forceSync({
+            isUserInitiated: true
+          });
+        } catch (syncErr) {
+          console.warn('Google Drive sync error:', syncErr);
+        }
+      }
       const savedLoans = loadSavedArray('amir_fin_loans_v3', ['amir_fin_loans_v2', 'amir_fin_loans'], loans);
       setLoans(savedLoans);
       const savedTx = loadSavedArray('amir_fin_txs_v3', ['amir_fin_txs_v2', 'amir_fin_tx'], transactions);
@@ -7369,6 +7157,8 @@ function App() {
       setContacts(savedContacts);
       const savedPeriods = loadSavedArray('amir_fin_completed_periods_v3', ['amir_fin_completed_periods_v2', 'amir_fin_completed_periods'], completedPeriods);
       setCompletedPeriods(savedPeriods);
+      const savedReminders = loadSavedArray('amir_fin_reminders_v1', ['amir_fin_reminders'], reminders);
+      setReminders(savedReminders);
       if (tabName === 'contact-detail' && selectedContact) {
         const updatedContact = savedContacts.find(c => c.id === selectedContact.id);
         if (updatedContact) setSelectedContact(updatedContact);
@@ -7376,6 +7166,21 @@ function App() {
       if (tabName === 'loan-detail' && selectedLoan) {
         const updatedLoan = savedLoans.find(l => l.id === selectedLoan.id);
         if (updatedLoan) setSelectedLoan(updatedLoan);
+      }
+      if (syncResult) {
+        if (syncResult.action === 'downloaded') {
+          showToast('تغییرات جدید از گوگل درایو دریافت و همگام شد');
+        } else if (syncResult.action === 'uploaded') {
+          showToast('اطلاعات با موفقیت در گوگل درایو ذخیره شد');
+        } else if (syncResult.action === 'up_to_date') {
+          showToast('اطلاعات به‌روز است (همگام با گوگل درایو)');
+        } else if (syncResult.action === 'not_signed_in') {
+          showToast('اطلاعات صفحه بازخوانی شد');
+        } else if (syncResult.action === 'error') {
+          showToast('خطا در همگام‌سازی با گوگل درایو');
+        }
+      } else {
+        showToast('اطلاعات صفحه بازخوانی شد');
       }
       setTimeout(() => {
         isRestoringOrClearingRef.current = false;
@@ -9943,26 +9748,21 @@ function App() {
   const loanWizardCards = [{
     id: 'title_contact',
     title: 'عنوان وام و مخاطب',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-4"
-    },
+    }, /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
-    }, "\u0639\u0646\u0648\u0627\u0646 \u0648\u0627\u0645"),
-    /*#__PURE__*/
+    }, "\u0639\u0646\u0648\u0627\u0646 \u0648\u0627\u0645"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex gap-2"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -9985,35 +9785,29 @@ function App() {
         }
       },
       className: `flex-1 min-w-0 bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-xs focus:outline-none transition-all ${validationErrors.loan_title ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'}`
-    }),
-    /*#__PURE__*/
+    }), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("button", {
       type: "button",
       onClick: () => setShowLoanIconSelector(true),
       className: "w-[46px] h-[46px] bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all shrink-0"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: loanForm.icon || 'landmark',
       className: "w-5 h-5"
-    }))), validationErrors.loan_title &&
-    /*#__PURE__*/
+    }))), validationErrors.loan_title && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
       className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "alert-circle",
       className: "w-3.5 h-3.5 shrink-0"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("span", null, validationErrors.loan_title))),
-    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.loan_title))), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(ContactSelectorCard, {
       contacts: contacts,
@@ -10039,8 +9833,7 @@ function App() {
   }, {
     id: 'start_date',
     title: 'زمان دریافت وام',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
@@ -10067,18 +9860,15 @@ function App() {
   }, {
     id: 'principal_amount',
     title: 'مبلغ اصل وام',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u0645\u0628\u0644\u063A \u0627\u0635\u0644 \u0648\u0627\u0645\u06CC \u06A9\u0647 \u062F\u0631\u06CC\u0627\u0641\u062A \u06A9\u0631\u062F\u0647\u200C\u0627\u06CC\u062F (\u062A\u0648\u0645\u0627\u0646):"),
-    /*#__PURE__*/
+    }, "\u0645\u0628\u0644\u063A \u0627\u0635\u0644 \u0648\u0627\u0645\u06CC \u06A9\u0647 \u062F\u0631\u06CC\u0627\u0641\u062A \u06A9\u0631\u062F\u0647\u200C\u0627\u06CC\u062F (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -10102,32 +9892,26 @@ function App() {
         }
       },
       className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.principal_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
-    }), validationErrors.principal_amount &&
-    /*#__PURE__*/
+    }), validationErrors.principal_amount && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
       className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "alert-circle",
       className: "w-3.5 h-3.5 shrink-0"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("span", null, validationErrors.principal_amount)), loanForm.principalAmount && Number(loanForm.principalAmount) > 0 &&
-    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.principal_amount)), loanForm.principalAmount && Number(loanForm.principalAmount) > 0 && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-1.5 mt-2"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs text-indigo-600 font-bold text-left ltr font-mono"
-    }, formatAppNumber(loanForm.principalAmount), " \u062A\u0648\u0645\u0627\u0646"),
-    /*#__PURE__*/
+    }, formatAppNumber(loanForm.principalAmount), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40"
@@ -10135,18 +9919,15 @@ function App() {
   }, {
     id: 'total_repayment',
     title: 'مبلغ کل بازپرداخت',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u0645\u062C\u0645\u0648\u0639 \u06A9\u0644 \u0645\u0628\u0644\u063A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0634\u0627\u0645\u0644 \u0627\u0635\u0644 \u0648 \u06A9\u0627\u0631\u0645\u0632\u062F:"),
-    /*#__PURE__*/
+    }, "\u0645\u062C\u0645\u0648\u0639 \u06A9\u0644 \u0645\u0628\u0644\u063A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0634\u0627\u0645\u0644 \u0627\u0635\u0644 \u0648 \u06A9\u0627\u0631\u0645\u0632\u062F:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -10170,32 +9951,26 @@ function App() {
         }
       },
       className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.total_repayment ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
-    }), validationErrors.total_repayment &&
-    /*#__PURE__*/
+    }), validationErrors.total_repayment && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
       className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "alert-circle",
       className: "w-3.5 h-3.5 shrink-0"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("span", null, validationErrors.total_repayment)), loanForm.totalRepayment && Number(loanForm.totalRepayment) > 0 &&
-    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.total_repayment)), loanForm.totalRepayment && Number(loanForm.totalRepayment) > 0 && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-1.5 mt-2"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs text-indigo-600 font-bold text-left ltr font-mono"
-    }, formatAppNumber(loanForm.totalRepayment), " \u062A\u0648\u0645\u0627\u0646"),
-    /*#__PURE__*/
+    }, formatAppNumber(loanForm.totalRepayment), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40"
@@ -10203,18 +9978,15 @@ function App() {
   }, {
     id: 'installment_amount',
     title: 'مبلغ هر قسط',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u0645\u0628\u0644\u063A \u0647\u0631 \u0642\u0633\u0637 \u0645\u0627\u0647\u0627\u0646\u0647 (\u062A\u0648\u0645\u0627\u0646):"),
-    /*#__PURE__*/
+    }, "\u0645\u0628\u0644\u063A \u0647\u0631 \u0642\u0633\u0637 \u0645\u0627\u0647\u0627\u0646\u0647 (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -10238,22 +10010,18 @@ function App() {
         }
       },
       className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.installment_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
-    }), validationErrors.installment_amount &&
-    /*#__PURE__*/
+    }), validationErrors.installment_amount && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
       className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "alert-circle",
       className: "w-3.5 h-3.5 shrink-0"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("span", null, validationErrors.installment_amount)), loanForm.installmentAmount && Number(loanForm.installmentAmount) > 0 &&
-    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.installment_amount)), loanForm.installmentAmount && Number(loanForm.installmentAmount) > 0 && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40 mt-1.5"
@@ -10269,23 +10037,19 @@ function App() {
         const diff = totalCalc - baseAmount;
         return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
           className: "space-y-2 mt-2"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "p-2.5 bg-indigo-50/70 dark:bg-indigo-950/50 rounded-2xl border border-indigo-200/80 dark:border-indigo-800/50 flex items-center justify-between gap-2"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-bold text-indigo-900 dark:text-indigo-200 shrink-0"
-        }, "\u062A\u0639\u062F\u0627\u062F \u06A9\u0644 \u0627\u0642\u0633\u0627\u0637:"),
-        /*#__PURE__*/
+        }, "\u062A\u0639\u062F\u0627\u062F \u06A9\u0644 \u0627\u0642\u0633\u0627\u0637:"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center space-x-1.5 space-x-reverse"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           type: "button",
@@ -10298,13 +10062,11 @@ function App() {
             }));
           },
           className: "w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-lg flex items-center justify-center shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-800 active:scale-95 transition-all cursor-pointer shrink-0"
-        }, "-"),
-        /*#__PURE__*/
+        }, "-"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "relative w-16 h-9 flex items-center"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("input", {
           type: "text",
@@ -10328,8 +10090,7 @@ function App() {
             }
           },
           className: "w-full h-full text-center font-mono bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-600 rounded-xl px-1 text-sm font-black text-indigo-700 dark:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-300 dark:placeholder:text-slate-600 placeholder:font-normal"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           type: "button",
@@ -10342,8 +10103,7 @@ function App() {
             }));
           },
           className: "w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-lg flex items-center justify-center shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-800 active:scale-95 transition-all cursor-pointer shrink-0"
-        }, "+"),
-        /*#__PURE__*/
+        }, "+"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           type: "button",
@@ -10356,81 +10116,65 @@ function App() {
           },
           title: "     ",
           className: "w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs hover:bg-emerald-100 dark:hover:bg-emerald-900/50 active:scale-95 transition-all cursor-pointer shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "rotate-cw",
           className: "w-4 h-4 text-emerald-600 dark:text-emerald-400"
-        })))), diff === 0 ?
-        /*#__PURE__*/
+        })))), diff === 0 ? /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "p-2.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between shadow-2xs"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center space-x-1.5 space-x-reverse"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "check-circle-2",
           className: "w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0"
-        }),
+        }), /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0627\u0642\u0633\u0627\u0637:")),
-        /*#__PURE__*/
+        React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0627\u0642\u0633\u0627\u0637:")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-extrabold text-xs text-emerald-600 dark:text-emerald-400"
-        }, "\u062A\u0631\u0627\u0632 \u062F\u0642\u06CC\u0642 (\u0628\u062F\u0648\u0646 \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647)")) : diff > 0 ?
-        /*#__PURE__*/
+        }, "\u062A\u0631\u0627\u0632 \u062F\u0642\u06CC\u0642 (\u0628\u062F\u0648\u0646 \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647)")) : diff > 0 ? /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "p-2.5 bg-blue-50 dark:bg-blue-950/60 rounded-xl text-xs font-bold text-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800 flex items-center justify-between shadow-2xs"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center space-x-1.5 space-x-reverse"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "info",
           className: "w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0"
-        }),
+        }), /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647 (\u0627\u0636\u0627\u0641\u0647):")),
-        /*#__PURE__*/
+        React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647 (\u0627\u0636\u0627\u0641\u0647):")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono text-xs dir-ltr font-black text-blue-700 dark:text-blue-300"
-        }, "+", formatAppNumber(diff), " \u062A\u0648\u0645\u0627\u0646")) :
-        /*#__PURE__*/
+        }, "+", formatAppNumber(diff), " \u062A\u0648\u0645\u0627\u0646")) : /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "p-2.5 bg-rose-50 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800 flex items-center justify-between shadow-2xs"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center space-x-1.5 space-x-reverse"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "alert-triangle",
           className: "w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0"
-        }),
+        }), /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647 (\u06A9\u0633\u0631\u06CC):")),
-        /*#__PURE__*/
+        React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647 (\u06A9\u0633\u0631\u06CC):")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono text-xs dir-ltr font-black text-rose-600 dark:text-rose-400"
@@ -10482,57 +10226,47 @@ function App() {
       };
       return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
         className: "space-y-2"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("label", {
         className: "block text-xs text-slate-500 font-bold"
-      }, "\u062A\u0627\u0631\u06CC\u062E \u0648 \u0645\u0627\u0647 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637 \u0648\u0627\u0645:"),
-      /*#__PURE__*/
+      }, "\u062A\u0627\u0631\u06CC\u062E \u0648 \u0645\u0627\u0647 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637 \u0648\u0627\u0645:"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "bg-[#F4F7FC] dark:bg-slate-900 rounded-2xl p-2.5 border border-slate-200 dark:border-slate-800 space-y-2"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-2 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between shadow-2xs"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("button", {
         type: "button",
         onClick: handlePrevMonth,
         title: " ",
         className: "p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement(Icon, {
         name: "chevron-right",
         className: "w-4 h-4"
-      })),
-      /*#__PURE__*/
+      })), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "text-center min-w-0 px-2 flex flex-col items-center"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "text-[9px] text-indigo-700/80 dark:text-indigo-300/80 font-bold"
-      }, "\u0645\u0627\u0647 \u0648 \u0633\u0627\u0644 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637"),
-      /*#__PURE__*/
+      }, "\u0645\u0627\u0647 \u0648 \u0633\u0627\u0644 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "flex items-center justify-center gap-1.5 mt-0.5"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", {
         className: "text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100"
-      }, curMonthName),
-      /*#__PURE__*/
+      }, curMonthName), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("input", {
         type: "text",
@@ -10566,42 +10300,35 @@ function App() {
         },
         className: "w-14 h-6 text-center font-extrabold text-xs text-indigo-900 dark:text-indigo-100 bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded-md shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono transition-all cursor-pointer",
         title: "    "
-      }))),
-      /*#__PURE__*/
+      }))), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("button", {
         type: "button",
         onClick: handleNextMonth,
         title: " ",
         className: "p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement(Icon, {
         name: "chevron-left",
         className: "w-4 h-4"
-      }))),
-      /*#__PURE__*/
+      }))), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-1.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs flex items-center justify-center space-x-1.5 space-x-reverse"
-      },
+      }, /*#__PURE__*/
       /*#__PURE__*/
-      /*#__PURE__*/
-      React.createElement("span", null, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637:"),
-      /*#__PURE__*/
+      React.createElement("span", null, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637:"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", {
         className: "font-mono text-xs tracking-wider font-extrabold dir-ltr text-indigo-700 dark:text-indigo-300 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-700 shadow-2xs"
-      }, formattedDueDateStr)),
-      /*#__PURE__*/
+      }, formattedDueDateStr)), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "grid grid-cols-7 gap-1 text-center text-xs font-bold pt-0.5"
       }, Array.from({
         length: 31
-      }, (_, i) => i + 1).map(day =>
-      /*#__PURE__*/
+      }, (_, i) => i + 1).map(day => /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("button", {
         key: day,
@@ -10617,18 +10344,15 @@ function App() {
   }, {
     id: 'notes',
     title: 'توضیحات تکمیلی',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500"
-    }, "\u06CC\u0627\u062F\u062F\u0627\u0634\u062A \u06CC\u0627 \u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0627\u0636\u0627\u0641\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u067E\u0631\u0648\u0646\u062F\u0647 \u0648\u0627\u0645:"),
-    /*#__PURE__*/
+    }, "\u06CC\u0627\u062F\u062F\u0627\u0634\u062A \u06CC\u0627 \u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0627\u0636\u0627\u0641\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u067E\u0631\u0648\u0646\u062F\u0647 \u0648\u0627\u0645:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("textarea", {
       rows: "3",
@@ -10644,8 +10368,7 @@ function App() {
   const demandWizardCards = [{
     id: 'demand_contact',
     title: 'انتخاب مخاطب',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(ContactSelectorCard, {
       contacts: contacts,
@@ -10670,18 +10393,15 @@ function App() {
   }, {
     id: 'demand_amount',
     title: 'مبلغ طلب',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u0645\u0628\u0644\u063A \u0637\u0644\u0628 (\u062A\u0648\u0645\u0627\u0646):"),
-    /*#__PURE__*/
+    }, "\u0645\u0628\u0644\u063A \u0637\u0644\u0628 (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -10705,32 +10425,26 @@ function App() {
         }
       },
       className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.demand_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
-    }), validationErrors.demand_amount &&
-    /*#__PURE__*/
+    }), validationErrors.demand_amount && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
       className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "alert-circle",
       className: "w-3.5 h-3.5 shrink-0"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("span", null, validationErrors.demand_amount)), demandDebtForm.amount && Number(demandDebtForm.amount) > 0 &&
-    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.demand_amount)), demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-1.5 mt-2"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs text-emerald-600 font-bold text-left ltr font-numeric"
-    }, formatAppNumber(demandDebtForm.amount), " \u062A\u0648\u0645\u0627\u0646"),
-    /*#__PURE__*/
+    }, formatAppNumber(demandDebtForm.amount), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40"
@@ -10738,8 +10452,7 @@ function App() {
   }, {
     id: 'demand_date',
     title: 'تاریخ طلب',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
@@ -10758,18 +10471,15 @@ function App() {
   }, {
     id: 'demand_notes',
     title: 'توضیحات تکمیلی',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648 \u0628\u0627\u0628\u062A \u0637\u0644\u0628:"),
-    /*#__PURE__*/
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648 \u0628\u0627\u0628\u062A \u0637\u0644\u0628:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("textarea", {
       rows: "3",
@@ -10785,8 +10495,7 @@ function App() {
   const debtWizardCards = [{
     id: 'debt_contact',
     title: 'انتخاب مخاطب',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(ContactSelectorCard, {
       contacts: contacts,
@@ -10811,18 +10520,15 @@ function App() {
   }, {
     id: 'debt_amount',
     title: 'مبلغ بدهی',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u0645\u0628\u0644\u063A \u0628\u062F\u0647\u06CC (\u062A\u0648\u0645\u0627\u0646):"),
-    /*#__PURE__*/
+    }, "\u0645\u0628\u0644\u063A \u0628\u062F\u0647\u06CC (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -10846,32 +10552,26 @@ function App() {
         }
       },
       className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.debt_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
-    }), validationErrors.debt_amount &&
-    /*#__PURE__*/
+    }), validationErrors.debt_amount && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
       className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "alert-circle",
       className: "w-3.5 h-3.5 shrink-0"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("span", null, validationErrors.debt_amount)), demandDebtForm.amount && Number(demandDebtForm.amount) > 0 &&
-    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.debt_amount)), demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-1.5 mt-2"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "text-xs text-rose-500 font-bold text-left ltr"
-    }, Number(demandDebtForm.amount).toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"),
-    /*#__PURE__*/
+    }, Number(demandDebtForm.amount).toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "p-2.5 bg-rose-50/80 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40"
@@ -10879,8 +10579,7 @@ function App() {
   }, {
     id: 'debt_date',
     title: 'تاریخ بدهی',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
@@ -10899,18 +10598,15 @@ function App() {
   }, {
     id: 'debt_notes',
     title: 'توضیحات تکمیلی',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u062A\u06A9\u0645\u06CC\u0644\u06CC:"),
-    /*#__PURE__*/
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u062A\u06A9\u0645\u06CC\u0644\u06CC:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("textarea", {
       rows: "3",
@@ -10926,8 +10622,7 @@ function App() {
   const installmentWizardCards = [{
     id: 'inst_select_loan',
     title: 'انتخاب وام',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(LoanSelectorCard, {
       loans: loans,
@@ -10959,8 +10654,7 @@ function App() {
   }, {
     id: 'inst_date',
     title: 'تاریخ پرداخت',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
@@ -10991,13 +10685,11 @@ function App() {
       const isOver = targetLoan && inputAmt > loanRemaining;
       return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
         className: "space-y-3"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("label", {
         className: "block text-xs text-slate-500 font-bold"
-      }, "\u0645\u0628\u0644\u063A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 (\u0628\u0627\u0631\u06AF\u0630\u0627\u0631\u06CC \u0634\u062F\u0647 \u0627\u0632 \u0648\u0627\u0645 - \u0642\u0627\u0628\u0644 \u0648\u06CC\u0631\u0627\u06CC\u0634):"),
-      /*#__PURE__*/
+      }, "\u0645\u0628\u0644\u063A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 (\u0628\u0627\u0631\u06AF\u0630\u0627\u0631\u06CC \u0634\u062F\u0647 \u0627\u0632 \u0648\u0627\u0645 - \u0642\u0627\u0628\u0644 \u0648\u06CC\u0631\u0627\u06CC\u0634):"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("input", {
         type: "text",
@@ -11020,86 +10712,70 @@ function App() {
           }
         },
         className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.inst_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
-      }), validationErrors.inst_amount &&
-      /*#__PURE__*/
+      }), validationErrors.inst_amount && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("p", {
         className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement(Icon, {
         name: "alert-circle",
         className: "w-3.5 h-3.5 shrink-0"
-      }),
+      }), /*#__PURE__*/
       /*#__PURE__*/
-      /*#__PURE__*/
-      React.createElement("span", null, validationErrors.inst_amount)), inputAmt > 0 &&
-      /*#__PURE__*/
+      React.createElement("span", null, validationErrors.inst_amount)), inputAmt > 0 && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "space-y-1.5 mt-2"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "text-xs text-indigo-600 font-bold text-left ltr font-numeric"
-      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"),
-      /*#__PURE__*/
+      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40"
-      }, numToPersianWords(installmentForm.amount))), targetLoan &&
-      /*#__PURE__*/
+      }, numToPersianWords(installmentForm.amount))), targetLoan && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "flex justify-between items-center text-xs"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", {
         className: "text-slate-500 dark:text-slate-400 font-medium"
-      }, "\u06A9\u0644 \u0645\u0627\u0646\u062F\u0647 \u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u0648\u0627\u0645:"),
-      /*#__PURE__*/
+      }, "\u06A9\u0644 \u0645\u0627\u0646\u062F\u0647 \u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u0648\u0627\u0645:"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", {
         className: "font-extrabold text-slate-800 dark:text-slate-200 font-mono"
-      }, formatAppNumber(loanRemaining), " \u062A\u0648\u0645\u0627\u0646")), isOver &&
-      /*#__PURE__*/
+      }, formatAppNumber(loanRemaining), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement(Icon, {
         name: "alert-circle",
         className: "w-4 h-4 shrink-0"
-      }),
-      /*#__PURE__*/
+      }), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u0645\u0627\u0646\u062F\u0647 \u06A9\u0644 \u0648\u0627\u0645 (", formatAppNumber(loanRemaining), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
     }
   }, {
     id: 'inst_notes',
     title: 'توضیحات تکمیلی',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u06CC\u0627 \u0634\u0645\u0627\u0631\u0647 \u067E\u06CC\u06AF\u06CC\u0631\u06CC \u067E\u0631\u062F\u0627\u062E\u062A:"),
-    /*#__PURE__*/
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u06CC\u0627 \u0634\u0645\u0627\u0631\u0647 \u067E\u06CC\u06AF\u06CC\u0631\u06CC \u067E\u0631\u062F\u0627\u062E\u062A:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("textarea", {
       rows: "3",
@@ -11115,8 +10791,7 @@ function App() {
   const debtRepaymentWizardCards = [{
     id: 'debt_repay_contact',
     title: 'انتخاب مخاطب',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(ContactSelectorCard, {
       contacts: contacts,
@@ -11150,13 +10825,11 @@ function App() {
       const isOver = inputAmt > totalDebt;
       return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
         className: "space-y-3"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("label", {
         className: "block text-xs text-slate-500 font-bold"
-      }, "\u0645\u0628\u0644\u063A \u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u062C\u0647\u062A \u06A9\u0633\u0631 \u0627\u0632 \u0628\u062F\u0647\u06CC \u0628\u0647 ", targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب', " (\u062A\u0648\u0645\u0627\u0646):"),
-      /*#__PURE__*/
+      }, "\u0645\u0628\u0644\u063A \u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u062C\u0647\u062A \u06A9\u0633\u0631 \u0627\u0632 \u0628\u062F\u0647\u06CC \u0628\u0647 ", targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب', " (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("input", {
         type: "text",
@@ -11180,76 +10853,62 @@ function App() {
           }
         },
         className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.debt_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
-      }), validationErrors.debt_repay_amount &&
-      /*#__PURE__*/
+      }), validationErrors.debt_repay_amount && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("p", {
         className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement(Icon, {
         name: "alert-circle",
         className: "w-3.5 h-3.5 shrink-0"
-      }),
+      }), /*#__PURE__*/
       /*#__PURE__*/
-      /*#__PURE__*/
-      React.createElement("span", null, validationErrors.debt_repay_amount)), inputAmt > 0 &&
-      /*#__PURE__*/
+      React.createElement("span", null, validationErrors.debt_repay_amount)), inputAmt > 0 && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "space-y-1.5 mt-2"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "text-xs text-rose-500 font-bold text-left ltr font-numeric"
-      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"),
-      /*#__PURE__*/
+      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-2.5 bg-rose-50/80 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40"
-      }, numToPersianWords(repaymentForm.amount))),
-      /*#__PURE__*/
+      }, numToPersianWords(repaymentForm.amount))), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "flex justify-between items-center text-xs"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", {
         className: "text-slate-500 dark:text-slate-400 font-medium"
-      }, "\u06A9\u0644 \u0628\u062F\u0647\u06CC \u0628\u0647 \u0627\u06CC\u0646 \u0645\u062E\u0627\u0637\u0628:"),
-      /*#__PURE__*/
+      }, "\u06A9\u0644 \u0628\u062F\u0647\u06CC \u0628\u0647 \u0627\u06CC\u0646 \u0645\u062E\u0627\u0637\u0628:"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", {
         className: "font-extrabold text-slate-800 dark:text-slate-200 font-mono"
-      }, formatAppNumber(totalDebt), " \u062A\u0648\u0645\u0627\u0646")), isOver &&
-      /*#__PURE__*/
+      }, formatAppNumber(totalDebt), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement(Icon, {
         name: "alert-circle",
         className: "w-4 h-4 shrink-0"
-      }),
-      /*#__PURE__*/
+      }), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u06A9\u0644 \u0628\u062F\u0647\u06CC (", formatAppNumber(totalDebt), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
     }
   }, {
     id: 'debt_repay_date',
     title: 'تاریخ بازپرداخت',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
@@ -11268,18 +10927,15 @@ function App() {
   }, {
     id: 'debt_repay_notes',
     title: 'توضیحات تکمیلی',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648 \u0628\u0627\u0628\u062A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A:"),
-    /*#__PURE__*/
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648 \u0628\u0627\u0628\u062A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("textarea", {
       rows: "3",
@@ -11295,8 +10951,7 @@ function App() {
   const demandRepaymentWizardCards = [{
     id: 'demand_repay_contact',
     title: 'انتخاب مخاطب',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(ContactSelectorCard, {
       contacts: contacts,
@@ -11330,13 +10985,11 @@ function App() {
       const isOver = inputAmt > totalDemand;
       return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
         className: "space-y-3"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("label", {
         className: "block text-xs text-slate-500 font-bold"
-      }, "\u0645\u0628\u0644\u063A \u062F\u0631\u06CC\u0627\u0641\u062A\u06CC \u062C\u0647\u062A \u06A9\u0633\u0631 \u0627\u0632 \u0637\u0644\u0628 \u0627\u0632 ", targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب', " (\u062A\u0648\u0645\u0627\u0646):"),
-      /*#__PURE__*/
+      }, "\u0645\u0628\u0644\u063A \u062F\u0631\u06CC\u0627\u0641\u062A\u06CC \u062C\u0647\u062A \u06A9\u0633\u0631 \u0627\u0632 \u0637\u0644\u0628 \u0627\u0632 ", targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب', " (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("input", {
         type: "text",
@@ -11360,76 +11013,62 @@ function App() {
           }
         },
         className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.demand_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
-      }), validationErrors.demand_repay_amount &&
-      /*#__PURE__*/
+      }), validationErrors.demand_repay_amount && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("p", {
         className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement(Icon, {
         name: "alert-circle",
         className: "w-3.5 h-3.5 shrink-0"
-      }),
+      }), /*#__PURE__*/
       /*#__PURE__*/
-      /*#__PURE__*/
-      React.createElement("span", null, validationErrors.demand_repay_amount)), inputAmt > 0 &&
-      /*#__PURE__*/
+      React.createElement("span", null, validationErrors.demand_repay_amount)), inputAmt > 0 && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "space-y-1.5 mt-2"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "text-xs text-emerald-600 font-bold text-left ltr font-numeric"
-      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"),
-      /*#__PURE__*/
+      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40"
-      }, numToPersianWords(repaymentForm.amount))),
-      /*#__PURE__*/
+      }, numToPersianWords(repaymentForm.amount))), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "flex justify-between items-center text-xs"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", {
         className: "text-slate-500 dark:text-slate-400 font-medium font-sans"
-      }, "\u06A9\u0644 \u0637\u0644\u0628 \u0627\u0632 \u0627\u06CC\u0646 \u0645\u062E\u0627\u0637\u0628:"),
-      /*#__PURE__*/
+      }, "\u06A9\u0644 \u0637\u0644\u0628 \u0627\u0632 \u0627\u06CC\u0646 \u0645\u062E\u0627\u0637\u0628:"), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", {
         className: "font-extrabold text-slate-800 dark:text-slate-200 font-mono"
-      }, formatAppNumber(totalDemand), " \u062A\u0648\u0645\u0627\u0646")), isOver &&
-      /*#__PURE__*/
+      }, formatAppNumber(totalDemand), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("div", {
         className: "p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse"
-      },
-      /*#__PURE__*/
+      }, /*#__PURE__*/
       /*#__PURE__*/
       React.createElement(Icon, {
         name: "alert-circle",
         className: "w-4 h-4 shrink-0"
-      }),
-      /*#__PURE__*/
+      }), /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u06A9\u0644 \u0637\u0644\u0628 (", formatAppNumber(totalDemand), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
     }
   }, {
     id: 'demand_repay_date',
     title: 'تاریخ دریافت',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(FullJalaliDatePicker, {
       day: pickerDay,
@@ -11448,18 +11087,15 @@ function App() {
   }, {
     id: 'demand_repay_notes',
     title: 'توضیحات تکمیلی',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs text-slate-500 font-bold"
-    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0628\u0627\u0628\u062A \u062F\u0631\u06CC\u0627\u0641\u062A\u06CC:"),
-    /*#__PURE__*/
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0628\u0627\u0628\u062A \u062F\u0631\u06CC\u0627\u0641\u062A\u06CC:"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("textarea", {
       rows: "3",
@@ -11475,23 +11111,19 @@ function App() {
   const contactWizardCards = [{
     id: 'contact_names',
     title: wizardMode === 'edit' ? 'ویرایش نام و نام خانوادگی' : 'نام و نام خانوادگی مخاطب',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-4"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex flex-col items-center justify-center pt-1 pb-2"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "relative"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg ring-4 ring-indigo-500/15 dark:ring-indigo-400/20 cursor-pointer group relative overflow-hidden",
@@ -11503,8 +11135,7 @@ function App() {
           document.getElementById('contact-image-upload-input').click();
         }
       }
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       id: "contact-image-upload-input",
@@ -11527,42 +11158,35 @@ function App() {
         }
         e.target.value = '';
       }
-    }), contactWizardForm.profileImage ?
-    /*#__PURE__*/
+    }), contactWizardForm.profileImage ? /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "w-full h-full rounded-full overflow-hidden"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("img", {
       src: contactWizardForm.profileImage,
       alt: "profile",
       className: "w-full h-full object-cover"
-    })) : contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ?
-    /*#__PURE__*/
+    })) : contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-2xl font-black tracking-tight"
-    }, (contactWizardForm.firstName.trim()[0] || '') + (contactWizardForm.lastName.trim()[0] || '')) :
-    /*#__PURE__*/
+    }, (contactWizardForm.firstName.trim()[0] || '') + (contactWizardForm.lastName.trim()[0] || '')) : /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "user-plus",
       className: "w-9 h-9 opacity-90"
-    }),
-    /*#__PURE__*/
+    }), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: contactWizardForm.profileImage ? "crop" : "camera",
       className: "w-6 h-6 text-white"
-    }))), contactWizardForm.profileImage &&
-    /*#__PURE__*/
+    }))), contactWizardForm.profileImage && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "absolute -bottom-1 -right-1 w-7 h-7 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm z-10 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors",
@@ -11571,27 +11195,22 @@ function App() {
         document.getElementById('contact-image-upload-input').click();
       },
       title: "  "
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "upload",
       className: "w-3.5 h-3.5"
-    }))),
-    /*#__PURE__*/
+    }))), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2"
-    }, contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? `${contactWizardForm.firstName.trim()} ${contactWizardForm.lastName.trim()}`.trim() : 'اطلاعات مخاطب جدید')),
+    }, contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? `${contactWizardForm.firstName.trim()} ${contactWizardForm.lastName.trim()}`.trim() : 'اطلاعات مخاطب جدید')), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
-    }, "\u0646\u0627\u0645"),
-    /*#__PURE__*/
+    }, "\u0646\u0627\u0645"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -11614,30 +11233,24 @@ function App() {
         }
       },
       className: `w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.contact_firstname ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'}`
-    }), validationErrors.contact_firstname &&
-    /*#__PURE__*/
+    }), validationErrors.contact_firstname && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
       className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement(Icon, {
       name: "alert-circle",
       className: "w-3.5 h-3.5 shrink-0"
-    }),
+    }), /*#__PURE__*/
     /*#__PURE__*/
+    React.createElement("span", null, validationErrors.contact_firstname))), /*#__PURE__*/
     /*#__PURE__*/
-    React.createElement("span", null, validationErrors.contact_firstname))),
-    /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
-    }, "\u0646\u0627\u0645 \u062E\u0627\u0646\u0648\u0627\u062F\u06AF\u06CC"),
-    /*#__PURE__*/
+    }, "\u0646\u0627\u0645 \u062E\u0627\u0646\u0648\u0627\u062F\u06AF\u06CC"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -11655,21 +11268,17 @@ function App() {
   }, {
     id: 'contact_info',
     title: wizardMode === 'edit' ? 'ویرایش تماس و حساب بانکی' : 'شماره تماس و اطلاعات حساب بانکی',
-    render: () =>
-    /*#__PURE__*/
+    render: () => /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "space-y-3.5"
-    },
+    }, /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
-    }, "\u0634\u0645\u0627\u0631\u0647 \u062A\u0645\u0627\u0633"),
-    /*#__PURE__*/
+    }, "\u0634\u0645\u0627\u0631\u0647 \u062A\u0645\u0627\u0633"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "tel",
@@ -11682,26 +11291,21 @@ function App() {
         phone: normalizePhoneNumber(e.target.value)
       })),
       className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
-    })),
+    })), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("div", {
       className: "flex items-center justify-between mb-1.5"
-    },
-    /*#__PURE__*/
+    }, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300"
-    }, "\u0634\u0645\u0627\u0631\u0647 \u06A9\u0627\u0631\u062A (\u06F1\u06F6 \u0631\u0642\u0645\u06CC - \u0627\u062E\u062A\u06CC\u0627\u0631\u06CC)"), contactWizardForm.bankName &&
-    /*#__PURE__*/
+    }, "\u0634\u0645\u0627\u0631\u0647 \u06A9\u0627\u0631\u062A (\u06F1\u06F6 \u0631\u0642\u0645\u06CC - \u0627\u062E\u062A\u06CC\u0627\u0631\u06CC)"), contactWizardForm.bankName && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("span", {
       className: "text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800"
-    }, contactWizardForm.bankName)),
-    /*#__PURE__*/
+    }, contactWizardForm.bankName)), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -11720,16 +11324,13 @@ function App() {
         }));
       },
       className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
-    })),
+    })), /*#__PURE__*/
     /*#__PURE__*/
-    /*#__PURE__*/
-    React.createElement("div", null,
-    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("label", {
       className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
-    }, "\u0634\u0645\u0627\u0631\u0647 \u0634\u0628\u0627 (\u0627\u062E\u062A\u06CC\u0627\u0631\u06CC)"),
-    /*#__PURE__*/
+    }, "\u0634\u0645\u0627\u0631\u0647 \u0634\u0628\u0627 (\u0627\u062E\u062A\u06CC\u0627\u0631\u06CC)"), /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
@@ -11780,31 +11381,25 @@ function App() {
       case 'dashboard':
         return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
           className: "space-y-3 animate-fade-in"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex justify-between items-center pt-0 pb-0 relative"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex flex-col items-start text-right"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("p", {
           className: "text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight"
-        }, "\u0633\u0644\u0627\u0645 \u0648\u0642\u062A \u0628\u0647 \u062E\u06CC\u0631 \uD83D\uDC4B"),
-        /*#__PURE__*/
+        }, "\u0633\u0644\u0627\u0645 \u0648\u0642\u062A \u0628\u0647 \u062E\u06CC\u0631 \uD83D\uDC4B"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("p", {
           className: "text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right"
-        }, "\u0627\u0645\u0631\u0648\u0632: ", toAppDigits(getDeviceJalaliDate().day), " ", getDeviceJalaliDate().month, " ", toAppDigits(getDeviceJalaliDate().year))),
+        }, "\u0627\u0645\u0631\u0648\u0632: ", toAppDigits(getDeviceJalaliDate().day), " ", getDeviceJalaliDate().month, " ", toAppDigits(getDeviceJalaliDate().year))), /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement(AnimatePresence, null, backupStatus && backupStatus.unbackedChangesCount > 0 &&
-        /*#__PURE__*/
+        React.createElement(AnimatePresence, null, backupStatus && backupStatus.unbackedChangesCount > 0 && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(motion.div, {
           key: "dashboard-backup-status-pill",
@@ -11824,8 +11419,7 @@ function App() {
             duration: 0.2
           },
           className: "absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => {
@@ -11835,41 +11429,34 @@ function App() {
           className: "relative w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/50 dark:border-amber-500/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer",
           title: `${backupStatus.unbackedChangesCount} تغییر جدید بدون پشتیبان`,
           "aria-label": " "
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "bell",
           className: `w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBellWiggling ? 'animate-bell-wiggle' : ''}`
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold px-1 rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 leading-none font-sans"
-        }, toAppDigits(backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount))))),
-        /*#__PURE__*/
+        }, toAppDigits(backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount))))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center gap-2.5",
           dir: "ltr"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(BrandAvatar, {
           className: "w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] rounded-2xl object-cover shadow-sm shrink-0",
           logoUrl: "favicon-96x96.png"
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex flex-col items-start text-left"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("h1", {
           className: "text-[15px] sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight font-sans tracking-wide"
-        }, "Amir Finance"),
-        /*#__PURE__*/
+        }, "Amir Finance"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
@@ -11942,44 +11529,36 @@ function App() {
               key: item.id,
               onClick: () => item.loanObj && openLoanDetail(item.loanObj),
               className: `bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-3 sm:p-3.5 border border-slate-100/90 dark:border-slate-700/50 flex items-center justify-between gap-3 transition-all hover:bg-slate-100/80 dark:hover:bg-slate-700/70 ${item.loanObj ? 'cursor-pointer active:scale-[0.99]' : ''}`
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "flex items-center space-x-3 space-x-reverse min-w-0"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: `w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center shrink-0 ${iconBgClass}`
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement(Icon, {
               name: iconName,
               className: "w-5 h-5 sm:w-5.5 sm:h-5.5"
-            })),
-            /*#__PURE__*/
+            })), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "min-w-0"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("h4", {
               className: "text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white truncate"
-            }, item.title),
-            /*#__PURE__*/
+            }, item.title), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("p", {
               className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5 truncate"
-            }, item.dateStr))),
-            /*#__PURE__*/
+            }, item.dateStr))), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "shrink-0"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("span", {
               className: `px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs inline-block ${badgeClass}`
@@ -11987,43 +11566,35 @@ function App() {
           };
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             className: "bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all space-y-3.5"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             onClick: () => setExpandedReminders(!expandedReminders),
             className: "flex justify-between items-center cursor-pointer select-none group px-0.5"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center space-x-3 space-x-reverse"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "calendar-clock",
             className: "w-5.5 h-5.5"
-          })),
+          })), /*#__PURE__*/
           /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement("div", null,
-          /*#__PURE__*/
+          React.createElement("div", null, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h3", {
             className: "text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight"
-          }, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC\u200C\u0647\u0627\u06CC \u0645\u0647\u0645"),
-          /*#__PURE__*/
+          }, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC\u200C\u0647\u0627\u06CC \u0645\u0647\u0645"), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5"
-          }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627"))),
-          /*#__PURE__*/
+          }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627"))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("button", {
             type: "button",
@@ -12032,40 +11603,33 @@ function App() {
               setExpandedReminders(!expandedReminders);
             },
             className: "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "chevron-down",
             className: `w-5 h-5 transition-transform duration-300 ${expandedReminders ? 'rotate-180' : 'rotate-0'}`
-          }))),
-          /*#__PURE__*/
+          }))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "space-y-2.5"
-          }, firstThree.map(item => renderReminderCard(item)), sortedList.length === 0 &&
-          /*#__PURE__*/
+          }, firstThree.map(item => renderReminderCard(item)), sortedList.length === 0 && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-center py-4 text-xs text-slate-400"
-          }, "\u0633\u0631\u0631\u0633\u06CC\u062F\u06CC \u0646\u0632\u062F\u06CC\u06A9 \u0646\u06CC\u0633\u062A"),
-          /*#__PURE__*/
+          }, "\u0633\u0631\u0631\u0633\u06CC\u062F\u06CC \u0646\u0632\u062F\u06CC\u06A9 \u0646\u06CC\u0633\u062A"), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${expandedReminders && extraList.length > 0 ? 'grid-rows-[1fr] opacity-100 mt-2.5' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "overflow-hidden space-y-2.5"
           }, extraList.map(item => renderReminderCard(item))))));
-        })(),
-        /*#__PURE__*/
+        })(), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "grid grid-cols-3 gap-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           onClick: () => {
@@ -12073,44 +11637,36 @@ function App() {
             navigateToTab('accounts', 'forward');
           },
           className: "relative bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "landmark",
           className: "w-16 h-16 sm:w-18 sm:h-18"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center justify-between w-full relative z-10"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs sm:text-[13px] font-bold text-white/95"
-        }, "\u0648\u0627\u0645\u200C\u0647\u0627")),
-        /*#__PURE__*/
+        }, "\u0648\u0627\u0645\u200C\u0647\u0627")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex flex-col items-start justify-end mt-1.5 relative z-10"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[15px] sm:text-base font-black tracking-tight leading-none text-white font-mono font-numeric"
-        }, toAppDigits(loans.length)),
-        /*#__PURE__*/
+        }, toAppDigits(loans.length)), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[9px] sm:text-[10px] text-indigo-100 font-medium mt-0.5"
-        }, "\u0648\u0627\u0645 \u0641\u0639\u0627\u0644"))),
-        /*#__PURE__*/
+        }, "\u0648\u0627\u0645 \u0641\u0639\u0627\u0644"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           onClick: () => {
@@ -12118,44 +11674,36 @@ function App() {
             navigateToTab('accounts', 'forward');
           },
           className: "relative bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "arrow-down-left",
           className: "w-16 h-16 sm:w-18 sm:h-18"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center justify-between w-full relative z-10"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs sm:text-[13px] font-bold text-white/95"
-        }, "\u0628\u062F\u0647\u06CC")),
-        /*#__PURE__*/
+        }, "\u0628\u062F\u0647\u06CC")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex flex-col items-start justify-end mt-1.5 relative z-10"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
-        }, formatAppNumber(totalDebt)),
-        /*#__PURE__*/
+        }, formatAppNumber(totalDebt)), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[9px] sm:text-[10px] text-rose-100 font-medium mt-0.5"
-        }, "\u062A\u0648\u0645\u0627\u0646"))),
-        /*#__PURE__*/
+        }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           onClick: () => {
@@ -12163,112 +11711,91 @@ function App() {
             navigateToTab('accounts', 'forward');
           },
           className: "relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "arrow-up-right",
           className: "w-16 h-16 sm:w-18 sm:h-18"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center justify-between w-full relative z-10"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs sm:text-[13px] font-bold text-white/95"
-        }, "\u0637\u0644\u0628")),
-        /*#__PURE__*/
+        }, "\u0637\u0644\u0628")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex flex-col items-start justify-end mt-1.5 relative z-10"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
-        }, formatAppNumber(totalDemand)),
-        /*#__PURE__*/
+        }, formatAppNumber(totalDemand)), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[9px] sm:text-[10px] text-emerald-100 font-medium mt-0.5"
-        }, "\u062A\u0648\u0645\u0627\u0646")))),
-        /*#__PURE__*/
+        }, "\u062A\u0648\u0645\u0627\u0646")))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           ref: recentTxsAccordionRef,
           className: "bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           onClick: toggleRecentTxsAccordion,
           className: "flex justify-between items-center cursor-pointer select-none group px-0.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center space-x-3 space-x-reverse"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "history",
           className: "w-5.5 h-5.5"
-        })),
+        })), /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("div", null,
-        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("h3", {
           className: "text-sm sm:text-base font-extrabold text-indigo-600 dark:text-indigo-400 leading-tight"
-        }, "\u0622\u062E\u0631\u06CC\u0646 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"),
-        /*#__PURE__*/
+        }, "\u0622\u062E\u0631\u06CC\u0646 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("p", {
           className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5"
-        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0627\u062E\u06CC\u0631 \u062B\u0628\u062A\u200C\u0634\u062F\u0647"))),
-        /*#__PURE__*/
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0627\u062E\u06CC\u0631 \u062B\u0628\u062A\u200C\u0634\u062F\u0647"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center space-x-2 space-x-reverse"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: toggleRecentTxsAccordion,
           className: "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "chevron-down",
           className: `w-5 h-5 transition-transform duration-300 ${expandedRecentTxs ? 'rotate-180' : 'rotate-0'}`
-        })))),
-        /*#__PURE__*/
+        })))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: `grid transition-[grid-template-rows,opacity,margin,padding] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${expandedRecentTxs ? 'grid-rows-[1fr] opacity-100 mt-3.5' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'}`
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "overflow-hidden space-y-2.5"
-        }, transactions.slice(0, 5).map((tx, idx) =>
-        /*#__PURE__*/
+        }, transactions.slice(0, 5).map((tx, idx) => /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(SwipeableTxCard, {
           key: tx.id || idx,
@@ -12279,13 +11806,11 @@ function App() {
           isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
           onEdit: txItem => handleTransactionClick(txItem),
           onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
-        })), transactions.length === 0 &&
-        /*#__PURE__*/
+        })), transactions.length === 0 && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100/90 dark:border-slate-700/50"
-        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A"), transactions.length > 0 &&
-        /*#__PURE__*/
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A"), transactions.length > 0 && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => {
@@ -12293,11 +11818,9 @@ function App() {
             navigateToTab('all-transactions', 'none');
           },
           className: "w-full mt-1.5 py-3 px-4 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100/90 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 border border-indigo-100/80 dark:border-indigo-800/50 text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 space-x-reverse active:scale-[0.98] transition-all cursor-pointer group/viewall"
-        },
+        }, /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("span", null, "\u0645\u0634\u0627\u0647\u062F\u0647 \u0647\u0645\u0647 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"),
-        /*#__PURE__*/
+        React.createElement("span", null, "\u0645\u0634\u0627\u0647\u062F\u0647 \u0647\u0645\u0647 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "chevron-left",
@@ -12306,39 +11829,32 @@ function App() {
       case 'accounts':
         return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
           className: "space-y-4 animate-fade-in"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center justify-between py-1.5 mb-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center gap-2"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "wallet",
           className: "w-7 h-7 text-slate-800 dark:text-slate-100"
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("h1", {
           className: "text-xl font-bold text-slate-900 dark:text-white"
-        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u062D\u0633\u0627\u0628\u200C\u0647\u0627"))),
-        /*#__PURE__*/
+        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u062D\u0633\u0627\u0628\u200C\u0647\u0627"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center gap-3 mb-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 relative"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("input", {
           type: "text",
@@ -12346,27 +11862,23 @@ function App() {
           onChange: e => setAccountsSearchQuery(e.target.value),
           placeholder: "...",
           className: "w-full h-12 pr-10 pl-4 bg-slate-100/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-inner"
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "search",
           className: "w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => setAccountsSearchQuery(''),
           className: "w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform",
           title: " "
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "x",
           className: "w-6 h-6"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs"
@@ -12390,15 +11902,13 @@ function App() {
           id: 'archived',
           label: 'بایگانی',
           activeClass: 'bg-purple-600 text-white shadow-sm font-bold'
-        }].map(tab =>
-        /*#__PURE__*/
+        }].map(tab => /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           key: tab.id,
           onClick: () => setAccountsSubTab(tab.id),
           className: `py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${accountsSubTab === tab.id ? tab.activeClass : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`
-        }, tab.label))),
-        /*#__PURE__*/
+        }, tab.label))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-6"
@@ -12407,18 +11917,15 @@ function App() {
           if (loansToDisplay.length === 0) return null;
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             className: "space-y-3"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-full flex items-center justify-center mb-3"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-full text-center bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-500/80 dark:border-indigo-400/60 text-indigo-700 dark:text-indigo-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs"
-          }, "\u0648\u0627\u0645\u200C\u0647\u0627")),
-          /*#__PURE__*/
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3"
@@ -12429,196 +11936,158 @@ function App() {
               key: loan.id,
               onDelete: confirmCb => handleDeleteLoanClick(loan, confirmCb),
               onCardClick: () => openLoanDetail(loan)
-            }, isCompleted ?
-            /*#__PURE__*/
+            }, isCompleted ? /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm p-4 sm:p-5 overflow-hidden relative transition-all cursor-pointer hover:border-emerald-300"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "w-full flex flex-col opacity-75 gap-2"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "flex items-center justify-between w-full"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "w-14 h-14 bg-indigo-50/50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-blue-500 dark:text-blue-400 shrink-0"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement(Icon, {
               name: loan.icon || 'landmark',
               className: "w-8 h-8 text-blue-500 dark:text-blue-400"
-            })),
-            /*#__PURE__*/
+            })), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "flex-1 text-right flex flex-col gap-1 pl-4 pr-2"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("h3", {
               className: "font-bold text-slate-700 dark:text-slate-200 text-sm"
-            }, loan.title),
-            /*#__PURE__*/
+            }, loan.title), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("p", {
               className: "text-slate-400 text-xs whitespace-normal"
-            }, loan.contactName || "بانک")),
-            /*#__PURE__*/
+            }, loan.contactName || "بانک")), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "text-left shrink-0 flex flex-col items-center"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "font-bold text-base leading-none line-through text-slate-400 font-mono font-numeric"
-            }, formatAppNumber(loan.principalAmount)),
-            /*#__PURE__*/
+            }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "text-slate-400 text-xs"
-            }, "\u062A\u0648\u0645\u0627\u0646"))),
-            /*#__PURE__*/
+            }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "flex justify-center"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("span", {
               className: "text-slate-500 dark:text-slate-400 font-bold text-xs"
-            }, "\u0622\u062E\u0631\u06CC\u0646 \u0642\u0633\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647 : ", nextDueInfo.lastPaidDateStr || "تمامی اقساط پرداخت شده")),
-            /*#__PURE__*/
+            }, "\u0622\u062E\u0631\u06CC\u0646 \u0642\u0633\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647 : ", nextDueInfo.lastPaidDateStr || "تمامی اقساط پرداخت شده")), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "bg-indigo-50/30 dark:bg-indigo-950/30 rounded-lg py-2 px-4 text-center"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("span", {
               className: "text-blue-500 dark:text-blue-400 font-bold text-sm"
-            }, "\u062A\u0645\u0627\u0645\u06CC \u0627\u0642\u0633\u0627\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647 \u0627\u0633\u062A"))),
-            /*#__PURE__*/
+            }, "\u062A\u0645\u0627\u0645\u06CC \u0627\u0642\u0633\u0627\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647 \u0627\u0633\u062A"))), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "absolute bottom-4 left-4 w-12 h-12 bg-emerald-50 dark:bg-emerald-950 border-2 border-emerald-500 rounded-full flex items-center justify-center text-emerald-500 z-10"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement(Icon, {
               name: "check",
               className: "w-6 h-6 stroke-[3]"
-            }))) :
-            /*#__PURE__*/
+            }))) : /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  p-3 sm:p-4 transition-all cursor-pointer hover:border-indigo-400"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "w-full flex flex-col gap-3"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "flex items-center justify-between w-full"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 shadow-inner"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement(Icon, {
               name: loan.icon || 'landmark',
               className: "w-6 h-6"
-            })),
-            /*#__PURE__*/
+            })), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("h3", {
               className: "font-bold text-slate-800 dark:text-white text-sm leading-tight"
-            }, loan.title),
-            /*#__PURE__*/
+            }, loan.title), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("p", {
               className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal line-clamp-1"
-            }, loan.contactName || "بانک")),
-            /*#__PURE__*/
+            }, loan.contactName || "بانک")), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "text-left shrink-0 flex flex-col items-center"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "text-indigo-600 dark:text-indigo-400 font-bold text-base leading-none font-mono font-numeric"
-            }, formatAppNumber(loan.principalAmount)),
-            /*#__PURE__*/
+            }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "text-indigo-600 dark:text-indigo-400 text-[10px] mt-1 font-medium"
-            }, "\u062A\u0648\u0645\u0627\u0646"))),
-            /*#__PURE__*/
+            }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "flex flex-col gap-2"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "flex items-center justify-between w-full bg-[#F4F7FC] dark:bg-slate-900/50 rounded-xl px-3 py-1.5 border border-slate-200/50 dark:border-slate-700/50"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("span", {
               className: "text-slate-500 dark:text-slate-400 font-medium text-xs"
-            }, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 ", toAppDigits(nextDueInfo.paidInst + 1)),
-            /*#__PURE__*/
+            }, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 ", toAppDigits(nextDueInfo.paidInst + 1)), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("span", {
               className: "text-indigo-600 dark:text-indigo-400 font-bold text-xs font-mono"
-            }, formatDateToNumericJalali(nextDueInfo.nextDueDateStr) || toAppDigits(nextDueInfo.nextDueDateStr))),
-            /*#__PURE__*/
+            }, formatDateToNumericJalali(nextDueInfo.nextDueDateStr) || toAppDigits(nextDueInfo.nextDueDateStr))), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "w-full flex flex-col gap-1.5 px-1 mt-1"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "flex justify-between items-center text-[10px] font-bold"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("span", {
               className: "text-emerald-600 dark:text-emerald-400"
-            }, toAppDigits(nextDueInfo.paidInst), " \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"),
-            /*#__PURE__*/
+            }, toAppDigits(nextDueInfo.paidInst), " \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("span", {
               className: "text-slate-400 dark:text-slate-500"
-            }, "\u0645\u0627\u0646\u062F\u0647 ", toAppDigits(nextDueInfo.remainingInst))),
-            /*#__PURE__*/
+            }, "\u0645\u0627\u0646\u062F\u0647 ", toAppDigits(nextDueInfo.remainingInst))), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "w-full h-2.5 bg-slate-100 dark:bg-slate-800/80 rounded-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-700/80 flex"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "h-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 rounded-full transition-all duration-500",
@@ -12627,23 +12096,19 @@ function App() {
               }
             })))))));
           })));
-        })(), (accountsSubTab === 'all' || accountsSubTab === 'demands' || accountsSubTab === 'archived') && filteredAccountsDemands.length > 0 &&
-        /*#__PURE__*/
+        })(), (accountsSubTab === 'all' || accountsSubTab === 'demands' || accountsSubTab === 'archived') && filteredAccountsDemands.length > 0 && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-full flex items-center justify-center mb-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-full text-center bg-emerald-50/90 dark:bg-emerald-950/70 border-2 border-emerald-500/80 dark:border-emerald-400/60 text-emerald-700 dark:text-emerald-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs"
-        }, "\u0637\u0644\u0628\u200C\u0647\u0627")),
-        /*#__PURE__*/
+        }, "\u0637\u0644\u0628\u200C\u0647\u0627")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3"
@@ -12654,95 +12119,77 @@ function App() {
             key: contact.id,
             onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
             onCardClick: () => openContactDetail(contact, 'demands', 'accounts')
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-full flex flex-col gap-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex flex-col items-center gap-1 shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-up-right",
             className: "w-6 h-6"
-          })), isArchived ?
-          /*#__PURE__*/
+          })), isArchived ? /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "bg-emerald-500 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md"
-          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC") :
-          /*#__PURE__*/
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC") : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "bg-slate-400 dark:bg-slate-600 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md opacity-50"
-          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC")),
-          /*#__PURE__*/
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h3", {
             className: "font-bold text-slate-800 dark:text-white text-sm"
-          }, contact.firstName, " ", contact.lastName),
-          /*#__PURE__*/
+          }, contact.firstName, " ", contact.lastName), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
-          }, contact.note || "طلب شخصی")),
-          /*#__PURE__*/
+          }, contact.note || "طلب شخصی")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric"
-          }, formatAppNumber(contact.totalDemand)),
-          /*#__PURE__*/
+          }, formatAppNumber(contact.totalDemand)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-emerald-600 dark:text-emerald-400 text-xs"
           }, "\u062A\u0648\u0645\u0627\u0646"))))));
-        }))), (accountsSubTab === 'all' || accountsSubTab === 'debts' || accountsSubTab === 'archived') && filteredAccountsDebts.length > 0 &&
-        /*#__PURE__*/
+        }))), (accountsSubTab === 'all' || accountsSubTab === 'debts' || accountsSubTab === 'archived') && filteredAccountsDebts.length > 0 && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-full flex items-center justify-center mb-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-full text-center bg-rose-50/90 dark:bg-rose-950/70 border-2 border-rose-500/80 dark:border-rose-400/60 text-rose-700 dark:text-rose-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs"
-        }, "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627")),
-        /*#__PURE__*/
+        }, "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3"
@@ -12753,96 +12200,78 @@ function App() {
             key: contact.id,
             onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
             onCardClick: () => openContactDetail(contact, 'debts', 'accounts')
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-full flex flex-col gap-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex flex-col items-center gap-1 shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-down-left",
             className: "w-6 h-6"
-          })), isArchived ?
-          /*#__PURE__*/
+          })), isArchived ? /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "bg-rose-500 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md"
-          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC") :
-          /*#__PURE__*/
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC") : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "bg-slate-400 dark:bg-slate-600 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md opacity-50"
-          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC")),
-          /*#__PURE__*/
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h3", {
             className: "font-bold text-slate-800 dark:text-white text-sm"
-          }, contact.firstName, " ", contact.lastName),
-          /*#__PURE__*/
+          }, contact.firstName, " ", contact.lastName), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
-          }, contact.note || "بدهی شخصی")),
-          /*#__PURE__*/
+          }, contact.note || "بدهی شخصی")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric"
-          }, formatAppNumber(contact.totalDebt)),
-          /*#__PURE__*/
+          }, formatAppNumber(contact.totalDebt)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 text-xs"
           }, "\u062A\u0648\u0645\u0627\u0646"))))));
-        }))), filteredAccountsLoans.length === 0 && filteredAccountsDemands.length === 0 && filteredAccountsDebts.length === 0 &&
-        /*#__PURE__*/
+        }))), filteredAccountsLoans.length === 0 && filteredAccountsDemands.length === 0 && filteredAccountsDebts.length === 0 && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-white dark:bg-slate-800 p-8 rounded-2xl text-center border border-slate-100 dark:border-slate-700/60 my-4"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "search-x",
           className: "w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2"
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-xs font-bold text-slate-600 dark:text-slate-300"
-        }, accountsSearchQuery ? `هیچ موردی با عبارت "${accountsSearchQuery}" یافت نشد.` : 'هیچ حساب یا پرونده‌ای برای نمایش وجود ندارد.'), accountsSearchQuery &&
-        /*#__PURE__*/
+        }, accountsSearchQuery ? `هیچ موردی با عبارت "${accountsSearchQuery}" یافت نشد.` : 'هیچ حساب یا پرونده‌ای برای نمایش وجود ندارد.'), accountsSearchQuery && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => setAccountsSearchQuery(''),
@@ -12851,52 +12280,43 @@ function App() {
       case 'contacts':
         return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
           className: "space-y-4 animate-fade-in"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center justify-between py-1.5 mb-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center gap-2"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "users",
           className: "w-7 h-7 text-slate-800 dark:text-slate-100"
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("h1", {
           className: "text-xl font-bold text-slate-900 dark:text-white"
-        }, "\u0645\u062E\u0627\u0637\u0628\u06CC\u0646")),
-        /*#__PURE__*/
+        }, "\u0645\u062E\u0627\u0637\u0628\u06CC\u0646")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => openStackWizard('contact', 'add'),
           className: "w-11 h-11 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white shadow-md active:scale-95 transition-all shrink-0",
           title: "  "
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "plus",
           className: "w-6 h-6"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center gap-3 mb-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 relative"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("input", {
           type: "text",
@@ -12904,39 +12324,33 @@ function App() {
           onChange: e => setSearchQuery(e.target.value),
           placeholder: "...",
           className: "w-full h-12 pr-10 pl-4 bg-slate-100/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-inner"
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "search",
           className: "w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => setSearchQuery(''),
           className: "w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform",
           title: " "
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "x",
           className: "w-6 h-6"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => setContactFilter(contactFilter === 'favorite' ? 'all' : 'favorite'),
           title: "",
           className: `flex items-center justify-center w-9 h-9 rounded-full transition-all shrink-0 ${contactFilter === 'favorite' ? 'bg-amber-100 dark:bg-amber-950 text-amber-500' : 'text-slate-400 hover:text-amber-500'}`
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "star",
@@ -12961,15 +12375,13 @@ function App() {
           id: 'settled',
           label: 'بایگانی',
           activeClass: 'bg-purple-600 text-white shadow-sm font-bold'
-        }].map(tab =>
-        /*#__PURE__*/
+        }].map(tab => /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           key: tab.id,
           onClick: () => setContactFilter(tab.id),
           className: `py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${contactFilter === tab.id ? tab.activeClass : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`
-        }, tab.label))),
-        /*#__PURE__*/
+        }, tab.label))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4"
@@ -13063,85 +12475,69 @@ function App() {
               if (contactFilter === 'demand') f = 'demands';else if (contactFilter === 'debt') f = 'debts';else if (contactFilter === 'loan') f = 'loans';
               openContactDetail(contact, f, 'contacts');
             }
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `relative overflow-hidden bg-white dark:bg-slate-800 ${theme.bg} rounded-2xl sm:rounded-[24px] border p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-sm ${theme.border} transition-all cursor-pointer group`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `absolute -bottom-8 -left-8 pointer-events-none transition-transform group-hover:scale-[1.15] duration-500 ${theme.watermarkColor}`
-          }, contact.profileImage ?
-          /*#__PURE__*/
+          }, contact.profileImage ? /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-44 h-44 rounded-full overflow-hidden opacity-80"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("img", {
             src: contact.profileImage,
             alt: "",
             className: "w-full h-full object-cover"
-          })) :
-          /*#__PURE__*/
+          })) : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-44 h-44 flex items-center justify-center text-[160px] font-black leading-none opacity-80 tracking-tighter"
-          }, contact.firstName.charAt(0))),
-          /*#__PURE__*/
+          }, contact.firstName.charAt(0))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "relative z-10 flex flex-col gap-5"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex flex-row items-start justify-between"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center gap-4"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `rounded-full ${avatarBg} ${theme.ring} flex-shrink-0 flex items-center justify-center text-white font-bold w-16 h-16 sm:w-18 sm:h-18 text-lg sm:text-xl shadow-md border-2 border-white/60 dark:border-slate-700/60 overflow-hidden transition-transform group-hover:scale-105`
-          }, contact.profileImage ?
-          /*#__PURE__*/
+          }, contact.profileImage ? /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("img", {
             src: contact.profileImage,
             alt: `${contact.firstName} ${contact.lastName}`,
             className: "w-full h-full object-cover"
-          }) :
+          }) : /*#__PURE__*/
           /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement(React.Fragment, null, contact.firstName.charAt(0), " ", contact.lastName.charAt(0))),
-          /*#__PURE__*/
+          React.createElement(React.Fragment, null, contact.firstName.charAt(0), " ", contact.lastName.charAt(0))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex flex-col"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "text-slate-900 dark:text-white font-extrabold text-base sm:text-lg tracking-tight"
-          }, contact.firstName, " ", contact.lastName),
-          /*#__PURE__*/
+          }, contact.firstName, " ", contact.lastName), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "text-slate-500 dark:text-slate-400 tracking-wider font-mono text-xs dir-ltr mt-0.5"
-          }, contact.phone)))),
-          /*#__PURE__*/
+          }, contact.phone)))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex gap-2.5 justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("button", {
             onClick: e => {
@@ -13149,31 +12545,26 @@ function App() {
               openContactDetail(contact, 'loans', 'contacts');
             },
             className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveLoan ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 active:scale-95 border border-blue-500/80 hover:from-blue-700 hover:to-indigo-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
-          }, hasSettledLoan &&
-          /*#__PURE__*/
+          }, hasSettledLoan && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "check",
             className: "w-2.5 h-2.5",
             strokeWidth: 3.5
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "landmark",
             className: `w-4.5 h-4.5 ${hasActiveLoan ? 'text-white' : 'opacity-60'}`
-          }),
-          /*#__PURE__*/
+          }), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "text-[11px] font-bold leading-none"
-          }, "\u0648\u0627\u0645\u200C\u0647\u0627")),
-          /*#__PURE__*/
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("button", {
             onClick: e => {
@@ -13181,31 +12572,26 @@ function App() {
               openContactDetail(contact, 'demands', 'contacts');
             },
             className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDemand ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 active:scale-95 border border-emerald-500/80 hover:from-emerald-700 hover:to-teal-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
-          }, hasSettledDemand &&
-          /*#__PURE__*/
+          }, hasSettledDemand && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "check",
             className: "w-2.5 h-2.5",
             strokeWidth: 3.5
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-down-left",
             className: `w-4.5 h-4.5 ${hasActiveDemand ? 'text-white' : 'opacity-60'}`
-          }),
-          /*#__PURE__*/
+          }), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "text-[11px] font-bold leading-none"
-          }, "\u0637\u0644\u0628\u200C\u0647\u0627")),
-          /*#__PURE__*/
+          }, "\u0637\u0644\u0628\u200C\u0647\u0627")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("button", {
             onClick: e => {
@@ -13213,26 +12599,22 @@ function App() {
               openContactDetail(contact, 'debts', 'contacts');
             },
             className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDebt ? 'bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md shadow-rose-500/25 active:scale-95 border border-rose-500/80 hover:from-rose-700 hover:to-red-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
-          }, hasSettledDebt &&
-          /*#__PURE__*/
+          }, hasSettledDebt && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "check",
             className: "w-2.5 h-2.5",
             strokeWidth: 3.5
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-up-right",
             className: `w-4.5 h-4.5 ${hasActiveDebt ? 'text-white' : 'opacity-60'}`
-          }),
-          /*#__PURE__*/
+          }), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "text-[11px] font-bold leading-none"
@@ -13242,61 +12624,51 @@ function App() {
         if (!selectedContact) return null;
         return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
           className: "space-y-4 animate-fade-in"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex justify-between items-center py-1"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: onBack ? () => onBack('button') : () => navigateBack(loanReturnTab === 'accounts' ? 'accounts' : 'contacts'),
           className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "arrow-right",
           className: "w-5 h-5 text-slate-700 dark:text-slate-200"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("h3", {
           className: "text-sm font-bold text-slate-800 dark:text-slate-100"
-        }, "\u067E\u0631\u0648\u0641\u0627\u06CC\u0644 \u0645\u062E\u0627\u0637\u0628"),
-        /*#__PURE__*/
+        }, "\u067E\u0631\u0648\u0641\u0627\u06CC\u0644 \u0645\u062E\u0627\u0637\u0628"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center space-x-1.5 space-x-reverse"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => openStackWizard('contact', 'edit', selectedContact),
           className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform",
           title: " "
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "pencil",
           className: "w-4 h-4"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: handleDeleteContact,
           className: "w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400",
           title: " "
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "trash-2",
           className: "w-4 h-4"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => {
@@ -13313,8 +12685,7 @@ function App() {
           },
           className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-amber-500 active:scale-95 transition-transform",
           title: ""
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "star",
@@ -13324,8 +12695,7 @@ function App() {
           const contactInitials = (selectedContact.firstName ? selectedContact.firstName.charAt(0) : '') + (selectedContact.lastName ? selectedContact.lastName.charAt(0) : '');
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             className: `relative overflow-hidden rounded-2xl p-4 border flex flex-col gap-3 group transition-transform duration-200 ${cardTheme.containerClass}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `absolute -top-2 -left-2 ${cardTheme.watermarkColor}`,
@@ -13334,162 +12704,133 @@ function App() {
               zIndex: 0,
               pointerEvents: "none"
             }
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "landmark",
             className: "w-28 h-28 sm:w-32 sm:h-32"
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "relative z-10 w-full flex flex-col gap-3"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex gap-3 items-center min-w-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden ${cardTheme.avatarClass} flex items-center justify-center font-bold text-xl sm:text-2xl shadow-md border-2 border-white/60 dark:border-slate-700/60 shrink-0`
-          }, selectedContact.profileImage ?
-          /*#__PURE__*/
+          }, selectedContact.profileImage ? /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("img", {
             src: selectedContact.profileImage,
             alt: `${selectedContact.firstName} ${selectedContact.lastName}`,
             className: "w-full h-full object-cover"
-          }) : contactInitials || '؟'),
-          /*#__PURE__*/
+          }) : contactInitials || '؟'), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "min-w-0 flex-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h2", {
             className: `text-base sm:text-lg font-bold leading-tight truncate ${cardTheme.nameClass}`
-          }, selectedContact.firstName, " ", selectedContact.lastName),
-          /*#__PURE__*/
+          }, selectedContact.firstName, " ", selectedContact.lastName), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: `text-xs flex items-center gap-1.5 mt-0.5 ${cardTheme.phoneClass}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "phone",
             className: "w-3.5 h-3.5 shrink-0"
-          }),
-          /*#__PURE__*/
+          }), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             dir: "ltr",
             className: "font-mono"
-          }, selectedContact.phone || 'بدون شماره تماس')))),
-          /*#__PURE__*/
+          }, selectedContact.phone || 'بدون شماره تماس')))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "space-y-2 mt-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center gap-2 shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "credit-card",
             className: `w-4 h-4 shrink-0 ${cardTheme.accentColorClass}`
-          }),
-          /*#__PURE__*/
+          }), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: `text-xs font-bold ${cardTheme.rowLabelClass}`
-          }, "\u06A9\u0627\u0631\u062A")),
-          /*#__PURE__*/
+          }, "\u06A9\u0627\u0631\u062A")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center gap-2 min-w-0 flex-1 justify-end"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: `font-mono text-sm sm:text-base font-bold tracking-wider dir-ltr truncate ${cardTheme.rowTextClass}`
-          }, selectedContact.bankCard ? selectedContact.bankCard : 'ثبت نشده'), selectedContact.bankCard &&
-          /*#__PURE__*/
+          }, selectedContact.bankCard ? selectedContact.bankCard : 'ثبت نشده'), selectedContact.bankCard && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("button", {
             onClick: () => copyToClipboard(selectedContact.bankCard, 'شماره کارت'),
             className: `${cardTheme.accentColorClass} active:opacity-50 shrink-0 p-1`,
             title: "  "
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "copy",
             className: "w-4 h-4 shrink-0"
-          })))),
-          /*#__PURE__*/
+          })))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center gap-2 shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "landmark",
             className: `w-4 h-4 shrink-0 ${cardTheme.accentColorClass}`
-          }),
-          /*#__PURE__*/
+          }), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: `text-xs font-bold ${cardTheme.rowLabelClass}`
-          }, "\u0634\u0628\u0627")),
-          /*#__PURE__*/
+          }, "\u0634\u0628\u0627")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center gap-2 min-w-0 flex-1 justify-end"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: `font-mono text-[11px] sm:text-xs font-bold dir-ltr truncate ${cardTheme.rowTextClass}`
-          }, selectedContact.iban ? selectedContact.iban : 'ثبت نشده'), selectedContact.iban &&
-          /*#__PURE__*/
+          }, selectedContact.iban ? selectedContact.iban : 'ثبت نشده'), selectedContact.iban && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("button", {
             onClick: () => copyToClipboard(selectedContact.iban, 'شماره شبا'),
             className: `${cardTheme.accentColorClass} active:opacity-50 shrink-0 p-1`,
             title: "  "
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "copy",
             className: "w-4 h-4 shrink-0"
           })))))));
-        })(),
-        /*#__PURE__*/
+        })(), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "grid grid-cols-3 gap-2.5"
@@ -13499,39 +12840,32 @@ function App() {
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             onClick: () => setProfileFilter(prev => prev === 'loans' ? 'all' : 'loans'),
             className: `relative bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-indigo-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "text-xs sm:text-[13px] font-bold text-white/95"
-          }, "\u0648\u0627\u0645\u200C\u0647\u0627"),
-          /*#__PURE__*/
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627"), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-indigo-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "landmark",
             className: "w-3 h-3"
-          }))),
-          /*#__PURE__*/
+          }))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex flex-col items-start justify-end mt-1.5"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-[15px] sm:text-base font-black tracking-tight leading-none text-white font-mono font-numeric"
-          }, toAppDigits(contactLoansCount)),
-          /*#__PURE__*/
+          }, toAppDigits(contactLoansCount)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-[9px] sm:text-[10px] text-indigo-100 font-medium mt-0.5"
@@ -13541,39 +12875,32 @@ function App() {
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             onClick: () => setProfileFilter(prev => prev === 'debts' ? 'all' : 'debts'),
             className: `relative bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-rose-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-rose-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "text-xs sm:text-[13px] font-bold text-white/95"
-          }, "\u0628\u062F\u0647\u06CC"),
-          /*#__PURE__*/
+          }, "\u0628\u062F\u0647\u06CC"), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-rose-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-down-left",
             className: "w-3 h-3"
-          }))),
-          /*#__PURE__*/
+          }))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex flex-col items-start justify-end mt-1.5"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
-          }, formatAppNumber(selectedContact.totalDebt || 0)),
-          /*#__PURE__*/
+          }, formatAppNumber(selectedContact.totalDebt || 0)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-[9px] sm:text-[10px] text-rose-100 font-medium mt-0.5"
@@ -13583,45 +12910,37 @@ function App() {
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             onClick: () => setProfileFilter(prev => prev === 'demands' ? 'all' : 'demands'),
             className: `relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-emerald-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-emerald-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "text-xs sm:text-[13px] font-bold text-white/95"
-          }, "\u0637\u0644\u0628"),
-          /*#__PURE__*/
+          }, "\u0637\u0644\u0628"), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: `w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-emerald-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-up-right",
             className: "w-3 h-3"
-          }))),
-          /*#__PURE__*/
+          }))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex flex-col items-start justify-end mt-1.5"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
-          }, formatAppNumber(selectedContact.totalDemand || 0)),
-          /*#__PURE__*/
+          }, formatAppNumber(selectedContact.totalDemand || 0)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-[9px] sm:text-[10px] text-emerald-100 font-medium mt-0.5"
           }, "\u062A\u0648\u0645\u0627\u0646")));
-        })())),
-        /*#__PURE__*/
+        })())), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-3"
@@ -13782,8 +13101,7 @@ function App() {
             className: "font-bold text-emerald-900 dark:text-emerald-300 font-numeric",
             dir: "rtl"
           }, toAppDigits(contactDemands.length), " \u0645\u0648\u0631\u062F"))))));
-        })(), profileFilter === 'loans' &&
-        /*#__PURE__*/
+        })(), profileFilter === 'loans' && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-2"
@@ -13793,8 +13111,7 @@ function App() {
           const closedLoans = contactLoans.filter(l => l.remainingAmount <= 0);
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             className: "space-y-2.5"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(ActiveArchiveSegmentedControl, {
             activeLabel: "\u0648\u0627\u0645\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
@@ -13812,130 +13129,106 @@ function App() {
               icon: 'receipt',
               onClick: () => openStackWizard('installment', 'add')
             }]
-          }), contactLoansSubFilter === 'active' ? activeLoans.length > 0 ? activeLoans.map(loan =>
-          /*#__PURE__*/
+          }), contactLoansSubFilter === 'active' ? activeLoans.length > 0 ? activeLoans.map(loan => /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             key: loan.id,
             onClick: () => openLoanDetail(loan),
             className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: loan.icon || 'landmark',
             className: "w-6 h-6"
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h3", {
             className: "text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal"
-          }, loan.title),
-          /*#__PURE__*/
+          }, loan.title), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: "text-xs text-slate-500 dark:text-slate-400 whitespace-normal"
-          }, "\u0627\u0642\u0633\u0627\u0637: ",
-          /*#__PURE__*/
+          }, "\u0627\u0642\u0633\u0627\u0637: ", /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "font-mono font-numeric"
-          }, formatAppNumber(loan.installmentAmount)), " \u062A\u0648\u0645\u0627\u0646"))),
-          /*#__PURE__*/
+          }, formatAppNumber(loan.installmentAmount)), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "font-bold text-base leading-none text-indigo-600 dark:text-indigo-400 font-mono font-numeric"
-          }, formatAppNumber(loan.principalAmount)),
-          /*#__PURE__*/
+          }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-xs text-indigo-600 dark:text-indigo-400"
-          }, "\u062A\u0648\u0645\u0627\u0646")))) :
-          /*#__PURE__*/
+          }, "\u062A\u0648\u0645\u0627\u0646")))) : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
-          }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : closedLoans.length > 0 ? closedLoans.map(loan =>
-          /*#__PURE__*/
+          }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : closedLoans.length > 0 ? closedLoans.map(loan => /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             key: loan.id,
             onClick: () => openLoanDetail(loan),
             className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "check-circle-2",
             className: "w-6 h-6 text-emerald-600 dark:text-emerald-400"
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h3", {
             className: "text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal line-through decoration-slate-400"
-          }, loan.title),
-          /*#__PURE__*/
+          }, loan.title), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: "text-xs text-emerald-600 dark:text-emerald-400 font-bold whitespace-normal"
-          }, "\u062A\u0633\u0648\u06CC\u0647 \u06A9\u0627\u0645\u0644 \u0634\u062F"))),
-          /*#__PURE__*/
+          }, "\u062A\u0633\u0648\u06CC\u0647 \u06A9\u0627\u0645\u0644 \u0634\u062F"))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "font-bold text-base leading-none text-slate-500 font-mono font-numeric"
-          }, formatAppNumber(loan.principalAmount)),
-          /*#__PURE__*/
+          }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-xs text-slate-500"
-          }, "\u062A\u0648\u0645\u0627\u0646")))) :
-          /*#__PURE__*/
+          }, "\u062A\u0648\u0645\u0627\u0646")))) : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
           }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647 \u06CC\u0627 \u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC\u200C\u0634\u062F\u0647\u200C\u0627\u06CC \u0648\u062C\u0648\u062F \u0646\u062F\u0627\u0631\u062F."));
-        })()), profileFilter === 'debts' &&
-        /*#__PURE__*/
+        })()), profileFilter === 'debts' && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-2"
@@ -13963,8 +13256,7 @@ function App() {
           const activeDebtCount = contactDebts.length > 0 ? contactDebts.length : selectedContact.totalDebt > 0 ? 1 : 0;
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             className: "space-y-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(ActiveArchiveSegmentedControl, {
             activeLabel: "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
@@ -13995,8 +13287,7 @@ function App() {
               onEdit: txItem => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem),
               onDelete: txItem => requestDeleteTx(txItem, 'debt')
             });
-          }) : selectedContact.totalDebt > 0 ?
-          /*#__PURE__*/
+          }) : selectedContact.totalDebt > 0 ? /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             onClick: () => openStackWizard('debt', 'edit', {
@@ -14004,128 +13295,104 @@ function App() {
               amount: selectedContact.totalDebt
             }),
             className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-full flex flex-col gap-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-down-left",
             className: "w-6 h-6"
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h3", {
             className: "font-bold text-slate-800 dark:text-white text-sm"
-          }, "\u062B\u0628\u062A \u0628\u062F\u0647\u06CC \u062C\u062F\u06CC\u062F \u0628\u0647 ", selectedContact.firstName, " ", selectedContact.lastName),
-          /*#__PURE__*/
+          }, "\u062B\u0628\u062A \u0628\u062F\u0647\u06CC \u062C\u062F\u06CC\u062F \u0628\u0647 ", selectedContact.firstName, " ", selectedContact.lastName), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
-          }, selectedContact.note || 'توضیحات ثبت نشده')),
-          /*#__PURE__*/
+          }, selectedContact.note || 'توضیحات ثبت نشده')), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric"
-          }, formatAppNumber(selectedContact.totalDebt)),
-          /*#__PURE__*/
+          }, formatAppNumber(selectedContact.totalDebt)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 text-xs"
-          }, "\u062A\u0648\u0645\u0627\u0646"))))) :
-          /*#__PURE__*/
+          }, "\u062A\u0648\u0645\u0627\u0646"))))) : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
-          }, "\u0647\u06CC\u0686 \u0628\u062F\u0647\u06CC \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDebtPeriods.length > 0 ? archivedDebtPeriods.map(period =>
-          /*#__PURE__*/
+          }, "\u0647\u06CC\u0686 \u0628\u062F\u0647\u06CC \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDebtPeriods.length > 0 ? archivedDebtPeriods.map(period => /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             key: period.id,
             onClick: () => openArchivedPeriodDetail(period),
             className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-full flex flex-col gap-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-down-left",
             className: "w-6 h-6"
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h3", {
             className: "font-bold text-slate-800 dark:text-white text-sm"
-          }, period.title || 'دوره تسویه‌شده بدهی'),
-          /*#__PURE__*/
+          }, period.title || 'دوره تسویه‌شده بدهی'), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
-          }, formatDateToNumericJalali(period.startDate), " \u062A\u0627 ", formatDateToNumericJalali(period.endDate))),
-          /*#__PURE__*/
+          }, formatDateToNumericJalali(period.startDate), " \u062A\u0627 ", formatDateToNumericJalali(period.endDate))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric"
-          }, formatAppNumber(period.totalAmount || 0)),
-          /*#__PURE__*/
+          }, formatAppNumber(period.totalAmount || 0)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-rose-600 dark:text-rose-400 text-xs"
-          }, "\u062A\u0648\u0645\u0627\u0646")))))) :
-          /*#__PURE__*/
+          }, "\u062A\u0648\u0645\u0627\u0646")))))) : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
           }, "\u0647\u06CC\u0686 \u062F\u0648\u0631\u0647 \u0628\u062F\u0647\u06CC \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647 \u06CC\u0627 \u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC\u200C\u0634\u062F\u0647\u200C\u0627\u06CC \u0648\u062C\u0648\u062F \u0646\u062F\u0627\u0631\u062F."));
-        })()), profileFilter === 'demands' &&
-        /*#__PURE__*/
+        })()), profileFilter === 'demands' && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-2"
@@ -14153,8 +13420,7 @@ function App() {
           const activeDemandCount = contactDemands.length > 0 ? contactDemands.length : selectedContact.totalDemand > 0 ? 1 : 0;
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             className: "space-y-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(ActiveArchiveSegmentedControl, {
             activeLabel: "\u0637\u0644\u0628\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
@@ -14185,8 +13451,7 @@ function App() {
               onEdit: txItem => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem),
               onDelete: txItem => requestDeleteTx(txItem, 'demand')
             });
-          }) : selectedContact.totalDemand > 0 ?
-          /*#__PURE__*/
+          }) : selectedContact.totalDemand > 0 ? /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             onClick: () => openStackWizard('demand', 'edit', {
@@ -14194,128 +13459,104 @@ function App() {
               amount: selectedContact.totalDemand
             }),
             className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-full flex flex-col gap-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-up-right",
             className: "w-6 h-6"
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h3", {
             className: "font-bold text-slate-800 dark:text-white text-sm"
-          }, "\u0637\u0644\u0628 \u0634\u062E\u0635\u06CC"),
-          /*#__PURE__*/
+          }, "\u0637\u0644\u0628 \u0634\u062E\u0635\u06CC"), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
-          }, selectedContact.note || `طلب از ${selectedContact.firstName} ${selectedContact.lastName}`)),
-          /*#__PURE__*/
+          }, selectedContact.note || `طلب از ${selectedContact.firstName} ${selectedContact.lastName}`)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric"
-          }, formatAppNumber(selectedContact.totalDemand)),
-          /*#__PURE__*/
+          }, formatAppNumber(selectedContact.totalDemand)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-emerald-600 dark:text-emerald-400 text-xs"
-          }, "\u062A\u0648\u0645\u0627\u0646"))))) :
-          /*#__PURE__*/
+          }, "\u062A\u0648\u0645\u0627\u0646"))))) : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
-          }, "\u0647\u06CC\u0686 \u0637\u0644\u0628\u06CC \u0627\u0632 \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDemandPeriods.length > 0 ? archivedDemandPeriods.map(period =>
-          /*#__PURE__*/
+          }, "\u0647\u06CC\u0686 \u0637\u0644\u0628\u06CC \u0627\u0632 \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDemandPeriods.length > 0 ? archivedDemandPeriods.map(period => /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             key: period.id,
             onClick: () => openArchivedPeriodDetail(period),
             className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-full flex flex-col gap-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center justify-between w-full"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-up-right",
             className: "w-6 h-6"
-          })),
-          /*#__PURE__*/
+          })), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("h3", {
             className: "font-bold text-slate-800 dark:text-white text-sm"
-          }, period.title || 'دوره تسویه‌شده طلب'),
-          /*#__PURE__*/
+          }, period.title || 'دوره تسویه‌شده طلب'), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("p", {
             className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
-          }, formatDateToNumericJalali(period.startDate), " \u062A\u0627 ", formatDateToNumericJalali(period.endDate))),
-          /*#__PURE__*/
+          }, formatDateToNumericJalali(period.startDate), " \u062A\u0627 ", formatDateToNumericJalali(period.endDate))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-center"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric"
-          }, formatAppNumber(period.totalAmount || 0)),
-          /*#__PURE__*/
+          }, formatAppNumber(period.totalAmount || 0)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-emerald-600 dark:text-emerald-400 text-xs"
-          }, "\u062A\u0648\u0645\u0627\u0646")))))) :
-          /*#__PURE__*/
+          }, "\u062A\u0648\u0645\u0627\u0646")))))) : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
           }, "\u0647\u06CC\u0686 \u062F\u0648\u0631\u0647 \u0637\u0644\u0628 \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647 \u06CC\u0627 \u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC\u200C\u0634\u062F\u0647\u200C\u0627\u06CC \u0648\u062C\u0648\u062F \u0646\u062F\u0627\u0631\u062F."));
-        })())),
-        /*#__PURE__*/
+        })())), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "h-12 shrink-0 pointer-events-none"
@@ -14333,82 +13574,68 @@ function App() {
         const progressPct = totalInst > 0 ? Math.min(100, Math.round(paidInst / totalInst * 100)) : 0;
         return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
           className: "space-y-4 animate-fade-in pb-8"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex justify-between items-center py-1"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: onBack ? () => onBack('button') : () => navigateBack(loanReturnTab || 'accounts'),
           className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "arrow-right",
           className: "w-5 h-5 text-slate-700 dark:text-slate-200"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("h1", {
           className: "text-sm font-bold text-slate-800 dark:text-slate-100 truncate px-2"
-        }, selectedLoan.title),
-        /*#__PURE__*/
+        }, selectedLoan.title), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center space-x-1.5 space-x-reverse shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => openStackWizard('loan', 'edit', selectedLoan),
           className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform",
           title: " "
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "pencil",
           className: "w-4 h-4"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => handleDeleteLoanClick(selectedLoan),
           className: "w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400",
           title: " "
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "trash-2",
           className: "w-4 h-4"
-        })))),
-        /*#__PURE__*/
+        })))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-900 rounded-3xl p-5 text-white relative overflow-hidden card-shadow border border-blue-400/30 space-y-4",
           "data-purpose": "loan-summary-header"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl pointer-events-none"
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "absolute left-4 bottom-1 opacity-15 pointer-events-none text-white"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           fill: "currentColor",
@@ -14416,138 +13643,112 @@ function App() {
           viewBox: "0 0 24 24",
           width: "180",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M12 2L2 7v2h20V7L12 2zm0 18H4v-9h1v9h2v-9h2v9h2v-9h2v9h2v-9h2v9h1v-9h1v9h-2zm-10-9h20v2H2v-2z"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "relative z-10 space-y-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-start justify-between gap-2"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-start gap-3 min-w-0 flex-1"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-white/15 backdrop-blur-md p-2.5 rounded-2xl border border-white/20 shrink-0 mt-0.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: selectedLoan.icon || 'landmark',
           className: "w-5 h-5 sm:w-6 sm:h-6 text-indigo-200"
-        })),
-        /*#__PURE__*/
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "min-w-0 flex-1"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("h2", {
           className: "text-base sm:text-lg font-bold text-white break-words leading-snug"
-        }, selectedLoan.title),
-        /*#__PURE__*/
+        }, selectedLoan.title), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center gap-1.5 text-xs opacity-90 mt-1"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: `w-2 h-2 rounded-full ${isClosed ? 'bg-emerald-400' : 'bg-emerald-400 animate-pulse'}`
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-indigo-200 font-medium"
-        }, isClosed ? `پرونده تسویه‌شده${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}` : `پرونده فعال${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}`))))),
-        /*#__PURE__*/
+        }, isClosed ? `پرونده تسویه‌شده${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}` : `پرونده فعال${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}`))))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-white/10 backdrop-blur-md rounded-2xl px-3.5 py-2 border border-white/10 flex items-center justify-between"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs text-indigo-200 font-medium"
-        }, "\u0645\u0627\u0646\u062F\u0647 \u0648\u0627\u0645"),
-        /*#__PURE__*/
+        }, "\u0645\u0627\u0646\u062F\u0647 \u0648\u0627\u0645"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-baseline gap-1.5 font-mono font-numeric"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xl sm:text-2xl font-black text-white"
-        }, formatAppNumber(selectedLoan.remainingAmount)),
-        /*#__PURE__*/
+        }, formatAppNumber(selectedLoan.remainingAmount)), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs text-indigo-200 font-normal"
-        }, "\u062A\u0648\u0645\u0627\u0646")))),
-        /*#__PURE__*/
+        }, "\u062A\u0648\u0645\u0627\u0646")))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "pt-2 relative z-10 space-y-1.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex justify-between items-center text-xs opacity-90"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-indigo-200"
-        }, "\u067E\u06CC\u0634\u0631\u0641\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0627\u0642\u0633\u0627\u0637"),
-        /*#__PURE__*/
+        }, "\u067E\u06CC\u0634\u0631\u0641\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-emerald-300 font-bold"
-        }, toAppDigits(paidInst), " \u0627\u0632 ", toAppDigits(totalInst), " \u0642\u0633\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647")),
-        /*#__PURE__*/
+        }, toAppDigits(paidInst), " \u0627\u0632 ", toAppDigits(totalInst), " \u0642\u0633\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-full bg-white/15 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500 shadow-xs",
           style: {
             width: `${progressPct}%`
           }
-        })))),
-        /*#__PURE__*/
+        })))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-white dark:bg-slate-800 rounded-2xl card-shadow border border-slate-100 dark:border-slate-700/60 p-2 sm:p-3 grid grid-cols-3 divide-x divide-x-reverse divide-slate-100 dark:divide-slate-700/60 text-center",
           "data-purpose": "loan-quick-stats"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-green-50 dark:bg-green-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400",
@@ -14555,41 +13756,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
-        }, "\u0645\u0628\u0644\u063A \u0627\u0635\u0644 \u0648\u0627\u0645"),
-        /*#__PURE__*/
+        }, "\u0645\u0628\u0644\u063A \u0627\u0635\u0644 \u0648\u0627\u0645"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-xs sm:text-sm font-bold text-green-600 dark:text-green-400 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
-        }, formatAppNumber(selectedLoan.principalAmount)),
-        /*#__PURE__*/
+        }, formatAppNumber(selectedLoan.principalAmount)), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
-        }, "\u062A\u0648\u0645\u0627\u0646")),
-        /*#__PURE__*/
+        }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-blue-50 dark:bg-blue-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400",
@@ -14597,41 +13791,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
-        }, "\u0645\u0628\u0644\u063A \u0647\u0631 \u0642\u0633\u0637"),
-        /*#__PURE__*/
+        }, "\u0645\u0628\u0644\u063A \u0647\u0631 \u0642\u0633\u0637"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
-        }, formatAppNumber(installmentAmount)),
-        /*#__PURE__*/
+        }, formatAppNumber(installmentAmount)), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
-        }, "\u062A\u0648\u0645\u0627\u0646")),
-        /*#__PURE__*/
+        }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-indigo-50 dark:bg-indigo-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400",
@@ -14639,52 +13826,43 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
-        }, "\u0642\u0633\u0637 \u0628\u0639\u062F\u06CC"),
-        /*#__PURE__*/
+        }, "\u0642\u0633\u0637 \u0628\u0639\u062F\u06CC"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
-        }, nextDueInfo.isCompleted ? 'تکمیل' : formatDateToNumericJalali(nextDueInfo.nextDueDateStr)),
-        /*#__PURE__*/
+        }, nextDueInfo.isCompleted ? 'تکمیل' : formatDateToNumericJalali(nextDueInfo.nextDueDateStr)), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[9px] text-indigo-600 dark:text-indigo-400 font-medium mt-0.5 text-center leading-tight break-words"
-        }, nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? `${toAppDigits(Math.abs(nextDueInfo.daysLeft))} روز تاخیر در پرداخت` : nextDueInfo.daysLeft === 0 ? 'امروز سررسید قسط' : `${toAppDigits(nextDueInfo.daysLeft)} روز مانده تا سررسید`))),
-        /*#__PURE__*/
+        }, nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? `${toAppDigits(Math.abs(nextDueInfo.daysLeft))} روز تاخیر در پرداخت` : nextDueInfo.daysLeft === 0 ? 'امروز سررسید قسط' : `${toAppDigits(nextDueInfo.daysLeft)} روز مانده تا سررسید`))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-white dark:bg-slate-800 rounded-3xl p-4 card-shadow border border-slate-100 dark:border-slate-700/60 space-y-3",
           "data-purpose": "loan-details-grid"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "grid grid-cols-2 gap-2.5 sm:gap-3"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4",
@@ -14692,41 +13870,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
-        }, "\u0645\u0628\u0644\u063A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u06A9\u0644"),
-        /*#__PURE__*/
+        }, "\u0645\u0628\u0644\u063A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u06A9\u0644"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono font-numeric leading-tight block mt-0.5"
-        }, formatAppNumber(selectedLoan.totalRepayment), " \u062A\u0648\u0645\u0627\u0646"))),
-        /*#__PURE__*/
+        }, formatAppNumber(selectedLoan.totalRepayment), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4",
@@ -14734,41 +13905,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
-        }, "\u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u062A\u0627 \u0627\u0645\u0631\u0648\u0632"),
-        /*#__PURE__*/
+        }, "\u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u062A\u0627 \u0627\u0645\u0631\u0648\u0632"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono font-numeric leading-tight block mt-0.5"
-        }, formatAppNumber(selectedLoan.paidAmount), " \u062A\u0648\u0645\u0627\u0646"))),
-        /*#__PURE__*/
+        }, formatAppNumber(selectedLoan.paidAmount), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4",
@@ -14776,41 +13940,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M4 6h16M4 12h16M4 18h7",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
-        }, "\u062A\u0639\u062F\u0627\u062F \u06A9\u0644 \u0627\u0642\u0633\u0627\u0637"),
-        /*#__PURE__*/
+        }, "\u062A\u0639\u062F\u0627\u062F \u06A9\u0644 \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-bold text-gray-800 dark:text-slate-200 leading-tight block mt-0.5"
-        }, toAppDigits(totalInst), " \u0642\u0633\u0637"))),
-        /*#__PURE__*/
+        }, toAppDigits(totalInst), " \u0642\u0633\u0637"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4",
@@ -14818,41 +13975,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
-        }, "\u0628\u0627\u0642\u06CC\u200C\u0645\u0627\u0646\u062F\u0647"),
-        /*#__PURE__*/
+        }, "\u0628\u0627\u0642\u06CC\u200C\u0645\u0627\u0646\u062F\u0647"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-extrabold text-rose-500 dark:text-rose-400 font-mono font-numeric leading-tight block mt-0.5"
-        }, formatAppNumber(selectedLoan.remainingAmount), " \u062A\u0648\u0645\u0627\u0646"))),
-        /*#__PURE__*/
+        }, formatAppNumber(selectedLoan.remainingAmount), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4",
@@ -14860,41 +14010,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 min-w-0 text-right"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
-        }, "\u062A\u0627\u0631\u06CC\u062E \u062F\u0631\u06CC\u0627\u0641\u062A \u0648\u0627\u0645"),
-        /*#__PURE__*/
+        }, "\u062A\u0627\u0631\u06CC\u062E \u062F\u0631\u06CC\u0627\u0641\u062A \u0648\u0627\u0645"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono font-numeric leading-tight block mt-0.5 text-right"
-        }, formatDateToNumericJalali(selectedLoan.receiveDate || selectedLoan.startDate)))),
-        /*#__PURE__*/
+        }, formatDateToNumericJalali(selectedLoan.receiveDate || selectedLoan.startDate)))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4",
@@ -14902,41 +14045,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 min-w-0 text-right"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
-        }, "\u062A\u0627\u0631\u06CC\u062E \u0634\u0631\u0648\u0639 \u0627\u0642\u0633\u0627\u0637"),
-        /*#__PURE__*/
+        }, "\u062A\u0627\u0631\u06CC\u062E \u0634\u0631\u0648\u0639 \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono font-numeric leading-tight block mt-0.5 text-right"
-        }, formatDateToNumericJalali(getLoanNextDueInfo(selectedLoan, []).nextDueDateStr || selectedLoan.startDate)))),
-        /*#__PURE__*/
+        }, formatDateToNumericJalali(getLoanNextDueInfo(selectedLoan, []).nextDueDateStr || selectedLoan.startDate)))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4",
@@ -14944,41 +14080,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
-        }, "\u0645\u0648\u0639\u062F \u0642\u0633\u0637 \u062F\u0631 \u0647\u0631 \u0645\u0627\u0647"),
-        /*#__PURE__*/
+        }, "\u0645\u0648\u0639\u062F \u0642\u0633\u0637 \u062F\u0631 \u0647\u0631 \u0645\u0627\u0647"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-bold text-blue-600 dark:text-blue-400 leading-tight block mt-0.5"
-        }, "\u0631\u0648\u0632 ", toAppDigits(selectedLoan.dueDayOfMonth), " \u0645\u0627\u0647"))),
-        /*#__PURE__*/
+        }, "\u0631\u0648\u0632 ", toAppDigits(selectedLoan.dueDayOfMonth), " \u0645\u0627\u0647"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-4 w-4",
@@ -14986,41 +14115,34 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
-        }, "\u0627\u0642\u0633\u0627\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"),
-        /*#__PURE__*/
+        }, "\u0627\u0642\u0633\u0627\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-bold text-gray-800 dark:text-slate-200 leading-tight block mt-0.5"
-        }, toAppDigits(paidInst), " \u0642\u0633\u0637")))),
-        /*#__PURE__*/
+        }, toAppDigits(paidInst), " \u0642\u0633\u0637")))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "p-3 bg-blue-50/70 dark:bg-indigo-950/40 rounded-2xl flex items-center gap-3 border border-blue-100/80 dark:border-indigo-900/40"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-white dark:bg-indigo-900/60 p-2 rounded-xl text-blue-600 dark:text-blue-300 shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-6 w-6",
@@ -15028,107 +14150,87 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        }))),
-        /*#__PURE__*/
+        }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex-1 min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-xs font-bold text-blue-700 dark:text-blue-300 block"
-        }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648\u0627\u0645"),
-        /*#__PURE__*/
+        }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648\u0627\u0645"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("p", {
           className: "text-[10px] text-gray-600 dark:text-slate-300 leading-relaxed break-words"
-        }, selectedLoan.notes && selectedLoan.notes.trim() ? selectedLoan.notes : 'توضیحاتی برای این وام ثبت نشده است.')))),
-        /*#__PURE__*/
+        }, selectedLoan.notes && selectedLoan.notes.trim() ? selectedLoan.notes : 'توضیحاتی برای این وام ثبت نشده است.')))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-amber-50/50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-800/40 rounded-3xl p-4 flex items-center justify-between card-shadow",
           "data-purpose": "reminder-banner"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center gap-4 min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "relative shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-amber-100 dark:bg-amber-900/60 p-3 rounded-2xl"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-10 w-10 text-amber-500 fill-amber-500/20",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 4.36 6 6.92 6 10v5l-2 2v1h16v-1l-2-2z"
-        }))), !nextDueInfo.isCompleted &&
-        /*#__PURE__*/
+        }))), !nextDueInfo.isCompleted && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-800"
-        }, toAppDigits(nextDueInfo.daysLeft < 0 ? Math.abs(nextDueInfo.daysLeft) : nextDueInfo.daysLeft))),
-        /*#__PURE__*/
+        }, toAppDigits(nextDueInfo.daysLeft < 0 ? Math.abs(nextDueInfo.daysLeft) : nextDueInfo.daysLeft))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "min-w-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("h3", {
           className: "text-sm font-bold text-amber-800 dark:text-amber-200"
-        }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u06CC\u0627\u062F\u0622\u0648\u0631\u06CC"),
-        /*#__PURE__*/
+        }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u06CC\u0627\u062F\u0622\u0648\u0631\u06CC"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("p", {
           className: "text-xs text-amber-700 dark:text-amber-300 mt-1 leading-snug"
-        }, nextDueInfo.isCompleted ? 'کلیه اقساط پرداخت شده‌اند' : `قسط شماره ${toAppDigits(nextDueInfo.nextDueNum)}`, !nextDueInfo.isCompleted &&
+        }, nextDueInfo.isCompleted ? 'کلیه اقساط پرداخت شده‌اند' : `قسط شماره ${toAppDigits(nextDueInfo.nextDueNum)}`, !nextDueInfo.isCompleted && /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("br", null), !nextDueInfo.isCompleted && formatDateToNumericJalali(nextDueInfo.nextDueDateStr)))),
-        /*#__PURE__*/
+        React.createElement("br", null), !nextDueInfo.isCompleted && formatDateToNumericJalali(nextDueInfo.nextDueDateStr)))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-center shrink-0"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: `text-xl sm:text-2xl font-black font-mono font-numeric ${nextDueInfo.isCompleted ? 'text-emerald-600 dark:text-emerald-400' : nextDueInfo.daysLeft < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400'}`
-        }, nextDueInfo.isCompleted ? 'تکمیل' : `${toAppDigits(Math.abs(nextDueInfo.daysLeft))} روز`),
-        /*#__PURE__*/
+        }, nextDueInfo.isCompleted ? 'تکمیل' : `${toAppDigits(Math.abs(nextDueInfo.daysLeft))} روز`), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: `text-[10px] sm:text-xs font-bold mt-0.5 ${nextDueInfo.isCompleted ? 'text-emerald-700 dark:text-emerald-300' : nextDueInfo.daysLeft < 0 ? 'text-rose-700 dark:text-rose-300' : 'text-amber-700 dark:text-amber-300'}`
-        }, nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? 'تاخیر در پرداخت' : 'مانده تا سررسید'),
-        /*#__PURE__*/
+        }, nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? 'تاخیر در پرداخت' : 'مانده تا سررسید'), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "mt-2 bg-white/60 dark:bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px] text-amber-800 dark:text-amber-200 flex items-center gap-1 justify-center"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-3 w-3",
@@ -15136,27 +14238,23 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        })),
+        })), /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("span", null, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC \u0641\u0639\u0627\u0644 \u0627\u0633\u062A")))),
-        /*#__PURE__*/
+        React.createElement("span", null, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC \u0641\u0639\u0627\u0644 \u0627\u0633\u062A")))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => openStackWizard('installment', 'add', selectedLoan),
           disabled: isClosed,
           className: `w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg transition-all active:scale-95 ${isClosed ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed shadow-none' : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-blue-200 dark:shadow-blue-950/50 cursor-pointer'}`,
           "data-purpose": "submit-payment-button"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("svg", {
           className: "h-6 w-6",
@@ -15164,77 +14262,63 @@ function App() {
           stroke: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("path", {
           d: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z",
           strokeLinecap: "round",
           strokeLinejoin: "round",
           strokeWidth: "2"
-        })),
+        })), /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("span", null, "\u062B\u0628\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637")),
-        /*#__PURE__*/
+        React.createElement("span", null, "\u062B\u0628\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("section", {
           className: "space-y-3",
           "data-purpose": "transaction-history"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-slate-200/80 dark:bg-slate-800/90 p-1 rounded-2xl flex items-center gap-1 border border-slate-300/50 dark:border-slate-700/60 shadow-inner"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           type: "button",
           onClick: () => setLoanTabFilter('paid'),
           className: `flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${loanTabFilter === 'paid' ? 'bg-blue-600 dark:bg-blue-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "check-circle-2",
           className: "w-4 h-4"
-        }),
+        }), /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("span", null, "\u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"),
-        /*#__PURE__*/
+        React.createElement("span", null, "\u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: `text-[10px] px-1.5 py-0.5 rounded-full font-mono font-numeric ${loanTabFilter === 'paid' ? 'bg-white/20 text-white' : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`
-        }, toAppDigits(repaymentTxs.length))),
-        /*#__PURE__*/
+        }, toAppDigits(repaymentTxs.length))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           type: "button",
           onClick: () => setLoanTabFilter('unpaid'),
           className: `flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${loanTabFilter === 'unpaid' ? 'bg-amber-600 dark:bg-amber-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "clock",
           className: "w-4 h-4"
-        }),
+        }), /*#__PURE__*/
         /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("span", null, "\u067E\u0631\u062F\u0627\u062E\u062A \u0646\u0634\u062F\u0647"),
-        /*#__PURE__*/
+        React.createElement("span", null, "\u067E\u0631\u062F\u0627\u062E\u062A \u0646\u0634\u062F\u0647"), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: `text-[10px] px-1.5 py-0.5 rounded-full font-mono font-numeric ${loanTabFilter === 'unpaid' ? 'bg-white/20 text-white' : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`
-        }, toAppDigits(Math.max(0, totalInst - repaymentTxs.length))))),
-        /*#__PURE__*/
+        }, toAppDigits(Math.max(0, totalInst - repaymentTxs.length))))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(AnimatePresence, {
           mode: "wait"
-        }, loanTabFilter === 'paid' ?
-        /*#__PURE__*/
+        }, loanTabFilter === 'paid' ? /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(motion.div, {
           key: "paid-list",
@@ -15254,18 +14338,15 @@ function App() {
             duration: 0.2
           },
           className: "space-y-3"
-        }, repaymentTxs.length === 0 ?
-        /*#__PURE__*/
+        }, repaymentTxs.length === 0 ? /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "bg-white dark:bg-slate-800 p-6 rounded-3xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 card-shadow"
-        }, "\u0647\u0646\u0648\u0632 \u0642\u0633\u0637\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0648\u0627\u0645 \u067E\u0631\u062F\u0627\u062E\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A") :
-        /*#__PURE__*/
+        }, "\u0647\u0646\u0648\u0632 \u0642\u0633\u0637\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0648\u0627\u0645 \u067E\u0631\u062F\u0627\u062E\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A") : /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "space-y-3"
-        }, repaymentTxs.map((tx, idx) =>
-        /*#__PURE__*/
+        }, repaymentTxs.map((tx, idx) => /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(SwipeableTxCard, {
           key: tx.id,
@@ -15279,8 +14360,7 @@ function App() {
           isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
           onEdit: txItem => openStackWizard('installment', 'edit', txItem),
           onDelete: txItem => requestDeleteTx(txItem, 'loan_installment')
-        })))) :
-        /*#__PURE__*/
+        })))) : /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(motion.div, {
           key: "unpaid-list",
@@ -15305,19 +14385,16 @@ function App() {
           if (paidCount >= totalInst) {
             return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
               className: "bg-emerald-50 dark:bg-emerald-950/40 p-6 rounded-3xl text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 card-shadow flex flex-col items-center gap-2"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("div", {
               className: "w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400"
-            },
-            /*#__PURE__*/
+            }, /*#__PURE__*/
             /*#__PURE__*/
             React.createElement(Icon, {
               name: "check-circle-2",
               className: "w-6 h-6"
-            })),
-            /*#__PURE__*/
+            })), /*#__PURE__*/
             /*#__PURE__*/
             React.createElement("span", null, "\u062A\u0645\u0627\u0645\u06CC \u0627\u0642\u0633\u0627\u0637 \u0627\u06CC\u0646 \u0648\u0627\u0645 \u0628\u0627 \u0645\u0648\u0641\u0642\u06CC\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647\u200C\u0627\u0646\u062F"));
           }
@@ -15331,84 +14408,68 @@ function App() {
           }
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             className: "space-y-2.5"
-          }, unpaidItems.map(item =>
-          /*#__PURE__*/
+          }, unpaidItems.map(item => /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             key: `unpaid-${item.instNum}`,
             className: "bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-700/70 card-shadow flex items-center justify-between gap-3"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "flex items-center gap-3 min-w-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200/60 dark:border-amber-800/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-bold text-xs"
-          },
+          }, /*#__PURE__*/
           /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement("span", null, "#", toAppDigits(item.instNum))),
-          /*#__PURE__*/
+          React.createElement("span", null, "#", toAppDigits(item.instNum))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "min-w-0"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 truncate"
-          }, "\u0642\u0633\u0637 ", toAppDigits(item.instNum), " \u0627\u0632 ", toAppDigits(totalInst)),
-          /*#__PURE__*/
+          }, "\u0642\u0633\u0637 ", toAppDigits(item.instNum), " \u0627\u0632 ", toAppDigits(totalInst)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "calendar",
             className: "w-3.5 h-3.5 text-slate-400"
-          }),
+          }), /*#__PURE__*/
           /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement("span", null, "\u0645\u0648\u0639\u062F: ", formatDateToNumericJalali(item.dateStr))))),
-          /*#__PURE__*/
+          React.createElement("span", null, "\u0645\u0648\u0639\u062F: ", formatDateToNumericJalali(item.dateStr))))), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "text-left shrink-0 flex flex-col items-end gap-1"
-          },
-          /*#__PURE__*/
+          }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "font-mono font-numeric font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 dir-ltr"
-          }, formatAppNumber(installmentAmount), " ",
-          /*#__PURE__*/
+          }, formatAppNumber(installmentAmount), " ", /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: "font-sans text-[10px] text-slate-500"
-          }, "\u062A\u0648\u0645\u0627\u0646")),
-          /*#__PURE__*/
+          }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("span", {
             className: `text-[10px] font-bold px-2 py-0.5 rounded-full ${item.daysLeft < 0 ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800' : item.daysLeft === 0 ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`
           }, item.daysLeft < 0 ? `${toAppDigits(Math.abs(item.daysLeft))} روز تاخیر` : item.daysLeft === 0 ? 'سررسید امروز' : `${toAppDigits(item.daysLeft)} روز مانده`)))));
-        })()))),
-        /*#__PURE__*/
+        })()))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
           onClick: () => openUniversalExportModal("loan", selectedLoan),
           className: "w-full py-3.5 sm:py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-lg shadow-blue-200 dark:shadow-blue-950/50 active:scale-95 transition-all cursor-pointer"
-        },
-        /*#__PURE__*/
+        }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(Icon, {
           name: "file-output",
           className: "w-5 h-5 text-white"
-        }),
-        /*#__PURE__*/
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", null, "\u062E\u0631\u0648\u062C\u06CC \u06AF\u0631\u0641\u062A\u0646 \u0627\u0632 \u06AF\u0632\u0627\u0631\u0634 \u0648\u0627\u0645")));
       case 'archived-period-detail':
@@ -16317,7 +15378,92 @@ function App() {
           className: "divide-y divide-slate-100 dark:divide-slate-700/60 rounded-xl overflow-hidden"
         }, /*#__PURE__*/
         /*#__PURE__*/
-        React.createElement("button", {
+        React.createElement("div", {
+          className: "p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group"
+        }, React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, React.createElement("div", {
+          className: "flex items-center gap-3.5 cursor-pointer flex-1 min-w-0",
+          onClick: () => {
+            if (!gdriveSyncState.isSignedIn && window.GoogleDriveSync) {
+              window.GoogleDriveSync.signIn();
+            }
+          }
+        }, React.createElement("div", {
+          className: "w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center shadow-xs shrink-0"
+        }, React.createElement("svg", {
+          className: "w-5 h-5",
+          viewBox: "0 0 24 24"
+        }, React.createElement("path", {
+          fill: "#4285F4",
+          d: "M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+        }), React.createElement("path", {
+          fill: "#34A853",
+          d: "M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        }), React.createElement("path", {
+          fill: "#FBBC05",
+          d: "M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+        }), React.createElement("path", {
+          fill: "#EA4335",
+          d: "M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+        }))), React.createElement("div", {
+          className: "text-right min-w-0"
+        }, React.createElement("div", {
+          className: "flex items-center gap-2"
+        }, React.createElement("p", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-100"
+        }, "همگام‌سازی با گوگل"), gdriveSyncState.isSignedIn && React.createElement("span", {
+          className: "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800"
+        }, React.createElement("span", {
+          className: "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
+        }), "متصل")), React.createElement("p", {
+          className: "text-[11px] text-slate-400 mt-0.5"
+        }, gdriveSyncState.isSignedIn ? gdriveSyncState.lastSyncTime ? "آخرین همگام‌سازی: " + (window.GoogleDriveSync ? window.GoogleDriveSync.getLastSyncFormatted() : "به‌روز") : "همگام‌سازی خودکار در پس‌زمینه فعال است" : "پشتیبان‌گیری ابری و امن در Google Drive"))), React.createElement("div", {
+          className: "flex items-center gap-2 shrink-0 mr-2"
+        }, !gdriveSyncState.isSignedIn ? React.createElement("button", {
+          type: "button",
+          onClick: () => {
+            if (window.GoogleDriveSync) window.GoogleDriveSync.signIn();
+          },
+          className: "px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold border border-blue-200/60 dark:border-blue-800/50 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+        }, React.createElement(Icon, {
+          name: "log-in",
+          className: "w-3.5 h-3.5"
+        }), "اتصال") : React.createElement("div", {
+          className: "flex items-center gap-1.5"
+        }, React.createElement("button", {
+          type: "button",
+          onClick: async e => {
+            e.stopPropagation();
+            if (window.GoogleDriveSync) {
+              const res = await window.GoogleDriveSync.forceSync({
+                isUserInitiated: true
+              });
+              if (res && res.success) {
+                showToast("همگام‌سازی با گوگل درایو انجام شد");
+              } else {
+                showToast("خطا در همگام‌سازی با گوگل درایو");
+              }
+            }
+          },
+          disabled: gdriveSyncState.isSyncing,
+          className: "px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-bold active:scale-95 transition-all flex items-center gap-1 cursor-pointer disabled:opacity-50",
+          title: "همگام‌سازی دستی"
+        }, React.createElement(Icon, {
+          name: "refresh-cw",
+          className: "w-3 h-3 " + (gdriveSyncState.isSyncing ? "animate-spin text-blue-600" : "")
+        }), gdriveSyncState.isSyncing ? "در حال سینک..." : "سینک دستی"), React.createElement("button", {
+          type: "button",
+          onClick: e => {
+            e.stopPropagation();
+            if (window.confirm("آیا از خروج و قطع اتصال حساب گوگل اطمینان دارید؟")) {
+              if (window.GoogleDriveSync) window.GoogleDriveSync.signOut();
+              showToast("اتصال با حساب گوگل قطع شد");
+            }
+          },
+          className: "px-2 py-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg text-[11px] font-bold active:scale-95 transition-all cursor-pointer",
+          title: "قطع اتصال"
+        }, "خروج"))))), React.createElement("button", {
           type: "button",
           onClick: handleExportBackup,
           className: "w-full flex items-center justify-between p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group text-right"

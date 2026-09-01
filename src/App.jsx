@@ -1,3 +1,12 @@
+function _extends2() {
+  return _extends2 = Object.assign ? Object.assign.bind() : function (n) {
+    for (var e = 1; e < arguments.length; e++) {
+      var t = arguments[e];
+      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+    }
+    return n;
+  }, _extends2.apply(null, arguments);
+}
 function _extends() {
   return _extends = Object.assign ? Object.assign.bind() : function (n) {
     for (var e = 1; e < arguments.length; e++) {
@@ -32,14 +41,14 @@ const motionProxy = Motion.motion || new Proxy({}, {
       dragConstraints,
       ...props
     }) {
-      return <tag>{children}</tag>;
+      return /*#__PURE__*/React.createElement("tag", null, children);
     };
   }
 });
 const motion = Motion.motion || motionProxy;
 const AnimatePresence = Motion.AnimatePresence || (({
   children
-}) => <>{children}</>);
+}) => /*#__PURE__*/React.createElement(React.Fragment, null, children));
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -59,17 +68,45 @@ class ErrorBoundary extends Component {
   }
   render() {
     if (this.state.hasError) {
-      return /*#__PURE__*/<div className="min-h-screen w-full flex flex-col items-center justify-center p-6 bg-slate-950 text-white text-center font-vazir dir-rtl">{/*#__PURE__*/<div className="text-5xl mb-4 animate-bounce">⚡</div>}{/*#__PURE__*/<h2 className="text-lg font-bold mb-2 text-slate-100">راه‌اندازی مجدد امیر فایننس</h2>}{/*#__PURE__*/<p className="text-xs text-slate-400 mb-6 max-w-xs leading-relaxed">{this.state.error ? String(this.state.error) : 'نسخه جدید برنامه آماده است. جهت بارگذاری دکمه زیر را لمس کنید.'}</p>}{/*#__PURE__*/<div className="flex gap-3">{/*#__PURE__*/<button onClick={() => {
-            this.setState({
-              hasError: false,
-              error: null
-            });
-            window.location.reload();
-          }} className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all cursor-pointer">ورود به برنامه</button>}{/*#__PURE__*/<button onClick={() => {
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.reload();
-          }} className="bg-slate-800 text-slate-300 px-5 py-2.5 rounded-xl font-bold text-xs active:scale-95 transition-all cursor-pointer">پاکسازی حافظه و بازیابی</button>}</div>}</div>;
+      return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+        className: "min-h-screen w-full flex flex-col items-center justify-center p-6 bg-slate-950 text-white text-center font-vazir dir-rtl"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "text-5xl mb-4 animate-bounce"
+      }, "\u26A1"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("h2", {
+        className: "text-lg font-bold mb-2 text-slate-100"
+      }, "\u0631\u0627\u0647\u200C\u0627\u0646\u062F\u0627\u0632\u06CC \u0645\u062C\u062F\u062F \u0627\u0645\u06CC\u0631 \u0641\u0627\u06CC\u0646\u0646\u0633"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("p", {
+        className: "text-xs text-slate-400 mb-6 max-w-xs leading-relaxed"
+      }, this.state.error ? String(this.state.error) : 'نسخه جدید برنامه آماده است. جهت بارگذاری دکمه زیر را لمس کنید.'), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "flex gap-3"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("button", {
+        onClick: () => {
+          this.setState({
+            hasError: false,
+            error: null
+          });
+          window.location.reload();
+        },
+        className: "bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all cursor-pointer"
+      }, "\u0648\u0631\u0648\u062F \u0628\u0647 \u0628\u0631\u0646\u0627\u0645\u0647"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("button", {
+        onClick: () => {
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.reload();
+        },
+        className: "bg-slate-800 text-slate-300 px-5 py-2.5 rounded-xl font-bold text-xs active:scale-95 transition-all cursor-pointer"
+      }, "\u067E\u0627\u06A9\u0633\u0627\u0632\u06CC \u062D\u0627\u0641\u0638\u0647 \u0648 \u0628\u0627\u0632\u06CC\u0627\u0628\u06CC")));
     }
     return this.props.children;
   }
@@ -91,91 +128,90 @@ const getContactCardTheme = contactId => {
     idNum = String(contactId).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
   }
   const themes = [
-    // 1: Building Watermark (Light Surface)
-    {
-      watermark: 'apartment',
-      containerClass: 'bg-slate-100 dark:bg-slate-800/95 text-slate-900 dark:text-white border-slate-200/80 dark:border-slate-700/80 shadow-sm',
-      avatarClass: 'bg-indigo-600 text-white',
-      nameClass: 'text-slate-900 dark:text-white',
-      phoneClass: 'text-slate-500 dark:text-slate-400',
-      buttonClass: 'bg-white/70 dark:bg-slate-700/70 text-slate-700 dark:text-slate-200 hover:bg-white',
-      rowClass: 'bg-white/70 dark:bg-slate-700/50',
-      rowLabelClass: 'text-slate-500 dark:text-slate-400',
-      rowTextClass: 'text-slate-900 dark:text-white',
-      accentColorClass: 'text-indigo-600 dark:text-indigo-400',
-      watermarkColor: 'text-slate-900 dark:text-white'
-    },
-    // 2: Wallet Watermark (Amber Warm)
-    {
-      watermark: 'account_balance_wallet',
-      containerClass: 'bg-amber-600 dark:bg-amber-800 text-white border-amber-500 dark:border-amber-700 shadow-md',
-      avatarClass: 'bg-amber-100 text-amber-900 font-black',
-      nameClass: 'text-white font-bold',
-      phoneClass: 'text-amber-100 dark:text-amber-200',
-      buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
-      rowClass: 'bg-white/15 dark:bg-black/20',
-      rowLabelClass: 'text-amber-100 dark:text-amber-200',
-      rowTextClass: 'text-white font-bold',
-      accentColorClass: 'text-amber-200',
-      watermarkColor: 'text-white'
-    },
-    // 3: Handshake Watermark (Tinted Surface)
-    {
-      watermark: 'handshake',
-      containerClass: 'bg-indigo-100/90 dark:bg-indigo-950/80 text-indigo-950 dark:text-indigo-100 border-indigo-200 dark:border-indigo-900 shadow-sm',
-      avatarClass: 'bg-indigo-600 text-white',
-      nameClass: 'text-indigo-950 dark:text-indigo-100',
-      phoneClass: 'text-indigo-700 dark:text-indigo-300',
-      buttonClass: 'bg-white/60 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 hover:bg-white/80',
-      rowClass: 'bg-white/60 dark:bg-indigo-900/50',
-      rowLabelClass: 'text-indigo-700 dark:text-indigo-300',
-      rowTextClass: 'text-indigo-950 dark:text-indigo-100',
-      accentColorClass: 'text-indigo-600 dark:text-indigo-400',
-      watermarkColor: 'text-indigo-600 dark:text-indigo-400'
-    },
-    // 4: Briefcase Watermark (Emerald Green)
-    {
-      watermark: 'work',
-      containerClass: 'bg-emerald-600 dark:bg-emerald-800 text-white border-emerald-500 dark:border-emerald-700 shadow-md',
-      avatarClass: 'bg-emerald-100 text-emerald-950 font-black',
-      nameClass: 'text-white font-bold',
-      phoneClass: 'text-emerald-100 dark:text-emerald-200',
-      buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
-      rowClass: 'bg-white/15 dark:bg-black/20',
-      rowLabelClass: 'text-emerald-100 dark:text-emerald-200',
-      rowTextClass: 'text-white font-bold',
-      accentColorClass: 'text-emerald-200',
-      watermarkColor: 'text-white'
-    },
-    // 5: Team Watermark (Blue / Indigo)
-    {
-      watermark: 'groups',
-      containerClass: 'bg-blue-600 dark:bg-blue-800 text-white border-blue-500 dark:border-blue-700 shadow-md',
-      avatarClass: 'bg-sky-100 text-blue-950 font-black',
-      nameClass: 'text-white font-bold',
-      phoneClass: 'text-blue-100 dark:text-blue-200',
-      buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
-      rowClass: 'bg-white/15 dark:bg-black/20',
-      rowLabelClass: 'text-blue-100 dark:text-blue-200',
-      rowTextClass: 'text-white font-bold',
-      accentColorClass: 'text-sky-200',
-      watermarkColor: 'text-white'
-    },
-    // 6: Document Watermark (Rose Pink/Red)
-    {
-      watermark: 'description',
-      containerClass: 'bg-rose-600 dark:bg-rose-800 text-white border-rose-500 dark:border-rose-700 shadow-md',
-      avatarClass: 'bg-rose-100 text-rose-950 font-black',
-      nameClass: 'text-white font-bold',
-      phoneClass: 'text-rose-100 dark:text-rose-200',
-      buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
-      rowClass: 'bg-white/15 dark:bg-black/20',
-      rowLabelClass: 'text-rose-100 dark:text-rose-200',
-      rowTextClass: 'text-white font-bold',
-      accentColorClass: 'text-rose-200',
-      watermarkColor: 'text-white'
-    }
-  ];
+  // 1: Building Watermark (Light Surface)
+  {
+    watermark: 'apartment',
+    containerClass: 'bg-slate-100 dark:bg-slate-800/95 text-slate-900 dark:text-white border-slate-200/80 dark:border-slate-700/80 shadow-sm',
+    avatarClass: 'bg-indigo-600 text-white',
+    nameClass: 'text-slate-900 dark:text-white',
+    phoneClass: 'text-slate-500 dark:text-slate-400',
+    buttonClass: 'bg-white/70 dark:bg-slate-700/70 text-slate-700 dark:text-slate-200 hover:bg-white',
+    rowClass: 'bg-white/70 dark:bg-slate-700/50',
+    rowLabelClass: 'text-slate-500 dark:text-slate-400',
+    rowTextClass: 'text-slate-900 dark:text-white',
+    accentColorClass: 'text-indigo-600 dark:text-indigo-400',
+    watermarkColor: 'text-slate-900 dark:text-white'
+  },
+  // 2: Wallet Watermark (Amber Warm)
+  {
+    watermark: 'account_balance_wallet',
+    containerClass: 'bg-amber-600 dark:bg-amber-800 text-white border-amber-500 dark:border-amber-700 shadow-md',
+    avatarClass: 'bg-amber-100 text-amber-900 font-black',
+    nameClass: 'text-white font-bold',
+    phoneClass: 'text-amber-100 dark:text-amber-200',
+    buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
+    rowClass: 'bg-white/15 dark:bg-black/20',
+    rowLabelClass: 'text-amber-100 dark:text-amber-200',
+    rowTextClass: 'text-white font-bold',
+    accentColorClass: 'text-amber-200',
+    watermarkColor: 'text-white'
+  },
+  // 3: Handshake Watermark (Tinted Surface)
+  {
+    watermark: 'handshake',
+    containerClass: 'bg-indigo-100/90 dark:bg-indigo-950/80 text-indigo-950 dark:text-indigo-100 border-indigo-200 dark:border-indigo-900 shadow-sm',
+    avatarClass: 'bg-indigo-600 text-white',
+    nameClass: 'text-indigo-950 dark:text-indigo-100',
+    phoneClass: 'text-indigo-700 dark:text-indigo-300',
+    buttonClass: 'bg-white/60 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 hover:bg-white/80',
+    rowClass: 'bg-white/60 dark:bg-indigo-900/50',
+    rowLabelClass: 'text-indigo-700 dark:text-indigo-300',
+    rowTextClass: 'text-indigo-950 dark:text-indigo-100',
+    accentColorClass: 'text-indigo-600 dark:text-indigo-400',
+    watermarkColor: 'text-indigo-600 dark:text-indigo-400'
+  },
+  // 4: Briefcase Watermark (Emerald Green)
+  {
+    watermark: 'work',
+    containerClass: 'bg-emerald-600 dark:bg-emerald-800 text-white border-emerald-500 dark:border-emerald-700 shadow-md',
+    avatarClass: 'bg-emerald-100 text-emerald-950 font-black',
+    nameClass: 'text-white font-bold',
+    phoneClass: 'text-emerald-100 dark:text-emerald-200',
+    buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
+    rowClass: 'bg-white/15 dark:bg-black/20',
+    rowLabelClass: 'text-emerald-100 dark:text-emerald-200',
+    rowTextClass: 'text-white font-bold',
+    accentColorClass: 'text-emerald-200',
+    watermarkColor: 'text-white'
+  },
+  // 5: Team Watermark (Blue / Indigo)
+  {
+    watermark: 'groups',
+    containerClass: 'bg-blue-600 dark:bg-blue-800 text-white border-blue-500 dark:border-blue-700 shadow-md',
+    avatarClass: 'bg-sky-100 text-blue-950 font-black',
+    nameClass: 'text-white font-bold',
+    phoneClass: 'text-blue-100 dark:text-blue-200',
+    buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
+    rowClass: 'bg-white/15 dark:bg-black/20',
+    rowLabelClass: 'text-blue-100 dark:text-blue-200',
+    rowTextClass: 'text-white font-bold',
+    accentColorClass: 'text-sky-200',
+    watermarkColor: 'text-white'
+  },
+  // 6: Document Watermark (Rose Pink/Red)
+  {
+    watermark: 'description',
+    containerClass: 'bg-rose-600 dark:bg-rose-800 text-white border-rose-500 dark:border-rose-700 shadow-md',
+    avatarClass: 'bg-rose-100 text-rose-950 font-black',
+    nameClass: 'text-white font-bold',
+    phoneClass: 'text-rose-100 dark:text-rose-200',
+    buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
+    rowClass: 'bg-white/15 dark:bg-black/20',
+    rowLabelClass: 'text-rose-100 dark:text-rose-200',
+    rowTextClass: 'text-white font-bold',
+    accentColorClass: 'text-rose-200',
+    watermarkColor: 'text-white'
+  }];
   return themes[Math.abs(idNum) % themes.length];
 };
 const jalaliMonths = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
@@ -2289,7 +2325,11 @@ function Icon({
       });
     }
   }, [name, className]);
-  return /*#__PURE__*/<span ref={containerRef} className="inline-flex items-center justify-center shrink-0" style={style} {...props} />;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("span", _extends2({
+    ref: containerRef,
+    className: "inline-flex items-center justify-center shrink-0",
+    style: style
+  }, props));
 }
 function PullToRefresh({
   onRefresh,
@@ -2418,23 +2458,55 @@ function PullToRefresh({
   const opacity = isExiting ? 0 : isRefreshing ? 1 : Math.min(1, pullY / 25);
   const scale = isExiting ? 0.4 : isRefreshing ? 1 : 0.5 + 0.5 * progress;
   const rotation = progress * 360;
-  return /*#__PURE__*/<div ref={containerRef} className={`relative overflow-y-auto overflow-x-hidden overscroll-x-none hide-scrollbar ${className}`} style={{
-    WebkitOverflowScrolling: 'touch',
-    overscrollBehaviorY: 'contain'
-  }}>{(pullY > 0 || isRefreshing || isExiting) && /*#__PURE__*/<div className="absolute left-1/2 -translate-x-1/2 z-40 pointer-events-none flex items-center justify-center" style={{
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    ref: containerRef,
+    className: `relative overflow-y-auto overflow-x-hidden overscroll-x-none hide-scrollbar ${className}`,
+    style: {
+      WebkitOverflowScrolling: 'touch',
+      overscrollBehaviorY: 'contain'
+    }
+  }, (pullY > 0 || isRefreshing || isExiting) && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "absolute left-1/2 -translate-x-1/2 z-40 pointer-events-none flex items-center justify-center",
+    style: {
       top: `${Math.max(12, pullY / 2 - 20)}px`,
       transform: `translate3d(-50%, 0, 0) scale(${scale})`,
       opacity: opacity,
       transition: isDraggingRef.current ? 'none' : 'transform 320ms cubic-bezier(0.32, 0.72, 0, 1), opacity 200ms ease',
       willChange: 'transform, opacity'
-    }}>{/*#__PURE__*/<div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400">{isRefreshing ? /*#__PURE__*/<div className="w-5 h-5 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin shrink-0" /> : /*#__PURE__*/<div className="flex items-center justify-center" style={{
-          transform: `rotate(${rotation}deg)`,
-          transition: isDraggingRef.current ? 'none' : 'transform 200ms ease-out'
-        }}>{/*#__PURE__*/<Icon name="refresh-cw" className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />}</div>}</div>}</div>}{/*#__PURE__*/<div className="w-full min-h-full" style={{
+    }
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400"
+  }, isRefreshing ? /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-5 h-5 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin shrink-0"
+  }) : /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center justify-center",
+    style: {
+      transform: `rotate(${rotation}deg)`,
+      transition: isDraggingRef.current ? 'none' : 'transform 200ms ease-out'
+    }
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "refresh-cw",
+    className: "w-4 h-4 text-indigo-600 dark:text-indigo-400"
+  })))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-full min-h-full",
+    style: {
       transform: pullY > 0 ? `translate3d(0, ${pullY}px, 0)` : 'translate3d(0, 0, 0)',
       transition: isDraggingRef.current ? 'none' : 'transform 320ms cubic-bezier(0.32, 0.72, 0, 1)',
       willChange: 'transform'
-    }}>{children}</div>}</div>;
+    }
+  }, children));
 }
 function SwipeBackWrapper({
   onBack,
@@ -2667,11 +2739,41 @@ function SwipeBackWrapper({
   const handleHeaderBack = () => {
     closePage('button');
   };
-  return /*#__PURE__*/<div className={`app-viewport fixed inset-0 w-full h-full overflow-hidden bg-[#F4F7FC] dark:bg-slate-950 z-30 ${className}`}>{/*#__PURE__*/<div ref={page1Ref} className="page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-hidden overscroll-x-none w-full h-full">{/*#__PURE__*/<div className="px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 min-h-full">{underlyingContent}</div>}</div>}{/*#__PURE__*/<div ref={overlayRef} className="backdrop-overlay" />}{/*#__PURE__*/<div ref={page2Ref} className="page-view z-20 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden">{onRefresh ? /*#__PURE__*/<PullToRefresh onRefresh={onRefresh} className="w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20">{typeof children === 'function' ? children({
-          onBack: handleHeaderBack
-        }) : children}</PullToRefresh> : /*#__PURE__*/<div className="w-full h-full overflow-y-auto overflow-x-hidden overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20">{typeof children === 'function' ? children({
-          onBack: handleHeaderBack
-        }) : children}</div>}</div>}</div>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    className: `app-viewport fixed inset-0 w-full h-full overflow-hidden bg-[#F4F7FC] dark:bg-slate-950 z-30 ${className}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    ref: page1Ref,
+    className: "page-view z-10 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 overflow-y-auto overflow-x-hidden overscroll-x-none w-full h-full"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20 min-h-full"
+  }, underlyingContent)), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    ref: overlayRef,
+    className: "backdrop-overlay"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    ref: page2Ref,
+    className: "page-view z-20 touch-pan-y bg-[#F4F7FC] dark:bg-slate-950 w-full h-full overflow-hidden"
+  }, onRefresh ? /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(PullToRefresh, {
+    onRefresh: onRefresh,
+    className: "w-full h-full px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20"
+  }, typeof children === 'function' ? children({
+    onBack: handleHeaderBack
+  }) : children) : /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-full h-full overflow-y-auto overflow-x-hidden overscroll-x-none px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-20"
+  }, typeof children === 'function' ? children({
+    onBack: handleHeaderBack
+  }) : children)));
 }
 function playHapticTick() {
   // Mute date picker scrolling audio feedback as requested
@@ -2815,21 +2917,52 @@ function WheelColumn({
       isUserInteractingRef.current = false;
     }, 300);
   };
-  return /*#__PURE__*/<div ref={elementRef} onScroll={handleScroll} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onMouseDown={handleTouchStart} onMouseUp={handleTouchEnd} className={`${flexClass} h-full overflow-y-scroll no-scrollbar wheel-scroll relative cursor-grab active:cursor-grabbing`} tabIndex={0} aria-label={ariaLabel}>{/*#__PURE__*/<div style={{
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    ref: elementRef,
+    onScroll: handleScroll,
+    onTouchStart: handleTouchStart,
+    onTouchEnd: handleTouchEnd,
+    onMouseDown: handleTouchStart,
+    onMouseUp: handleTouchEnd,
+    className: `${flexClass} h-full overflow-y-scroll no-scrollbar wheel-scroll relative cursor-grab active:cursor-grabbing`,
+    tabIndex: 0,
+    "aria-label": ariaLabel
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    style: {
       height: `${SPACER_HEIGHT}px`
-    }} className="w-full shrink-0" />}{/*#__PURE__*/<div ref={containerRef} className="w-full">{items.map((item, idx) => /*#__PURE__*/<div key={idx} onClick={() => {
-        isUserInteractingRef.current = true;
-        isProgrammaticRef.current = false;
-        if (elementRef.current) {
-          elementRef.current.scrollTo({
-            top: idx * ITEM_HEIGHT,
-            behavior: 'smooth'
-          });
-        }
-        if (onSelectIndex) onSelectIndex(idx);
-      }} className="wheel-item h-[44px] flex items-center justify-center font-normal text-base text-slate-400 dark:text-slate-400">{item.display}</div>)}</div>}{/*#__PURE__*/<div style={{
+    },
+    className: "w-full shrink-0"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    ref: containerRef,
+    className: "w-full"
+  }, items.map((item, idx) => /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    key: idx,
+    onClick: () => {
+      isUserInteractingRef.current = true;
+      isProgrammaticRef.current = false;
+      if (elementRef.current) {
+        elementRef.current.scrollTo({
+          top: idx * ITEM_HEIGHT,
+          behavior: 'smooth'
+        });
+      }
+      if (onSelectIndex) onSelectIndex(idx);
+    },
+    className: "wheel-item h-[44px] flex items-center justify-center font-normal text-base text-slate-400 dark:text-slate-400"
+  }, item.display))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    style: {
       height: `${SPACER_HEIGHT}px`
-    }} className="w-full shrink-0" />}</div>;
+    },
+    className: "w-full shrink-0"
+  }));
 }
 function FullJalaliDatePicker({
   day = 1,
@@ -2900,34 +3033,102 @@ function FullJalaliDatePicker({
       });
     }
   };
-  return /*#__PURE__*/<div className="w-full space-y-3 select-none">{/*#__PURE__*/<div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-xs">{/*#__PURE__*/<div className="flex items-center space-x-2 space-x-reverse">{/*#__PURE__*/<span className="text-xs font-medium text-slate-500 dark:text-slate-400">تاریخ انتخاب‌شده:</span>}{/*#__PURE__*/<span className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-blue-400 tracking-tight">{toAppDigits(numericDay)} {monthStr} {toAppDigits(numericYear)}</span>}</div>}{/*#__PURE__*/<button type="button" onClick={handleToday} className="py-1 px-2.5 bg-indigo-50 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition text-xs font-semibold rounded-xl text-indigo-600 dark:text-slate-200 border border-indigo-200 dark:border-slate-700/50 flex items-center space-x-1 space-x-reverse shrink-0 cursor-pointer">{/*#__PURE__*/<Icon name="clock" className="w-3.5 h-3.5 text-indigo-500 dark:text-blue-400" />}{/*#__PURE__*/<span>امروز</span>}</button>}</div>}{/*#__PURE__*/<div className="relative w-full h-[210px] bg-[#F4F7FC]/70 dark:bg-slate-950/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/50 flex shadow-inner">{/*#__PURE__*/<div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 h-[44px] bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-md rounded-xl pointer-events-none border border-slate-300/60 dark:border-slate-700/50 shadow-xs z-10" />}{/*#__PURE__*/<div className="relative w-full h-full wheel-mask flex z-20" dir="ltr">{/*#__PURE__*/<WheelColumn items={yearItems} selectedIndex={selectedYearIdx} onSelectIndex={idx => {
-          const newYear = years[idx];
-          if (newYear !== numericYear && onChange) {
-            onChange({
-              day: numericDay,
-              month: monthStr,
-              year: newYear
-            });
-          }
-        }} flexClass="flex-1" ariaLabel=" " />}{/*#__PURE__*/<WheelColumn items={monthItems} selectedIndex={selectedMonthIdx} onSelectIndex={idx => {
-          const newMonth = monthNames[idx];
-          if (newMonth !== monthStr && onChange) {
-            onChange({
-              day: numericDay,
-              month: newMonth,
-              year: numericYear
-            });
-          }
-        }} flexClass="flex-[1.3]" ariaLabel=" " />}{/*#__PURE__*/<WheelColumn items={dayItems} selectedIndex={selectedDayIdx} onSelectIndex={idx => {
-          const newDay = dayItems[idx].value;
-          if (newDay !== numericDay && onChange) {
-            onChange({
-              day: newDay,
-              month: monthStr,
-              year: numericYear
-            });
-          }
-        }} flexClass="flex-1" ariaLabel=" " />}</div>}</div>}</div>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    className: "w-full space-y-3 select-none"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center justify-between px-3.5 py-2.5 bg-slate-100 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-xs"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center space-x-2 space-x-reverse"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "text-xs font-medium text-slate-500 dark:text-slate-400"
+  }, "\u062A\u0627\u0631\u06CC\u062E \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647:"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "text-xs sm:text-sm font-bold text-indigo-600 dark:text-blue-400 tracking-tight"
+  }, toAppDigits(numericDay), " ", monthStr, " ", toAppDigits(numericYear))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: handleToday,
+    className: "py-1 px-2.5 bg-indigo-50 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition text-xs font-semibold rounded-xl text-indigo-600 dark:text-slate-200 border border-indigo-200 dark:border-slate-700/50 flex items-center space-x-1 space-x-reverse shrink-0 cursor-pointer"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "clock",
+    className: "w-3.5 h-3.5 text-indigo-500 dark:text-blue-400"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u0627\u0645\u0631\u0648\u0632"))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative w-full h-[210px] bg-[#F4F7FC]/70 dark:bg-slate-950/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/50 flex shadow-inner"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "absolute left-2 right-2 top-1/2 -translate-y-1/2 h-[44px] bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-md rounded-xl pointer-events-none border border-slate-300/60 dark:border-slate-700/50 shadow-xs z-10"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative w-full h-full wheel-mask flex z-20",
+    dir: "ltr"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(WheelColumn, {
+    items: yearItems,
+    selectedIndex: selectedYearIdx,
+    onSelectIndex: idx => {
+      const newYear = years[idx];
+      if (newYear !== numericYear && onChange) {
+        onChange({
+          day: numericDay,
+          month: monthStr,
+          year: newYear
+        });
+      }
+    },
+    flexClass: "flex-1",
+    ariaLabel: " "
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(WheelColumn, {
+    items: monthItems,
+    selectedIndex: selectedMonthIdx,
+    onSelectIndex: idx => {
+      const newMonth = monthNames[idx];
+      if (newMonth !== monthStr && onChange) {
+        onChange({
+          day: numericDay,
+          month: newMonth,
+          year: numericYear
+        });
+      }
+    },
+    flexClass: "flex-[1.3]",
+    ariaLabel: " "
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(WheelColumn, {
+    items: dayItems,
+    selectedIndex: selectedDayIdx,
+    onSelectIndex: idx => {
+      const newDay = dayItems[idx].value;
+      if (newDay !== numericDay && onChange) {
+        onChange({
+          day: newDay,
+          month: monthStr,
+          year: numericYear
+        });
+      }
+    },
+    flexClass: "flex-1",
+    ariaLabel: " "
+  }))));
 }
 function IOSWheelPicker({
   items = [],
@@ -2942,9 +3143,35 @@ function IOSWheelPicker({
     }));
   }, [items]);
   const selectedIndex = Math.max(0, items.indexOf(selectedValue));
-  return /*#__PURE__*/<div className="flex flex-col items-center flex-1 min-w-0 select-none">{label && /*#__PURE__*/<span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">{label}</span>}{/*#__PURE__*/<div className="relative w-full h-[180px] bg-[#F4F7FC]/70 dark:bg-slate-950/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/50 flex">{/*#__PURE__*/<div className="absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[44px] bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-md rounded-xl pointer-events-none border border-slate-300/60 dark:border-slate-700/50 z-10" />}{/*#__PURE__*/<div className="relative w-full h-full wheel-mask flex z-20">{/*#__PURE__*/<WheelColumn items={formattedItems} selectedIndex={selectedIndex} onSelectIndex={idx => {
-          if (onChange && items[idx] !== undefined) onChange(items[idx]);
-        }} flexClass="flex-1" ariaLabel={label || "wheel"} />}</div>}</div>}</div>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col items-center flex-1 min-w-0 select-none"
+  }, label && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1"
+  }, label), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative w-full h-[180px] bg-[#F4F7FC]/70 dark:bg-slate-950/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/50 flex"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "absolute left-1 right-1 top-1/2 -translate-y-1/2 h-[44px] bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-md rounded-xl pointer-events-none border border-slate-300/60 dark:border-slate-700/50 z-10"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative w-full h-full wheel-mask flex z-20"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(WheelColumn, {
+    items: formattedItems,
+    selectedIndex: selectedIndex,
+    onSelectIndex: idx => {
+      if (onChange && items[idx] !== undefined) onChange(items[idx]);
+    },
+    flexClass: "flex-1",
+    ariaLabel: label || "wheel"
+  }))));
 }
 function GlobalConfirmDialog({
   isOpen,
@@ -2960,30 +3187,102 @@ function GlobalConfirmDialog({
   onCancel = () => {},
   allowBackdropClose = true
 }) {
-  return /*#__PURE__*/<AnimatePresence>{isOpen && /*#__PURE__*/<motion.div key="global-confirm-backdrop" initial={{
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "global-confirm-backdrop",
+    initial: {
       opacity: 0
-    }} animate={{
+    },
+    animate: {
       opacity: 1
-    }} exit={{
+    },
+    exit: {
       opacity: 0
-    }} onClick={e => {
+    },
+    onClick: e => {
       if (e.target === e.currentTarget && allowBackdropClose) {
         onCancel();
       }
-    }} className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">{/*#__PURE__*/<motion.div key="global-confirm-modal" initial={{
-        scale: 0.9,
-        opacity: 0
-      }} animate={{
-        scale: 1,
-        opacity: 1
-      }} exit={{
-        scale: 0.9,
-        opacity: 0
-      }} transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 25
-      }} className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl w-full max-w-xs sm:max-w-sm rounded-[28px] p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700/80">{/*#__PURE__*/<div className={`w-14 h-14 rounded-full ${iconBgColor} mx-auto flex items-center justify-center shadow-sm active:scale-95 transition-transform duration-200`}>{/*#__PURE__*/<Icon name={iconName} className="w-7 h-7" />}</div>}{/*#__PURE__*/<div className="space-y-1.5">{/*#__PURE__*/<h4 className="text-base font-extrabold text-slate-900 dark:text-white">{title}</h4>}{/*#__PURE__*/<p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">{message}</p>}{details && details.length > 0 && /*#__PURE__*/<div className="mt-3 p-3 bg-[#F4F7FC] dark:bg-slate-900/80 rounded-2xl border border-slate-100 dark:border-slate-700/60 text-right space-y-1.5 text-xs">{/*#__PURE__*/<span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block mb-1">موارد در حال حذف:</span>}{details.map((item, idx) => /*#__PURE__*/<div key={idx} className="flex items-center space-x-2 space-x-reverse text-slate-700 dark:text-slate-300 font-bold">{/*#__PURE__*/<span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />}{/*#__PURE__*/<span>{item}</span>}</div>)}</div>}</div>}{/*#__PURE__*/<div className="flex space-x-2.5 space-x-reverse pt-2">{/*#__PURE__*/<button onClick={onConfirm} className={`flex-1 font-extrabold py-3 rounded-2xl text-xs shadow-md active:scale-[0.95] transition-all duration-150 ${isDestructive ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-500/20' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'}`}>{confirmLabel}</button>}{/*#__PURE__*/<button onClick={onCancel} className="flex-1 bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-2xl text-xs active:scale-[0.95] transition-all duration-150">{cancelLabel}</button>}</div>}</motion.div>}</motion.div>}</AnimatePresence>;
+    },
+    className: "fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "global-confirm-modal",
+    initial: {
+      scale: 0.9,
+      opacity: 0
+    },
+    animate: {
+      scale: 1,
+      opacity: 1
+    },
+    exit: {
+      scale: 0.9,
+      opacity: 0
+    },
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 25
+    },
+    className: "bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl w-full max-w-xs sm:max-w-sm rounded-[28px] p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700/80"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `w-14 h-14 rounded-full ${iconBgColor} mx-auto flex items-center justify-center shadow-sm active:scale-95 transition-transform duration-200`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: iconName,
+    className: "w-7 h-7"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "space-y-1.5"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h4", {
+    className: "text-base font-extrabold text-slate-900 dark:text-white"
+  }, title), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium"
+  }, message), details && details.length > 0 && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "mt-3 p-3 bg-[#F4F7FC] dark:bg-slate-900/80 rounded-2xl border border-slate-100 dark:border-slate-700/60 text-right space-y-1.5 text-xs"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "text-[11px] font-bold text-slate-400 dark:text-slate-500 block mb-1"
+  }, "\u0645\u0648\u0627\u0631\u062F \u062F\u0631 \u062D\u0627\u0644 \u062D\u0630\u0641:"), details.map((item, idx) => /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    key: idx,
+    className: "flex items-center space-x-2 space-x-reverse text-slate-700 dark:text-slate-300 font-bold"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, item))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex space-x-2.5 space-x-reverse pt-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: onConfirm,
+    className: `flex-1 font-extrabold py-3 rounded-2xl text-xs shadow-md active:scale-[0.95] transition-all duration-150 ${isDestructive ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-500/20' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'}`
+  }, confirmLabel), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: onCancel,
+    className: "flex-1 bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-2xl text-xs active:scale-[0.95] transition-all duration-150"
+  }, cancelLabel)))));
 }
 function SwipeToDeleteItem({
   children,
@@ -3223,9 +3522,19 @@ function SwipeToDeleteItem({
       window.removeEventListener('mouseup', handleEnd);
     };
   }, [triggerDeleteModal, onCardClick, swipedOpen]);
-  return /*#__PURE__*/<div ref={containerRef} data-swipe-item="true" style={{
-    touchAction: 'pan-y'
-  }} className={`relative transition-[max-height,opacity,transform] duration-300 overflow-hidden rounded-2xl ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' : 'max-h-[500px] opacity-100 my-0.5 swipe-container-safe'} ${className}`}>{/*#__PURE__*/<div ref={btnRef} className="absolute right-1 top-1/2 z-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white cursor-pointer shadow-md select-none transition-colors" style={{
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    ref: containerRef,
+    "data-swipe-item": "true",
+    style: {
+      touchAction: 'pan-y'
+    },
+    className: `relative transition-[max-height,opacity,transform] duration-300 overflow-hidden rounded-2xl ${isDeleting ? 'max-h-0 opacity-0 my-0 py-0 scale-95 pointer-events-none' : 'max-h-[500px] opacity-100 my-0.5 swipe-container-safe'} ${className}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    ref: btnRef,
+    className: "absolute right-1 top-1/2 z-0 flex items-center justify-center bg-red-600 hover:bg-red-700 active:bg-red-800 text-white cursor-pointer shadow-md select-none transition-colors",
+    style: {
       width: '52px',
       height: '52px',
       borderRadius: '26px',
@@ -3234,16 +3543,35 @@ function SwipeToDeleteItem({
       transformOrigin: 'right center',
       visibility: 'hidden',
       willChange: 'transform, width, border-radius'
-    }} onClick={e => {
+    },
+    onClick: e => {
       e.stopPropagation();
       triggerDeleteModal();
-    }}>{/*#__PURE__*/<div className="flex items-center justify-center w-full h-full">{/*#__PURE__*/<Icon name="trash-2" className="w-5 h-5 text-white shrink-0" />}</div>}</div>}{/*#__PURE__*/<div ref={cardRef} data-swipe-item="true" style={{
+    }
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center justify-center w-full h-full"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "trash-2",
+    className: "w-5 h-5 text-white shrink-0"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    ref: cardRef,
+    "data-swipe-item": "true",
+    style: {
       touchAction: 'pan-y'
-    }} style={{
+    },
+    style: {
       transform: 'translate3d(0, 0, 0)',
       willChange: 'transform',
       touchAction: 'pan-y'
-    }} className={`relative z-10 transition-shadow duration-200 ${isDragging || swipedOpen ? 'rounded-2xl shadow-xl' : ''}`}>{children}</div>}</div>;
+    },
+    className: `relative z-10 transition-shadow duration-200 ${isDragging || swipedOpen ? 'rounded-2xl shadow-xl' : ''}`
+  }, children));
 }
 function getInstallmentNumberForTx(tx, repaymentTxs, totalCount, index) {
   if (!tx) return 1;
@@ -3324,25 +3652,109 @@ function ActiveArchiveSegmentedControl({
   };
   const isRightActive = currentFilter === 'active';
   const isLeftActive = currentFilter === 'archived';
-  return /*#__PURE__*/<div className="w-full relative my-2.5 select-none flex items-center justify-between gap-2 border-b border-slate-200/80 dark:border-slate-700/60 pb-2">{/*#__PURE__*/<div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/90 p-1 rounded-2xl text-xs font-bold border border-slate-200/70 dark:border-slate-700/50">{/*#__PURE__*/<button type="button" onClick={() => onChange('active')} className={`py-1.5 px-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${isRightActive ? `bg-white dark:bg-slate-700 ${themeConfig.activeTextColor} shadow-xs font-black` : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium'}`}>{/*#__PURE__*/<span>{activeLabel}</span>}{/*#__PURE__*/<span className="dir-ltr text-[11px] font-extrabold opacity-80">({toAppDigits(activeCount)})</span>}</button>}{/*#__PURE__*/<button type="button" onClick={() => onChange('archived')} className={`py-1.5 px-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${isLeftActive ? `bg-white dark:bg-slate-700 ${themeConfig.activeTextColor} shadow-xs font-black` : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium'}`}>{/*#__PURE__*/<span>بایگانی</span>}{/*#__PURE__*/<span className="dir-ltr text-[11px] font-extrabold opacity-80">({toAppDigits(archiveCount)})</span>}</button>}</div>}{actions && actions.length > 0 && /*#__PURE__*/<div className="relative" ref={dropdownRef}>{/*#__PURE__*/<button type="button" onClick={() => setIsMenuOpen(!isMenuOpen)} className={`py-1.5 px-3 rounded-full bg-gradient-to-r ${themeConfig.btnGradient} text-white font-extrabold text-xs shadow-sm hover:shadow-md active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer`}>{/*#__PURE__*/<Icon name="plus" className="w-3.5 h-3.5" />}{/*#__PURE__*/<span>ثبت جدید</span>}{/*#__PURE__*/<Icon name="chevron-down" className={`w-3 h-3 transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`} />}</button>}{/*#__PURE__*/<AnimatePresence>{isMenuOpen && /*#__PURE__*/<motion.div key="actions-dropdown-menu" initial={{
-          opacity: 0,
-          scale: 0.92,
-          y: -6
-        }} animate={{
-          opacity: 1,
-          scale: 1,
-          y: 4
-        }} exit={{
-          opacity: 0,
-          scale: 0.92,
-          y: -6
-        }} transition={{
-          duration: 0.15,
-          ease: "easeOut"
-        }} className="absolute left-0 top-full z-50 min-w-[170px] bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200/90 dark:border-slate-700/80 p-1.5 space-y-1 overflow-hidden">{actions.map((act, idx) => /*#__PURE__*/<button key={idx} type="button" onClick={() => {
-            setIsMenuOpen(false);
-            act.onClick();
-          }} className="w-full py-2 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/80 text-slate-800 dark:text-slate-100 text-xs font-bold flex items-center gap-2.5 transition-colors text-right cursor-pointer group">{/*#__PURE__*/<div className={`w-6 h-6 rounded-lg ${themeConfig.badgeBg} flex items-center justify-center shrink-0`}>{/*#__PURE__*/<Icon name={act.icon || 'plus'} className="w-3.5 h-3.5" />}</div>}{/*#__PURE__*/<span className="truncate">{act.label}</span>}</button>)}</motion.div>}</AnimatePresence>}</div>}</div>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    className: "w-full relative my-2.5 select-none flex items-center justify-between gap-2 border-b border-slate-200/80 dark:border-slate-700/60 pb-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center gap-1 bg-slate-100 dark:bg-slate-800/90 p-1 rounded-2xl text-xs font-bold border border-slate-200/70 dark:border-slate-700/50"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => onChange('active'),
+    className: `py-1.5 px-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${isRightActive ? `bg-white dark:bg-slate-700 ${themeConfig.activeTextColor} shadow-xs font-black` : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium'}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, activeLabel), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "dir-ltr text-[11px] font-extrabold opacity-80"
+  }, "(", toAppDigits(activeCount), ")")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => onChange('archived'),
+    className: `py-1.5 px-3 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${isLeftActive ? `bg-white dark:bg-slate-700 ${themeConfig.activeTextColor} shadow-xs font-black` : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium'}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "dir-ltr text-[11px] font-extrabold opacity-80"
+  }, "(", toAppDigits(archiveCount), ")"))), actions && actions.length > 0 && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative",
+    ref: dropdownRef
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => setIsMenuOpen(!isMenuOpen),
+    className: `py-1.5 px-3 rounded-full bg-gradient-to-r ${themeConfig.btnGradient} text-white font-extrabold text-xs shadow-sm hover:shadow-md active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "plus",
+    className: "w-3.5 h-3.5"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u062B\u0628\u062A \u062C\u062F\u06CC\u062F"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "chevron-down",
+    className: `w-3 h-3 transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, isMenuOpen && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "actions-dropdown-menu",
+    initial: {
+      opacity: 0,
+      scale: 0.92,
+      y: -6
+    },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      y: 4
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.92,
+      y: -6
+    },
+    transition: {
+      duration: 0.15,
+      ease: "easeOut"
+    },
+    className: "absolute left-0 top-full z-50 min-w-[170px] bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200/90 dark:border-slate-700/80 p-1.5 space-y-1 overflow-hidden"
+  }, actions.map((act, idx) => /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    key: idx,
+    type: "button",
+    onClick: () => {
+      setIsMenuOpen(false);
+      act.onClick();
+    },
+    className: "w-full py-2 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/80 text-slate-800 dark:text-slate-100 text-xs font-bold flex items-center gap-2.5 transition-colors text-right cursor-pointer group"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `w-6 h-6 rounded-lg ${themeConfig.badgeBg} flex items-center justify-center shrink-0`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: act.icon || 'plus',
+    className: "w-3.5 h-3.5"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "truncate"
+  }, act.label)))))));
 }
 function TxBorderFocusOverlay({
   tx,
@@ -3397,7 +3809,11 @@ function TxBorderFocusOverlay({
     };
   }, [isHighlighted]);
   if (!isHighlighted || !animActive || dims.width === 0 || dims.height === 0) {
-    return /*#__PURE__*/<div ref={containerRef} className="absolute inset-0 pointer-events-none" aria-hidden="true" />;
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      ref: containerRef,
+      className: "absolute inset-0 pointer-events-none",
+      "aria-hidden": "true"
+    });
   }
   const w = dims.width;
   const h = dims.height;
@@ -3409,7 +3825,140 @@ function TxBorderFocusOverlay({
 
   // Path 2 (Counter-Clockwise): Top-Center -> Top-Left -> Left-Edge -> Bottom-Left -> Bottom-Center
   const path2 = `M ${w / 2} 1 L ${1 + r} 1 A ${r} ${r} 0 0 0 1 ${1 + r} L 1 ${h - 1 - r} A ${r} ${r} 0 0 0 ${1 + r} ${h - 1} L ${w / 2} ${h - 1}`;
-  return /*#__PURE__*/<div ref={containerRef} className="absolute inset-0 pointer-events-none z-30 overflow-visible" aria-hidden="true">{/*#__PURE__*/<svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="absolute inset-0 w-full h-full overflow-visible pointer-events-none tx-focus-container">{/*#__PURE__*/<defs>{/*#__PURE__*/<filter id={`tx-glow-${tx.id}`} x="-20%" y="-20%" width="140%" height="140%">{/*#__PURE__*/<feGaussianBlur stdDeviation="2.5" result="blur" />}{/*#__PURE__*/<feMerge>{/*#__PURE__*/<feMergeNode in="blur" />}{/*#__PURE__*/<feMergeNode in="SourceGraphic" />}</feMerge>}</filter>}{/*#__PURE__*/<radialGradient id={`tx-meet-grad-${tx.id}`} cx="50%" cy="50%" r="50%">{/*#__PURE__*/<stop offset="0%" stopColor={lightTint} stopOpacity="1" />}{/*#__PURE__*/<stop offset="35%" stopColor={colorHex} stopOpacity="0.85" />}{/*#__PURE__*/<stop offset="100%" stopColor={colorHex} stopOpacity="0" />}</radialGradient>}</defs>}{/*#__PURE__*/<path d={path1} pathLength="100" fill="none" stroke={colorHex} strokeWidth="4" strokeLinecap="round" strokeOpacity="0.45" className="tx-focus-beam-glow" filter={`url(#tx-glow-${tx.id})`} />}{/*#__PURE__*/<path d={path2} pathLength="100" fill="none" stroke={colorHex} strokeWidth="4" strokeLinecap="round" strokeOpacity="0.45" className="tx-focus-beam-glow" filter={`url(#tx-glow-${tx.id})`} />}{/*#__PURE__*/<path d={path1} pathLength="100" fill="none" stroke={colorHex} strokeWidth="2.2" strokeLinecap="round" className="tx-focus-beam-core" />}{/*#__PURE__*/<path d={path2} pathLength="100" fill="none" stroke={colorHex} strokeWidth="2.2" strokeLinecap="round" className="tx-focus-beam-core" />}{/*#__PURE__*/<path d={path1} pathLength="100" fill="none" stroke={lightTint} strokeWidth="1.6" strokeLinecap="round" className="tx-focus-beam-head" />}{/*#__PURE__*/<path d={path2} pathLength="100" fill="none" stroke={lightTint} strokeWidth="1.6" strokeLinecap="round" className="tx-focus-beam-head" />}{/*#__PURE__*/<circle cx={w / 2} cy={h - 1} r="14" fill={`url(#tx-meet-grad-${tx.id})`} className="tx-focus-meet-pulse" />}</svg>}</div>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    ref: containerRef,
+    className: "absolute inset-0 pointer-events-none z-30 overflow-visible",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("svg", {
+    width: w,
+    height: h,
+    viewBox: `0 0 ${w} ${h}`,
+    className: "absolute inset-0 w-full h-full overflow-visible pointer-events-none tx-focus-container"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("defs", null, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("filter", {
+    id: `tx-glow-${tx.id}`,
+    x: "-20%",
+    y: "-20%",
+    width: "140%",
+    height: "140%"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("feGaussianBlur", {
+    stdDeviation: "2.5",
+    result: "blur"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("feMerge", null, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("feMergeNode", {
+    in: "blur"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("feMergeNode", {
+    in: "SourceGraphic"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("radialGradient", {
+    id: `tx-meet-grad-${tx.id}`,
+    cx: "50%",
+    cy: "50%",
+    r: "50%"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("stop", {
+    offset: "0%",
+    stopColor: lightTint,
+    stopOpacity: "1"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("stop", {
+    offset: "35%",
+    stopColor: colorHex,
+    stopOpacity: "0.85"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("stop", {
+    offset: "100%",
+    stopColor: colorHex,
+    stopOpacity: "0"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("path", {
+    d: path1,
+    pathLength: "100",
+    fill: "none",
+    stroke: colorHex,
+    strokeWidth: "4",
+    strokeLinecap: "round",
+    strokeOpacity: "0.45",
+    className: "tx-focus-beam-glow",
+    filter: `url(#tx-glow-${tx.id})`
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("path", {
+    d: path2,
+    pathLength: "100",
+    fill: "none",
+    stroke: colorHex,
+    strokeWidth: "4",
+    strokeLinecap: "round",
+    strokeOpacity: "0.45",
+    className: "tx-focus-beam-glow",
+    filter: `url(#tx-glow-${tx.id})`
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("path", {
+    d: path1,
+    pathLength: "100",
+    fill: "none",
+    stroke: colorHex,
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    className: "tx-focus-beam-core"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("path", {
+    d: path2,
+    pathLength: "100",
+    fill: "none",
+    stroke: colorHex,
+    strokeWidth: "2.2",
+    strokeLinecap: "round",
+    className: "tx-focus-beam-core"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("path", {
+    d: path1,
+    pathLength: "100",
+    fill: "none",
+    stroke: lightTint,
+    strokeWidth: "1.6",
+    strokeLinecap: "round",
+    className: "tx-focus-beam-head"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("path", {
+    d: path2,
+    pathLength: "100",
+    fill: "none",
+    stroke: lightTint,
+    strokeWidth: "1.6",
+    strokeLinecap: "round",
+    className: "tx-focus-beam-head"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("circle", {
+    cx: w / 2,
+    cy: h - 1,
+    r: "14",
+    fill: `url(#tx-meet-grad-${tx.id})`,
+    className: "tx-focus-meet-pulse"
+  })));
 }
 function SwipeableTxCard({
   tx,
@@ -3625,12 +4174,89 @@ function SwipeableTxCard({
       sign: ''
     };
   })();
-  return /*#__PURE__*/<SwipeToDeleteItem onDelete={confirmCb => onDelete && onDelete(tx, confirmCb)} onCardClick={() => onEdit && onEdit(tx)}>{/*#__PURE__*/<div id={`tx-card-${tx.id}`} className={`${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border border-r-[3.5px] ${txVisualConfig.borderAccent} pl-3 sm:pl-5 pr-2.5 sm:pr-3.5 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto relative overflow-visible`}>{/*#__PURE__*/<TxBorderFocusOverlay tx={tx} isHighlighted={isHighlighted} />}{/*#__PURE__*/<div className="flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1">{/*#__PURE__*/<div className="relative shrink-0">{/*#__PURE__*/<div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base ${txVisualConfig.iconBg} flex items-center justify-center shadow-xs select-none`}>{txVisualConfig.isLoan && instNum ? /*#__PURE__*/<span className="font-extrabold font-mono tracking-tight text-indigo-700 dark:text-indigo-300">{toAppDigits(instNum)}</span> : /*#__PURE__*/<Icon name={txVisualConfig.iconName} className="w-5 h-5 sm:w-5.5 sm:h-5.5" />}</div>}{/*#__PURE__*/<div className={`absolute -top-1 -right-1 w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full ${txVisualConfig.microBadgeClass} border-2 border-white dark:border-slate-800 flex items-center justify-center shadow-xs pointer-events-none`}>{/*#__PURE__*/<Icon name={txVisualConfig.microBadgeIcon} className="w-2.5 h-2.5 stroke-[3]" />}</div>}</div>}{/*#__PURE__*/<div className="min-w-0 flex-1 text-right flex flex-col gap-0.5">{/*#__PURE__*/<h3 className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug truncate">{line1}</h3>}{line2 && /*#__PURE__*/<div className="text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 truncate leading-snug">{line2}</div>}{/*#__PURE__*/<p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 truncate leading-relaxed mt-0.5">{line3}</p>}</div>}</div>}{/*#__PURE__*/<div className="text-center shrink-0 flex flex-col items-center justify-center min-w-[70px] sm:min-w-[90px] pl-0 sm:pl-1">{/*#__PURE__*/<div className={`font-black text-sm sm:text-[15px] leading-tight text-center ${txVisualConfig.amountClass} dir-ltr font-mono font-numeric`}>{txVisualConfig.sign && /*#__PURE__*/<span className="ml-0.5 text-xs">{txVisualConfig.sign}</span>}{formatAppNumber(Math.abs(tx.amount))}</div>}{/*#__PURE__*/<div className={`text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${txVisualConfig.amountClass}`}>تومان</div>}{(() => {
-          const rawDate = tx.dateStr || tx.date || tx.receiveDate || tx.startDate || tx.createdAt || '';
-          const numericDate = formatDateToNumericJalali(rawDate);
-          if (!numericDate || numericDate === '-') return null;
-          return /*#__PURE__*/<div className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 font-mono mt-0.5 text-center whitespace-nowrap">{numericDate}</div>;
-        })()}</div>}</div>}</SwipeToDeleteItem>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
+    onDelete: confirmCb => onDelete && onDelete(tx, confirmCb),
+    onCardClick: () => onEdit && onEdit(tx)
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    id: `tx-card-${tx.id}`,
+    className: `${hasShadow ? 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-sm hover:shadow-md' : 'bg-[#F8FAFC] dark:bg-slate-700/40 border-slate-100/90 dark:border-slate-700/50 hover:bg-slate-100/80 dark:hover:bg-slate-700/70'} rounded-2xl border border-r-[3.5px] ${txVisualConfig.borderAccent} pl-3 sm:pl-5 pr-2.5 sm:pr-3.5 py-2.5 sm:py-3 transition-all cursor-pointer flex items-center justify-between gap-2 sm:gap-3 min-h-[72px] h-auto relative overflow-visible`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(TxBorderFocusOverlay, {
+    tx: tx,
+    isHighlighted: isHighlighted
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base ${txVisualConfig.iconBg} flex items-center justify-center shadow-xs select-none`
+  }, txVisualConfig.isLoan && instNum ? /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-extrabold font-mono tracking-tight text-indigo-700 dark:text-indigo-300"
+  }, toAppDigits(instNum)) : /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: txVisualConfig.iconName,
+    className: "w-5 h-5 sm:w-5.5 sm:h-5.5"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `absolute -top-1 -right-1 w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full ${txVisualConfig.microBadgeClass} border-2 border-white dark:border-slate-800 flex items-center justify-center shadow-xs pointer-events-none`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: txVisualConfig.microBadgeIcon,
+    className: "w-2.5 h-2.5 stroke-[3]"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "min-w-0 flex-1 text-right flex flex-col gap-0.5"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white leading-snug truncate"
+  }, line1), line2 && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 truncate leading-snug"
+  }, line2), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 truncate leading-relaxed mt-0.5"
+  }, line3))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-center shrink-0 flex flex-col items-center justify-center min-w-[70px] sm:min-w-[90px] pl-0 sm:pl-1"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `font-black text-sm sm:text-[15px] leading-tight text-center ${txVisualConfig.amountClass} dir-ltr font-mono font-numeric`
+  }, txVisualConfig.sign && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "ml-0.5 text-xs"
+  }, txVisualConfig.sign), formatAppNumber(Math.abs(tx.amount))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `text-[10px] sm:text-xs font-semibold text-center w-full mt-0.5 ${txVisualConfig.amountClass}`
+  }, "\u062A\u0648\u0645\u0627\u0646"), (() => {
+    const rawDate = tx.dateStr || tx.date || tx.receiveDate || tx.startDate || tx.createdAt || '';
+    const numericDate = formatDateToNumericJalali(rawDate);
+    if (!numericDate || numericDate === '-') return null;
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      className: "text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 font-mono mt-0.5 text-center whitespace-nowrap"
+    }, numericDate);
+  })())));
 }
 function StackCardItem({
   card,
@@ -3684,7 +4310,16 @@ function StackCardItem({
   const isExitNext = isExitingNextCard;
   const isEnterPrev = isReturningPrevCard;
   const isFirstCard = currentCardIdx === 0;
-  return /*#__PURE__*/<div ref={cardRef} key={card.id} data-depth={depthAttr} className={`stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`}>{/*#__PURE__*/<div className="flex-1 py-2 overflow-y-auto overflow-x-hidden overscroll-x-none hide-scrollbar touch-pan-y" onClick={e => {
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    ref: cardRef,
+    key: card.id,
+    "data-depth": depthAttr,
+    className: `stack-card bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  flex flex-col justify-between ${depth !== 0 && !isReturningPrevCard && !isExitingNextCard ? 'pointer-events-none select-none' : ''} ${isShaking ? 'animate-shake' : ''} ${isExitNext ? 'animating-next' : ''} ${isEnterPrev ? 'animating-prev' : ''}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex-1 py-2 overflow-y-auto overflow-x-hidden overscroll-x-none hide-scrollbar touch-pan-y",
+    onClick: e => {
       if (e.target.closest('input, textarea, select, button, label, a')) return;
       if (cardRef.current) {
         const targetInput = cardRef.current.querySelector('input:not([type="hidden"]):not([type="file"]):not([type="radio"]):not([type="checkbox"]):not([readonly]), textarea:not([readonly])');
@@ -3694,7 +4329,34 @@ function StackCardItem({
           } catch (err) {}
         }
       }
-    }}>{card.render()}</div>}{/*#__PURE__*/<div className="pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse h-12">{/*#__PURE__*/<button type="button" onClick={!isFirstCard ? handlePrevCard : undefined} disabled={isFirstCard} className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center space-x-1 space-x-reverse ${isFirstCard ? 'bg-slate-100 dark:bg-slate-800/60 text-slate-300 dark:text-slate-600 border border-slate-200/50 dark:border-slate-700/50 cursor-not-allowed opacity-40 pointer-events-none' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 cursor-pointer opacity-100 active:scale-95 shadow-2xs'}`}>{/*#__PURE__*/<Icon name="arrow-right" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>مرحله قبلی</span>}</button>}{/*#__PURE__*/<button type="button" onClick={handleNextCard} className="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse">{/*#__PURE__*/<span>{index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'}</span>}</button>}</div>}</div>;
+    }
+  }, card.render()), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center space-x-2 space-x-reverse h-12"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: !isFirstCard ? handlePrevCard : undefined,
+    disabled: isFirstCard,
+    className: `flex-1 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center space-x-1 space-x-reverse ${isFirstCard ? 'bg-slate-100 dark:bg-slate-800/60 text-slate-300 dark:text-slate-600 border border-slate-200/50 dark:border-slate-700/50 cursor-not-allowed opacity-40 pointer-events-none' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 cursor-pointer opacity-100 active:scale-95 shadow-2xs'}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "arrow-right",
+    className: "w-3.5 h-3.5 shrink-0"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u0645\u0631\u062D\u0644\u0647 \u0642\u0628\u0644\u06CC")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: handleNextCard,
+    className: "flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, index === totalCards - 1 ? 'ثبت و ذخیره نهایی' : 'مرحله بعدی'))));
 }
 function ContactAvatar({
   contact,
@@ -3709,9 +4371,24 @@ function ContactAvatar({
   const contactName = name || (contact ? `${contact.firstName || ''} ${contact.lastName || ''}` : '');
   const bgClass = getAvatarColor(contactId, contactName);
   if (contactAvatar) {
-    return /*#__PURE__*/<div className={`rounded-full flex-shrink-0 overflow-hidden shadow-xs border border-white/10 ${className}`}>{/*#__PURE__*/<img src={contactAvatar} alt={contactName} className="w-full h-full object-cover" />}</div>;
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      className: `rounded-full flex-shrink-0 overflow-hidden shadow-xs border border-white/10 ${className}`
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("img", {
+      src: contactAvatar,
+      alt: contactName,
+      className: "w-full h-full object-cover"
+    }));
   }
-  return /*#__PURE__*/<div className={`rounded-full ${bgClass} flex-shrink-0 flex items-center justify-center text-white font-bold shadow-xs ${className}`}>{/*#__PURE__*/<Icon name="user" className={`${iconClassName} text-white/95`} />}</div>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    className: `rounded-full ${bgClass} flex-shrink-0 flex items-center justify-center text-white font-bold shadow-xs ${className}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "user",
+    className: `${iconClassName} text-white/95`
+  }));
 }
 const LOAN_ICON_CATEGORIES = [{
   id: 'all',
@@ -4115,15 +4792,134 @@ function LoanIconPickerModal({
       return item.label.toLowerCase().includes(q) || item.keywords.toLowerCase().includes(q) || item.name.toLowerCase().includes(q);
     });
   }, [searchQuery, selectedCategory]);
-  return /*#__PURE__*/<AnimatePresence>{isOpen && /*#__PURE__*/<motion.div key="loan-icon-picker-backdrop" variants={iosBackdropVariants} initial="initial" animate="animate" exit="exit" className="absolute inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4" onClick={onClose}>{/*#__PURE__*/<motion.div key="loan-icon-picker-panel" variants={iosModalVariants} initial="initial" animate="animate" exit="exit" style={{
-        transformOrigin: "center center"
-      }} onClick={e => e.stopPropagation()} className="w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] p-4 sm:p-5 space-y-3.5 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col">{/*#__PURE__*/<div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto shrink-0" />}{/*#__PURE__*/<div className="flex items-center justify-between shrink-0">{/*#__PURE__*/<div className="text-right">{/*#__PURE__*/<h3 className="font-extrabold text-slate-900 dark:text-white text-base">انتخاب آیکون وام</h3>}{/*#__PURE__*/<p className="text-xs text-slate-400 mt-0.5">یک آیکون متناسب با موضوع پرونده انتخاب کنید</p>}</div>}{/*#__PURE__*/<button type="button" onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center transition-colors">{/*#__PURE__*/<Icon name="x" className="w-4 h-4" />}</button>}</div>}{/*#__PURE__*/<div className="relative shrink-0">{/*#__PURE__*/<Icon name="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400" />}{/*#__PURE__*/<input type="text" placeholder="  (:    )..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full bg-[#F4F7FC] dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-8 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />}{searchQuery && /*#__PURE__*/<button type="button" onClick={() => setSearchQuery('')} className="absolute left-3 top-3 text-slate-400 hover:text-slate-600">{/*#__PURE__*/<Icon name="x" className="w-3.5 h-3.5" />}</button>}</div>}{/*#__PURE__*/<div className="flex items-center gap-1.5 overflow-x-auto pb-1 hide-scrollbar shrink-0 text-xs">{LOAN_ICON_CATEGORIES.map(cat => {
-            const isActive = selectedCategory === cat.id;
-            return /*#__PURE__*/<button key={cat.id} type="button" onClick={() => setSelectedCategory(cat.id)} className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all cursor-pointer ${isActive ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>{cat.label}</button>;
-          })}</div>}{/*#__PURE__*/<div className="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar min-h-[220px] max-h-[320px] p-1">{filteredIcons.length > 0 ? /*#__PURE__*/<div className="grid grid-cols-4 sm:grid-cols-5 gap-2.5">{filteredIcons.map(item => {
-              const isSelected = selectedIcon === item.name;
-              return /*#__PURE__*/<button key={item.name} type="button" onClick={() => onSelect(item.name)} className={`flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all cursor-pointer group active:scale-95 ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-500 dark:border-indigo-500 ring-2 ring-indigo-500/30 text-indigo-600 dark:text-indigo-300 shadow-xs' : 'bg-[#F4F7FC]/70 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50/40'}`}>{/*#__PURE__*/<div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mb-1.5 transition-transform group-hover:scale-110">{/*#__PURE__*/<Icon name={item.name} className="w-6 h-6" />}</div>}{/*#__PURE__*/<span className="text-[10px] font-bold truncate max-w-full text-center leading-tight">{item.label}</span>}</button>;
-            })}</div> : /*#__PURE__*/<div className="text-center py-10 text-xs text-slate-400">آیکونی با این مشخصات یافت نشد</div>}</div>}</motion.div>}</motion.div>}</AnimatePresence>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "loan-icon-picker-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4",
+    onClick: onClose
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "loan-icon-picker-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      transformOrigin: "center center"
+    },
+    onClick: e => e.stopPropagation(),
+    className: "w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] p-4 sm:p-5 space-y-3.5 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto shrink-0"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center justify-between shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-right"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "font-extrabold text-slate-900 dark:text-white text-base"
+  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0622\u06CC\u06A9\u0648\u0646 \u0648\u0627\u0645"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-xs text-slate-400 mt-0.5"
+  }, "\u06CC\u06A9 \u0622\u06CC\u06A9\u0648\u0646 \u0645\u062A\u0646\u0627\u0633\u0628 \u0628\u0627 \u0645\u0648\u0636\u0648\u0639 \u067E\u0631\u0648\u0646\u062F\u0647 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: onClose,
+    className: "w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center transition-colors"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "x",
+    className: "w-4 h-4"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "search",
+    className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    placeholder: "  (:    )...",
+    value: searchQuery,
+    onChange: e => setSearchQuery(e.target.value),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-8 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  }), searchQuery && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => setSearchQuery(''),
+    className: "absolute left-3 top-3 text-slate-400 hover:text-slate-600"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "x",
+    className: "w-3.5 h-3.5"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center gap-1.5 overflow-x-auto pb-1 hide-scrollbar shrink-0 text-xs"
+  }, LOAN_ICON_CATEGORIES.map(cat => {
+    const isActive = selectedCategory === cat.id;
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("button", {
+      key: cat.id,
+      type: "button",
+      onClick: () => setSelectedCategory(cat.id),
+      className: `px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all cursor-pointer ${isActive ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`
+    }, cat.label);
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar min-h-[220px] max-h-[320px] p-1"
+  }, filteredIcons.length > 0 ? /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "grid grid-cols-4 sm:grid-cols-5 gap-2.5"
+  }, filteredIcons.map(item => {
+    const isSelected = selectedIcon === item.name;
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("button", {
+      key: item.name,
+      type: "button",
+      onClick: () => onSelect(item.name),
+      className: `flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all cursor-pointer group active:scale-95 ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-500 dark:border-indigo-500 ring-2 ring-indigo-500/30 text-indigo-600 dark:text-indigo-300 shadow-xs' : 'bg-[#F4F7FC]/70 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50/40'}`
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mb-1.5 transition-transform group-hover:scale-110"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: item.name,
+      className: "w-6 h-6"
+    })), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-[10px] font-bold truncate max-w-full text-center leading-tight"
+    }, item.label));
+  })) : /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-center py-10 text-xs text-slate-400"
+  }, "\u0622\u06CC\u06A9\u0648\u0646\u06CC \u0628\u0627 \u0627\u06CC\u0646 \u0645\u0634\u062E\u0635\u0627\u062A \u06CC\u0627\u0641\u062A \u0646\u0634\u062F")))));
 }
 function ContactImageCropperModal({
   isOpen,
@@ -4251,20 +5047,178 @@ function ContactImageCropperModal({
     const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
     onConfirm(dataUrl);
   };
-  return /*#__PURE__*/<AnimatePresence>{isOpen && /*#__PURE__*/<motion.div key="contact-image-cropper-backdrop" variants={iosBackdropVariants} initial="initial" animate="animate" exit="exit" className="absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4" onClick={onCancel}>{/*#__PURE__*/<motion.div key="contact-image-cropper-panel" variants={iosModalVariants} initial="initial" animate="animate" exit="exit" style={{
-        transformOrigin: "center center"
-      }} onClick={e => e.stopPropagation()} className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl text-center">{/*#__PURE__*/<div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto" />}{/*#__PURE__*/<div>{/*#__PURE__*/<h3 className="font-extrabold text-slate-900 dark:text-white text-base">تنظیم و برش تصویر مخاطب</h3>}{/*#__PURE__*/<p className="text-xs text-slate-400 mt-0.5">تصویر را حرکت داده و با اندازه دلخواه تنظیم کنید</p>}</div>}{/*#__PURE__*/<div className="relative w-60 h-60 mx-auto rounded-2xl bg-slate-950 overflow-hidden cursor-grab active:cursor-grabbing border border-slate-700 select-none shadow-inner" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>{imageSrc && /*#__PURE__*/<img ref={imgRef} src={imageSrc} alt="Crop target" draggable={false} style={{
-            transform: `translate(${pan.x}px, ${pan.y}px) rotate(${rotation}deg) scale(${zoom})`,
-            transformOrigin: 'center center',
-            transition: isDragging ? 'none' : 'transform 0.1s ease-out'
-          }} className="w-full h-full object-contain pointer-events-none" />}{/*#__PURE__*/<div className="absolute inset-0 pointer-events-none flex items-center justify-center">{/*#__PURE__*/<div className="w-48 h-48 rounded-full border-2 border-white/80 border-dashed shadow-[0_0_0_9999px_rgba(15,23,42,0.65)] ring-1 ring-indigo-500/50" />}</div>}</div>}{/*#__PURE__*/<div className="space-y-2.5 pt-1">{/*#__PURE__*/<div className="flex items-center gap-3 px-2">{/*#__PURE__*/<button type="button" onClick={() => setZoom(z => Math.max(0.6, z - 0.15))} className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 active:scale-95 shrink-0" title="">{/*#__PURE__*/<Icon name="minus" className="w-4 h-4" />}</button>}{/*#__PURE__*/<input type="range" min="0.6" max="3.5" step="0.05" value={zoom} onChange={e => setZoom(parseFloat(e.target.value))} className="flex-1 accent-indigo-600 cursor-pointer" />}{/*#__PURE__*/<button type="button" onClick={() => setZoom(z => Math.min(3.5, z + 0.15))} className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 active:scale-95 shrink-0" title="">{/*#__PURE__*/<Icon name="plus" className="w-4 h-4" />}</button>}</div>}{/*#__PURE__*/<div className="flex items-center justify-center gap-2">{/*#__PURE__*/<button type="button" onClick={() => setRotation(r => (r + 90) % 360)} className="py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all">{/*#__PURE__*/<Icon name="rotate-cw" className="w-3.5 h-3.5" />}{/*#__PURE__*/<span>چرخش ۹۰°</span>}</button>}{/*#__PURE__*/<button type="button" onClick={() => {
-              setZoom(1);
-              setPan({
-                x: 0,
-                y: 0
-              });
-              setRotation(0);
-            }} className="py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all">{/*#__PURE__*/<Icon name="rotate-ccw" className="w-3.5 h-3.5" />}{/*#__PURE__*/<span>تنظیم مجدد</span>}</button>}</div>}</div>}{/*#__PURE__*/<div className="flex items-center gap-2 pt-2">{/*#__PURE__*/<button type="button" onClick={onCancel} className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all active:scale-95">انصراف</button>}{/*#__PURE__*/<button type="button" onClick={handleConfirmCrop} className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5">{/*#__PURE__*/<Icon name="check" className="w-4 h-4" />}{/*#__PURE__*/<span>تایید و ذخیره تصویر</span>}</button>}</div>}</motion.div>}</motion.div>}</AnimatePresence>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "contact-image-cropper-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4",
+    onClick: onCancel
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "contact-image-cropper-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      transformOrigin: "center center"
+    },
+    onClick: e => e.stopPropagation(),
+    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl text-center"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", null, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "font-extrabold text-slate-900 dark:text-white text-base"
+  }, "\u062A\u0646\u0638\u06CC\u0645 \u0648 \u0628\u0631\u0634 \u062A\u0635\u0648\u06CC\u0631 \u0645\u062E\u0627\u0637\u0628"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-xs text-slate-400 mt-0.5"
+  }, "\u062A\u0635\u0648\u06CC\u0631 \u0631\u0627 \u062D\u0631\u06A9\u062A \u062F\u0627\u062F\u0647 \u0648 \u0628\u0627 \u0627\u0646\u062F\u0627\u0632\u0647 \u062F\u0644\u062E\u0648\u0627\u0647 \u062A\u0646\u0638\u06CC\u0645 \u06A9\u0646\u06CC\u062F")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative w-60 h-60 mx-auto rounded-2xl bg-slate-950 overflow-hidden cursor-grab active:cursor-grabbing border border-slate-700 select-none shadow-inner",
+    onMouseDown: handleMouseDown,
+    onMouseMove: handleMouseMove,
+    onMouseUp: handleMouseUp,
+    onMouseLeave: handleMouseUp,
+    onTouchStart: handleTouchStart,
+    onTouchMove: handleTouchMove,
+    onTouchEnd: handleTouchEnd
+  }, imageSrc && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("img", {
+    ref: imgRef,
+    src: imageSrc,
+    alt: "Crop target",
+    draggable: false,
+    style: {
+      transform: `translate(${pan.x}px, ${pan.y}px) rotate(${rotation}deg) scale(${zoom})`,
+      transformOrigin: 'center center',
+      transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+    },
+    className: "w-full h-full object-contain pointer-events-none"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "absolute inset-0 pointer-events-none flex items-center justify-center"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-48 h-48 rounded-full border-2 border-white/80 border-dashed shadow-[0_0_0_9999px_rgba(15,23,42,0.65)] ring-1 ring-indigo-500/50"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "space-y-2.5 pt-1"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center gap-3 px-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => setZoom(z => Math.max(0.6, z - 0.15)),
+    className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 active:scale-95 shrink-0",
+    title: ""
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "minus",
+    className: "w-4 h-4"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "range",
+    min: "0.6",
+    max: "3.5",
+    step: "0.05",
+    value: zoom,
+    onChange: e => setZoom(parseFloat(e.target.value)),
+    className: "flex-1 accent-indigo-600 cursor-pointer"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => setZoom(z => Math.min(3.5, z + 0.15)),
+    className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 active:scale-95 shrink-0",
+    title: ""
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "plus",
+    className: "w-4 h-4"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center justify-center gap-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => setRotation(r => (r + 90) % 360),
+    className: "py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "rotate-cw",
+    className: "w-3.5 h-3.5"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u0686\u0631\u062E\u0634 \u06F9\u06F0\xB0")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => {
+      setZoom(1);
+      setPan({
+        x: 0,
+        y: 0
+      });
+      setRotation(0);
+    },
+    className: "py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "rotate-ccw",
+    className: "w-3.5 h-3.5"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u062A\u0646\u0638\u06CC\u0645 \u0645\u062C\u062F\u062F")))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center gap-2 pt-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: onCancel,
+    className: "flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all active:scale-95"
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: handleConfirmCrop,
+    className: "flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "check",
+    className: "w-4 h-4"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u062A\u0627\u06CC\u06CC\u062F \u0648 \u0630\u062E\u06CC\u0631\u0647 \u062A\u0635\u0648\u06CC\u0631"))))));
 }
 function LoanIconSelectorModal({
   isOpen,
@@ -4274,245 +5228,604 @@ function LoanIconSelectorModal({
 }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-
-  const loanIconCategories = [
-    { id: 'all', label: 'همه آیکون‌ها' },
-    { id: 'finance', label: 'بانک و مالی' },
-    { id: 'vehicles', label: 'خودرو و نقلیه' },
-    { id: 'housing', label: 'مسکن و ملک' },
-    { id: 'shopping', label: 'خرید و کالا' },
-    { id: 'work', label: 'کار و آموزش' },
-    { id: 'family', label: 'سلامت و فردی' },
-    { id: 'general', label: 'عمومی و ویژه' }
-  ];
-
+  const loanIconCategories = [{
+    id: 'all',
+    label: 'همه آیکون‌ها'
+  }, {
+    id: 'finance',
+    label: 'بانک و مالی'
+  }, {
+    id: 'vehicles',
+    label: 'خودرو و نقلیه'
+  }, {
+    id: 'housing',
+    label: 'مسکن و ملک'
+  }, {
+    id: 'shopping',
+    label: 'خرید و کالا'
+  }, {
+    id: 'work',
+    label: 'کار و آموزش'
+  }, {
+    id: 'family',
+    label: 'سلامت و فردی'
+  }, {
+    id: 'general',
+    label: 'عمومی و ویژه'
+  }];
   const loanIconsCatalog = [
-    // Finance & Banking
-    { name: 'landmark', label: 'بانک و شعبه', category: 'finance', keywords: 'بانک شعبه موسسه قرض الحسنه صندوق' },
-    { name: 'banknote', label: 'اسکناس و پول', category: 'finance', keywords: 'اسکناس پول نقد تومان ریال سرمایه' },
-    { name: 'credit-card', label: 'کارت بانکی', category: 'finance', keywords: 'کارت عابربانک حساب بانکی واریز' },
-    { name: 'wallet', label: 'کیف پول', category: 'finance', keywords: 'کیف پول جیب پس انداز موجودی' },
-    { name: 'coins', label: 'سکه‌ها و طلا', category: 'finance', keywords: 'سکه طلا نقره ارز سرمایه گذاری' },
-    { name: 'piggy-bank', label: 'قلک پس‌انداز', category: 'finance', keywords: 'قلک پس انداز اندوخته ذخیره' },
-    { name: 'scale', label: 'ترازوی حساب', category: 'finance', keywords: 'ترازو تعادل عدالت قسط حقوقی' },
-    { name: 'receipt', label: 'فاکتور و رسید', category: 'finance', keywords: 'رسید فاکتور قبض پرداخت بدهی' },
-    { name: 'badge-percent', label: 'سود و کارمزد', category: 'finance', keywords: 'درصد سود کارمزد بهره تخفیف' },
-    { name: 'circle-dollar-sign', label: 'ارز و دلار', category: 'finance', keywords: 'دلار ارز یورو تومان مالی' },
-    { name: 'calculator', label: 'ماشین‌حساب', category: 'finance', keywords: 'حسابداری ماشین حساب محاسبات قسط' },
-    { name: 'vault', label: 'گاوصندوق', category: 'finance', keywords: 'گاوصندوق امن صندوق امانات طلا' },
-    { name: 'gem', label: 'طلا و جواهرات', category: 'finance', keywords: 'طلا الماس جواهر نقره دارایی' },
-    { name: 'hand-coins', label: 'وام و کمک‌هزینه', category: 'finance', keywords: 'وام کمک هزینه دستی قرض نقدینگی' },
-    { name: 'chart-candlestick', label: 'بورس و سرمایه', category: 'finance', keywords: 'بورس ترید سهام نمودار سرمایه' },
-    { name: 'percent', label: 'نرخ سود و بهره', category: 'finance', keywords: 'درصد سود اقساطی کارمزد بهره' },
-
-    // Vehicles & Transport
-    { name: 'car', label: 'خودرو سواری', category: 'vehicles', keywords: 'خودرو ماشین اتومبیل سواری پراید پژو دنا' },
-    { name: 'truck', label: 'کامیون و باربری', category: 'vehicles', keywords: 'کامیون تریلی وانت خاور باربری سنگین' },
-    { name: 'bus', label: 'اتوبوس و سرویس', category: 'vehicles', keywords: 'اتوبوس مینی بوس ون سرویس مسافرتی' },
-    { name: 'bike', label: 'موتور و دوچرخه', category: 'vehicles', keywords: 'موتور سیکلت دوچرخه اسکوتر هوندا' },
-    { name: 'plane', label: 'هواپیما و پرواز', category: 'vehicles', keywords: 'هواپیما پرواز سفر مسافرت بلیط هوایی' },
-    { name: 'ship', label: 'کشتی و قایق', category: 'vehicles', keywords: 'کشتی قایق لنج دریایی باربری لنج' },
-    { name: 'fuel', label: 'سوخت و بنزین', category: 'vehicles', keywords: 'بنزین گازوییل گاز پمپ سوخت خودرو باک' },
-    { name: 'train', label: 'قطار و مترو', category: 'vehicles', keywords: 'قطار ریل مترو مسافرت حمل راه آهن' },
-    { name: 'gauge', label: 'کیلومتر و سرعت', category: 'vehicles', keywords: 'کیلومتر سرعت سنج فنی تعمیرات شتاب' },
-    { name: 'wrench', label: 'تعمیرات خودرو', category: 'vehicles', keywords: 'تعمیرگاه آچار مکانیکی سرویس دوره ای' },
-    { name: 'car-taxi-front', label: 'تاکسی و کرایه', category: 'vehicles', keywords: 'تاکسی آژانس اسنپ تپسی کرایه خودرو' },
-    { name: 'anchor', label: 'دریانوردی و لنج', category: 'vehicles', keywords: 'لنگر دریا شیلات صیادی قایق' },
-
-    // Housing & Real Estate
-    { name: 'home', label: 'خانه و مسکن', category: 'housing', keywords: 'خانه منزل مسکن آپارتمان رهن اجاره خرید' },
-    { name: 'building', label: 'ساختمان و برج', category: 'housing', keywords: 'ساختمان برج مجتمع سازمانی تجاری' },
-    { name: 'building-2', label: 'مجتمع مسکونی', category: 'housing', keywords: 'مجتمع شهرک آپارتمان پروژه ساخت بلوک' },
-    { name: 'warehouse', label: 'انبار و سوله', category: 'housing', keywords: 'انبار سوله کارگاه ذخیره سازی کارخانه' },
-    { name: 'key', label: 'کلید و سند ملک', category: 'housing', keywords: 'کلید خرید خانه رهن تحویل سند مالکیت' },
-    { name: 'hammer', label: 'ساخت و بازسازی', category: 'housing', keywords: 'چکش تعمیرات بازسازی ساخت نوسازی بنایی' },
-    { name: 'trees', label: 'باغ و ویلا', category: 'housing', keywords: 'باغ ویلا زمین کشاورزی باغچه شمال مزرعه' },
-    { name: 'bed', label: 'سرویس خواب', category: 'housing', keywords: 'تخت خواب اتاق مبلمان جهیزیه دکوراسیون' },
-    { name: 'bath', label: 'تجهیزات و تاسیسات', category: 'housing', keywords: 'حمام سرویس شیرآلات دکوراسیون پکیج' },
-    { name: 'hotel', label: 'هتل و اقامتگاه', category: 'housing', keywords: 'هتل سوئیت اقامتگاه ویلا بومگردی' },
-    { name: 'castle', label: 'عمارت و باغ', category: 'housing', keywords: 'عمارت کاخ قصر باغ ویلا لوکس' },
-    { name: 'fence', label: 'حصار و محوطه', category: 'housing', keywords: 'حصار نرده محوطه زمین فنس حصارکشی' },
-
-    // Shopping & Tech
-    { name: 'shopping-bag', label: 'خرید و پوشاک', category: 'shopping', keywords: 'خرید لباس بازار فروشگاه کیسه مد' },
-    { name: 'shopping-cart', label: 'سبد خرید', category: 'shopping', keywords: 'سبد خرید سوپرمارکت سفارش کالا آنلاین' },
-    { name: 'gift', label: 'هدیه و کادو', category: 'shopping', keywords: 'کادو هدیه جایزه عیدی سورپرایز جشن' },
-    { name: 'tag', label: 'تخفیف و کالا', category: 'shopping', keywords: 'اتیکت قیمت برچسب حراج جنس مارک' },
-    { name: 'smartphone', label: 'موبایل و گوشی', category: 'shopping', keywords: 'گوشی موبایل آیفون سامسونگ تبلت تلفن' },
-    { name: 'laptop', label: 'لپ‌تاپ و کامپیوتر', category: 'shopping', keywords: 'لپ تاپ کامپیوتر سیستم پی سی مک رایانه' },
-    { name: 'tv', label: 'تلویزیون و صوتی', category: 'shopping', keywords: 'تلویزیون مانیتور سینما خانگی نمایشگر ال ای دی' },
-    { name: 'camera', label: 'دوربین عکاسی', category: 'shopping', keywords: 'دوربین فیلمبرداری عکاسی لنز آتلیه کانن' },
-    { name: 'watch', label: 'ساعت هوشمند', category: 'shopping', keywords: 'ساعت مچی اکسسوری اپل واچ گارمین' },
-    { name: 'shirt', label: 'پوشاک و لباس', category: 'shopping', keywords: 'لباس پیراهن پوشاک مد بوتیک کت شلوار' },
-    { name: 'headphones', label: 'لوازم دیجیتال', category: 'shopping', keywords: 'هدفون هندزفری اسپیکر صوتی موسیقی ایرپاد' },
-    { name: 'package', label: 'بسته و محموله', category: 'shopping', keywords: 'بسته جعبه کارتن پست بار کالا ارسال' },
-    { name: 'monitor', label: 'نمایشگر و مانیتور', category: 'shopping', keywords: 'مانیتور ال سی دی صفحه نمایش سیستم گیمینگ' },
-    { name: 'tablet', label: 'تببلت و آیپد', category: 'shopping', keywords: 'تبلت آیپد قلم دیوایس هوشمند قلم نوری' },
-    { name: 'speaker', label: 'اسپیکر و سیستم صوتی', category: 'shopping', keywords: 'اسپیکر باند صوتی ضبط صدا سیستم' },
-    { name: 'radio', label: 'رادیو و تجهیزات', category: 'shopping', keywords: 'رادیو بیسیم مخابرات امواج فرستنده' },
-
-    // Work & Education
-    { name: 'graduation-cap', label: 'تحصیل و دانشگاه', category: 'work', keywords: 'دانشگاه شهریه دانشجو درس کنکور مدرسه کلاه' },
-    { name: 'book-open', label: 'کتاب و آموزش', category: 'work', keywords: 'کتاب دوره کلاس تدریس جزوه مطالعه دانش' },
-    { name: 'book', label: 'کتاب و پژوهش', category: 'work', keywords: 'کتاب منبع کتابخانه پژوهش پایان نامه مقاله' },
-    { name: 'briefcase', label: 'کسب‌وکار و شغل', category: 'work', keywords: 'کیف کار شغل استخدام اداری بیزینس شرکت قرارداد' },
-    { name: 'award', label: 'پاداش و موفقیت', category: 'work', keywords: 'مدال جایزه رتبه برتر افتخار تقدیر لوح' },
-    { name: 'file-text', label: 'قرارداد و پرونده', category: 'work', keywords: 'قرارداد پرونده مدارک سند برگه چک قولنامه' },
-    { name: 'folder', label: 'پوشه اسناد', category: 'work', keywords: 'پوشه بایگانی اسناد مدارک زونکن پوشه' },
-    { name: 'printer', label: 'لوازم اداری', category: 'work', keywords: 'پرینتر چاپگر کپی دفتر کار لوازم تحریر اسکنر' },
-    { name: 'pencil', label: 'نوشت‌افزار و طراحی', category: 'work', keywords: 'مداد خودکار اتود لوازم التحریر نقشه کشی' },
-    { name: 'newspaper', label: 'مطبوعات و رسانه', category: 'work', keywords: 'روزنامه مجله خبر نشر انتشارات چاپ' },
-    { name: 'presentation', label: 'جلسه و پرزنتیشن', category: 'work', keywords: 'پرزنت کنفرانس ویدیو پروژکتور جلسه سمینار' },
-    { name: 'hard-hat', label: 'عمران و مهندسی', category: 'work', keywords: 'کلاه ایمنی مهندسی عمران ساختمان کارگاه پیمانکار' },
-
-    // Family & Health
-    { name: 'heart-pulse', label: 'درمان و بیمارستان', category: 'family', keywords: 'قلب پزشکی درمان بیمارستان سلامتی دارو عمل جراحی کلینیک' },
-    { name: 'baby', label: 'فرزند و کودک', category: 'family', keywords: 'نوزاد بچه فرزند سیسمونی زایمان تولد اسباب بازی' },
-    { name: 'users', label: 'خانواده و فامیل', category: 'family', keywords: 'خانواده جمع دوستان فامیل دورهمی والدین' },
-    { name: 'user', label: 'شخصی و انفرادی', category: 'family', keywords: 'شخصی فرد مخاطب قرض شخصی فردی خود' },
-    { name: 'shield-check', label: 'بیمه و ضمانت', category: 'family', keywords: 'بیمه ضمانت گارانتی امنیت سپر تامین اجتماعی' },
-    { name: 'activity', label: 'ورزش و سلامت', category: 'family', keywords: 'ورزش باشگاه سلامت فعالیت چکاپ تناسب اندام' },
-    { name: 'pill', label: 'دارو و درمان', category: 'family', keywords: 'قرص کپسول داروخانه نسخه درمانی ویتامین' },
-    { name: 'stethoscope', label: 'پزشکی و معاینه', category: 'family', keywords: 'گوشی پزشکی دکتر ویزیت متخصص درمانگاه' },
-    { name: 'heart-handshake', label: 'همیاری و خیریه', category: 'family', keywords: 'همدلی خیریه کمک دستی قرض الحسنه دست خیر' },
-    { name: 'dumbbell', label: 'باشگاه و تندرستی', category: 'family', keywords: 'دمبل پرورش اندام بدنسازی تمرین فیتنس' },
-
-    // General & Lifestyle
-    { name: 'sparkles', label: 'ویژه و ستاره‌دار', category: 'general', keywords: 'درخشان ستاره شانس اکسترا خاص ویژه تاپ' },
-    { name: 'sun', label: 'فصل و روشنایی', category: 'general', keywords: 'خورشید تابستان تعطیلات روشنایی روز انرژی خورشیدی' },
-    { name: 'coffee', label: 'کافه و نوشیدنی', category: 'general', keywords: 'کافه قهوه چای خوراک رستوران مهمانی اسپرسو' },
-    { name: 'utensils', label: 'رستوران و غذا', category: 'general', keywords: 'غذا قاشق چنگال ناهار شام ضیافت کترینگ' },
-    { name: 'plane-takeoff', label: 'سفر و توریسم', category: 'general', keywords: 'مسافرت تفریح تور پرواز خارج زیارت گردشگری' },
-    { name: 'compass', label: 'هدف و برنامه‌ریزی', category: 'general', keywords: 'جهت یاب مسیر برنامه ریزی آینده قطب نما' },
-    { name: 'flame', label: 'فوری و اضطراری', category: 'general', keywords: 'فوری ضروری آتش اورژانسی داغ بحران' },
-    { name: 'trophy', label: 'جام و دستاورد', category: 'general', keywords: 'جام مسابقه پیروزی دستاورد برنده قهرمانی' },
-    { name: 'star', label: 'ستاره طلایی', category: 'general', keywords: 'ستاره برگزیده مهم امتیاز عالی برتر' },
-    { name: 'heart', label: 'ازدواج و جهیزیه', category: 'general', keywords: 'ازدواج عروسی جهیزیه عشق همسر عقد نامزدی' },
-    { name: 'zap', label: 'شتاب و انرژی', category: 'general', keywords: 'انرژی رعد برق شتاب فوری سریع برق' },
-    { name: 'crown', label: 'لوکس و VIP', category: 'general', keywords: 'تاج پادشاهی لوکس وی آی پی درجه یک خاص' },
-    { name: 'music', label: 'موسیقی و هنر', category: 'general', keywords: 'آهنگ ساز گیتار پیانو کنسرت نواختن هنر' },
-    { name: 'video', label: 'فیلم و سینما', category: 'general', keywords: 'سینما فیلم ویدیو تدوین استودیو تولید محتوا' },
-    { name: 'palette', label: 'طراحی و نقاشی', category: 'general', keywords: 'نقاشی رنگ آمیزی گرافیک پالت هنر دکور' },
-    { name: 'umbrella', label: 'پشتیبانی و بیمه', category: 'general', keywords: 'چتر حامی مراقبت روز مبادا پوشش حفاظتی' }
-  ];
-
+  // Finance & Banking
+  {
+    name: 'landmark',
+    label: 'بانک و شعبه',
+    category: 'finance',
+    keywords: 'بانک شعبه موسسه قرض الحسنه صندوق'
+  }, {
+    name: 'banknote',
+    label: 'اسکناس و پول',
+    category: 'finance',
+    keywords: 'اسکناس پول نقد تومان ریال سرمایه'
+  }, {
+    name: 'credit-card',
+    label: 'کارت بانکی',
+    category: 'finance',
+    keywords: 'کارت عابربانک حساب بانکی واریز'
+  }, {
+    name: 'wallet',
+    label: 'کیف پول',
+    category: 'finance',
+    keywords: 'کیف پول جیب پس انداز موجودی'
+  }, {
+    name: 'coins',
+    label: 'سکه‌ها و طلا',
+    category: 'finance',
+    keywords: 'سکه طلا نقره ارز سرمایه گذاری'
+  }, {
+    name: 'piggy-bank',
+    label: 'قلک پس‌انداز',
+    category: 'finance',
+    keywords: 'قلک پس انداز اندوخته ذخیره'
+  }, {
+    name: 'scale',
+    label: 'ترازوی حساب',
+    category: 'finance',
+    keywords: 'ترازو تعادل عدالت قسط حقوقی'
+  }, {
+    name: 'receipt',
+    label: 'فاکتور و رسید',
+    category: 'finance',
+    keywords: 'رسید فاکتور قبض پرداخت بدهی'
+  }, {
+    name: 'badge-percent',
+    label: 'سود و کارمزد',
+    category: 'finance',
+    keywords: 'درصد سود کارمزد بهره تخفیف'
+  }, {
+    name: 'circle-dollar-sign',
+    label: 'ارز و دلار',
+    category: 'finance',
+    keywords: 'دلار ارز یورو تومان مالی'
+  }, {
+    name: 'calculator',
+    label: 'ماشین‌حساب',
+    category: 'finance',
+    keywords: 'حسابداری ماشین حساب محاسبات قسط'
+  }, {
+    name: 'vault',
+    label: 'گاوصندوق',
+    category: 'finance',
+    keywords: 'گاوصندوق امن صندوق امانات طلا'
+  }, {
+    name: 'gem',
+    label: 'طلا و جواهرات',
+    category: 'finance',
+    keywords: 'طلا الماس جواهر نقره دارایی'
+  }, {
+    name: 'hand-coins',
+    label: 'وام و کمک‌هزینه',
+    category: 'finance',
+    keywords: 'وام کمک هزینه دستی قرض نقدینگی'
+  }, {
+    name: 'chart-candlestick',
+    label: 'بورس و سرمایه',
+    category: 'finance',
+    keywords: 'بورس ترید سهام نمودار سرمایه'
+  }, {
+    name: 'percent',
+    label: 'نرخ سود و بهره',
+    category: 'finance',
+    keywords: 'درصد سود اقساطی کارمزد بهره'
+  },
+  // Vehicles & Transport
+  {
+    name: 'car',
+    label: 'خودرو سواری',
+    category: 'vehicles',
+    keywords: 'خودرو ماشین اتومبیل سواری پراید پژو دنا'
+  }, {
+    name: 'truck',
+    label: 'کامیون و باربری',
+    category: 'vehicles',
+    keywords: 'کامیون تریلی وانت خاور باربری سنگین'
+  }, {
+    name: 'bus',
+    label: 'اتوبوس و سرویس',
+    category: 'vehicles',
+    keywords: 'اتوبوس مینی بوس ون سرویس مسافرتی'
+  }, {
+    name: 'bike',
+    label: 'موتور و دوچرخه',
+    category: 'vehicles',
+    keywords: 'موتور سیکلت دوچرخه اسکوتر هوندا'
+  }, {
+    name: 'plane',
+    label: 'هواپیما و پرواز',
+    category: 'vehicles',
+    keywords: 'هواپیما پرواز سفر مسافرت بلیط هوایی'
+  }, {
+    name: 'ship',
+    label: 'کشتی و قایق',
+    category: 'vehicles',
+    keywords: 'کشتی قایق لنج دریایی باربری لنج'
+  }, {
+    name: 'fuel',
+    label: 'سوخت و بنزین',
+    category: 'vehicles',
+    keywords: 'بنزین گازوییل گاز پمپ سوخت خودرو باک'
+  }, {
+    name: 'train',
+    label: 'قطار و مترو',
+    category: 'vehicles',
+    keywords: 'قطار ریل مترو مسافرت حمل راه آهن'
+  }, {
+    name: 'gauge',
+    label: 'کیلومتر و سرعت',
+    category: 'vehicles',
+    keywords: 'کیلومتر سرعت سنج فنی تعمیرات شتاب'
+  }, {
+    name: 'wrench',
+    label: 'تعمیرات خودرو',
+    category: 'vehicles',
+    keywords: 'تعمیرگاه آچار مکانیکی سرویس دوره ای'
+  }, {
+    name: 'car-taxi-front',
+    label: 'تاکسی و کرایه',
+    category: 'vehicles',
+    keywords: 'تاکسی آژانس اسنپ تپسی کرایه خودرو'
+  }, {
+    name: 'anchor',
+    label: 'دریانوردی و لنج',
+    category: 'vehicles',
+    keywords: 'لنگر دریا شیلات صیادی قایق'
+  },
+  // Housing & Real Estate
+  {
+    name: 'home',
+    label: 'خانه و مسکن',
+    category: 'housing',
+    keywords: 'خانه منزل مسکن آپارتمان رهن اجاره خرید'
+  }, {
+    name: 'building',
+    label: 'ساختمان و برج',
+    category: 'housing',
+    keywords: 'ساختمان برج مجتمع سازمانی تجاری'
+  }, {
+    name: 'building-2',
+    label: 'مجتمع مسکونی',
+    category: 'housing',
+    keywords: 'مجتمع شهرک آپارتمان پروژه ساخت بلوک'
+  }, {
+    name: 'warehouse',
+    label: 'انبار و سوله',
+    category: 'housing',
+    keywords: 'انبار سوله کارگاه ذخیره سازی کارخانه'
+  }, {
+    name: 'key',
+    label: 'کلید و سند ملک',
+    category: 'housing',
+    keywords: 'کلید خرید خانه رهن تحویل سند مالکیت'
+  }, {
+    name: 'hammer',
+    label: 'ساخت و بازسازی',
+    category: 'housing',
+    keywords: 'چکش تعمیرات بازسازی ساخت نوسازی بنایی'
+  }, {
+    name: 'trees',
+    label: 'باغ و ویلا',
+    category: 'housing',
+    keywords: 'باغ ویلا زمین کشاورزی باغچه شمال مزرعه'
+  }, {
+    name: 'bed',
+    label: 'سرویس خواب',
+    category: 'housing',
+    keywords: 'تخت خواب اتاق مبلمان جهیزیه دکوراسیون'
+  }, {
+    name: 'bath',
+    label: 'تجهیزات و تاسیسات',
+    category: 'housing',
+    keywords: 'حمام سرویس شیرآلات دکوراسیون پکیج'
+  }, {
+    name: 'hotel',
+    label: 'هتل و اقامتگاه',
+    category: 'housing',
+    keywords: 'هتل سوئیت اقامتگاه ویلا بومگردی'
+  }, {
+    name: 'castle',
+    label: 'عمارت و باغ',
+    category: 'housing',
+    keywords: 'عمارت کاخ قصر باغ ویلا لوکس'
+  }, {
+    name: 'fence',
+    label: 'حصار و محوطه',
+    category: 'housing',
+    keywords: 'حصار نرده محوطه زمین فنس حصارکشی'
+  },
+  // Shopping & Tech
+  {
+    name: 'shopping-bag',
+    label: 'خرید و پوشاک',
+    category: 'shopping',
+    keywords: 'خرید لباس بازار فروشگاه کیسه مد'
+  }, {
+    name: 'shopping-cart',
+    label: 'سبد خرید',
+    category: 'shopping',
+    keywords: 'سبد خرید سوپرمارکت سفارش کالا آنلاین'
+  }, {
+    name: 'gift',
+    label: 'هدیه و کادو',
+    category: 'shopping',
+    keywords: 'کادو هدیه جایزه عیدی سورپرایز جشن'
+  }, {
+    name: 'tag',
+    label: 'تخفیف و کالا',
+    category: 'shopping',
+    keywords: 'اتیکت قیمت برچسب حراج جنس مارک'
+  }, {
+    name: 'smartphone',
+    label: 'موبایل و گوشی',
+    category: 'shopping',
+    keywords: 'گوشی موبایل آیفون سامسونگ تبلت تلفن'
+  }, {
+    name: 'laptop',
+    label: 'لپ‌تاپ و کامپیوتر',
+    category: 'shopping',
+    keywords: 'لپ تاپ کامپیوتر سیستم پی سی مک رایانه'
+  }, {
+    name: 'tv',
+    label: 'تلویزیون و صوتی',
+    category: 'shopping',
+    keywords: 'تلویزیون مانیتور سینما خانگی نمایشگر ال ای دی'
+  }, {
+    name: 'camera',
+    label: 'دوربین عکاسی',
+    category: 'shopping',
+    keywords: 'دوربین فیلمبرداری عکاسی لنز آتلیه کانن'
+  }, {
+    name: 'watch',
+    label: 'ساعت هوشمند',
+    category: 'shopping',
+    keywords: 'ساعت مچی اکسسوری اپل واچ گارمین'
+  }, {
+    name: 'shirt',
+    label: 'پوشاک و لباس',
+    category: 'shopping',
+    keywords: 'لباس پیراهن پوشاک مد بوتیک کت شلوار'
+  }, {
+    name: 'headphones',
+    label: 'لوازم دیجیتال',
+    category: 'shopping',
+    keywords: 'هدفون هندزفری اسپیکر صوتی موسیقی ایرپاد'
+  }, {
+    name: 'package',
+    label: 'بسته و محموله',
+    category: 'shopping',
+    keywords: 'بسته جعبه کارتن پست بار کالا ارسال'
+  }, {
+    name: 'monitor',
+    label: 'نمایشگر و مانیتور',
+    category: 'shopping',
+    keywords: 'مانیتور ال سی دی صفحه نمایش سیستم گیمینگ'
+  }, {
+    name: 'tablet',
+    label: 'تببلت و آیپد',
+    category: 'shopping',
+    keywords: 'تبلت آیپد قلم دیوایس هوشمند قلم نوری'
+  }, {
+    name: 'speaker',
+    label: 'اسپیکر و سیستم صوتی',
+    category: 'shopping',
+    keywords: 'اسپیکر باند صوتی ضبط صدا سیستم'
+  }, {
+    name: 'radio',
+    label: 'رادیو و تجهیزات',
+    category: 'shopping',
+    keywords: 'رادیو بیسیم مخابرات امواج فرستنده'
+  },
+  // Work & Education
+  {
+    name: 'graduation-cap',
+    label: 'تحصیل و دانشگاه',
+    category: 'work',
+    keywords: 'دانشگاه شهریه دانشجو درس کنکور مدرسه کلاه'
+  }, {
+    name: 'book-open',
+    label: 'کتاب و آموزش',
+    category: 'work',
+    keywords: 'کتاب دوره کلاس تدریس جزوه مطالعه دانش'
+  }, {
+    name: 'book',
+    label: 'کتاب و پژوهش',
+    category: 'work',
+    keywords: 'کتاب منبع کتابخانه پژوهش پایان نامه مقاله'
+  }, {
+    name: 'briefcase',
+    label: 'کسب‌وکار و شغل',
+    category: 'work',
+    keywords: 'کیف کار شغل استخدام اداری بیزینس شرکت قرارداد'
+  }, {
+    name: 'award',
+    label: 'پاداش و موفقیت',
+    category: 'work',
+    keywords: 'مدال جایزه رتبه برتر افتخار تقدیر لوح'
+  }, {
+    name: 'file-text',
+    label: 'قرارداد و پرونده',
+    category: 'work',
+    keywords: 'قرارداد پرونده مدارک سند برگه چک قولنامه'
+  }, {
+    name: 'folder',
+    label: 'پوشه اسناد',
+    category: 'work',
+    keywords: 'پوشه بایگانی اسناد مدارک زونکن پوشه'
+  }, {
+    name: 'printer',
+    label: 'لوازم اداری',
+    category: 'work',
+    keywords: 'پرینتر چاپگر کپی دفتر کار لوازم تحریر اسکنر'
+  }, {
+    name: 'pencil',
+    label: 'نوشت‌افزار و طراحی',
+    category: 'work',
+    keywords: 'مداد خودکار اتود لوازم التحریر نقشه کشی'
+  }, {
+    name: 'newspaper',
+    label: 'مطبوعات و رسانه',
+    category: 'work',
+    keywords: 'روزنامه مجله خبر نشر انتشارات چاپ'
+  }, {
+    name: 'presentation',
+    label: 'جلسه و پرزنتیشن',
+    category: 'work',
+    keywords: 'پرزنت کنفرانس ویدیو پروژکتور جلسه سمینار'
+  }, {
+    name: 'hard-hat',
+    label: 'عمران و مهندسی',
+    category: 'work',
+    keywords: 'کلاه ایمنی مهندسی عمران ساختمان کارگاه پیمانکار'
+  },
+  // Family & Health
+  {
+    name: 'heart-pulse',
+    label: 'درمان و بیمارستان',
+    category: 'family',
+    keywords: 'قلب پزشکی درمان بیمارستان سلامتی دارو عمل جراحی کلینیک'
+  }, {
+    name: 'baby',
+    label: 'فرزند و کودک',
+    category: 'family',
+    keywords: 'نوزاد بچه فرزند سیسمونی زایمان تولد اسباب بازی'
+  }, {
+    name: 'users',
+    label: 'خانواده و فامیل',
+    category: 'family',
+    keywords: 'خانواده جمع دوستان فامیل دورهمی والدین'
+  }, {
+    name: 'user',
+    label: 'شخصی و انفرادی',
+    category: 'family',
+    keywords: 'شخصی فرد مخاطب قرض شخصی فردی خود'
+  }, {
+    name: 'shield-check',
+    label: 'بیمه و ضمانت',
+    category: 'family',
+    keywords: 'بیمه ضمانت گارانتی امنیت سپر تامین اجتماعی'
+  }, {
+    name: 'activity',
+    label: 'ورزش و سلامت',
+    category: 'family',
+    keywords: 'ورزش باشگاه سلامت فعالیت چکاپ تناسب اندام'
+  }, {
+    name: 'pill',
+    label: 'دارو و درمان',
+    category: 'family',
+    keywords: 'قرص کپسول داروخانه نسخه درمانی ویتامین'
+  }, {
+    name: 'stethoscope',
+    label: 'پزشکی و معاینه',
+    category: 'family',
+    keywords: 'گوشی پزشکی دکتر ویزیت متخصص درمانگاه'
+  }, {
+    name: 'heart-handshake',
+    label: 'همیاری و خیریه',
+    category: 'family',
+    keywords: 'همدلی خیریه کمک دستی قرض الحسنه دست خیر'
+  }, {
+    name: 'dumbbell',
+    label: 'باشگاه و تندرستی',
+    category: 'family',
+    keywords: 'دمبل پرورش اندام بدنسازی تمرین فیتنس'
+  },
+  // General & Lifestyle
+  {
+    name: 'sparkles',
+    label: 'ویژه و ستاره‌دار',
+    category: 'general',
+    keywords: 'درخشان ستاره شانس اکسترا خاص ویژه تاپ'
+  }, {
+    name: 'sun',
+    label: 'فصل و روشنایی',
+    category: 'general',
+    keywords: 'خورشید تابستان تعطیلات روشنایی روز انرژی خورشیدی'
+  }, {
+    name: 'coffee',
+    label: 'کافه و نوشیدنی',
+    category: 'general',
+    keywords: 'کافه قهوه چای خوراک رستوران مهمانی اسپرسو'
+  }, {
+    name: 'utensils',
+    label: 'رستوران و غذا',
+    category: 'general',
+    keywords: 'غذا قاشق چنگال ناهار شام ضیافت کترینگ'
+  }, {
+    name: 'plane-takeoff',
+    label: 'سفر و توریسم',
+    category: 'general',
+    keywords: 'مسافرت تفریح تور پرواز خارج زیارت گردشگری'
+  }, {
+    name: 'compass',
+    label: 'هدف و برنامه‌ریزی',
+    category: 'general',
+    keywords: 'جهت یاب مسیر برنامه ریزی آینده قطب نما'
+  }, {
+    name: 'flame',
+    label: 'فوری و اضطراری',
+    category: 'general',
+    keywords: 'فوری ضروری آتش اورژانسی داغ بحران'
+  }, {
+    name: 'trophy',
+    label: 'جام و دستاورد',
+    category: 'general',
+    keywords: 'جام مسابقه پیروزی دستاورد برنده قهرمانی'
+  }, {
+    name: 'star',
+    label: 'ستاره طلایی',
+    category: 'general',
+    keywords: 'ستاره برگزیده مهم امتیاز عالی برتر'
+  }, {
+    name: 'heart',
+    label: 'ازدواج و جهیزیه',
+    category: 'general',
+    keywords: 'ازدواج عروسی جهیزیه عشق همسر عقد نامزدی'
+  }, {
+    name: 'zap',
+    label: 'شتاب و انرژی',
+    category: 'general',
+    keywords: 'انرژی رعد برق شتاب فوری سریع برق'
+  }, {
+    name: 'crown',
+    label: 'لوکس و VIP',
+    category: 'general',
+    keywords: 'تاج پادشاهی لوکس وی آی پی درجه یک خاص'
+  }, {
+    name: 'music',
+    label: 'موسیقی و هنر',
+    category: 'general',
+    keywords: 'آهنگ ساز گیتار پیانو کنسرت نواختن هنر'
+  }, {
+    name: 'video',
+    label: 'فیلم و سینما',
+    category: 'general',
+    keywords: 'سینما فیلم ویدیو تدوین استودیو تولید محتوا'
+  }, {
+    name: 'palette',
+    label: 'طراحی و نقاشی',
+    category: 'general',
+    keywords: 'نقاشی رنگ آمیزی گرافیک پالت هنر دکور'
+  }, {
+    name: 'umbrella',
+    label: 'پشتیبانی و بیمه',
+    category: 'general',
+    keywords: 'چتر حامی مراقبت روز مبادا پوشش حفاظتی'
+  }];
   const filteredIcons = loanIconsCatalog.filter(iconItem => {
     const matchesCategory = activeCategory === 'all' || iconItem.category === activeCategory;
     const query = searchQuery.trim().toLowerCase();
-    const matchesSearch = !query || iconItem.label.toLowerCase().includes(query) || (iconItem.keywords && iconItem.keywords.toLowerCase().includes(query)) || iconItem.name.toLowerCase().includes(query);
+    const matchesSearch = !query || iconItem.label.toLowerCase().includes(query) || iconItem.keywords && iconItem.keywords.toLowerCase().includes(query) || iconItem.name.toLowerCase().includes(query);
     return matchesCategory && matchesSearch;
   });
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          key="loan-icon-selector-backdrop"
-          variants={iosBackdropVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4"
-          onClick={onClose}
-        >
-          <motion.div
-            key="loan-icon-selector-panel"
-            variants={iosModalVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            onClick={e => e.stopPropagation()}
-            className="w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] p-4 sm:p-5 space-y-3.5 border border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col max-h-[85vh]"
-            dir="rtl"
-          >
-            <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto shrink-0" />
-            
-            <div className="text-center shrink-0">
-              <h3 className="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg">انتخاب نماد و موضوع وام</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">آیکون متناسب با هدف وام خود را انتخاب فرمایید</p>
-            </div>
-
-            <div className="relative shrink-0">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="جستجوی موضوع وام (مثال: خودرو، مسکن، ازدواج، لپ‌تاپ...)"
-                className="w-full py-2.5 pr-9 pl-8 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
-              />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                <Icon name="search" className="w-4 h-4" />
-              </div>
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
-                >
-                  <Icon name="x" className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            <div className="flex gap-1.5 overflow-x-auto pb-1 hide-scrollbar shrink-0">
-              {loanIconCategories.map(cat => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${activeCategory === cat.id ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-4 sm:grid-cols-5 gap-2.5 overflow-y-auto p-1 max-h-60 sm:max-h-72 min-h-[160px] hide-scrollbar border border-slate-100 dark:border-slate-800/60 rounded-2xl bg-slate-50/50 dark:bg-slate-900/40">
-              {filteredIcons.length > 0 ? (
-                filteredIcons.map(iconItem => {
-                  const isSelected = selectedIcon === iconItem.name;
-                  return (
-                    <button
-                      key={iconItem.name}
-                      type="button"
-                      onClick={() => {
-                        onSelect(iconItem.name);
-                        onClose();
-                      }}
-                      title={iconItem.label}
-                      className={`flex flex-col items-center justify-center p-2 rounded-2xl transition-all aspect-square relative group ${isSelected ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 scale-102 ring-2 ring-indigo-500/50' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700/60 hover:scale-105'}`}
-                    >
-                      <Icon name={iconItem.name} className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
-                      <span className={`text-[10px] mt-1.5 text-center truncate max-w-full font-medium ${isSelected ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`}>
-                        {iconItem.label}
-                      </span>
-                    </button>
-                  );
-                })
-              ) : (
-                <div className="col-span-full py-8 text-center text-slate-400 text-xs">
-                  <p>هیچ آیکونی با این عنوان یافت نشد</p>
-                </div>
-              )}
-            </div>
-
-            <div className="pt-1 shrink-0 flex items-center justify-between gap-2">
-              <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                {filteredIcons.length} آیکون موجود
-              </span>
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all active:scale-95"
-              >
-                انصراف
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  return /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/React.createElement(motion.div, {
+    key: "loan-icon-selector-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    key: "loan-icon-selector-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    onClick: e => e.stopPropagation(),
+    className: "w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] p-4 sm:p-5 space-y-3.5 border border-slate-100 dark:border-slate-800 shadow-2xl flex flex-col max-h-[85vh]",
+    dir: "rtl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto shrink-0"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "text-center shrink-0"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "font-extrabold text-slate-900 dark:text-white text-base sm:text-lg"
+  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0646\u0645\u0627\u062F \u0648 \u0645\u0648\u0636\u0648\u0639 \u0648\u0627\u0645"), /*#__PURE__*/React.createElement("p", {
+    className: "text-xs text-slate-500 dark:text-slate-400 mt-0.5"
+  }, "\u0622\u06CC\u06A9\u0648\u0646 \u0645\u062A\u0646\u0627\u0633\u0628 \u0628\u0627 \u0647\u062F\u0641 \u0648\u0627\u0645 \u062E\u0648\u062F \u0631\u0627 \u0627\u0646\u062A\u062E\u0627\u0628 \u0641\u0631\u0645\u0627\u06CC\u06CC\u062F")), /*#__PURE__*/React.createElement("div", {
+    className: "relative shrink-0"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: searchQuery,
+    onChange: e => setSearchQuery(e.target.value),
+    placeholder: "\u062C\u0633\u062A\u062C\u0648\u06CC \u0645\u0648\u0636\u0648\u0639 \u0648\u0627\u0645 (\u0645\u062B\u0627\u0644: \u062E\u0648\u062F\u0631\u0648\u060C \u0645\u0633\u06A9\u0646\u060C \u0627\u0632\u062F\u0648\u0627\u062C\u060C \u0644\u067E\u200C\u062A\u0627\u067E...)",
+    className: "w-full py-2.5 pr-9 pl-8 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "search",
+    className: "w-4 h-4"
+  })), searchQuery && /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => setSearchQuery(''),
+    className: "absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "x",
+    className: "w-3.5 h-3.5"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-1.5 overflow-x-auto pb-1 hide-scrollbar shrink-0"
+  }, loanIconCategories.map(cat => /*#__PURE__*/React.createElement("button", {
+    key: cat.id,
+    type: "button",
+    onClick: () => setActiveCategory(cat.id),
+    className: `px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${activeCategory === cat.id ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20' : 'bg-slate-100 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`
+  }, cat.label))), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-4 sm:grid-cols-5 gap-2.5 overflow-y-auto p-1 max-h-60 sm:max-h-72 min-h-[160px] hide-scrollbar border border-slate-100 dark:border-slate-800/60 rounded-2xl bg-slate-50/50 dark:bg-slate-900/40"
+  }, filteredIcons.length > 0 ? filteredIcons.map(iconItem => {
+    const isSelected = selectedIcon === iconItem.name;
+    return /*#__PURE__*/React.createElement("button", {
+      key: iconItem.name,
+      type: "button",
+      onClick: () => {
+        onSelect(iconItem.name);
+        onClose();
+      },
+      title: iconItem.label,
+      className: `flex flex-col items-center justify-center p-2 rounded-2xl transition-all aspect-square relative group ${isSelected ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 scale-102 ring-2 ring-indigo-500/50' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700/60 hover:scale-105'}`
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: iconItem.name,
+      className: "w-5 h-5 sm:w-6 sm:h-6 shrink-0"
+    }), /*#__PURE__*/React.createElement("span", {
+      className: `text-[10px] mt-1.5 text-center truncate max-w-full font-medium ${isSelected ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`
+    }, iconItem.label));
+  }) : /*#__PURE__*/React.createElement("div", {
+    className: "col-span-full py-8 text-center text-slate-400 text-xs"
+  }, /*#__PURE__*/React.createElement("p", null, "\u0647\u06CC\u0686 \u0622\u06CC\u06A9\u0648\u0646\u06CC \u0628\u0627 \u0627\u06CC\u0646 \u0639\u0646\u0648\u0627\u0646 \u06CC\u0627\u0641\u062A \u0646\u0634\u062F"))), /*#__PURE__*/React.createElement("div", {
+    className: "pt-1 shrink-0 flex items-center justify-between gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-[11px] text-slate-500 dark:text-slate-400"
+  }, filteredIcons.length, " \u0622\u06CC\u06A9\u0648\u0646 \u0645\u0648\u062C\u0648\u062F"), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: onClose,
+    className: "px-5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all active:scale-95"
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641")))));
 }
 function ContactSelectorCard({
   contacts = [],
@@ -4541,15 +5854,122 @@ function ContactSelectorCard({
   }
   const filtered = filteredContacts.filter(c => `${c.firstName} ${c.lastName}`.toLowerCase().includes(searchQ) || c.phone && c.phone.includes(searchQ));
   if (selectedC && !isExpanded) {
-    return /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-600 dark:text-slate-300 font-bold">مخاطب انتخاب‌شده:</label>}{/*#__PURE__*/<div className="bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-500 rounded-2xl p-3.5 flex items-center justify-between shadow-xs">{/*#__PURE__*/<div className="flex items-center space-x-3 space-x-reverse">{/*#__PURE__*/<ContactAvatar contact={selectedC} className="w-10 h-10" iconClassName="w-5 h-5" />}{/*#__PURE__*/<div>{/*#__PURE__*/<div className="text-xs font-bold text-indigo-950 dark:text-indigo-100">{selectedC.firstName} {selectedC.lastName}</div>}{/*#__PURE__*/<div className="text-[10px] text-indigo-600 dark:text-indigo-300 font-mono">{selectedC.phone ? toAppDigits(selectedC.phone) : 'بدون شماره تماس'}</div>}</div>}</div>}{/*#__PURE__*/<button type="button" onClick={() => setIsExpanded(true)} className="text-xs font-bold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-indigo-900/80 px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 active:scale-95 transition-all">تغییر مخاطب</button>}</div>}</div>;
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-600 dark:text-slate-300 font-bold"
+    }, "\u0645\u062E\u0627\u0637\u0628 \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-500 rounded-2xl p-3.5 flex items-center justify-between shadow-xs"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex items-center space-x-3 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(ContactAvatar, {
+      contact: selectedC,
+      className: "w-10 h-10",
+      iconClassName: "w-5 h-5"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs font-bold text-indigo-950 dark:text-indigo-100"
+    }, selectedC.firstName, " ", selectedC.lastName), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-[10px] text-indigo-600 dark:text-indigo-300 font-mono"
+    }, selectedC.phone ? toAppDigits(selectedC.phone) : 'بدون شماره تماس'))), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => setIsExpanded(true),
+      className: "text-xs font-bold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-indigo-900/80 px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 active:scale-95 transition-all"
+    }, "\u062A\u063A\u06CC\u06CC\u0631 \u0645\u062E\u0627\u0637\u0628")));
   }
-  return /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-600 dark:text-slate-300 font-bold">مخاطب خود را انتخاب کنید:</label>}{/*#__PURE__*/<div className="relative">{/*#__PURE__*/<Icon name="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400" />}{/*#__PURE__*/<input type="text" placeholder="  (   )..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className={`w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 ${error ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:ring-indigo-500'}`} />}</div>}{/*#__PURE__*/<div className={`max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`}>{filtered.length > 0 ? filtered.map(c => {
-        const isSelected = Number(selectedContactId) === c.id;
-        return /*#__PURE__*/<div key={c.id} onClick={() => {
-          onSelect(c);
-          setIsExpanded(false);
-        }} className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 dark:border-indigo-600 font-bold text-indigo-700 dark:text-indigo-300' : 'bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300'}`}>{/*#__PURE__*/<div className="flex items-center space-x-2.5 space-x-reverse">{/*#__PURE__*/<ContactAvatar contact={c} className="w-8 h-8" iconClassName="w-4 h-4" />}{/*#__PURE__*/<div>{/*#__PURE__*/<div className="text-xs">{c.firstName} {c.lastName}</div>}{/*#__PURE__*/<div className="text-[10px] text-slate-400">{c.phone ? toAppDigits(c.phone) : ''}</div>}</div>}</div>}{isSelected && /*#__PURE__*/<Icon name="check-circle-2" className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />}</div>;
-      }) : /*#__PURE__*/<div className="text-center py-6 text-xs text-slate-400">مخاطبی جهت انتخاب یافت نشد.</div>}</div>}{error && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{error}</span>}</p>}</div>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("label", {
+    className: "block text-xs text-slate-600 dark:text-slate-300 font-bold"
+  }, "\u0645\u062E\u0627\u0637\u0628 \u062E\u0648\u062F \u0631\u0627 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F:"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "search",
+    className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    placeholder: "  (   )...",
+    value: searchQuery,
+    onChange: e => setSearchQuery(e.target.value),
+    className: `w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 ${error ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-slate-200 dark:border-slate-700 focus:ring-indigo-500'}`
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
+  }, filtered.length > 0 ? filtered.map(c => {
+    const isSelected = Number(selectedContactId) === c.id;
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      key: c.id,
+      onClick: () => {
+        onSelect(c);
+        setIsExpanded(false);
+      },
+      className: `p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 dark:border-indigo-600 font-bold text-indigo-700 dark:text-indigo-300' : 'bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300'}`
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex items-center space-x-2.5 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(ContactAvatar, {
+      contact: c,
+      className: "w-8 h-8",
+      iconClassName: "w-4 h-4"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs"
+    }, c.firstName, " ", c.lastName), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-[10px] text-slate-400"
+    }, c.phone ? toAppDigits(c.phone) : ''))), isSelected && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "check-circle-2",
+      className: "w-5 h-5 text-indigo-600 dark:text-indigo-400"
+    }));
+  }) : /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-center py-6 text-xs text-slate-400"
+  }, "\u0645\u062E\u0627\u0637\u0628\u06CC \u062C\u0647\u062A \u0627\u0646\u062A\u062E\u0627\u0628 \u06CC\u0627\u0641\u062A \u0646\u0634\u062F.")), error && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "alert-circle",
+    className: "w-3.5 h-3.5 shrink-0"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, error)));
 }
 function LoanSelectorCard({
   loans = [],
@@ -4621,13 +6041,249 @@ function LoanSelectorCard({
       displayDateStr = formatDateToNumericJalali(editingTx.dateStr) || toAppDigits(editingTx.dateStr);
       displayAmount = formatAppNumber(editingTx.amount || 0);
     }
-    return /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-900 text-white rounded-2xl p-4 shadow-lg border border-indigo-500/30 space-y-3.5">{/*#__PURE__*/<div className="flex items-center justify-between">{/*#__PURE__*/<div className="space-y-1">{/*#__PURE__*/<div className="text-[11px] text-indigo-200 font-bold flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="landmark" className="w-4 h-4 text-indigo-300" />}{/*#__PURE__*/<span>{isEditingMode ? 'ویرایش قسط پرونده:' : 'پرونده وام انتخاب‌شده:'}</span>}</div>}{/*#__PURE__*/<div className="text-sm font-extrabold text-white">{selectedLoanObj.title}</div>}{/*#__PURE__*/<div className="text-xs text-indigo-100 font-medium">طرف حساب: {contactName}</div>}</div>}{/*#__PURE__*/<div className="flex flex-col items-center justify-center bg-white/20 backdrop-blur-md border border-white/40 rounded-2xl px-4 py-3 shadow-inner text-white dir-rtl shrink-0 min-w-[100px]">{/*#__PURE__*/<span className="text-[10px] text-indigo-100 font-bold">{isEditingMode ? 'ویرایش قسط' : 'قسط شماره'}</span>}{/*#__PURE__*/<span className="text-3xl font-black tracking-tight leading-none my-1 text-white font-mono">{toAppDigits(displayInstNum)}</span>}{/*#__PURE__*/<span className="text-[11px] text-indigo-200 font-bold">از {toAppDigits(totalInst)}</span>}</div>}</div>}{/*#__PURE__*/<div className="pt-3 border-t border-indigo-400/30 space-y-2 dir-rtl">{/*#__PURE__*/<div className="flex items-center justify-between">{/*#__PURE__*/<span className="text-xs text-indigo-200 font-medium">{isEditingMode ? 'تاریخ ثبت‌شده این قسط:' : 'تاریخ پرداخت این قسط:'}</span>}{/*#__PURE__*/<span className="text-sm font-extrabold text-white bg-white/15 px-3 py-1 rounded-xl border border-white/20 font-mono tracking-wider whitespace-nowrap" dir="ltr">{displayDateStr}</span>}</div>}{/*#__PURE__*/<div className="flex items-center justify-between">{/*#__PURE__*/<span className="text-xs text-indigo-200 font-medium">مبلغ قسط:</span>}{/*#__PURE__*/<span className="text-base font-black text-amber-300 font-mono">{displayAmount} تومان</span>}</div>}</div>}</div>}{isExpanded ? /*#__PURE__*/<div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">{/*#__PURE__*/<div className="flex justify-between items-center">{/*#__PURE__*/<span className="text-xs font-bold text-slate-700 dark:text-slate-300">انتخاب وام دیگر:</span>}{/*#__PURE__*/<button type="button" onClick={() => setIsExpanded(false)} className="text-[11px] font-bold text-slate-500 hover:underline">بستن منو</button>}</div>}{/*#__PURE__*/<div className="relative">{/*#__PURE__*/<Icon name="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400" />}{/*#__PURE__*/<input type="text" placeholder="    ..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none" />}</div>}{/*#__PURE__*/<div className="max-h-44 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1">{filtered.length > 0 ? filtered.map(l => /*#__PURE__*/<div key={l.id} onClick={() => handleSelect(l)} className="p-2.5 rounded-xl border bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 flex justify-between items-center cursor-pointer hover:border-indigo-400">{/*#__PURE__*/<div>{/*#__PURE__*/<div className="text-xs font-bold text-slate-900 dark:text-white">{l.title}</div>}{/*#__PURE__*/<div className="text-[10px] text-slate-400 font-mono">{l.installmentAmount ? formatAppNumber(l.installmentAmount) : 0} تومان در ماه</div>}</div>}{/*#__PURE__*/<Icon name="chevron-left" className="w-4 h-4 text-slate-400" />}</div>) : /*#__PURE__*/<div className="text-center py-4 text-xs text-slate-400">وام فعالی یافت نشد</div>}</div>}</div> : /*#__PURE__*/<button type="button" onClick={() => setIsExpanded(true)} className="w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<Icon name="repeat" className="w-3.5 h-3.5 text-indigo-600" />}{/*#__PURE__*/<span>تغییر وام انتخاب‌شده</span>}</button>}</div>;
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-900 text-white rounded-2xl p-4 shadow-lg border border-indigo-500/30 space-y-3.5"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex items-center justify-between"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-1"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-[11px] text-indigo-200 font-bold flex items-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "landmark",
+      className: "w-4 h-4 text-indigo-300"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, isEditingMode ? 'ویرایش قسط پرونده:' : 'پرونده وام انتخاب‌شده:')), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-sm font-extrabold text-white"
+    }, selectedLoanObj.title), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs text-indigo-100 font-medium"
+    }, "\u0637\u0631\u0641 \u062D\u0633\u0627\u0628: ", contactName)), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex flex-col items-center justify-center bg-white/20 backdrop-blur-md border border-white/40 rounded-2xl px-4 py-3 shadow-inner text-white dir-rtl shrink-0 min-w-[100px]"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-[10px] text-indigo-100 font-bold"
+    }, isEditingMode ? 'ویرایش قسط' : 'قسط شماره'), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-3xl font-black tracking-tight leading-none my-1 text-white font-mono"
+    }, toAppDigits(displayInstNum)), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-[11px] text-indigo-200 font-bold"
+    }, "\u0627\u0632 ", toAppDigits(totalInst)))), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "pt-3 border-t border-indigo-400/30 space-y-2 dir-rtl"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex items-center justify-between"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-xs text-indigo-200 font-medium"
+    }, isEditingMode ? 'تاریخ ثبت‌شده این قسط:' : 'تاریخ پرداخت این قسط:'), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-sm font-extrabold text-white bg-white/15 px-3 py-1 rounded-xl border border-white/20 font-mono tracking-wider whitespace-nowrap",
+      dir: "ltr"
+    }, displayDateStr)), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex items-center justify-between"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-xs text-indigo-200 font-medium"
+    }, "\u0645\u0628\u0644\u063A \u0642\u0633\u0637:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-base font-black text-amber-300 font-mono"
+    }, displayAmount, " \u062A\u0648\u0645\u0627\u0646")))), isExpanded ? /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex justify-between items-center"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-xs font-bold text-slate-700 dark:text-slate-300"
+    }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0648\u0627\u0645 \u062F\u06CC\u06AF\u0631:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => setIsExpanded(false),
+      className: "text-[11px] font-bold text-slate-500 hover:underline"
+    }, "\u0628\u0633\u062A\u0646 \u0645\u0646\u0648")), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "relative"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "search",
+      className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      placeholder: "    ...",
+      value: searchQuery,
+      onChange: e => setSearchQuery(e.target.value),
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none"
+    })), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "max-h-44 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1"
+    }, filtered.length > 0 ? filtered.map(l => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      key: l.id,
+      onClick: () => handleSelect(l),
+      className: "p-2.5 rounded-xl border bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 flex justify-between items-center cursor-pointer hover:border-indigo-400"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs font-bold text-slate-900 dark:text-white"
+    }, l.title), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-[10px] text-slate-400 font-mono"
+    }, l.installmentAmount ? formatAppNumber(l.installmentAmount) : 0, " \u062A\u0648\u0645\u0627\u0646 \u062F\u0631 \u0645\u0627\u0647")), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "chevron-left",
+      className: "w-4 h-4 text-slate-400"
+    }))) : /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-center py-4 text-xs text-slate-400"
+    }, "\u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u06CC\u0627\u0641\u062A \u0646\u0634\u062F"))) : /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => setIsExpanded(true),
+      className: "w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "repeat",
+      className: "w-3.5 h-3.5 text-indigo-600"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, "\u062A\u063A\u06CC\u06CC\u0631 \u0648\u0627\u0645 \u0627\u0646\u062A\u062E\u0627\u0628\u200C\u0634\u062F\u0647")));
   }
-  return /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs font-bold text-slate-700 dark:text-slate-300">یک وام فعال جهت پرداخت قسط انتخاب کنید:</label>}{/*#__PURE__*/<div className="relative">{/*#__PURE__*/<Icon name="search" className="w-4 h-4 absolute right-3 top-3 text-slate-400" />}{/*#__PURE__*/<input type="text" placeholder="     ..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" />}</div>}{/*#__PURE__*/<div className={`max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`}>{filtered.length > 0 ? filtered.map(l => {
-        const contact = contacts.find(c => c.id === l.contactId);
-        const cName = contact ? `${contact.firstName} ${contact.lastName}` : l.contactName || 'بانک/سازمان';
-        return /*#__PURE__*/<div key={l.id} onClick={() => handleSelect(l)} className="p-3 rounded-2xl border bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 flex items-center justify-between cursor-pointer hover:border-indigo-500 transition-all shadow-2xs">{/*#__PURE__*/<div className="flex items-center space-x-3 space-x-reverse">{/*#__PURE__*/<div className="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs">{/*#__PURE__*/<Icon name="landmark" className="w-4 h-4" />}</div>}{/*#__PURE__*/<div>{/*#__PURE__*/<div className="text-xs font-bold text-slate-900 dark:text-white">{l.title}</div>}{/*#__PURE__*/<div className="text-[10px] text-slate-400">{cName}</div>}</div>}</div>}{/*#__PURE__*/<div className="text-left ltr">{/*#__PURE__*/<div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-mono">{l.installmentAmount ? formatAppNumber(l.installmentAmount) : '-'} تومان</div>}{/*#__PURE__*/<div className="text-[9px] text-slate-400">مبلغ قسط</div>}</div>}</div>;
-      }) : /*#__PURE__*/<div className="text-center py-6 text-xs text-slate-400">هیچ وام فعالی جهت پرداخت قسط یافت نشد.</div>}</div>}{error && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{error}</span>}</p>}</div>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    className: "space-y-3"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("label", {
+    className: "block text-xs font-bold text-slate-700 dark:text-slate-300"
+  }, "\u06CC\u06A9 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644 \u062C\u0647\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F:"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "search",
+    className: "w-4 h-4 absolute right-3 top-3 text-slate-400"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    placeholder: "     ...",
+    value: searchQuery,
+    onChange: e => setSearchQuery(e.target.value),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 pr-9 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `max-h-52 overflow-y-auto overflow-x-hidden overscroll-x-none space-y-1.5 hide-scrollbar p-1 rounded-2xl border transition-all ${error ? 'border-rose-500/80 bg-rose-50/10 dark:bg-rose-950/10' : 'border-transparent'}`
+  }, filtered.length > 0 ? filtered.map(l => {
+    const contact = contacts.find(c => c.id === l.contactId);
+    const cName = contact ? `${contact.firstName} ${contact.lastName}` : l.contactName || 'بانک/سازمان';
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      key: l.id,
+      onClick: () => handleSelect(l),
+      className: "p-3 rounded-2xl border bg-[#F4F7FC] dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 flex items-center justify-between cursor-pointer hover:border-indigo-500 transition-all shadow-2xs"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex items-center space-x-3 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "landmark",
+      className: "w-4 h-4"
+    })), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs font-bold text-slate-900 dark:text-white"
+    }, l.title), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-[10px] text-slate-400"
+    }, cName))), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-left ltr"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs font-bold text-indigo-600 dark:text-indigo-400 font-mono"
+    }, l.installmentAmount ? formatAppNumber(l.installmentAmount) : '-', " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-[9px] text-slate-400"
+    }, "\u0645\u0628\u0644\u063A \u0642\u0633\u0637")));
+  }) : /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-center py-6 text-xs text-slate-400"
+  }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u062C\u0647\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 \u06CC\u0627\u0641\u062A \u0646\u0634\u062F.")), error && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "alert-circle",
+    className: "w-3.5 h-3.5 shrink-0"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, error)));
 }
 
 // Brand Avatar Component with Multi-Fallback Strategy
@@ -4647,9 +6303,20 @@ const BrandAvatar = ({
     return [...new Set(list)];
   }, [logoUrl]);
   if (srcIndex >= sources.length) {
-    return /*#__PURE__*/<div className={`rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white font-black flex items-center justify-center shadow-sm border border-indigo-400/30 shrink-0 ${className}`}>{/*#__PURE__*/<span className="text-sm font-black tracking-tight">AF</span>}</div>;
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      className: `rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white font-black flex items-center justify-center shadow-sm border border-indigo-400/30 shrink-0 ${className}`
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-sm font-black tracking-tight"
+    }, "AF"));
   }
-  return /*#__PURE__*/<img src={sources[srcIndex]} onError={() => setSrcIndex(prev => prev + 1)} alt="Amir Finance" className={`rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-transform shrink-0 ${className}`} />;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("img", {
+    src: sources[srcIndex],
+    onError: () => setSrcIndex(prev => prev + 1),
+    alt: "Amir Finance",
+    className: `rounded-2xl object-cover shadow-sm border border-slate-200/80 dark:border-slate-700 active:scale-95 transition-transform shrink-0 ${className}`
+  });
 };
 
 // NavRippleButton Component with Smooth Ripple Effect
@@ -4678,23 +6345,50 @@ function NavRippleButton({
   const removeRipple = rippleId => {
     setRipples(prev => prev.filter(r => r.id !== rippleId));
   };
-  return /*#__PURE__*/<button id={id} onPointerDown={handlePointerDown} onClick={onClick} className={`relative overflow-hidden flex flex-col items-center justify-center w-14 h-12 rounded-2xl transition-all duration-200 select-none cursor-pointer ${isActive ? 'text-indigo-600 dark:text-indigo-400 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>{/*#__PURE__*/<AnimatePresence>{ripples.map(ripple => /*#__PURE__*/<motion.span key={ripple.id} initial={{
-        scale: 0,
-        opacity: 0.45
-      }} animate={{
-        scale: 2.5,
-        opacity: 0
-      }} exit={{
-        opacity: 0
-      }} transition={{
-        duration: 0.55,
-        ease: [0.1, 0.8, 0.3, 1]
-      }} onAnimationComplete={() => removeRipple(ripple.id)} className="absolute rounded-full bg-indigo-500/25 dark:bg-indigo-400/30 pointer-events-none" style={{
-        top: ripple.y,
-        left: ripple.x,
-        width: ripple.size,
-        height: ripple.size
-      }} />)}</AnimatePresence>}{/*#__PURE__*/<Icon name={iconName} className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`} />}{/*#__PURE__*/<span className="text-[10px] mt-0.5 font-medium tracking-tight">{label}</span>}</button>;
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("button", {
+    id: id,
+    onPointerDown: handlePointerDown,
+    onClick: onClick,
+    className: `relative overflow-hidden flex flex-col items-center justify-center w-14 h-12 rounded-2xl transition-all duration-200 select-none cursor-pointer ${isActive ? 'text-indigo-600 dark:text-indigo-400 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, ripples.map(ripple => /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.span, {
+    key: ripple.id,
+    initial: {
+      scale: 0,
+      opacity: 0.45
+    },
+    animate: {
+      scale: 2.5,
+      opacity: 0
+    },
+    exit: {
+      opacity: 0
+    },
+    transition: {
+      duration: 0.55,
+      ease: [0.1, 0.8, 0.3, 1]
+    },
+    onAnimationComplete: () => removeRipple(ripple.id),
+    className: "absolute rounded-full bg-indigo-500/25 dark:bg-indigo-400/30 pointer-events-none",
+    style: {
+      top: ripple.y,
+      left: ripple.x,
+      width: ripple.size,
+      height: ripple.size
+    }
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: iconName,
+    className: `w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "text-[10px] mt-0.5 font-medium tracking-tight"
+  }, label));
 }
 function App() {
   const [currentTab, setCurrentTab] = useState('dashboard');
@@ -4741,6 +6435,48 @@ function App() {
     setCurrentTab('contact-detail');
   };
   const [toastMessage, setToastMessage] = useState('');
+  const [gdriveSyncState, setGdriveSyncState] = useState({
+    isSignedIn: false,
+    isSyncing: false,
+    syncStatus: 'idle',
+    lastSyncTime: null
+  });
+
+  useEffect(() => {
+    let unsub = null;
+    const bindSync = () => {
+      if (typeof window !== 'undefined' && window.GoogleDriveSync && typeof window.GoogleDriveSync.subscribe === 'function') {
+        unsub = window.GoogleDriveSync.subscribe(state => {
+          setGdriveSyncState(state);
+        });
+        return true;
+      }
+      return false;
+    };
+
+    if (!bindSync()) {
+      const timer = setInterval(() => {
+        if (bindSync()) clearInterval(timer);
+      }, 300);
+      return () => {
+        clearInterval(timer);
+        if (unsub) unsub();
+      };
+    }
+    return () => {
+      if (unsub) unsub();
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleRemoteUpdated = () => {
+      if (typeof handleRefreshData === 'function') {
+        handleRefreshData();
+      }
+    };
+    window.addEventListener('gdrive-remote-updated', handleRemoteUpdated);
+    return () => window.removeEventListener('gdrive-remote-updated', handleRemoteUpdated);
+  }, []);
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   // Page Slide Transition Animation Variants (Matching reference code smooth slide & fade)
   const pageSlideVariants = {
@@ -4775,14 +6511,22 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.2.8",
-    "buildNumber": 458,
+    "buildNumber": 460,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.2.8",
-    "latestBuild": 458,
+    "latestBuild": 460,
     "isUpdateAvailable": false,
-    "history": [{"version": "3.2.8", "buildNumber": 458, "releaseDate": "2026-08-27", "releaseChannel": "Stable", "commitHash": "v328b458", "commitMessage": "feat: comprehensive contact photo & loan icon backup audit, enhanced loan icon catalog with 90+ categorized icons, and release v3.2.8", "changes": ["بررسی جامع و اعتبارسنجی ۱۰۰٪ جریان‌های پشتیبان‌گیری، بازیابی و حذف داده برای تصاویر مخاطبین و آیکون‌های وام", "توسعه اساسی پالت آیکون‌های وام به بیش از ۹۰ آیکون متنوع و تخصصی با دسته‌بندی موضوعی (بانکی، نقلیه، مسکن، خرید، کار، خانواده و عمومی)", "افزودن قابلیت جستجوی زنده در موضوعات و کلمات کلیدی آیکون‌های وام", "اصلاح و جایگزینی کامل آیکون خالی/سفید با آیکون‌های استاندارد Lucide", "بهبود هماهنگی نام‌گذاری ۳ خطی تراکنش‌ها و ارتقای یکپارچه به نسخه 3.2.8"]}, {
+    "history": [{
+      "version": "3.2.8",
+      "buildNumber": 458,
+      "releaseDate": "2026-08-27",
+      "releaseChannel": "Stable",
+      "commitHash": "v328b458",
+      "commitMessage": "feat: comprehensive contact photo & loan icon backup audit, enhanced loan icon catalog with 90+ categorized icons, and release v3.2.8",
+      "changes": ["بررسی جامع و اعتبارسنجی ۱۰۰٪ جریان‌های پشتیبان‌گیری، بازیابی و حذف داده برای تصاویر مخاطبین و آیکون‌های وام", "توسعه اساسی پالت آیکون‌های وام به بیش از ۹۰ آیکون متنوع و تخصصی با دسته‌بندی موضوعی (بانکی، نقلیه، مسکن، خرید، کار، خانواده و عمومی)", "افزودن قابلیت جستجوی زنده در موضوعات و کلمات کلیدی آیکون‌های وام", "اصلاح و جایگزینی کامل آیکون خالی/سفید با آیکون‌های استاندارد Lucide", "بهبود هماهنگی نام‌گذاری ۳ خطی تراکنش‌ها و ارتقای یکپارچه به نسخه 3.2.8"]
+    }, {
       "version": "3.2.3",
       "buildNumber": 380,
       "releaseDate": "2026-08-22",
@@ -5063,7 +6807,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 458;
+    const EMBEDDED_BUILD = 460;
     const EMBEDDED_VERSION = "3.2.8";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -5414,6 +7158,15 @@ function App() {
   const handleRefreshData = async tabName => {
     try {
       isRestoringOrClearingRef.current = true;
+      let syncResult = null;
+      if (typeof window !== 'undefined' && window.GoogleDriveSync && typeof window.GoogleDriveSync.forceSync === 'function') {
+        try {
+          syncResult = await window.GoogleDriveSync.forceSync({ isUserInitiated: true });
+        } catch (syncErr) {
+          console.warn('Google Drive sync error:', syncErr);
+        }
+      }
+
       const savedLoans = loadSavedArray('amir_fin_loans_v3', ['amir_fin_loans_v2', 'amir_fin_loans'], loans);
       setLoans(savedLoans);
       const savedTx = loadSavedArray('amir_fin_txs_v3', ['amir_fin_txs_v2', 'amir_fin_tx'], transactions);
@@ -5422,6 +7175,9 @@ function App() {
       setContacts(savedContacts);
       const savedPeriods = loadSavedArray('amir_fin_completed_periods_v3', ['amir_fin_completed_periods_v2', 'amir_fin_completed_periods'], completedPeriods);
       setCompletedPeriods(savedPeriods);
+      const savedReminders = loadSavedArray('amir_fin_reminders_v1', ['amir_fin_reminders'], reminders);
+      setReminders(savedReminders);
+
       if (tabName === 'contact-detail' && selectedContact) {
         const updatedContact = savedContacts.find(c => c.id === selectedContact.id);
         if (updatedContact) setSelectedContact(updatedContact);
@@ -5430,6 +7186,23 @@ function App() {
         const updatedLoan = savedLoans.find(l => l.id === selectedLoan.id);
         if (updatedLoan) setSelectedLoan(updatedLoan);
       }
+
+      if (syncResult) {
+        if (syncResult.action === 'downloaded') {
+          showToast('تغییرات جدید از گوگل درایو دریافت و همگام شد');
+        } else if (syncResult.action === 'uploaded') {
+          showToast('اطلاعات با موفقیت در گوگل درایو ذخیره شد');
+        } else if (syncResult.action === 'up_to_date') {
+          showToast('اطلاعات به‌روز است (همگام با گوگل درایو)');
+        } else if (syncResult.action === 'not_signed_in') {
+          showToast('اطلاعات صفحه بازخوانی شد');
+        } else if (syncResult.action === 'error') {
+          showToast('خطا در همگام‌سازی با گوگل درایو');
+        }
+      } else {
+        showToast('اطلاعات صفحه بازخوانی شد');
+      }
+
       setTimeout(() => {
         isRestoringOrClearingRef.current = false;
       }, 400);
@@ -6309,6 +8082,10 @@ function App() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 2800);
   }
+  useEffect(() => {
+    window.showAppToast = showToast;
+    return () => { window.showAppToast = null; };
+  }, []);
   const copyToClipboard = (text, label) => {
     if (!text) return;
     const dummy = document.createElement('textarea');
@@ -7996,22 +9773,71 @@ function App() {
   const loanWizardCards = [{
     id: 'title_contact',
     title: 'عنوان وام و مخاطب',
-    render: () => /*#__PURE__*/<div className="space-y-4">{/*#__PURE__*/<div>{/*#__PURE__*/<label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">عنوان وام</label>}{/*#__PURE__*/<div className="flex gap-2">{/*#__PURE__*/<input type="text" placeholder=":     " value={loanForm.title} onChange={e => {
-            const val = e.target.value;
-            setLoanForm(prev => ({
-              ...prev,
-              title: val
-            }));
-            if (val.trim()) {
-              setValidationErrors(errs => {
-                const {
-                  loan_title,
-                  ...rest
-                } = errs;
-                return rest;
-              });
-            }
-          }} className={`flex-1 min-w-0 bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-xs focus:outline-none transition-all ${validationErrors.loan_title ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'}`} />}{/*#__PURE__*/<button type="button" onClick={() => setShowLoanIconSelector(true)} className="w-[46px] h-[46px] bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all shrink-0">{/*#__PURE__*/<Icon name={loanForm.icon || 'landmark'} className="w-5 h-5" />}</button>}</div>}{validationErrors.loan_title && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.loan_title}</span>}</p>}</div>}{/*#__PURE__*/<ContactSelectorCard contacts={contacts} selectedContactId={loanForm.selectedContactId} onSelect={c => {
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
+    }, "\u0639\u0646\u0648\u0627\u0646 \u0648\u0627\u0645"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex gap-2"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      placeholder: ":     ",
+      value: loanForm.title,
+      onChange: e => {
+        const val = e.target.value;
+        setLoanForm(prev => ({
+          ...prev,
+          title: val
+        }));
+        if (val.trim()) {
+          setValidationErrors(errs => {
+            const {
+              loan_title,
+              ...rest
+            } = errs;
+            return rest;
+          });
+        }
+      },
+      className: `flex-1 min-w-0 bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-xs focus:outline-none transition-all ${validationErrors.loan_title ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'}`
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => setShowLoanIconSelector(true),
+      className: "w-[46px] h-[46px] bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all shrink-0"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: loanForm.icon || 'landmark',
+      className: "w-5 h-5"
+    }))), validationErrors.loan_title && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("p", {
+      className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "alert-circle",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.loan_title))), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(ContactSelectorCard, {
+      contacts: contacts,
+      selectedContactId: loanForm.selectedContactId,
+      onSelect: c => {
         setLoanForm(prev => ({
           ...prev,
           selectedContactId: c.id,
@@ -8024,31 +9850,57 @@ function App() {
           } = errs;
           return rest;
         });
-      }} error={validationErrors.loan_contact} wizardType="loan" wizardMode={wizardMode} />}</div>
+      },
+      error: validationErrors.loan_contact,
+      wizardType: "loan",
+      wizardMode: wizardMode
+    }))
   }, {
     id: 'start_date',
     title: 'زمان دریافت وام',
-    render: () => /*#__PURE__*/<FullJalaliDatePicker day={pickerDay} month={pickerMonth} year={pickerYear} onChange={({
-      day,
-      month,
-      year
-    }) => {
-      setPickerDay(day);
-      setPickerMonth(month);
-      setPickerYear(year);
-      setLoanForm(prev => ({
-        ...prev,
-        startDate: `${year}/${String(jalaliMonths.indexOf(month) + 1).padStart(2, '0')}/${String(day).padStart(2, '0')}`,
-        firstInstallmentYear: year,
-        firstInstallmentMonth: month,
-        firstInstallmentDay: day,
-        dueDayOfMonth: day
-      }));
-    }} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(FullJalaliDatePicker, {
+      day: pickerDay,
+      month: pickerMonth,
+      year: pickerYear,
+      onChange: ({
+        day,
+        month,
+        year
+      }) => {
+        setPickerDay(day);
+        setPickerMonth(month);
+        setPickerYear(year);
+        setLoanForm(prev => ({
+          ...prev,
+          startDate: `${year}/${String(jalaliMonths.indexOf(month) + 1).padStart(2, '0')}/${String(day).padStart(2, '0')}`,
+          firstInstallmentYear: year,
+          firstInstallmentMonth: month,
+          firstInstallmentDay: day,
+          dueDayOfMonth: day
+        }));
+      }
+    })
   }, {
     id: 'principal_amount',
     title: 'مبلغ اصل وام',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">مبلغ اصل وامی که دریافت کرده‌اید (تومان):</label>}{/*#__PURE__*/<input type="text" inputMode="numeric" placeholder=": ,," value={formatWithCommas(loanForm.principalAmount)} onChange={e => {
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u0645\u0628\u0644\u063A \u0627\u0635\u0644 \u0648\u0627\u0645\u06CC \u06A9\u0647 \u062F\u0631\u06CC\u0627\u0641\u062A \u06A9\u0631\u062F\u0647\u200C\u0627\u06CC\u062F (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      inputMode: "numeric",
+      placeholder: ": ,,",
+      value: formatWithCommas(loanForm.principalAmount),
+      onChange: e => {
         const raw = parseRawNumber(e.target.value);
         setLoanForm(prev => ({
           ...prev,
@@ -8063,11 +9915,51 @@ function App() {
             return rest;
           });
         }
-      }} className={`w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.principal_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`} />}{validationErrors.principal_amount && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.principal_amount}</span>}</p>}{loanForm.principalAmount && Number(loanForm.principalAmount) > 0 && /*#__PURE__*/<div className="space-y-1.5 mt-2">{/*#__PURE__*/<div className="text-xs text-indigo-600 font-bold text-left ltr font-mono">{formatAppNumber(loanForm.principalAmount)} تومان</div>}{/*#__PURE__*/<div className="p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40">{numToPersianWords(loanForm.principalAmount)}</div>}</div>}</div>
+      },
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.principal_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+    }), validationErrors.principal_amount && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("p", {
+      className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "alert-circle",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.principal_amount)), loanForm.principalAmount && Number(loanForm.principalAmount) > 0 && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-1.5 mt-2"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs text-indigo-600 font-bold text-left ltr font-mono"
+    }, formatAppNumber(loanForm.principalAmount), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40"
+    }, numToPersianWords(loanForm.principalAmount))))
   }, {
     id: 'total_repayment',
     title: 'مبلغ کل بازپرداخت',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">مجموع کل مبلغ بازپرداخت شامل اصل و کارمزد:</label>}{/*#__PURE__*/<input type="text" inputMode="numeric" placeholder=": ,," value={formatWithCommas(loanForm.totalRepayment)} onChange={e => {
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u0645\u062C\u0645\u0648\u0639 \u06A9\u0644 \u0645\u0628\u0644\u063A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0634\u0627\u0645\u0644 \u0627\u0635\u0644 \u0648 \u06A9\u0627\u0631\u0645\u0632\u062F:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      inputMode: "numeric",
+      placeholder: ": ,,",
+      value: formatWithCommas(loanForm.totalRepayment),
+      onChange: e => {
         const raw = parseRawNumber(e.target.value);
         setLoanForm(prev => ({
           ...prev,
@@ -8082,11 +9974,51 @@ function App() {
             return rest;
           });
         }
-      }} className={`w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.total_repayment ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`} />}{validationErrors.total_repayment && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.total_repayment}</span>}</p>}{loanForm.totalRepayment && Number(loanForm.totalRepayment) > 0 && /*#__PURE__*/<div className="space-y-1.5 mt-2">{/*#__PURE__*/<div className="text-xs text-indigo-600 font-bold text-left ltr font-mono">{formatAppNumber(loanForm.totalRepayment)} تومان</div>}{/*#__PURE__*/<div className="p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40">{numToPersianWords(loanForm.totalRepayment)}</div>}</div>}</div>
+      },
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.total_repayment ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+    }), validationErrors.total_repayment && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("p", {
+      className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "alert-circle",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.total_repayment)), loanForm.totalRepayment && Number(loanForm.totalRepayment) > 0 && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-1.5 mt-2"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs text-indigo-600 font-bold text-left ltr font-mono"
+    }, formatAppNumber(loanForm.totalRepayment), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40"
+    }, numToPersianWords(loanForm.totalRepayment))))
   }, {
     id: 'installment_amount',
     title: 'مبلغ هر قسط',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">مبلغ هر قسط ماهانه (تومان):</label>}{/*#__PURE__*/<input type="text" inputMode="numeric" placeholder=": ,," value={formatWithCommas(loanForm.installmentAmount)} onChange={e => {
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u0645\u0628\u0644\u063A \u0647\u0631 \u0642\u0633\u0637 \u0645\u0627\u0647\u0627\u0646\u0647 (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      inputMode: "numeric",
+      placeholder: ": ,,",
+      value: formatWithCommas(loanForm.installmentAmount),
+      onChange: e => {
         const raw = parseRawNumber(e.target.value);
         setLoanForm(prev => ({
           ...prev,
@@ -8101,53 +10033,180 @@ function App() {
             return rest;
           });
         }
-      }} className={`w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.installment_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`} />}{validationErrors.installment_amount && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.installment_amount}</span>}</p>}{loanForm.installmentAmount && Number(loanForm.installmentAmount) > 0 && /*#__PURE__*/<div className="p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40 mt-1.5">{numToPersianWords(loanForm.installmentAmount)}</div>}{loanForm.installmentAmount && Number(loanForm.installmentAmount) > 0 && (() => {
-        const baseAmount = Number(loanForm.totalRepayment) > 0 ? Number(loanForm.totalRepayment) : Number(loanForm.principalAmount);
-        const instAmt = Number(loanForm.installmentAmount);
-        if (baseAmount > 0 && instAmt > 0) {
-          const defaultNumInst = Math.ceil(baseAmount / instAmt);
-          const hasCustom = loanForm.customInstallmentCount !== undefined && loanForm.customInstallmentCount !== '';
-          const displayVal = hasCustom ? loanForm.customInstallmentCount : String(defaultNumInst);
-          const currentNumInst = hasCustom && !isNaN(Number(loanForm.customInstallmentCount)) && Number(loanForm.customInstallmentCount) > 0 ? Number(loanForm.customInstallmentCount) : defaultNumInst;
-          const totalCalc = currentNumInst * instAmt;
-          const diff = totalCalc - baseAmount;
-          return /*#__PURE__*/<div className="space-y-2 mt-2">{/*#__PURE__*/<div className="p-2.5 bg-indigo-50/70 dark:bg-indigo-950/50 rounded-2xl border border-indigo-200/80 dark:border-indigo-800/50 flex items-center justify-between gap-2">{/*#__PURE__*/<span className="text-xs font-bold text-indigo-900 dark:text-indigo-200 shrink-0">تعداد کل اقساط:</span>}{/*#__PURE__*/<div className="flex items-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<button type="button" onClick={() => {
-                  const cur = Number(displayVal) || defaultNumInst;
-                  const newVal = Math.max(1, cur - 1);
-                  setLoanForm(prev => ({
-                    ...prev,
-                    customInstallmentCount: String(newVal)
-                  }));
-                }} className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-lg flex items-center justify-center shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-800 active:scale-95 transition-all cursor-pointer shrink-0">-</button>}{/*#__PURE__*/<div className="relative w-16 h-9 flex items-center">{/*#__PURE__*/<input type="text" inputMode="numeric" dir="ltr" placeholder="" value={displayVal} onChange={e => {
-                    const raw = parseRawNumber(e.target.value);
-                    setLoanForm(prev => ({
-                      ...prev,
-                      customInstallmentCount: raw
-                    }));
-                  }} onBlur={() => {
-                    if (loanForm.customInstallmentCount === '') {
-                      setLoanForm(prev => ({
-                        ...prev,
-                        customInstallmentCount: undefined
-                      }));
-                    }
-                  }} className="w-full h-full text-center font-mono bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-600 rounded-xl px-1 text-sm font-black text-indigo-700 dark:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-300 dark:placeholder:text-slate-600 placeholder:font-normal" />}</div>}{/*#__PURE__*/<button type="button" onClick={() => {
-                  const cur = Number(displayVal) || defaultNumInst;
-                  const newVal = cur + 1;
-                  setLoanForm(prev => ({
-                    ...prev,
-                    customInstallmentCount: String(newVal)
-                  }));
-                }} className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-lg flex items-center justify-center shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-800 active:scale-95 transition-all cursor-pointer shrink-0">+</button>}{/*#__PURE__*/<button type="button" onClick={() => {
-                  setLoanForm(prev => ({
-                    ...prev,
-                    customInstallmentCount: undefined
-                  }));
-                  showToast('تعداد اقساط مجدداً طبق فرمول محاسبه شد');
-                }} title="     " className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs hover:bg-emerald-100 dark:hover:bg-emerald-900/50 active:scale-95 transition-all cursor-pointer shrink-0">{/*#__PURE__*/<Icon name="rotate-cw" className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}</button>}</div>}</div>}{diff === 0 ? /*#__PURE__*/<div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between shadow-2xs">{/*#__PURE__*/<div className="flex items-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<Icon name="check-circle-2" className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}{/*#__PURE__*/<span>تراز مالی اقساط:</span>}</div>}{/*#__PURE__*/<span className="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">تراز دقیق (بدون باقیمانده)</span>}</div> : diff > 0 ? /*#__PURE__*/<div className="p-2.5 bg-blue-50 dark:bg-blue-950/60 rounded-xl text-xs font-bold text-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800 flex items-center justify-between shadow-2xs">{/*#__PURE__*/<div className="flex items-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<Icon name="info" className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />}{/*#__PURE__*/<span>تراز مالی باقیمانده (اضافه):</span>}</div>}{/*#__PURE__*/<span className="font-mono text-xs dir-ltr font-black text-blue-700 dark:text-blue-300">+{formatAppNumber(diff)} تومان</span>}</div> : /*#__PURE__*/<div className="p-2.5 bg-rose-50 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800 flex items-center justify-between shadow-2xs">{/*#__PURE__*/<div className="flex items-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<Icon name="alert-triangle" className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />}{/*#__PURE__*/<span>تراز مالی باقیمانده (کسری):</span>}</div>}{/*#__PURE__*/<span className="font-mono text-xs dir-ltr font-black text-rose-600 dark:text-rose-400">{formatAppNumber(diff)} تومان</span>}</div>}</div>;
-        }
-        return null;
-      })()}</div>
+      },
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.installment_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+    }), validationErrors.installment_amount && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("p", {
+      className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "alert-circle",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.installment_amount)), loanForm.installmentAmount && Number(loanForm.installmentAmount) > 0 && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40 mt-1.5"
+    }, numToPersianWords(loanForm.installmentAmount)), loanForm.installmentAmount && Number(loanForm.installmentAmount) > 0 && (() => {
+      const baseAmount = Number(loanForm.totalRepayment) > 0 ? Number(loanForm.totalRepayment) : Number(loanForm.principalAmount);
+      const instAmt = Number(loanForm.installmentAmount);
+      if (baseAmount > 0 && instAmt > 0) {
+        const defaultNumInst = Math.ceil(baseAmount / instAmt);
+        const hasCustom = loanForm.customInstallmentCount !== undefined && loanForm.customInstallmentCount !== '';
+        const displayVal = hasCustom ? loanForm.customInstallmentCount : String(defaultNumInst);
+        const currentNumInst = hasCustom && !isNaN(Number(loanForm.customInstallmentCount)) && Number(loanForm.customInstallmentCount) > 0 ? Number(loanForm.customInstallmentCount) : defaultNumInst;
+        const totalCalc = currentNumInst * instAmt;
+        const diff = totalCalc - baseAmount;
+        return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+          className: "space-y-2 mt-2"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "p-2.5 bg-indigo-50/70 dark:bg-indigo-950/50 rounded-2xl border border-indigo-200/80 dark:border-indigo-800/50 flex items-center justify-between gap-2"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold text-indigo-900 dark:text-indigo-200 shrink-0"
+        }, "\u062A\u0639\u062F\u0627\u062F \u06A9\u0644 \u0627\u0642\u0633\u0627\u0637:"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-1.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => {
+            const cur = Number(displayVal) || defaultNumInst;
+            const newVal = Math.max(1, cur - 1);
+            setLoanForm(prev => ({
+              ...prev,
+              customInstallmentCount: String(newVal)
+            }));
+          },
+          className: "w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-lg flex items-center justify-center shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-800 active:scale-95 transition-all cursor-pointer shrink-0"
+        }, "-"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "relative w-16 h-9 flex items-center"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("input", {
+          type: "text",
+          inputMode: "numeric",
+          dir: "ltr",
+          placeholder: "",
+          value: displayVal,
+          onChange: e => {
+            const raw = parseRawNumber(e.target.value);
+            setLoanForm(prev => ({
+              ...prev,
+              customInstallmentCount: raw
+            }));
+          },
+          onBlur: () => {
+            if (loanForm.customInstallmentCount === '') {
+              setLoanForm(prev => ({
+                ...prev,
+                customInstallmentCount: undefined
+              }));
+            }
+          },
+          className: "w-full h-full text-center font-mono bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-600 rounded-xl px-1 text-sm font-black text-indigo-700 dark:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-300 dark:placeholder:text-slate-600 placeholder:font-normal"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => {
+            const cur = Number(displayVal) || defaultNumInst;
+            const newVal = cur + 1;
+            setLoanForm(prev => ({
+              ...prev,
+              customInstallmentCount: String(newVal)
+            }));
+          },
+          className: "w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 font-extrabold text-lg flex items-center justify-center shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-800 active:scale-95 transition-all cursor-pointer shrink-0"
+        }, "+"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => {
+            setLoanForm(prev => ({
+              ...prev,
+              customInstallmentCount: undefined
+            }));
+            showToast('تعداد اقساط مجدداً طبق فرمول محاسبه شد');
+          },
+          title: "     ",
+          className: "w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs hover:bg-emerald-100 dark:hover:bg-emerald-900/50 active:scale-95 transition-all cursor-pointer shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "rotate-cw",
+          className: "w-4 h-4 text-emerald-600 dark:text-emerald-400"
+        })))), diff === 0 ? /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "p-2.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between shadow-2xs"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-1.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "check-circle-2",
+          className: "w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0627\u0642\u0633\u0627\u0637:")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "font-extrabold text-xs text-emerald-600 dark:text-emerald-400"
+        }, "\u062A\u0631\u0627\u0632 \u062F\u0642\u06CC\u0642 (\u0628\u062F\u0648\u0646 \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647)")) : diff > 0 ? /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "p-2.5 bg-blue-50 dark:bg-blue-950/60 rounded-xl text-xs font-bold text-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-800 flex items-center justify-between shadow-2xs"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-1.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "info",
+          className: "w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647 (\u0627\u0636\u0627\u0641\u0647):")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "font-mono text-xs dir-ltr font-black text-blue-700 dark:text-blue-300"
+        }, "+", formatAppNumber(diff), " \u062A\u0648\u0645\u0627\u0646")) : /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "p-2.5 bg-rose-50 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800 flex items-center justify-between shadow-2xs"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-1.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "alert-triangle",
+          className: "w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u062A\u0631\u0627\u0632 \u0645\u0627\u0644\u06CC \u0628\u0627\u0642\u06CC\u0645\u0627\u0646\u062F\u0647 (\u06A9\u0633\u0631\u06CC):")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "font-mono text-xs dir-ltr font-black text-rose-600 dark:text-rose-400"
+        }, formatAppNumber(diff), " \u062A\u0648\u0645\u0627\u0646")));
+      }
+      return null;
+    })())
   }, {
     id: 'due_date',
     title: 'تاریخ اولین قسط وام',
@@ -8190,62 +10249,191 @@ function App() {
           firstInstallmentYear: prevYear
         }));
       };
-      return /*#__PURE__*/<div className="space-y-2">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">تاریخ و ماه اولین قسط وام:</label>}{/*#__PURE__*/<div className="bg-[#F4F7FC] dark:bg-slate-900 rounded-2xl p-2.5 border border-slate-200 dark:border-slate-800 space-y-2">{/*#__PURE__*/<div className="p-2 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between shadow-2xs">{/*#__PURE__*/<button type="button" onClick={handlePrevMonth} title=" " className="p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0">{/*#__PURE__*/<Icon name="chevron-right" className="w-4 h-4" />}</button>}{/*#__PURE__*/<div className="text-center min-w-0 px-2 flex flex-col items-center">{/*#__PURE__*/<div className="text-[9px] text-indigo-700/80 dark:text-indigo-300/80 font-bold">ماه و سال اولین قسط</div>}{/*#__PURE__*/<div className="flex items-center justify-center gap-1.5 mt-0.5">{/*#__PURE__*/<span className="text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100">{curMonthName}</span>}{/*#__PURE__*/<input type="text" inputMode="numeric" pattern="[0-9]*" dir="ltr" value={curYear} onFocus={e => e.target.select()} onClick={e => e.target.select()} onChange={e => {
-                  const raw = toEnglishDigits(e.target.value).replace(/\D/g, '');
-                  const clean = raw.slice(0, 4);
-                  setLoanForm(prev => ({
-                    ...prev,
-                    firstInstallmentYear: clean ? clean.length === 4 ? parseInt(clean, 10) : clean : ''
-                  }));
-                }} onBlur={() => {
-                  const num = parseInt(toEnglishDigits(String(loanForm.firstInstallmentYear)).replace(/\D/g, ''), 10);
-                  if (isNaN(num) || num < 1300 || num > 1500) {
-                    setLoanForm(prev => ({
-                      ...prev,
-                      firstInstallmentYear: activeYear
-                    }));
-                  } else {
-                    setLoanForm(prev => ({
-                      ...prev,
-                      firstInstallmentYear: num
-                    }));
-                  }
-                }} className="w-14 h-6 text-center font-extrabold text-xs text-indigo-900 dark:text-indigo-100 bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded-md shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono transition-all cursor-pointer" title="    " />}</div>}</div>}{/*#__PURE__*/<button type="button" onClick={handleNextMonth} title=" " className="p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0">{/*#__PURE__*/<Icon name="chevron-left" className="w-4 h-4" />}</button>}</div>}{/*#__PURE__*/<div className="p-1.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs flex items-center justify-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<span>سررسید اولین قسط:</span>}{/*#__PURE__*/<span className="font-mono text-xs tracking-wider font-extrabold dir-ltr text-indigo-700 dark:text-indigo-300 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-700 shadow-2xs">{formattedDueDateStr}</span>}</div>}{/*#__PURE__*/<div className="grid grid-cols-7 gap-1 text-center text-xs font-bold pt-0.5">{Array.from({
-              length: 31
-            }, (_, i) => i + 1).map(day => /*#__PURE__*/<button key={day} type="button" onClick={() => setLoanForm(prev => ({
+      return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+        className: "space-y-2"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("label", {
+        className: "block text-xs text-slate-500 font-bold"
+      }, "\u062A\u0627\u0631\u06CC\u062E \u0648 \u0645\u0627\u0647 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637 \u0648\u0627\u0645:"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "bg-[#F4F7FC] dark:bg-slate-900 rounded-2xl p-2.5 border border-slate-200 dark:border-slate-800 space-y-2"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-2 bg-indigo-50/90 dark:bg-indigo-950/70 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between shadow-2xs"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("button", {
+        type: "button",
+        onClick: handlePrevMonth,
+        title: " ",
+        className: "p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(Icon, {
+        name: "chevron-right",
+        className: "w-4 h-4"
+      })), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "text-center min-w-0 px-2 flex flex-col items-center"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "text-[9px] text-indigo-700/80 dark:text-indigo-300/80 font-bold"
+      }, "\u0645\u0627\u0647 \u0648 \u0633\u0627\u0644 \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "flex items-center justify-center gap-1.5 mt-0.5"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", {
+        className: "text-xs sm:text-sm font-extrabold text-indigo-900 dark:text-indigo-100"
+      }, curMonthName), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("input", {
+        type: "text",
+        inputMode: "numeric",
+        pattern: "[0-9]*",
+        dir: "ltr",
+        value: curYear,
+        onFocus: e => e.target.select(),
+        onClick: e => e.target.select(),
+        onChange: e => {
+          const raw = toEnglishDigits(e.target.value).replace(/\D/g, '');
+          const clean = raw.slice(0, 4);
+          setLoanForm(prev => ({
+            ...prev,
+            firstInstallmentYear: clean ? clean.length === 4 ? parseInt(clean, 10) : clean : ''
+          }));
+        },
+        onBlur: () => {
+          const num = parseInt(toEnglishDigits(String(loanForm.firstInstallmentYear)).replace(/\D/g, ''), 10);
+          if (isNaN(num) || num < 1300 || num > 1500) {
+            setLoanForm(prev => ({
               ...prev,
-              dueDayOfMonth: day,
-              firstInstallmentDay: day
-            }))} className={`h-6 sm:h-6.5 rounded-lg flex items-center justify-center transition-all cursor-pointer ${activeDueDay === day ? 'bg-indigo-600 text-white font-black shadow-md scale-105' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}`}>{day}</button>)}</div>}</div>}</div>;
+              firstInstallmentYear: activeYear
+            }));
+          } else {
+            setLoanForm(prev => ({
+              ...prev,
+              firstInstallmentYear: num
+            }));
+          }
+        },
+        className: "w-14 h-6 text-center font-extrabold text-xs text-indigo-900 dark:text-indigo-100 bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-600 rounded-md shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono transition-all cursor-pointer",
+        title: "    "
+      }))), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("button", {
+        type: "button",
+        onClick: handleNextMonth,
+        title: " ",
+        className: "p-1 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 shadow-2xs hover:bg-indigo-100 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center cursor-pointer shrink-0"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(Icon, {
+        name: "chevron-left",
+        className: "w-4 h-4"
+      }))), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-1.5 bg-blue-50/80 dark:bg-indigo-900/40 rounded-xl text-center text-xs font-bold text-blue-800 dark:text-blue-200 border border-blue-200/60 dark:border-indigo-800/40 shadow-2xs flex items-center justify-center space-x-1.5 space-x-reverse"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", null, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0627\u0648\u0644\u06CC\u0646 \u0642\u0633\u0637:"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", {
+        className: "font-mono text-xs tracking-wider font-extrabold dir-ltr text-indigo-700 dark:text-indigo-300 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-700 shadow-2xs"
+      }, formattedDueDateStr)), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "grid grid-cols-7 gap-1 text-center text-xs font-bold pt-0.5"
+      }, Array.from({
+        length: 31
+      }, (_, i) => i + 1).map(day => /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("button", {
+        key: day,
+        type: "button",
+        onClick: () => setLoanForm(prev => ({
+          ...prev,
+          dueDayOfMonth: day,
+          firstInstallmentDay: day
+        })),
+        className: `h-6 sm:h-6.5 rounded-lg flex items-center justify-center transition-all cursor-pointer ${activeDueDay === day ? 'bg-indigo-600 text-white font-black shadow-md scale-105' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'}`
+      }, day)))));
     }
   }, {
     id: 'notes',
     title: 'توضیحات تکمیلی',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500">یادداشت یا توضیحات اضافی برای این پرونده وام:</label>}{/*#__PURE__*/<textarea rows="3" placeholder="      ..." value={loanForm.notes} onChange={e => setLoanForm({
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500"
+    }, "\u06CC\u0627\u062F\u062F\u0627\u0634\u062A \u06CC\u0627 \u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0627\u0636\u0627\u0641\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u067E\u0631\u0648\u0646\u062F\u0647 \u0648\u0627\u0645:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("textarea", {
+      rows: "3",
+      placeholder: "      ...",
+      value: loanForm.notes,
+      onChange: e => setLoanForm({
         ...loanForm,
         notes: e.target.value
-      })} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none" />}</div>
+      }),
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none"
+    }))
   }];
   const demandWizardCards = [{
     id: 'demand_contact',
     title: 'انتخاب مخاطب',
-    render: () => /*#__PURE__*/<ContactSelectorCard contacts={contacts} selectedContactId={demandDebtForm.selectedContactId} onSelect={c => {
-      setDemandDebtForm(prev => ({
-        ...prev,
-        selectedContactId: c.id
-      }));
-      setValidationErrors(errs => {
-        const {
-          demand_contact,
-          ...rest
-        } = errs;
-        return rest;
-      });
-    }} error={validationErrors.demand_contact} wizardType="demand" wizardMode={wizardMode} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(ContactSelectorCard, {
+      contacts: contacts,
+      selectedContactId: demandDebtForm.selectedContactId,
+      onSelect: c => {
+        setDemandDebtForm(prev => ({
+          ...prev,
+          selectedContactId: c.id
+        }));
+        setValidationErrors(errs => {
+          const {
+            demand_contact,
+            ...rest
+          } = errs;
+          return rest;
+        });
+      },
+      error: validationErrors.demand_contact,
+      wizardType: "demand",
+      wizardMode: wizardMode
+    })
   }, {
     id: 'demand_amount',
     title: 'مبلغ طلب',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">مبلغ طلب (تومان):</label>}{/*#__PURE__*/<input type="text" inputMode="numeric" placeholder=": ,," value={formatWithCommas(demandDebtForm.amount)} onChange={e => {
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u0645\u0628\u0644\u063A \u0637\u0644\u0628 (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      inputMode: "numeric",
+      placeholder: ": ,,",
+      value: formatWithCommas(demandDebtForm.amount),
+      onChange: e => {
         const raw = parseRawNumber(e.target.value);
         setDemandDebtForm(prev => ({
           ...prev,
@@ -8260,47 +10448,119 @@ function App() {
             return rest;
           });
         }
-      }} className={`w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.demand_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`} />}{validationErrors.demand_amount && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.demand_amount}</span>}</p>}{demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && /*#__PURE__*/<div className="space-y-1.5 mt-2">{/*#__PURE__*/<div className="text-xs text-emerald-600 font-bold text-left ltr font-numeric">{formatAppNumber(demandDebtForm.amount)} تومان</div>}{/*#__PURE__*/<div className="p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40">{numToPersianWords(demandDebtForm.amount)}</div>}</div>}</div>
+      },
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.demand_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+    }), validationErrors.demand_amount && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("p", {
+      className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "alert-circle",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.demand_amount)), demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-1.5 mt-2"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs text-emerald-600 font-bold text-left ltr font-numeric"
+    }, formatAppNumber(demandDebtForm.amount), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40"
+    }, numToPersianWords(demandDebtForm.amount))))
   }, {
     id: 'demand_date',
     title: 'تاریخ طلب',
-    render: () => /*#__PURE__*/<FullJalaliDatePicker day={pickerDay} month={pickerMonth} year={pickerYear} onChange={({
-      day,
-      month,
-      year
-    }) => {
-      setPickerDay(day);
-      setPickerMonth(month);
-      setPickerYear(year);
-    }} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(FullJalaliDatePicker, {
+      day: pickerDay,
+      month: pickerMonth,
+      year: pickerYear,
+      onChange: ({
+        day,
+        month,
+        year
+      }) => {
+        setPickerDay(day);
+        setPickerMonth(month);
+        setPickerYear(year);
+      }
+    })
   }, {
     id: 'demand_notes',
     title: 'توضیحات تکمیلی',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">توضیحات و بابت طلب:</label>}{/*#__PURE__*/<textarea rows="3" placeholder="   ..." value={demandDebtForm.notes} onChange={e => setDemandDebtForm({
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648 \u0628\u0627\u0628\u062A \u0637\u0644\u0628:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("textarea", {
+      rows: "3",
+      placeholder: "   ...",
+      value: demandDebtForm.notes,
+      onChange: e => setDemandDebtForm({
         ...demandDebtForm,
         notes: e.target.value
-      })} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none" />}</div>
+      }),
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none"
+    }))
   }];
   const debtWizardCards = [{
     id: 'debt_contact',
     title: 'انتخاب مخاطب',
-    render: () => /*#__PURE__*/<ContactSelectorCard contacts={contacts} selectedContactId={demandDebtForm.selectedContactId} onSelect={c => {
-      setDemandDebtForm(prev => ({
-        ...prev,
-        selectedContactId: c.id
-      }));
-      setValidationErrors(errs => {
-        const {
-          debt_contact,
-          ...rest
-        } = errs;
-        return rest;
-      });
-    }} error={validationErrors.debt_contact} wizardType="debt" wizardMode={wizardMode} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(ContactSelectorCard, {
+      contacts: contacts,
+      selectedContactId: demandDebtForm.selectedContactId,
+      onSelect: c => {
+        setDemandDebtForm(prev => ({
+          ...prev,
+          selectedContactId: c.id
+        }));
+        setValidationErrors(errs => {
+          const {
+            debt_contact,
+            ...rest
+          } = errs;
+          return rest;
+        });
+      },
+      error: validationErrors.debt_contact,
+      wizardType: "debt",
+      wizardMode: wizardMode
+    })
   }, {
     id: 'debt_amount',
     title: 'مبلغ بدهی',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">مبلغ بدهی (تومان):</label>}{/*#__PURE__*/<input type="text" inputMode="numeric" placeholder=": ,," value={formatWithCommas(demandDebtForm.amount)} onChange={e => {
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u0645\u0628\u0644\u063A \u0628\u062F\u0647\u06CC (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      inputMode: "numeric",
+      placeholder: ": ,,",
+      value: formatWithCommas(demandDebtForm.amount),
+      onChange: e => {
         const raw = parseRawNumber(e.target.value);
         setDemandDebtForm(prev => ({
           ...prev,
@@ -8315,60 +10575,126 @@ function App() {
             return rest;
           });
         }
-      }} className={`w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.debt_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`} />}{validationErrors.debt_amount && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.debt_amount}</span>}</p>}{demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && /*#__PURE__*/<div className="space-y-1.5 mt-2">{/*#__PURE__*/<div className="text-xs text-rose-500 font-bold text-left ltr">{Number(demandDebtForm.amount).toLocaleString()} تومان</div>}{/*#__PURE__*/<div className="p-2.5 bg-rose-50/80 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40">{numToPersianWords(demandDebtForm.amount)}</div>}</div>}</div>
+      },
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.debt_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+    }), validationErrors.debt_amount && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("p", {
+      className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "alert-circle",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.debt_amount)), demandDebtForm.amount && Number(demandDebtForm.amount) > 0 && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-1.5 mt-2"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-xs text-rose-500 font-bold text-left ltr"
+    }, Number(demandDebtForm.amount).toLocaleString(), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "p-2.5 bg-rose-50/80 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40"
+    }, numToPersianWords(demandDebtForm.amount))))
   }, {
     id: 'debt_date',
     title: 'تاریخ بدهی',
-    render: () => /*#__PURE__*/<FullJalaliDatePicker day={pickerDay} month={pickerMonth} year={pickerYear} onChange={({
-      day,
-      month,
-      year
-    }) => {
-      setPickerDay(day);
-      setPickerMonth(month);
-      setPickerYear(year);
-    }} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(FullJalaliDatePicker, {
+      day: pickerDay,
+      month: pickerMonth,
+      year: pickerYear,
+      onChange: ({
+        day,
+        month,
+        year
+      }) => {
+        setPickerDay(day);
+        setPickerMonth(month);
+        setPickerYear(year);
+      }
+    })
   }, {
     id: 'debt_notes',
     title: 'توضیحات تکمیلی',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">توضیحات تکمیلی:</label>}{/*#__PURE__*/<textarea rows="3" placeholder="  ..." value={demandDebtForm.notes} onChange={e => setDemandDebtForm({
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u062A\u06A9\u0645\u06CC\u0644\u06CC:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("textarea", {
+      rows: "3",
+      placeholder: "  ...",
+      value: demandDebtForm.notes,
+      onChange: e => setDemandDebtForm({
         ...demandDebtForm,
         notes: e.target.value
-      })} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none" />}</div>
+      }),
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none"
+    }))
   }];
   const installmentWizardCards = [{
     id: 'inst_select_loan',
     title: 'انتخاب وام',
-    render: () => /*#__PURE__*/<LoanSelectorCard loans={loans} transactions={transactions} contacts={contacts} selectedLoanId={installmentForm.selectedLoanId} editingTxId={installmentForm.id} onSelectLoan={l => {
-      const nextD = getInstallmentNextDueDate(l, transactions);
-      setPickerDay(nextD.day);
-      setPickerMonth(nextD.month);
-      setPickerYear(nextD.year);
-      setInstallmentForm(prev => ({
-        ...prev,
-        selectedLoanId: l.id,
-        amount: l.installmentAmount
-      }));
-      setValidationErrors(errs => {
-        const {
-          inst_select_loan,
-          ...rest
-        } = errs;
-        return rest;
-      });
-    }} error={validationErrors.inst_select_loan} wizardMode={wizardMode} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(LoanSelectorCard, {
+      loans: loans,
+      transactions: transactions,
+      contacts: contacts,
+      selectedLoanId: installmentForm.selectedLoanId,
+      editingTxId: installmentForm.id,
+      onSelectLoan: l => {
+        const nextD = getInstallmentNextDueDate(l, transactions);
+        setPickerDay(nextD.day);
+        setPickerMonth(nextD.month);
+        setPickerYear(nextD.year);
+        setInstallmentForm(prev => ({
+          ...prev,
+          selectedLoanId: l.id,
+          amount: l.installmentAmount
+        }));
+        setValidationErrors(errs => {
+          const {
+            inst_select_loan,
+            ...rest
+          } = errs;
+          return rest;
+        });
+      },
+      error: validationErrors.inst_select_loan,
+      wizardMode: wizardMode
+    })
   }, {
     id: 'inst_date',
     title: 'تاریخ پرداخت',
-    render: () => /*#__PURE__*/<FullJalaliDatePicker day={pickerDay} month={pickerMonth} year={pickerYear} onChange={({
-      day,
-      month,
-      year
-    }) => {
-      setPickerDay(day);
-      setPickerMonth(month);
-      setPickerYear(year);
-    }} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(FullJalaliDatePicker, {
+      day: pickerDay,
+      month: pickerMonth,
+      year: pickerYear,
+      onChange: ({
+        day,
+        month,
+        year
+      }) => {
+        setPickerDay(day);
+        setPickerMonth(month);
+        setPickerYear(year);
+      }
+    })
   }, {
     id: 'inst_amount',
     title: 'مبلغ پرداخت',
@@ -8382,7 +10708,19 @@ function App() {
       const loanRemaining = Math.max(0, loanTotal - loanPaidExceptCurrent);
       const inputAmt = Number(installmentForm.amount) || 0;
       const isOver = targetLoan && inputAmt > loanRemaining;
-      return /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">مبلغ پرداخت قسط (بارگذاری شده از وام - قابل ویرایش):</label>}{/*#__PURE__*/<input type="text" inputMode="numeric" value={formatWithCommas(installmentForm.amount)} onChange={e => {
+      return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+        className: "space-y-3"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("label", {
+        className: "block text-xs text-slate-500 font-bold"
+      }, "\u0645\u0628\u0644\u063A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637 (\u0628\u0627\u0631\u06AF\u0630\u0627\u0631\u06CC \u0634\u062F\u0647 \u0627\u0632 \u0648\u0627\u0645 - \u0642\u0627\u0628\u0644 \u0648\u06CC\u0631\u0627\u06CC\u0634):"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("input", {
+        type: "text",
+        inputMode: "numeric",
+        value: formatWithCommas(installmentForm.amount),
+        onChange: e => {
           const raw = parseRawNumber(e.target.value);
           setInstallmentForm(prev => ({
             ...prev,
@@ -8397,32 +10735,109 @@ function App() {
               return rest;
             });
           }
-        }} className={`w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.inst_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`} />}{validationErrors.inst_amount && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.inst_amount}</span>}</p>}{inputAmt > 0 && /*#__PURE__*/<div className="space-y-1.5 mt-2">{/*#__PURE__*/<div className="text-xs text-indigo-600 font-bold text-left ltr font-numeric">{formatAppNumber(inputAmt)} تومان</div>}{/*#__PURE__*/<div className="p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40">{numToPersianWords(installmentForm.amount)}</div>}</div>}{targetLoan && /*#__PURE__*/<div className="p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700">{/*#__PURE__*/<div className="flex justify-between items-center text-xs">{/*#__PURE__*/<span className="text-slate-500 dark:text-slate-400 font-medium">کل مانده پرداختی وام:</span>}{/*#__PURE__*/<span className="font-extrabold text-slate-800 dark:text-slate-200 font-mono">{formatAppNumber(loanRemaining)} تومان</span>}</div>}{isOver && /*#__PURE__*/<div className="p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-4 h-4 shrink-0" />}{/*#__PURE__*/<span>مبلغ وارد شده بیشتر از مانده کل وام ({formatAppNumber(loanRemaining)} تومان) است!</span>}</div>}</div>}</div>;
+        },
+        className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.inst_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+      }), validationErrors.inst_amount && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("p", {
+        className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(Icon, {
+        name: "alert-circle",
+        className: "w-3.5 h-3.5 shrink-0"
+      }), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", null, validationErrors.inst_amount)), inputAmt > 0 && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "space-y-1.5 mt-2"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "text-xs text-indigo-600 font-bold text-left ltr font-numeric"
+      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-2.5 bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl text-xs font-bold text-indigo-900 dark:text-indigo-200 border border-indigo-200/60 dark:border-indigo-800/40"
+      }, numToPersianWords(installmentForm.amount))), targetLoan && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "flex justify-between items-center text-xs"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", {
+        className: "text-slate-500 dark:text-slate-400 font-medium"
+      }, "\u06A9\u0644 \u0645\u0627\u0646\u062F\u0647 \u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u0648\u0627\u0645:"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", {
+        className: "font-extrabold text-slate-800 dark:text-slate-200 font-mono"
+      }, formatAppNumber(loanRemaining), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(Icon, {
+        name: "alert-circle",
+        className: "w-4 h-4 shrink-0"
+      }), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u0645\u0627\u0646\u062F\u0647 \u06A9\u0644 \u0648\u0627\u0645 (", formatAppNumber(loanRemaining), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
     }
   }, {
     id: 'inst_notes',
     title: 'توضیحات تکمیلی',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">توضیحات یا شماره پیگیری پرداخت:</label>}{/*#__PURE__*/<textarea rows="3" placeholder="    ..." value={installmentForm.notes} onChange={e => setInstallmentForm({
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u06CC\u0627 \u0634\u0645\u0627\u0631\u0647 \u067E\u06CC\u06AF\u06CC\u0631\u06CC \u067E\u0631\u062F\u0627\u062E\u062A:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("textarea", {
+      rows: "3",
+      placeholder: "    ...",
+      value: installmentForm.notes,
+      onChange: e => setInstallmentForm({
         ...installmentForm,
         notes: e.target.value
-      })} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none" />}</div>
+      }),
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none"
+    }))
   }];
   const debtRepaymentWizardCards = [{
     id: 'debt_repay_contact',
     title: 'انتخاب مخاطب',
-    render: () => /*#__PURE__*/<ContactSelectorCard contacts={contacts} selectedContactId={demandDebtForm.selectedContactId} onSelect={c => {
-      setDemandDebtForm(prev => ({
-        ...prev,
-        selectedContactId: c.id
-      }));
-      setValidationErrors(errs => {
-        const {
-          debt_repay_contact,
-          ...rest
-        } = errs;
-        return rest;
-      });
-    }} error={validationErrors.debt_repay_contact} wizardType="debt_repayment" wizardMode={wizardMode} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(ContactSelectorCard, {
+      contacts: contacts,
+      selectedContactId: demandDebtForm.selectedContactId,
+      onSelect: c => {
+        setDemandDebtForm(prev => ({
+          ...prev,
+          selectedContactId: c.id
+        }));
+        setValidationErrors(errs => {
+          const {
+            debt_repay_contact,
+            ...rest
+          } = errs;
+          return rest;
+        });
+      },
+      error: validationErrors.debt_repay_contact,
+      wizardType: "debt_repayment",
+      wizardMode: wizardMode
+    })
   }, {
     id: 'debt_repay_amount',
     title: 'مبلغ بازپرداخت بدهی',
@@ -8433,7 +10848,20 @@ function App() {
       const totalDebt = (targetContact ? targetContact.totalDebt || 0 : 0) + editingTxAmt;
       const inputAmt = Number(repaymentForm.amount) || 0;
       const isOver = inputAmt > totalDebt;
-      return /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">مبلغ پرداختی جهت کسر از بدهی به {targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب'} (تومان):</label>}{/*#__PURE__*/<input type="text" inputMode="numeric" placeholder=": ," value={formatWithCommas(repaymentForm.amount)} onChange={e => {
+      return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+        className: "space-y-3"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("label", {
+        className: "block text-xs text-slate-500 font-bold"
+      }, "\u0645\u0628\u0644\u063A \u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u062C\u0647\u062A \u06A9\u0633\u0631 \u0627\u0632 \u0628\u062F\u0647\u06CC \u0628\u0647 ", targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب', " (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("input", {
+        type: "text",
+        inputMode: "numeric",
+        placeholder: ": ,",
+        value: formatWithCommas(repaymentForm.amount),
+        onChange: e => {
           const raw = parseRawNumber(e.target.value);
           setRepaymentForm(prev => ({
             ...prev,
@@ -8448,44 +10876,128 @@ function App() {
               return rest;
             });
           }
-        }} className={`w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.debt_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`} />}{validationErrors.debt_repay_amount && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.debt_repay_amount}</span>}</p>}{inputAmt > 0 && /*#__PURE__*/<div className="space-y-1.5 mt-2">{/*#__PURE__*/<div className="text-xs text-rose-500 font-bold text-left ltr font-numeric">{formatAppNumber(inputAmt)} تومان</div>}{/*#__PURE__*/<div className="p-2.5 bg-rose-50/80 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40">{numToPersianWords(repaymentForm.amount)}</div>}</div>}{/*#__PURE__*/<div className="p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700">{/*#__PURE__*/<div className="flex justify-between items-center text-xs">{/*#__PURE__*/<span className="text-slate-500 dark:text-slate-400 font-medium">کل بدهی به این مخاطب:</span>}{/*#__PURE__*/<span className="font-extrabold text-slate-800 dark:text-slate-200 font-mono">{formatAppNumber(totalDebt)} تومان</span>}</div>}{isOver && /*#__PURE__*/<div className="p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-4 h-4 shrink-0" />}{/*#__PURE__*/<span>مبلغ وارد شده بیشتر از کل بدهی ({formatAppNumber(totalDebt)} تومان) است!</span>}</div>}</div>}</div>;
+        },
+        className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.debt_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+      }), validationErrors.debt_repay_amount && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("p", {
+        className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(Icon, {
+        name: "alert-circle",
+        className: "w-3.5 h-3.5 shrink-0"
+      }), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", null, validationErrors.debt_repay_amount)), inputAmt > 0 && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "space-y-1.5 mt-2"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "text-xs text-rose-500 font-bold text-left ltr font-numeric"
+      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-2.5 bg-rose-50/80 dark:bg-rose-950/60 rounded-xl text-xs font-bold text-rose-900 dark:text-rose-200 border border-rose-200/60 dark:border-rose-800/40"
+      }, numToPersianWords(repaymentForm.amount))), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "flex justify-between items-center text-xs"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", {
+        className: "text-slate-500 dark:text-slate-400 font-medium"
+      }, "\u06A9\u0644 \u0628\u062F\u0647\u06CC \u0628\u0647 \u0627\u06CC\u0646 \u0645\u062E\u0627\u0637\u0628:"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", {
+        className: "font-extrabold text-slate-800 dark:text-slate-200 font-mono"
+      }, formatAppNumber(totalDebt), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(Icon, {
+        name: "alert-circle",
+        className: "w-4 h-4 shrink-0"
+      }), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u06A9\u0644 \u0628\u062F\u0647\u06CC (", formatAppNumber(totalDebt), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
     }
   }, {
     id: 'debt_repay_date',
     title: 'تاریخ بازپرداخت',
-    render: () => /*#__PURE__*/<FullJalaliDatePicker day={pickerDay} month={pickerMonth} year={pickerYear} onChange={({
-      day,
-      month,
-      year
-    }) => {
-      setPickerDay(day);
-      setPickerMonth(month);
-      setPickerYear(year);
-    }} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(FullJalaliDatePicker, {
+      day: pickerDay,
+      month: pickerMonth,
+      year: pickerYear,
+      onChange: ({
+        day,
+        month,
+        year
+      }) => {
+        setPickerDay(day);
+        setPickerMonth(month);
+        setPickerYear(year);
+      }
+    })
   }, {
     id: 'debt_repay_notes',
     title: 'توضیحات تکمیلی',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">توضیحات و بابت بازپرداخت:</label>}{/*#__PURE__*/<textarea rows="3" placeholder="    ..." value={repaymentForm.notes} onChange={e => setRepaymentForm({
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648 \u0628\u0627\u0628\u062A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("textarea", {
+      rows: "3",
+      placeholder: "    ...",
+      value: repaymentForm.notes,
+      onChange: e => setRepaymentForm({
         ...repaymentForm,
         notes: e.target.value
-      })} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none" />}</div>
+      }),
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none"
+    }))
   }];
   const demandRepaymentWizardCards = [{
     id: 'demand_repay_contact',
     title: 'انتخاب مخاطب',
-    render: () => /*#__PURE__*/<ContactSelectorCard contacts={contacts} selectedContactId={demandDebtForm.selectedContactId} onSelect={c => {
-      setDemandDebtForm(prev => ({
-        ...prev,
-        selectedContactId: c.id
-      }));
-      setValidationErrors(errs => {
-        const {
-          demand_repay_contact,
-          ...rest
-        } = errs;
-        return rest;
-      });
-    }} error={validationErrors.demand_repay_contact} wizardType="demand_repayment" wizardMode={wizardMode} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(ContactSelectorCard, {
+      contacts: contacts,
+      selectedContactId: demandDebtForm.selectedContactId,
+      onSelect: c => {
+        setDemandDebtForm(prev => ({
+          ...prev,
+          selectedContactId: c.id
+        }));
+        setValidationErrors(errs => {
+          const {
+            demand_repay_contact,
+            ...rest
+          } = errs;
+          return rest;
+        });
+      },
+      error: validationErrors.demand_repay_contact,
+      wizardType: "demand_repayment",
+      wizardMode: wizardMode
+    })
   }, {
     id: 'demand_repay_amount',
     title: 'مبلغ بازپرداخت طلب',
@@ -8496,7 +11008,20 @@ function App() {
       const totalDemand = (targetContact ? targetContact.totalDemand || 0 : 0) + editingTxAmt;
       const inputAmt = Number(repaymentForm.amount) || 0;
       const isOver = inputAmt > totalDemand;
-      return /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">مبلغ دریافتی جهت کسر از طلب از {targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب'} (تومان):</label>}{/*#__PURE__*/<input type="text" inputMode="numeric" placeholder=": ,," value={formatWithCommas(repaymentForm.amount)} onChange={e => {
+      return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+        className: "space-y-3"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("label", {
+        className: "block text-xs text-slate-500 font-bold"
+      }, "\u0645\u0628\u0644\u063A \u062F\u0631\u06CC\u0627\u0641\u062A\u06CC \u062C\u0647\u062A \u06A9\u0633\u0631 \u0627\u0632 \u0637\u0644\u0628 \u0627\u0632 ", targetContact ? `${targetContact.firstName} ${targetContact.lastName}` : 'مخاطب', " (\u062A\u0648\u0645\u0627\u0646):"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("input", {
+        type: "text",
+        inputMode: "numeric",
+        placeholder: ": ,,",
+        value: formatWithCommas(repaymentForm.amount),
+        onChange: e => {
           const raw = parseRawNumber(e.target.value);
           setRepaymentForm(prev => ({
             ...prev,
@@ -8511,97 +11036,338 @@ function App() {
               return rest;
             });
           }
-        }} className={`w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.demand_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`} />}{validationErrors.demand_repay_amount && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.demand_repay_amount}</span>}</p>}{inputAmt > 0 && /*#__PURE__*/<div className="space-y-1.5 mt-2">{/*#__PURE__*/<div className="text-xs text-emerald-600 font-bold text-left ltr font-numeric">{formatAppNumber(inputAmt)} تومان</div>}{/*#__PURE__*/<div className="p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40">{numToPersianWords(repaymentForm.amount)}</div>}</div>}{/*#__PURE__*/<div className="p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700">{/*#__PURE__*/<div className="flex justify-between items-center text-xs">{/*#__PURE__*/<span className="text-slate-500 dark:text-slate-400 font-medium font-sans">کل طلب از این مخاطب:</span>}{/*#__PURE__*/<span className="font-extrabold text-slate-800 dark:text-slate-200 font-mono">{formatAppNumber(totalDemand)} تومان</span>}</div>}{isOver && /*#__PURE__*/<div className="p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-4 h-4 shrink-0" />}{/*#__PURE__*/<span>مبلغ وارد شده بیشتر از کل طلب ({formatAppNumber(totalDemand)} تومان) است!</span>}</div>}</div>}</div>;
+        },
+        className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.demand_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+      }), validationErrors.demand_repay_amount && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("p", {
+        className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(Icon, {
+        name: "alert-circle",
+        className: "w-3.5 h-3.5 shrink-0"
+      }), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", null, validationErrors.demand_repay_amount)), inputAmt > 0 && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "space-y-1.5 mt-2"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "text-xs text-emerald-600 font-bold text-left ltr font-numeric"
+      }, formatAppNumber(inputAmt), " \u062A\u0648\u0645\u0627\u0646"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-2.5 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-xl text-xs font-bold text-emerald-900 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-800/40"
+      }, numToPersianWords(repaymentForm.amount))), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl space-y-1.5 border border-slate-200 dark:border-slate-700"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "flex justify-between items-center text-xs"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", {
+        className: "text-slate-500 dark:text-slate-400 font-medium font-sans"
+      }, "\u06A9\u0644 \u0637\u0644\u0628 \u0627\u0632 \u0627\u06CC\u0646 \u0645\u062E\u0627\u0637\u0628:"), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", {
+        className: "font-extrabold text-slate-800 dark:text-slate-200 font-mono"
+      }, formatAppNumber(totalDemand), " \u062A\u0648\u0645\u0627\u0646")), isOver && /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("div", {
+        className: "p-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center space-x-1.5 space-x-reverse"
+      }, /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(Icon, {
+        name: "alert-circle",
+        className: "w-4 h-4 shrink-0"
+      }), /*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement("span", null, "\u0645\u0628\u0644\u063A \u0648\u0627\u0631\u062F \u0634\u062F\u0647 \u0628\u06CC\u0634\u062A\u0631 \u0627\u0632 \u06A9\u0644 \u0637\u0644\u0628 (", formatAppNumber(totalDemand), " \u062A\u0648\u0645\u0627\u0646) \u0627\u0633\u062A!"))));
     }
   }, {
     id: 'demand_repay_date',
     title: 'تاریخ دریافت',
-    render: () => /*#__PURE__*/<FullJalaliDatePicker day={pickerDay} month={pickerMonth} year={pickerYear} onChange={({
-      day,
-      month,
-      year
-    }) => {
-      setPickerDay(day);
-      setPickerMonth(month);
-      setPickerYear(year);
-    }} />
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(FullJalaliDatePicker, {
+      day: pickerDay,
+      month: pickerMonth,
+      year: pickerYear,
+      onChange: ({
+        day,
+        month,
+        year
+      }) => {
+        setPickerDay(day);
+        setPickerMonth(month);
+        setPickerYear(year);
+      }
+    })
   }, {
     id: 'demand_repay_notes',
     title: 'توضیحات تکمیلی',
-    render: () => /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<label className="block text-xs text-slate-500 font-bold">توضیحات بابت دریافتی:</label>}{/*#__PURE__*/<textarea rows="3" placeholder="    ..." value={repaymentForm.notes} onChange={e => setRepaymentForm({
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs text-slate-500 font-bold"
+    }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0628\u0627\u0628\u062A \u062F\u0631\u06CC\u0627\u0641\u062A\u06CC:"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("textarea", {
+      rows: "3",
+      placeholder: "    ...",
+      value: repaymentForm.notes,
+      onChange: e => setRepaymentForm({
         ...repaymentForm,
         notes: e.target.value
-      })} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none" />}</div>
+      }),
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs focus:outline-none"
+    }))
   }];
   const contactWizardCards = [{
     id: 'contact_names',
     title: wizardMode === 'edit' ? 'ویرایش نام و نام خانوادگی' : 'نام و نام خانوادگی مخاطب',
-    render: () => /*#__PURE__*/<div className="space-y-4">{/*#__PURE__*/<div className="flex flex-col items-center justify-center pt-1 pb-2">{/*#__PURE__*/<div className="relative">{/*#__PURE__*/<div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg ring-4 ring-indigo-500/15 dark:ring-indigo-400/20 cursor-pointer group relative overflow-hidden" onClick={() => {
-            if (contactWizardForm.profileImage) {
-              setContactImageCropperSrc(contactWizardForm.originalImage || contactWizardForm.profileImage);
-              setShowContactImageCropper(true);
-            } else {
-              document.getElementById('contact-image-upload-input').click();
-            }
-          }}>{/*#__PURE__*/<input id="contact-image-upload-input" type="file" accept="image/*" className="hidden" onChange={e => {
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = ev => {
-                  setContactWizardForm(prev => ({
-                    ...prev,
-                    originalImage: ev.target.result
-                  }));
-                  setContactImageCropperSrc(ev.target.result);
-                  setShowContactImageCropper(true);
-                };
-                reader.readAsDataURL(file);
-              }
-              e.target.value = '';
-            }} />}{contactWizardForm.profileImage ? /*#__PURE__*/<div className="w-full h-full rounded-full overflow-hidden">{/*#__PURE__*/<img src={contactWizardForm.profileImage} alt="profile" className="w-full h-full object-cover" />}</div> : contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? /*#__PURE__*/<span className="text-2xl font-black tracking-tight">{(contactWizardForm.firstName.trim()[0] || '') + (contactWizardForm.lastName.trim()[0] || '')}</span> : /*#__PURE__*/<Icon name="user-plus" className="w-9 h-9 opacity-90" />}{/*#__PURE__*/<div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">{/*#__PURE__*/<Icon name={contactWizardForm.profileImage ? "crop" : "camera"} className="w-6 h-6 text-white" />}</div>}</div>}{contactWizardForm.profileImage && /*#__PURE__*/<div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm z-10 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors" onClick={e => {
-            e.stopPropagation();
-            document.getElementById('contact-image-upload-input').click();
-          }} title="  ">{/*#__PURE__*/<Icon name="upload" className="w-3.5 h-3.5" />}</div>}</div>}{/*#__PURE__*/<span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2">{contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? `${contactWizardForm.firstName.trim()} ${contactWizardForm.lastName.trim()}`.trim() : 'اطلاعات مخاطب جدید'}</span>}</div>}{/*#__PURE__*/<div>{/*#__PURE__*/<label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">نام</label>}{/*#__PURE__*/<input type="text" placeholder="    " value={contactWizardForm.firstName} onChange={e => {
-          const val = e.target.value;
-          setContactWizardForm(prev => ({
-            ...prev,
-            firstName: val
-          }));
-          if (val.trim()) {
-            setValidationErrors(errs => {
-              const {
-                contact_firstname,
-                ...rest
-              } = errs;
-              return rest;
-            });
-          }
-        }} className={`w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.contact_firstname ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'}`} />}{validationErrors.contact_firstname && /*#__PURE__*/<p className="text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse">{/*#__PURE__*/<Icon name="alert-circle" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span>{validationErrors.contact_firstname}</span>}</p>}</div>}{/*#__PURE__*/<div>{/*#__PURE__*/<label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">نام خانوادگی</label>}{/*#__PURE__*/<input type="text" placeholder="     " value={contactWizardForm.lastName} onChange={e => {
-          const val = e.target.value;
-          setContactWizardForm(prev => ({
-            ...prev,
-            lastName: val
-          }));
-        }} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all" />}</div>}</div>
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-4"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex flex-col items-center justify-center pt-1 pb-2"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "relative"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 text-white flex items-center justify-center shadow-lg ring-4 ring-indigo-500/15 dark:ring-indigo-400/20 cursor-pointer group relative overflow-hidden",
+      onClick: () => {
+        if (contactWizardForm.profileImage) {
+          setContactImageCropperSrc(contactWizardForm.originalImage || contactWizardForm.profileImage);
+          setShowContactImageCropper(true);
+        } else {
+          document.getElementById('contact-image-upload-input').click();
+        }
+      }
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      id: "contact-image-upload-input",
+      type: "file",
+      accept: "image/*",
+      className: "hidden",
+      onChange: e => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = ev => {
+            setContactWizardForm(prev => ({
+              ...prev,
+              originalImage: ev.target.result
+            }));
+            setContactImageCropperSrc(ev.target.result);
+            setShowContactImageCropper(true);
+          };
+          reader.readAsDataURL(file);
+        }
+        e.target.value = '';
+      }
+    }), contactWizardForm.profileImage ? /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "w-full h-full rounded-full overflow-hidden"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("img", {
+      src: contactWizardForm.profileImage,
+      alt: "profile",
+      className: "w-full h-full object-cover"
+    })) : contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-2xl font-black tracking-tight"
+    }, (contactWizardForm.firstName.trim()[0] || '') + (contactWizardForm.lastName.trim()[0] || '')) : /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "user-plus",
+      className: "w-9 h-9 opacity-90"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: contactWizardForm.profileImage ? "crop" : "camera",
+      className: "w-6 h-6 text-white"
+    }))), contactWizardForm.profileImage && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "absolute -bottom-1 -right-1 w-7 h-7 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm z-10 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors",
+      onClick: e => {
+        e.stopPropagation();
+        document.getElementById('contact-image-upload-input').click();
+      },
+      title: "  "
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "upload",
+      className: "w-3.5 h-3.5"
+    }))), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2"
+    }, contactWizardForm.firstName.trim() || contactWizardForm.lastName.trim() ? `${contactWizardForm.firstName.trim()} ${contactWizardForm.lastName.trim()}`.trim() : 'اطلاعات مخاطب جدید')), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
+    }, "\u0646\u0627\u0645"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      placeholder: "    ",
+      value: contactWizardForm.firstName,
+      onChange: e => {
+        const val = e.target.value;
+        setContactWizardForm(prev => ({
+          ...prev,
+          firstName: val
+        }));
+        if (val.trim()) {
+          setValidationErrors(errs => {
+            const {
+              contact_firstname,
+              ...rest
+            } = errs;
+            return rest;
+          });
+        }
+      },
+      className: `w-full bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.contact_firstname ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500'}`
+    }), validationErrors.contact_firstname && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("p", {
+      className: "text-[11px] font-bold text-rose-500 dark:text-rose-400 mt-1 animate-fade-in flex items-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "alert-circle",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, validationErrors.contact_firstname))), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
+    }, "\u0646\u0627\u0645 \u062E\u0627\u0646\u0648\u0627\u062F\u06AF\u06CC"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      placeholder: "     ",
+      value: contactWizardForm.lastName,
+      onChange: e => {
+        const val = e.target.value;
+        setContactWizardForm(prev => ({
+          ...prev,
+          lastName: val
+        }));
+      },
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+    })))
   }, {
     id: 'contact_info',
     title: wizardMode === 'edit' ? 'ویرایش تماس و حساب بانکی' : 'شماره تماس و اطلاعات حساب بانکی',
-    render: () => /*#__PURE__*/<div className="space-y-3.5">{/*#__PURE__*/<div>{/*#__PURE__*/<label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره تماس</label>}{/*#__PURE__*/<input type="tel" inputMode="tel" dir="ltr" placeholder=": 09121234567" value={contactWizardForm.phone} onChange={e => setContactWizardForm(prev => ({
+    render: () => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "space-y-3.5"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
+    }, "\u0634\u0645\u0627\u0631\u0647 \u062A\u0645\u0627\u0633"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "tel",
+      inputMode: "tel",
+      dir: "ltr",
+      placeholder: ": 09121234567",
+      value: contactWizardForm.phone,
+      onChange: e => setContactWizardForm(prev => ({
+        ...prev,
+        phone: normalizePhoneNumber(e.target.value)
+      })),
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
+    })), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex items-center justify-between mb-1.5"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs font-bold text-slate-700 dark:text-slate-300"
+    }, "\u0634\u0645\u0627\u0631\u0647 \u06A9\u0627\u0631\u062A (\u06F1\u06F6 \u0631\u0642\u0645\u06CC - \u0627\u062E\u062A\u06CC\u0627\u0631\u06CC)"), contactWizardForm.bankName && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800"
+    }, contactWizardForm.bankName)), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      inputMode: "numeric",
+      dir: "ltr",
+      placeholder: ": 6037 9975 4321 4582",
+      value: contactWizardForm.bankCard,
+      onChange: e => {
+        const val = e.target.value;
+        const formatted = formatCardNumber(val);
+        const detectedBank = getBankNameFromCard(val) || contactWizardForm.bankName;
+        setContactWizardForm(prev => ({
           ...prev,
-          phone: normalizePhoneNumber(e.target.value)
-        }))} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono" />}</div>}{/*#__PURE__*/<div>{/*#__PURE__*/<div className="flex items-center justify-between mb-1.5">{/*#__PURE__*/<label className="block text-xs font-bold text-slate-700 dark:text-slate-300">شماره کارت (۱۶ رقمی - اختیاری)</label>}{contactWizardForm.bankName && /*#__PURE__*/<span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800">{contactWizardForm.bankName}</span>}</div>}{/*#__PURE__*/<input type="text" inputMode="numeric" dir="ltr" placeholder=": 6037 9975 4321 4582" value={contactWizardForm.bankCard} onChange={e => {
-          const val = e.target.value;
-          const formatted = formatCardNumber(val);
-          const detectedBank = getBankNameFromCard(val) || contactWizardForm.bankName;
-          setContactWizardForm(prev => ({
-            ...prev,
-            bankCard: formatted,
-            bankName: detectedBank
-          }));
-        }} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono" />}</div>}{/*#__PURE__*/<div>{/*#__PURE__*/<label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">شماره شبا (اختیاری)</label>}{/*#__PURE__*/<input type="text" dir="ltr" placeholder=": IR12 0120 0000 0001 2345 6789 01" value={contactWizardForm.iban} onChange={e => setContactWizardForm(prev => ({
-          ...prev,
-          iban: normalizeIBAN(e.target.value)
-        }))} className="w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono" />}</div>}</div>
+          bankCard: formatted,
+          bankName: detectedBank
+        }));
+      },
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
+    })), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("label", {
+      className: "block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5"
+    }, "\u0634\u0645\u0627\u0631\u0647 \u0634\u0628\u0627 (\u0627\u062E\u062A\u06CC\u0627\u0631\u06CC)"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("input", {
+      type: "text",
+      dir: "ltr",
+      placeholder: ": IR12 0120 0000 0001 2345 6789 01",
+      value: contactWizardForm.iban,
+      onChange: e => setContactWizardForm(prev => ({
+        ...prev,
+        iban: normalizeIBAN(e.target.value)
+      })),
+      className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ltr font-mono"
+    })))
   }];
   const getCurrentWizardCards = () => {
     if (wizardType === 'loan') return loanWizardCards;
@@ -8638,554 +11404,2188 @@ function App() {
   const renderTab = (tabName, onBack) => {
     switch (tabName) {
       case 'dashboard':
-        return /*#__PURE__*/<div className="space-y-3 animate-fade-in">{/*#__PURE__*/<div className="flex justify-between items-center pt-0 pb-0 relative">{/*#__PURE__*/<div className="flex flex-col items-start text-right">{/*#__PURE__*/<p className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight">سلام وقت به خیر 👋</p>}{/*#__PURE__*/<p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right">امروز: {toAppDigits(getDeviceJalaliDate().day)} {getDeviceJalaliDate().month} {toAppDigits(getDeviceJalaliDate().year)}</p>}</div>}{/*#__PURE__*/<AnimatePresence>{backupStatus && backupStatus.unbackedChangesCount > 0 && /*#__PURE__*/<motion.div key="dashboard-backup-status-pill" initial={{
-                opacity: 0,
-                scale: 0.7
-              }} animate={{
-                opacity: 1,
-                scale: 1
-              }} exit={{
-                opacity: 0,
-                scale: 0.7
-              }} transition={{
-                duration: 0.2
-              }} className="absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center">{/*#__PURE__*/<button onClick={() => {
-                  setShowBackupPopover(true);
-                  setBackupError(null);
-                }} className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/50 dark:border-amber-500/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer" title={`${backupStatus.unbackedChangesCount} تغییر جدید بدون پشتیبان`} aria-label=" ">{/*#__PURE__*/<Icon name="bell" className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBellWiggling ? 'animate-bell-wiggle' : ''}`} />}{/*#__PURE__*/<span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold px-1 rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 leading-none font-sans">{toAppDigits(backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount)}</span>}</button>}</motion.div>}</AnimatePresence>}{/*#__PURE__*/<div className="flex items-center gap-2.5" dir="ltr">{/*#__PURE__*/<BrandAvatar className="w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] rounded-2xl object-cover shadow-sm shrink-0" logoUrl="favicon-96x96.png" />}{/*#__PURE__*/<div className="flex flex-col items-start text-left">{/*#__PURE__*/<h1 className="text-[15px] sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight font-sans tracking-wide">Amir Finance</h1>}{/*#__PURE__*/<span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5">نسخه {toAppDigits(versionData.installedVersion || '3.2.0')}</span>}</div>}</div>}</div>}{(() => {
-            const loanReminders = loans.map(loan => {
-              const nextDueInfo = getLoanNextDueInfo(loan, transactions);
-              if (nextDueInfo.isCompleted) return null;
-              let iconName = loan.icon || 'landmark';
-              if (!loan.icon) {
-                const titleLower = (loan.title || '').toLowerCase();
-                if (titleLower.includes('خودرو') || titleLower.includes('ماشین') || titleLower.includes('car')) {
-                  iconName = 'car';
-                } else if (titleLower.includes('مسکن') || titleLower.includes('خانه') || titleLower.includes('ملک') || titleLower.includes('آپارتمان')) {
-                  iconName = 'home';
-                } else if (titleLower.includes('رضایی') || titleLower.includes('شخصی') || titleLower.includes('بازپرداخت') || titleLower.includes('پرداخت')) {
-                  iconName = 'user';
-                } else {
-                  const hash = String(loan.id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                  const icons = ['car', 'user', 'home', 'credit-card'];
-                  iconName = icons[hash % icons.length];
-                }
-              }
-              let iconBgClass = '';
-              const daysLeft = nextDueInfo.daysLeft;
-              if (daysLeft < 0) {
-                iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
-              } else if (daysLeft === 0) {
-                iconBgClass = 'bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-500';
-              } else if (daysLeft < 6) {
-                iconBgClass = 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-500 dark:text-yellow-400';
+        return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+          className: "space-y-3 animate-fade-in"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex justify-between items-center pt-0 pb-0 relative"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex flex-col items-start text-right"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 text-right leading-tight"
+        }, "\u0633\u0644\u0627\u0645 \u0648\u0642\u062A \u0628\u0647 \u062E\u06CC\u0631 \uD83D\uDC4B"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 text-right"
+        }, "\u0627\u0645\u0631\u0648\u0632: ", toAppDigits(getDeviceJalaliDate().day), " ", getDeviceJalaliDate().month, " ", toAppDigits(getDeviceJalaliDate().year))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(AnimatePresence, null, backupStatus && backupStatus.unbackedChangesCount > 0 && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(motion.div, {
+          key: "dashboard-backup-status-pill",
+          initial: {
+            opacity: 0,
+            scale: 0.7
+          },
+          animate: {
+            opacity: 1,
+            scale: 1
+          },
+          exit: {
+            opacity: 0,
+            scale: 0.7
+          },
+          transition: {
+            duration: 0.2
+          },
+          className: "absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => {
+            setShowBackupPopover(true);
+            setBackupError(null);
+          },
+          className: "relative w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/50 dark:border-amber-500/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer",
+          title: `${backupStatus.unbackedChangesCount} تغییر جدید بدون پشتیبان`,
+          "aria-label": " "
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "bell",
+          className: `w-4 h-4 sm:w-4.5 sm:h-4.5 ${isBellWiggling ? 'animate-bell-wiggle' : ''}`
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold px-1 rounded-full min-w-[17px] h-[17px] flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 leading-none font-sans"
+        }, toAppDigits(backupStatus.unbackedChangesCount > 99 ? '+99' : backupStatus.unbackedChangesCount))))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-2.5",
+          dir: "ltr"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(BrandAvatar, {
+          className: "w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] rounded-2xl object-cover shadow-sm shrink-0",
+          logoUrl: "favicon-96x96.png"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex flex-col items-start text-left"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h1", {
+          className: "text-[15px] sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight font-sans tracking-wide"
+        }, "Amir Finance"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
+        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.2.0'))))), (() => {
+          const loanReminders = loans.map(loan => {
+            const nextDueInfo = getLoanNextDueInfo(loan, transactions);
+            if (nextDueInfo.isCompleted) return null;
+            let iconName = loan.icon || 'landmark';
+            if (!loan.icon) {
+              const titleLower = (loan.title || '').toLowerCase();
+              if (titleLower.includes('خودرو') || titleLower.includes('ماشین') || titleLower.includes('car')) {
+                iconName = 'car';
+              } else if (titleLower.includes('مسکن') || titleLower.includes('خانه') || titleLower.includes('ملک') || titleLower.includes('آپارتمان')) {
+                iconName = 'home';
+              } else if (titleLower.includes('رضایی') || titleLower.includes('شخصی') || titleLower.includes('بازپرداخت') || titleLower.includes('پرداخت')) {
+                iconName = 'user';
               } else {
-                iconBgClass = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
+                const hash = String(loan.id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                const icons = ['car', 'user', 'home', 'credit-card'];
+                iconName = icons[hash % icons.length];
               }
-              return {
-                id: `loan-${loan.id}`,
-                loanObj: loan,
-                title: loan.title,
-                dateStr: nextDueInfo.nextDueDateStr,
-                daysLeft: nextDueInfo.daysLeft,
-                icon: iconName,
-                iconColor: iconBgClass
-              };
-            }).filter(Boolean);
-            const activeList = loanReminders.length > 0 ? loanReminders : reminders;
-            const sortedList = [...activeList].sort((a, b) => a.daysLeft - b.daysLeft);
-            const firstThree = sortedList.slice(0, 3);
-            const extraList = sortedList.slice(3);
-            const renderReminderCard = item => {
-              const isOverdue = item.daysLeft < 0;
-              const isToday = item.daysLeft === 0;
-              const isSoon = item.daysLeft > 0 && item.daysLeft < 6;
-              let iconName = item.icon || 'landmark';
-              let iconBgClass = '';
-              let badgeClass = '';
-              if (isOverdue) {
-                iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
-                badgeClass = 'bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/60';
-              } else if (isToday) {
-                iconBgClass = 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400';
-                badgeClass = 'bg-indigo-100/90 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/60';
-              } else if (isSoon) {
-                iconBgClass = 'bg-orange-50 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400';
-                badgeClass = 'bg-orange-100/90 dark:bg-orange-950/80 text-orange-700 dark:text-orange-300 border border-orange-200/80 dark:border-orange-800/60';
-              } else {
-                iconBgClass = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
-                badgeClass = 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-600/50';
-              }
-              const daysBadgeText = isOverdue ? `${toAppDigits(Math.abs(item.daysLeft))} روز تأخیر` : isToday ? 'امروز سررسید' : `${toAppDigits(item.daysLeft)} روز مانده`;
-              return /*#__PURE__*/<div key={item.id} onClick={() => item.loanObj && openLoanDetail(item.loanObj)} className={`bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-3 sm:p-3.5 border border-slate-100/90 dark:border-slate-700/50 flex items-center justify-between gap-3 transition-all hover:bg-slate-100/80 dark:hover:bg-slate-700/70 ${item.loanObj ? 'cursor-pointer active:scale-[0.99]' : ''}`}>{/*#__PURE__*/<div className="flex items-center space-x-3 space-x-reverse min-w-0">{/*#__PURE__*/<div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center shrink-0 ${iconBgClass}`}>{/*#__PURE__*/<Icon name={iconName} className="w-5 h-5 sm:w-5.5 sm:h-5.5" />}</div>}{/*#__PURE__*/<div className="min-w-0">{/*#__PURE__*/<h4 className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white truncate">{item.title}</h4>}{/*#__PURE__*/<p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5 truncate">{item.dateStr}</p>}</div>}</div>}{/*#__PURE__*/<div className="shrink-0">{/*#__PURE__*/<span className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs inline-block ${badgeClass}`}>{daysBadgeText}</span>}</div>}</div>;
+            }
+            let iconBgClass = '';
+            const daysLeft = nextDueInfo.daysLeft;
+            if (daysLeft < 0) {
+              iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+            } else if (daysLeft === 0) {
+              iconBgClass = 'bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-500';
+            } else if (daysLeft < 6) {
+              iconBgClass = 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-500 dark:text-yellow-400';
+            } else {
+              iconBgClass = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
+            }
+            return {
+              id: `loan-${loan.id}`,
+              loanObj: loan,
+              title: loan.title,
+              dateStr: nextDueInfo.nextDueDateStr,
+              daysLeft: nextDueInfo.daysLeft,
+              icon: iconName,
+              iconColor: iconBgClass
             };
-            return /*#__PURE__*/<div className="bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all space-y-3.5">{/*#__PURE__*/<div onClick={() => setExpandedReminders(!expandedReminders)} className="flex justify-between items-center cursor-pointer select-none group px-0.5">{/*#__PURE__*/<div className="flex items-center space-x-3 space-x-reverse">{/*#__PURE__*/<div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0">{/*#__PURE__*/<Icon name="calendar-clock" className="w-5.5 h-5.5" />}</div>}{/*#__PURE__*/<div>{/*#__PURE__*/<h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight">یادآوری‌های مهم</h3>}{/*#__PURE__*/<p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5">نزدیک‌ترین سررسیدها</p>}</div>}</div>}{/*#__PURE__*/<button type="button" onClick={e => {
-                  e.stopPropagation();
-                  setExpandedReminders(!expandedReminders);
-                }} className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer">{/*#__PURE__*/<Icon name="chevron-down" className={`w-5 h-5 transition-transform duration-300 ${expandedReminders ? 'rotate-180' : 'rotate-0'}`} />}</button>}</div>}{/*#__PURE__*/<div className="space-y-2.5">{firstThree.map(item => renderReminderCard(item))}{sortedList.length === 0 && /*#__PURE__*/<div className="text-center py-4 text-xs text-slate-400">سررسیدی نزدیک نیست</div>}{/*#__PURE__*/<div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${expandedReminders && extraList.length > 0 ? 'grid-rows-[1fr] opacity-100 mt-2.5' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'}`}>{/*#__PURE__*/<div className="overflow-hidden space-y-2.5">{extraList.map(item => renderReminderCard(item))}</div>}</div>}</div>}</div>;
-          })()}{/*#__PURE__*/<div className="grid grid-cols-3 gap-2.5">{/*#__PURE__*/<div onClick={() => {
-              setAccountsSubTab('loans');
-              navigateToTab('accounts', 'forward');
-            }} className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group">{/*#__PURE__*/<div className="absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300">{/*#__PURE__*/<Icon name="landmark" className="w-16 h-16 sm:w-18 sm:h-18" />}</div>}{/*#__PURE__*/<div className="flex items-center justify-between w-full relative z-10">{/*#__PURE__*/<span className="text-xs sm:text-[13px] font-bold text-white/95">وام‌ها</span>}</div>}{/*#__PURE__*/<div className="flex flex-col items-start justify-end mt-1.5 relative z-10">{/*#__PURE__*/<div className="text-[15px] sm:text-base font-black tracking-tight leading-none text-white font-mono font-numeric">{toAppDigits(loans.length)}</div>}{/*#__PURE__*/<div className="text-[9px] sm:text-[10px] text-indigo-100 font-medium mt-0.5">وام فعال</div>}</div>}</div>}{/*#__PURE__*/<div onClick={() => {
-              setAccountsSubTab('debts');
-              navigateToTab('accounts', 'forward');
-            }} className="relative bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group">{/*#__PURE__*/<div className="absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300">{/*#__PURE__*/<Icon name="arrow-down-left" className="w-16 h-16 sm:w-18 sm:h-18" />}</div>}{/*#__PURE__*/<div className="flex items-center justify-between w-full relative z-10">{/*#__PURE__*/<span className="text-xs sm:text-[13px] font-bold text-white/95">بدهی</span>}</div>}{/*#__PURE__*/<div className="flex flex-col items-start justify-end mt-1.5 relative z-10">{/*#__PURE__*/<div className="text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full">{formatAppNumber(totalDebt)}</div>}{/*#__PURE__*/<div className="text-[9px] sm:text-[10px] text-rose-100 font-medium mt-0.5">تومان</div>}</div>}</div>}{/*#__PURE__*/<div onClick={() => {
-              setAccountsSubTab('demands');
-              navigateToTab('accounts', 'forward');
-            }} className="relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group">{/*#__PURE__*/<div className="absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300">{/*#__PURE__*/<Icon name="arrow-up-right" className="w-16 h-16 sm:w-18 sm:h-18" />}</div>}{/*#__PURE__*/<div className="flex items-center justify-between w-full relative z-10">{/*#__PURE__*/<span className="text-xs sm:text-[13px] font-bold text-white/95">طلب</span>}</div>}{/*#__PURE__*/<div className="flex flex-col items-start justify-end mt-1.5 relative z-10">{/*#__PURE__*/<div className="text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full">{formatAppNumber(totalDemand)}</div>}{/*#__PURE__*/<div className="text-[9px] sm:text-[10px] text-emerald-100 font-medium mt-0.5">تومان</div>}</div>}</div>}</div>}{/*#__PURE__*/<div ref={recentTxsAccordionRef} className="bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all">{/*#__PURE__*/<div onClick={toggleRecentTxsAccordion} className="flex justify-between items-center cursor-pointer select-none group px-0.5">{/*#__PURE__*/<div className="flex items-center space-x-3 space-x-reverse">{/*#__PURE__*/<div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0">{/*#__PURE__*/<Icon name="history" className="w-5.5 h-5.5" />}</div>}{/*#__PURE__*/<div>{/*#__PURE__*/<h3 className="text-sm sm:text-base font-extrabold text-indigo-600 dark:text-indigo-400 leading-tight">آخرین تراکنش‌ها</h3>}{/*#__PURE__*/<p className="text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5">تراکنش‌های اخیر ثبت‌شده</p>}</div>}</div>}{/*#__PURE__*/<div className="flex items-center space-x-2 space-x-reverse">{/*#__PURE__*/<button onClick={toggleRecentTxsAccordion} className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer">{/*#__PURE__*/<Icon name="chevron-down" className={`w-5 h-5 transition-transform duration-300 ${expandedRecentTxs ? 'rotate-180' : 'rotate-0'}`} />}</button>}</div>}</div>}{/*#__PURE__*/<div className={`grid transition-[grid-template-rows,opacity,margin,padding] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${expandedRecentTxs ? 'grid-rows-[1fr] opacity-100 mt-3.5' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'}`}>{/*#__PURE__*/<div className="overflow-hidden space-y-2.5">{transactions.slice(0, 5).map((tx, idx) => /*#__PURE__*/<SwipeableTxCard key={tx.id || idx} tx={tx} contacts={contacts} loans={loans} transactions={transactions} isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)} onEdit={txItem => handleTransactionClick(txItem)} onDelete={(txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)} />)}{transactions.length === 0 && /*#__PURE__*/<div className="bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100/90 dark:border-slate-700/50">تراکنشی ثبت نشده است</div>}{transactions.length > 0 && /*#__PURE__*/<button onClick={() => {
-                  setAllTxsPage(1);
-                  navigateToTab('all-transactions', 'none');
-                }} className="w-full mt-1.5 py-3 px-4 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100/90 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 border border-indigo-100/80 dark:border-indigo-800/50 text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 space-x-reverse active:scale-[0.98] transition-all cursor-pointer group/viewall">{/*#__PURE__*/<span>مشاهده همه تراکنش‌ها</span>}{/*#__PURE__*/<Icon name="chevron-left" className="w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover/viewall:-translate-x-1 transition-transform" />}</button>}</div>}</div>}</div>}</div>;
+          }).filter(Boolean);
+          const activeList = loanReminders.length > 0 ? loanReminders : reminders;
+          const sortedList = [...activeList].sort((a, b) => a.daysLeft - b.daysLeft);
+          const firstThree = sortedList.slice(0, 3);
+          const extraList = sortedList.slice(3);
+          const renderReminderCard = item => {
+            const isOverdue = item.daysLeft < 0;
+            const isToday = item.daysLeft === 0;
+            const isSoon = item.daysLeft > 0 && item.daysLeft < 6;
+            let iconName = item.icon || 'landmark';
+            let iconBgClass = '';
+            let badgeClass = '';
+            if (isOverdue) {
+              iconBgClass = 'bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400';
+              badgeClass = 'bg-rose-100/90 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/60';
+            } else if (isToday) {
+              iconBgClass = 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400';
+              badgeClass = 'bg-indigo-100/90 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/60';
+            } else if (isSoon) {
+              iconBgClass = 'bg-orange-50 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400';
+              badgeClass = 'bg-orange-100/90 dark:bg-orange-950/80 text-orange-700 dark:text-orange-300 border border-orange-200/80 dark:border-orange-800/60';
+            } else {
+              iconBgClass = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
+              badgeClass = 'bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-600/50';
+            }
+            const daysBadgeText = isOverdue ? `${toAppDigits(Math.abs(item.daysLeft))} روز تأخیر` : isToday ? 'امروز سررسید' : `${toAppDigits(item.daysLeft)} روز مانده`;
+            return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+              key: item.id,
+              onClick: () => item.loanObj && openLoanDetail(item.loanObj),
+              className: `bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-3 sm:p-3.5 border border-slate-100/90 dark:border-slate-700/50 flex items-center justify-between gap-3 transition-all hover:bg-slate-100/80 dark:hover:bg-slate-700/70 ${item.loanObj ? 'cursor-pointer active:scale-[0.99]' : ''}`
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "flex items-center space-x-3 space-x-reverse min-w-0"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: `w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center shrink-0 ${iconBgClass}`
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement(Icon, {
+              name: iconName,
+              className: "w-5 h-5 sm:w-5.5 sm:h-5.5"
+            })), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "min-w-0"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("h4", {
+              className: "text-xs sm:text-sm font-extrabold text-slate-800 dark:text-white truncate"
+            }, item.title), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("p", {
+              className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5 truncate"
+            }, item.dateStr))), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "shrink-0"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("span", {
+              className: `px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs inline-block ${badgeClass}`
+            }, daysBadgeText)));
+          };
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all space-y-3.5"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            onClick: () => setExpandedReminders(!expandedReminders),
+            className: "flex justify-between items-center cursor-pointer select-none group px-0.5"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center space-x-3 space-x-reverse"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "calendar-clock",
+            className: "w-5.5 h-5.5"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", null, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight"
+          }, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC\u200C\u0647\u0627\u06CC \u0645\u0647\u0645"), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5"
+          }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627"))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            type: "button",
+            onClick: e => {
+              e.stopPropagation();
+              setExpandedReminders(!expandedReminders);
+            },
+            className: "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "chevron-down",
+            className: `w-5 h-5 transition-transform duration-300 ${expandedReminders ? 'rotate-180' : 'rotate-0'}`
+          }))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "space-y-2.5"
+          }, firstThree.map(item => renderReminderCard(item)), sortedList.length === 0 && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-center py-4 text-xs text-slate-400"
+          }, "\u0633\u0631\u0631\u0633\u06CC\u062F\u06CC \u0646\u0632\u062F\u06CC\u06A9 \u0646\u06CC\u0633\u062A"), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${expandedReminders && extraList.length > 0 ? 'grid-rows-[1fr] opacity-100 mt-2.5' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "overflow-hidden space-y-2.5"
+          }, extraList.map(item => renderReminderCard(item))))));
+        })(), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "grid grid-cols-3 gap-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: () => {
+            setAccountsSubTab('loans');
+            navigateToTab('accounts', 'forward');
+          },
+          className: "relative bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "landmark",
+          className: "w-16 h-16 sm:w-18 sm:h-18"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between w-full relative z-10"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs sm:text-[13px] font-bold text-white/95"
+        }, "\u0648\u0627\u0645\u200C\u0647\u0627")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex flex-col items-start justify-end mt-1.5 relative z-10"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[15px] sm:text-base font-black tracking-tight leading-none text-white font-mono font-numeric"
+        }, toAppDigits(loans.length)), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[9px] sm:text-[10px] text-indigo-100 font-medium mt-0.5"
+        }, "\u0648\u0627\u0645 \u0641\u0639\u0627\u0644"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: () => {
+            setAccountsSubTab('debts');
+            navigateToTab('accounts', 'forward');
+          },
+          className: "relative bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "arrow-down-left",
+          className: "w-16 h-16 sm:w-18 sm:h-18"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between w-full relative z-10"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs sm:text-[13px] font-bold text-white/95"
+        }, "\u0628\u062F\u0647\u06CC")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex flex-col items-start justify-end mt-1.5 relative z-10"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
+        }, formatAppNumber(totalDebt)), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[9px] sm:text-[10px] text-rose-100 font-medium mt-0.5"
+        }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: () => {
+            setAccountsSubTab('demands');
+            navigateToTab('accounts', 'forward');
+          },
+          className: "relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "arrow-up-right",
+          className: "w-16 h-16 sm:w-18 sm:h-18"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between w-full relative z-10"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs sm:text-[13px] font-bold text-white/95"
+        }, "\u0637\u0644\u0628")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex flex-col items-start justify-end mt-1.5 relative z-10"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
+        }, formatAppNumber(totalDemand)), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[9px] sm:text-[10px] text-emerald-100 font-medium mt-0.5"
+        }, "\u062A\u0648\u0645\u0627\u0646")))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          ref: recentTxsAccordionRef,
+          className: "bg-white dark:bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-[0_4px_25px_rgba(0,0,0,0.04)] dark:shadow-sm border border-slate-100 dark:border-slate-700/60 transition-all"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: toggleRecentTxsAccordion,
+          className: "flex justify-between items-center cursor-pointer select-none group px-0.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-3 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "history",
+          className: "w-5.5 h-5.5"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "text-sm sm:text-base font-extrabold text-indigo-600 dark:text-indigo-400 leading-tight"
+        }, "\u0622\u062E\u0631\u06CC\u0646 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-[11px] sm:text-xs text-slate-400 dark:text-slate-400 font-medium mt-0.5"
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0627\u062E\u06CC\u0631 \u062B\u0628\u062A\u200C\u0634\u062F\u0647"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-2 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: toggleRecentTxsAccordion,
+          className: "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors p-1 cursor-pointer"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 transition-transform duration-300 ${expandedRecentTxs ? 'rotate-180' : 'rotate-0'}`
+        })))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `grid transition-[grid-template-rows,opacity,margin,padding] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${expandedRecentTxs ? 'grid-rows-[1fr] opacity-100 mt-3.5' : 'grid-rows-[0fr] opacity-0 mt-0 pointer-events-none'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "overflow-hidden space-y-2.5"
+        }, transactions.slice(0, 5).map((tx, idx) => /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(SwipeableTxCard, {
+          key: tx.id || idx,
+          tx: tx,
+          contacts: contacts,
+          loans: loans,
+          transactions: transactions,
+          isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
+          onEdit: txItem => handleTransactionClick(txItem),
+          onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
+        })), transactions.length === 0 && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-[#F8FAFC] dark:bg-slate-700/40 rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100/90 dark:border-slate-700/50"
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A"), transactions.length > 0 && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => {
+            setAllTxsPage(1);
+            navigateToTab('all-transactions', 'none');
+          },
+          className: "w-full mt-1.5 py-3 px-4 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100/90 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 border border-indigo-100/80 dark:border-indigo-800/50 text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 space-x-reverse active:scale-[0.98] transition-all cursor-pointer group/viewall"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u0645\u0634\u0627\u0647\u062F\u0647 \u0647\u0645\u0647 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-left",
+          className: "w-4 h-4 text-indigo-500 dark:text-indigo-400 group-hover/viewall:-translate-x-1 transition-transform"
+        }))))));
       case 'accounts':
-        return /*#__PURE__*/<div className="space-y-4 animate-fade-in">{/*#__PURE__*/<div className="flex items-center justify-between py-1.5 mb-3">{/*#__PURE__*/<div className="flex items-center gap-2">{/*#__PURE__*/<Icon name="wallet" className="w-7 h-7 text-slate-800 dark:text-slate-100" />}{/*#__PURE__*/<h1 className="text-xl font-bold text-slate-900 dark:text-white">مدیریت حساب‌ها</h1>}</div>}</div>}{/*#__PURE__*/<div className="flex items-center gap-3 mb-3">{/*#__PURE__*/<div className="flex-1 relative">{/*#__PURE__*/<input type="text" value={accountsSearchQuery} onChange={e => setAccountsSearchQuery(e.target.value)} placeholder="..." className="w-full h-12 pr-10 pl-4 bg-slate-100/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-inner" />}{/*#__PURE__*/<Icon name="search" className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />}</div>}{/*#__PURE__*/<button onClick={() => setAccountsSearchQuery('')} className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform" title=" ">{/*#__PURE__*/<Icon name="x" className="w-6 h-6" />}</button>}</div>}{/*#__PURE__*/<div className="bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs">{[{
-              id: 'all',
-              label: 'همه',
-              activeClass: 'bg-indigo-600 text-white shadow-sm font-bold'
-            }, {
-              id: 'loans',
-              label: 'وام',
-              activeClass: 'bg-blue-600 text-white shadow-sm font-bold'
-            }, {
-              id: 'debts',
-              label: 'بدهی',
-              activeClass: 'bg-rose-600 text-white shadow-sm font-bold'
-            }, {
-              id: 'demands',
-              label: 'طلب',
-              activeClass: 'bg-emerald-600 text-white shadow-sm font-bold'
-            }, {
-              id: 'archived',
-              label: 'بایگانی',
-              activeClass: 'bg-purple-600 text-white shadow-sm font-bold'
-            }].map(tab => /*#__PURE__*/<button key={tab.id} onClick={() => setAccountsSubTab(tab.id)} className={`py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${accountsSubTab === tab.id ? tab.activeClass : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>{tab.label}</button>)}</div>}{/*#__PURE__*/<div className="space-y-6">{(accountsSubTab === 'all' || accountsSubTab === 'loans' || accountsSubTab === 'archived') && (() => {
-              const loansToDisplay = filteredAccountsLoans;
-              if (loansToDisplay.length === 0) return null;
-              return /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<div className="w-full flex items-center justify-center mb-3">{/*#__PURE__*/<div className="w-full text-center bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-500/80 dark:border-indigo-400/60 text-indigo-700 dark:text-indigo-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs">وام‌ها</div>}</div>}{/*#__PURE__*/<div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">{loansToDisplay.map(loan => {
-                    const nextDueInfo = getLoanNextDueInfo(loan, transactions);
-                    const isCompleted = nextDueInfo.isCompleted || loan.remainingAmount !== undefined && loan.remainingAmount <= 0;
-                    return /*#__PURE__*/<SwipeToDeleteItem key={loan.id} onDelete={confirmCb => handleDeleteLoanClick(loan, confirmCb)} onCardClick={() => openLoanDetail(loan)}>{isCompleted ? /*#__PURE__*/<div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm p-4 sm:p-5 overflow-hidden relative transition-all cursor-pointer hover:border-emerald-300">{/*#__PURE__*/<div className="w-full flex flex-col opacity-75 gap-2">{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<div className="w-14 h-14 bg-indigo-50/50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-blue-500 dark:text-blue-400 shrink-0">{/*#__PURE__*/<Icon name={loan.icon || 'landmark'} className="w-8 h-8 text-blue-500 dark:text-blue-400" />}</div>}{/*#__PURE__*/<div className="flex-1 text-right flex flex-col gap-1 pl-4 pr-2">{/*#__PURE__*/<h3 className="font-bold text-slate-700 dark:text-slate-200 text-sm">{loan.title}</h3>}{/*#__PURE__*/<p className="text-slate-400 text-xs whitespace-normal">{loan.contactName || "بانک"}</p>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="font-bold text-base leading-none line-through text-slate-400 font-mono font-numeric">{formatAppNumber(loan.principalAmount)}</div>}{/*#__PURE__*/<div className="text-slate-400 text-xs">تومان</div>}</div>}</div>}{/*#__PURE__*/<div className="flex justify-center">{/*#__PURE__*/<span className="text-slate-500 dark:text-slate-400 font-bold text-xs">آخرین قسط پرداخت شده : {nextDueInfo.lastPaidDateStr || "تمامی اقساط پرداخت شده"}</span>}</div>}{/*#__PURE__*/<div className="bg-indigo-50/30 dark:bg-indigo-950/30 rounded-lg py-2 px-4 text-center">{/*#__PURE__*/<span className="text-blue-500 dark:text-blue-400 font-bold text-sm">تمامی اقساط پرداخت شده است</span>}</div>}</div>}{/*#__PURE__*/<div className="absolute bottom-4 left-4 w-12 h-12 bg-emerald-50 dark:bg-emerald-950 border-2 border-emerald-500 rounded-full flex items-center justify-center text-emerald-500 z-10">{/*#__PURE__*/<Icon name="check" className="w-6 h-6 stroke-[3]" />}</div>}</div> : /*#__PURE__*/<div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  p-3 sm:p-4 transition-all cursor-pointer hover:border-indigo-400">{/*#__PURE__*/<div className="w-full flex flex-col gap-3">{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 shadow-inner">{/*#__PURE__*/<Icon name={loan.icon || 'landmark'} className="w-6 h-6" />}</div>}{/*#__PURE__*/<div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">{/*#__PURE__*/<h3 className="font-bold text-slate-800 dark:text-white text-sm leading-tight">{loan.title}</h3>}{/*#__PURE__*/<p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal line-clamp-1">{loan.contactName || "بانک"}</p>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="text-indigo-600 dark:text-indigo-400 font-bold text-base leading-none font-mono font-numeric">{formatAppNumber(loan.principalAmount)}</div>}{/*#__PURE__*/<div className="text-indigo-600 dark:text-indigo-400 text-[10px] mt-1 font-medium">تومان</div>}</div>}</div>}{/*#__PURE__*/<div className="flex flex-col gap-2">{/*#__PURE__*/<div className="flex items-center justify-between w-full bg-[#F4F7FC] dark:bg-slate-900/50 rounded-xl px-3 py-1.5 border border-slate-200/50 dark:border-slate-700/50">{/*#__PURE__*/<span className="text-slate-500 dark:text-slate-400 font-medium text-xs">سررسید قسط {toAppDigits(nextDueInfo.paidInst + 1)}</span>}{/*#__PURE__*/<span className="text-indigo-600 dark:text-indigo-400 font-bold text-xs font-mono">{formatDateToNumericJalali(nextDueInfo.nextDueDateStr) || toAppDigits(nextDueInfo.nextDueDateStr)}</span>}</div>}{/*#__PURE__*/<div className="w-full flex flex-col gap-1.5 px-1 mt-1">{/*#__PURE__*/<div className="flex justify-between items-center text-[10px] font-bold">{/*#__PURE__*/<span className="text-emerald-600 dark:text-emerald-400">{toAppDigits(nextDueInfo.paidInst)} پرداخت شده</span>}{/*#__PURE__*/<span className="text-slate-400 dark:text-slate-500">مانده {toAppDigits(nextDueInfo.remainingInst)}</span>}</div>}{/*#__PURE__*/<div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800/80 rounded-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-700/80 flex">{/*#__PURE__*/<div className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 rounded-full transition-all duration-500" style={{
-                                  width: `${Math.min(100, nextDueInfo.totalInst > 0 ? nextDueInfo.paidInst / nextDueInfo.totalInst * 100 : 0)}%`
-                                }} />}</div>}</div>}</div>}</div>}</div>}</SwipeToDeleteItem>;
-                  })}</div>}</div>;
-            })()}{(accountsSubTab === 'all' || accountsSubTab === 'demands' || accountsSubTab === 'archived') && filteredAccountsDemands.length > 0 && /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<div className="w-full flex items-center justify-center mb-3">{/*#__PURE__*/<div className="w-full text-center bg-emerald-50/90 dark:bg-emerald-950/70 border-2 border-emerald-500/80 dark:border-emerald-400/60 text-emerald-700 dark:text-emerald-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs">طلب‌ها</div>}</div>}{/*#__PURE__*/<div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">{filteredAccountsDemands.map(contact => {
-                  const settledCount = getSettledPeriodCount(contact.id, 'demand');
-                  const isArchived = settledCount > 0 || accountsSubTab === 'archived' || contact.totalDemand === 0;
-                  return /*#__PURE__*/<SwipeToDeleteItem key={contact.id} onDelete={confirmCb => handleDeleteContact(contact, confirmCb)} onCardClick={() => openContactDetail(contact, 'demands', 'accounts')}>{/*#__PURE__*/<div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between">{/*#__PURE__*/<div className="w-full flex flex-col gap-1">{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<div className="flex flex-col items-center gap-1 shrink-0">{/*#__PURE__*/<div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400">{/*#__PURE__*/<Icon name="arrow-up-right" className="w-6 h-6" />}</div>}{isArchived ? /*#__PURE__*/<span className="bg-emerald-500 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md">بایگانی</span> : /*#__PURE__*/<span className="bg-slate-400 dark:bg-slate-600 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md opacity-50">بایگانی</span>}</div>}{/*#__PURE__*/<div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">{/*#__PURE__*/<h3 className="font-bold text-slate-800 dark:text-white text-sm">{contact.firstName} {contact.lastName}</h3>}{/*#__PURE__*/<p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{contact.note || "طلب شخصی"}</p>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric">{formatAppNumber(contact.totalDemand)}</div>}{/*#__PURE__*/<div className="text-emerald-600 dark:text-emerald-400 text-xs">تومان</div>}</div>}</div>}</div>}</div>}</SwipeToDeleteItem>;
-                })}</div>}</div>}{(accountsSubTab === 'all' || accountsSubTab === 'debts' || accountsSubTab === 'archived') && filteredAccountsDebts.length > 0 && /*#__PURE__*/<div className="space-y-3">{/*#__PURE__*/<div className="w-full flex items-center justify-center mb-3">{/*#__PURE__*/<div className="w-full text-center bg-rose-50/90 dark:bg-rose-950/70 border-2 border-rose-500/80 dark:border-rose-400/60 text-rose-700 dark:text-rose-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs">بدهی‌ها</div>}</div>}{/*#__PURE__*/<div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3">{filteredAccountsDebts.map(contact => {
-                  const settledCount = getSettledPeriodCount(contact.id, 'debt');
-                  const isArchived = settledCount > 0 || accountsSubTab === 'archived' || contact.totalDebt === 0;
-                  return /*#__PURE__*/<SwipeToDeleteItem key={contact.id} onDelete={confirmCb => handleDeleteContact(contact, confirmCb)} onCardClick={() => openContactDetail(contact, 'debts', 'accounts')}>{/*#__PURE__*/<div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between">{/*#__PURE__*/<div className="w-full flex flex-col gap-1">{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<div className="flex flex-col items-center gap-1 shrink-0">{/*#__PURE__*/<div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400">{/*#__PURE__*/<Icon name="arrow-down-left" className="w-6 h-6" />}</div>}{isArchived ? /*#__PURE__*/<span className="bg-rose-500 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md">بایگانی</span> : /*#__PURE__*/<span className="bg-slate-400 dark:bg-slate-600 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md opacity-50">بایگانی</span>}</div>}{/*#__PURE__*/<div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">{/*#__PURE__*/<h3 className="font-bold text-slate-800 dark:text-white text-sm">{contact.firstName} {contact.lastName}</h3>}{/*#__PURE__*/<p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{contact.note || "بدهی شخصی"}</p>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric">{formatAppNumber(contact.totalDebt)}</div>}{/*#__PURE__*/<div className="text-rose-600 dark:text-rose-400 text-xs">تومان</div>}</div>}</div>}</div>}</div>}</SwipeToDeleteItem>;
-                })}</div>}</div>}{filteredAccountsLoans.length === 0 && filteredAccountsDemands.length === 0 && filteredAccountsDebts.length === 0 && /*#__PURE__*/<div className="bg-white dark:bg-slate-800 p-8 rounded-2xl text-center border border-slate-100 dark:border-slate-700/60 my-4">{/*#__PURE__*/<Icon name="search-x" className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />}{/*#__PURE__*/<div className="text-xs font-bold text-slate-600 dark:text-slate-300">{accountsSearchQuery ? `هیچ موردی با عبارت "${accountsSearchQuery}" یافت نشد.` : 'هیچ حساب یا پرونده‌ای برای نمایش وجود ندارد.'}</div>}{accountsSearchQuery && /*#__PURE__*/<button onClick={() => setAccountsSearchQuery('')} className="mt-3 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-xs font-bold text-indigo-600 dark:text-indigo-400 rounded-xl transition-all">پاک‌سازی جستجو</button>}</div>}</div>}</div>;
+        return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+          className: "space-y-4 animate-fade-in"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between py-1.5 mb-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-2"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "wallet",
+          className: "w-7 h-7 text-slate-800 dark:text-slate-100"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h1", {
+          className: "text-xl font-bold text-slate-900 dark:text-white"
+        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u062D\u0633\u0627\u0628\u200C\u0647\u0627"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-3 mb-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 relative"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("input", {
+          type: "text",
+          value: accountsSearchQuery,
+          onChange: e => setAccountsSearchQuery(e.target.value),
+          placeholder: "...",
+          className: "w-full h-12 pr-10 pl-4 bg-slate-100/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-inner"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "search",
+          className: "w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => setAccountsSearchQuery(''),
+          className: "w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform",
+          title: " "
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "x",
+          className: "w-6 h-6"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs"
+        }, [{
+          id: 'all',
+          label: 'همه',
+          activeClass: 'bg-indigo-600 text-white shadow-sm font-bold'
+        }, {
+          id: 'loans',
+          label: 'وام',
+          activeClass: 'bg-blue-600 text-white shadow-sm font-bold'
+        }, {
+          id: 'debts',
+          label: 'بدهی',
+          activeClass: 'bg-rose-600 text-white shadow-sm font-bold'
+        }, {
+          id: 'demands',
+          label: 'طلب',
+          activeClass: 'bg-emerald-600 text-white shadow-sm font-bold'
+        }, {
+          id: 'archived',
+          label: 'بایگانی',
+          activeClass: 'bg-purple-600 text-white shadow-sm font-bold'
+        }].map(tab => /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          key: tab.id,
+          onClick: () => setAccountsSubTab(tab.id),
+          className: `py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${accountsSubTab === tab.id ? tab.activeClass : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`
+        }, tab.label))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-6"
+        }, (accountsSubTab === 'all' || accountsSubTab === 'loans' || accountsSubTab === 'archived') && (() => {
+          const loansToDisplay = filteredAccountsLoans;
+          if (loansToDisplay.length === 0) return null;
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            className: "space-y-3"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-full flex items-center justify-center mb-3"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-full text-center bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-500/80 dark:border-indigo-400/60 text-indigo-700 dark:text-indigo-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs"
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3"
+          }, loansToDisplay.map(loan => {
+            const nextDueInfo = getLoanNextDueInfo(loan, transactions);
+            const isCompleted = nextDueInfo.isCompleted || loan.remainingAmount !== undefined && loan.remainingAmount <= 0;
+            return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
+              key: loan.id,
+              onDelete: confirmCb => handleDeleteLoanClick(loan, confirmCb),
+              onCardClick: () => openLoanDetail(loan)
+            }, isCompleted ? /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm p-4 sm:p-5 overflow-hidden relative transition-all cursor-pointer hover:border-emerald-300"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "w-full flex flex-col opacity-75 gap-2"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "flex items-center justify-between w-full"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "w-14 h-14 bg-indigo-50/50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-blue-500 dark:text-blue-400 shrink-0"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement(Icon, {
+              name: loan.icon || 'landmark',
+              className: "w-8 h-8 text-blue-500 dark:text-blue-400"
+            })), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "flex-1 text-right flex flex-col gap-1 pl-4 pr-2"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("h3", {
+              className: "font-bold text-slate-700 dark:text-slate-200 text-sm"
+            }, loan.title), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("p", {
+              className: "text-slate-400 text-xs whitespace-normal"
+            }, loan.contactName || "بانک")), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "text-left shrink-0 flex flex-col items-center"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "font-bold text-base leading-none line-through text-slate-400 font-mono font-numeric"
+            }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "text-slate-400 text-xs"
+            }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "flex justify-center"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("span", {
+              className: "text-slate-500 dark:text-slate-400 font-bold text-xs"
+            }, "\u0622\u062E\u0631\u06CC\u0646 \u0642\u0633\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647 : ", nextDueInfo.lastPaidDateStr || "تمامی اقساط پرداخت شده")), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "bg-indigo-50/30 dark:bg-indigo-950/30 rounded-lg py-2 px-4 text-center"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("span", {
+              className: "text-blue-500 dark:text-blue-400 font-bold text-sm"
+            }, "\u062A\u0645\u0627\u0645\u06CC \u0627\u0642\u0633\u0627\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647 \u0627\u0633\u062A"))), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "absolute bottom-4 left-4 w-12 h-12 bg-emerald-50 dark:bg-emerald-950 border-2 border-emerald-500 rounded-full flex items-center justify-center text-emerald-500 z-10"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement(Icon, {
+              name: "check",
+              className: "w-6 h-6 stroke-[3]"
+            }))) : /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  p-3 sm:p-4 transition-all cursor-pointer hover:border-indigo-400"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "w-full flex flex-col gap-3"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "flex items-center justify-between w-full"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 shadow-inner"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement(Icon, {
+              name: loan.icon || 'landmark',
+              className: "w-6 h-6"
+            })), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("h3", {
+              className: "font-bold text-slate-800 dark:text-white text-sm leading-tight"
+            }, loan.title), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("p", {
+              className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal line-clamp-1"
+            }, loan.contactName || "بانک")), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "text-left shrink-0 flex flex-col items-center"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "text-indigo-600 dark:text-indigo-400 font-bold text-base leading-none font-mono font-numeric"
+            }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "text-indigo-600 dark:text-indigo-400 text-[10px] mt-1 font-medium"
+            }, "\u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "flex flex-col gap-2"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "flex items-center justify-between w-full bg-[#F4F7FC] dark:bg-slate-900/50 rounded-xl px-3 py-1.5 border border-slate-200/50 dark:border-slate-700/50"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("span", {
+              className: "text-slate-500 dark:text-slate-400 font-medium text-xs"
+            }, "\u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 ", toAppDigits(nextDueInfo.paidInst + 1)), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("span", {
+              className: "text-indigo-600 dark:text-indigo-400 font-bold text-xs font-mono"
+            }, formatDateToNumericJalali(nextDueInfo.nextDueDateStr) || toAppDigits(nextDueInfo.nextDueDateStr))), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "w-full flex flex-col gap-1.5 px-1 mt-1"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "flex justify-between items-center text-[10px] font-bold"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("span", {
+              className: "text-emerald-600 dark:text-emerald-400"
+            }, toAppDigits(nextDueInfo.paidInst), " \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("span", {
+              className: "text-slate-400 dark:text-slate-500"
+            }, "\u0645\u0627\u0646\u062F\u0647 ", toAppDigits(nextDueInfo.remainingInst))), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "w-full h-2.5 bg-slate-100 dark:bg-slate-800/80 rounded-full overflow-hidden shadow-inner border border-slate-200 dark:border-slate-700/80 flex"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "h-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 rounded-full transition-all duration-500",
+              style: {
+                width: `${Math.min(100, nextDueInfo.totalInst > 0 ? nextDueInfo.paidInst / nextDueInfo.totalInst * 100 : 0)}%`
+              }
+            })))))));
+          })));
+        })(), (accountsSubTab === 'all' || accountsSubTab === 'demands' || accountsSubTab === 'archived') && filteredAccountsDemands.length > 0 && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-full flex items-center justify-center mb-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-full text-center bg-emerald-50/90 dark:bg-emerald-950/70 border-2 border-emerald-500/80 dark:border-emerald-400/60 text-emerald-700 dark:text-emerald-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs"
+        }, "\u0637\u0644\u0628\u200C\u0647\u0627")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3"
+        }, filteredAccountsDemands.map(contact => {
+          const settledCount = getSettledPeriodCount(contact.id, 'demand');
+          const isArchived = settledCount > 0 || accountsSubTab === 'archived' || contact.totalDemand === 0;
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
+            key: contact.id,
+            onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
+            onCardClick: () => openContactDetail(contact, 'demands', 'accounts')
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-full flex flex-col gap-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex flex-col items-center gap-1 shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-up-right",
+            className: "w-6 h-6"
+          })), isArchived ? /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "bg-emerald-500 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md"
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC") : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "bg-slate-400 dark:bg-slate-600 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md opacity-50"
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "font-bold text-slate-800 dark:text-white text-sm"
+          }, contact.firstName, " ", contact.lastName), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
+          }, contact.note || "طلب شخصی")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-left shrink-0 flex flex-col items-center"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(contact.totalDemand)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-emerald-600 dark:text-emerald-400 text-xs"
+          }, "\u062A\u0648\u0645\u0627\u0646"))))));
+        }))), (accountsSubTab === 'all' || accountsSubTab === 'debts' || accountsSubTab === 'archived') && filteredAccountsDebts.length > 0 && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-full flex items-center justify-center mb-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-full text-center bg-rose-50/90 dark:bg-rose-950/70 border-2 border-rose-500/80 dark:border-rose-400/60 text-rose-700 dark:text-rose-300 py-2.5 px-4 rounded-2xl text-sm font-black shadow-xs"
+        }, "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3"
+        }, filteredAccountsDebts.map(contact => {
+          const settledCount = getSettledPeriodCount(contact.id, 'debt');
+          const isArchived = settledCount > 0 || accountsSubTab === 'archived' || contact.totalDebt === 0;
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
+            key: contact.id,
+            onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
+            onCardClick: () => openContactDetail(contact, 'debts', 'accounts')
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-full flex flex-col gap-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex flex-col items-center gap-1 shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-down-left",
+            className: "w-6 h-6"
+          })), isArchived ? /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "bg-rose-500 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md"
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC") : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "bg-slate-400 dark:bg-slate-600 text-white text-[10px] px-3 py-0.5 rounded-full font-bold shadow-md opacity-50"
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "font-bold text-slate-800 dark:text-white text-sm"
+          }, contact.firstName, " ", contact.lastName), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
+          }, contact.note || "بدهی شخصی")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-left shrink-0 flex flex-col items-center"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(contact.totalDebt)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-rose-600 dark:text-rose-400 text-xs"
+          }, "\u062A\u0648\u0645\u0627\u0646"))))));
+        }))), filteredAccountsLoans.length === 0 && filteredAccountsDemands.length === 0 && filteredAccountsDebts.length === 0 && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white dark:bg-slate-800 p-8 rounded-2xl text-center border border-slate-100 dark:border-slate-700/60 my-4"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "search-x",
+          className: "w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs font-bold text-slate-600 dark:text-slate-300"
+        }, accountsSearchQuery ? `هیچ موردی با عبارت "${accountsSearchQuery}" یافت نشد.` : 'هیچ حساب یا پرونده‌ای برای نمایش وجود ندارد.'), accountsSearchQuery && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => setAccountsSearchQuery(''),
+          className: "mt-3 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-xs font-bold text-indigo-600 dark:text-indigo-400 rounded-xl transition-all"
+        }, "\u067E\u0627\u06A9\u200C\u0633\u0627\u0632\u06CC \u062C\u0633\u062A\u062C\u0648"))));
       case 'contacts':
-        return /*#__PURE__*/<div className="space-y-4 animate-fade-in">{/*#__PURE__*/<div className="flex items-center justify-between py-1.5 mb-3">{/*#__PURE__*/<div className="flex items-center gap-2">{/*#__PURE__*/<Icon name="users" className="w-7 h-7 text-slate-800 dark:text-slate-100" />}{/*#__PURE__*/<h1 className="text-xl font-bold text-slate-900 dark:text-white">مخاطبین</h1>}</div>}{/*#__PURE__*/<button onClick={() => openStackWizard('contact', 'add')} className="w-11 h-11 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white shadow-md active:scale-95 transition-all shrink-0" title="  ">{/*#__PURE__*/<Icon name="plus" className="w-6 h-6" />}</button>}</div>}{/*#__PURE__*/<div className="flex items-center gap-3 mb-3">{/*#__PURE__*/<div className="flex-1 relative">{/*#__PURE__*/<input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="..." className="w-full h-12 pr-10 pl-4 bg-slate-100/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-inner" />}{/*#__PURE__*/<Icon name="search" className="w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />}</div>}{/*#__PURE__*/<button onClick={() => setSearchQuery('')} className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform" title=" ">{/*#__PURE__*/<Icon name="x" className="w-6 h-6" />}</button>}</div>}{/*#__PURE__*/<div className="bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs">{/*#__PURE__*/<button onClick={() => setContactFilter(contactFilter === 'favorite' ? 'all' : 'favorite')} title="" className={`flex items-center justify-center w-9 h-9 rounded-full transition-all shrink-0 ${contactFilter === 'favorite' ? 'bg-amber-100 dark:bg-amber-950 text-amber-500' : 'text-slate-400 hover:text-amber-500'}`}>{/*#__PURE__*/<Icon name="star" className={`w-5 h-5 ${contactFilter === 'favorite' ? 'fill-amber-400 text-amber-500' : 'text-slate-400'}`} />}</button>}{[{
-              id: 'all',
-              label: 'همه',
-              activeClass: 'bg-indigo-600 text-white shadow-sm font-bold'
-            }, {
-              id: 'loan',
-              label: 'وام',
-              activeClass: 'bg-blue-600 text-white shadow-sm font-bold'
-            }, {
-              id: 'debt',
-              label: 'بدهی',
-              activeClass: 'bg-rose-600 text-white shadow-sm font-bold'
-            }, {
-              id: 'demand',
-              label: 'طلب',
-              activeClass: 'bg-emerald-600 text-white shadow-sm font-bold'
-            }, {
-              id: 'settled',
-              label: 'بایگانی',
-              activeClass: 'bg-purple-600 text-white shadow-sm font-bold'
-            }].map(tab => /*#__PURE__*/<button key={tab.id} onClick={() => setContactFilter(tab.id)} className={`py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${contactFilter === tab.id ? tab.activeClass : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>{tab.label}</button>)}</div>}{/*#__PURE__*/<div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">{filteredContacts.map(contact => {
-              const contactLoans = loans.filter(l => l.contactId === contact.id);
-              const hasActiveLoan = contactLoans.some(l => !getLoanNextDueInfo(l, transactions).isCompleted && (l.remainingAmount === undefined || l.remainingAmount > 0));
-              const hasSettledLoan = contactLoans.some(l => getLoanNextDueInfo(l, transactions).isCompleted || l.remainingAmount !== undefined && l.remainingAmount <= 0);
-              const hasSettledDemand = getSettledPeriodCount(contact.id, 'demand') > 0;
-              const hasActiveDemand = contact.totalDemand > 0;
-              const hasSettledDebt = getSettledPeriodCount(contact.id, 'debt') > 0;
-              const hasActiveDebt = contact.totalDebt > 0;
-              const colorMappings = {
-                'bg-blue-600': {
-                  bg: 'bg-gradient-to-br from-blue-50/80 to-indigo-50/30 dark:from-blue-950/20 dark:to-indigo-950/10',
-                  border: 'border-blue-200/80 dark:border-slate-700/60 hover:border-blue-400 dark:hover:border-blue-600',
-                  watermark: 'users',
-                  watermarkColor: 'text-blue-500 dark:text-blue-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-blue-500/15'
-                },
-                'bg-amber-600': {
-                  bg: 'bg-gradient-to-br from-amber-50/80 to-orange-50/30 dark:from-amber-950/20 dark:to-orange-950/10',
-                  border: 'border-amber-200/80 dark:border-slate-700/60 hover:border-amber-400 dark:hover:border-amber-600',
-                  watermark: 'star',
-                  watermarkColor: 'text-amber-500 dark:text-amber-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-amber-500/15'
-                },
-                'bg-emerald-600': {
-                  bg: 'bg-gradient-to-br from-emerald-50/80 to-teal-50/30 dark:from-emerald-950/20 dark:to-teal-950/10',
-                  border: 'border-emerald-200/80 dark:border-slate-700/60 hover:border-emerald-400 dark:hover:border-emerald-600',
-                  watermark: 'briefcase',
-                  watermarkColor: 'text-emerald-500 dark:text-emerald-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-emerald-500/15'
-                },
-                'bg-indigo-600': {
-                  bg: 'bg-gradient-to-br from-indigo-50/80 to-purple-50/30 dark:from-indigo-950/20 dark:to-purple-950/10',
-                  border: 'border-indigo-200/80 dark:border-slate-700/60 hover:border-indigo-400 dark:hover:border-indigo-600',
-                  watermark: 'landmark',
-                  watermarkColor: 'text-indigo-500 dark:text-indigo-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-indigo-500/15'
-                },
-                'bg-teal-600': {
-                  bg: 'bg-gradient-to-br from-teal-50/80 to-emerald-50/30 dark:from-teal-950/20 dark:to-emerald-950/10',
-                  border: 'border-teal-200/80 dark:border-slate-700/60 hover:border-teal-400 dark:hover:border-teal-600',
-                  watermark: 'shield',
-                  watermarkColor: 'text-teal-500 dark:text-teal-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-teal-500/15'
-                },
-                'bg-rose-600': {
-                  bg: 'bg-gradient-to-br from-rose-50/80 to-pink-50/30 dark:from-rose-950/20 dark:to-pink-950/10',
-                  border: 'border-rose-200/80 dark:border-slate-700/60 hover:border-rose-400 dark:hover:border-rose-600',
-                  watermark: 'heart',
-                  watermarkColor: 'text-rose-500 dark:text-rose-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-rose-500/15'
-                },
-                'bg-purple-600': {
-                  bg: 'bg-gradient-to-br from-purple-50/80 to-fuchsia-50/30 dark:from-purple-950/20 dark:to-fuchsia-950/10',
-                  border: 'border-purple-200/80 dark:border-slate-700/60 hover:border-purple-400 dark:hover:border-purple-600',
-                  watermark: 'award',
-                  watermarkColor: 'text-purple-500 dark:text-purple-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-purple-500/15'
-                },
-                'bg-cyan-600': {
-                  bg: 'bg-gradient-to-br from-cyan-50/80 to-blue-50/30 dark:from-cyan-950/20 dark:to-blue-950/10',
-                  border: 'border-cyan-200/80 dark:border-slate-700/60 hover:border-cyan-400 dark:hover:border-cyan-600',
-                  watermark: 'anchor',
-                  watermarkColor: 'text-cyan-500 dark:text-cyan-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-cyan-500/15'
-                },
-                'bg-orange-600': {
-                  bg: 'bg-gradient-to-br from-orange-50/80 to-amber-50/30 dark:from-orange-950/20 dark:to-amber-950/10',
-                  border: 'border-orange-200/80 dark:border-slate-700/60 hover:border-orange-400 dark:hover:border-orange-600',
-                  watermark: 'sun',
-                  watermarkColor: 'text-orange-500 dark:text-orange-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-orange-500/15'
-                },
-                'bg-violet-600': {
-                  bg: 'bg-gradient-to-br from-violet-50/80 to-purple-50/30 dark:from-violet-950/20 dark:to-purple-950/10',
-                  border: 'border-violet-200/80 dark:border-slate-700/60 hover:border-violet-400 dark:hover:border-violet-600',
-                  watermark: 'hexagon',
-                  watermarkColor: 'text-violet-500 dark:text-violet-400 opacity-[0.16] dark:opacity-[0.13]',
-                  ring: 'ring-4 ring-violet-500/15'
-                }
-              };
-              const avatarBg = getAvatarColor(contact.id, contact.firstName + contact.lastName);
-              const theme = colorMappings[avatarBg] || colorMappings['bg-indigo-600'];
-              return /*#__PURE__*/<SwipeToDeleteItem key={contact.id} onDelete={confirmCb => handleDeleteContact(contact, confirmCb)} onCardClick={() => {
-                let f = 'all';
-                if (contactFilter === 'demand') f = 'demands';else if (contactFilter === 'debt') f = 'debts';else if (contactFilter === 'loan') f = 'loans';
-                openContactDetail(contact, f, 'contacts');
-              }}>{/*#__PURE__*/<div className={`relative overflow-hidden bg-white dark:bg-slate-800 ${theme.bg} rounded-2xl sm:rounded-[24px] border p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-sm ${theme.border} transition-all cursor-pointer group`}>{/*#__PURE__*/<div className={`absolute -bottom-8 -left-8 pointer-events-none transition-transform group-hover:scale-[1.15] duration-500 ${theme.watermarkColor}`}>{contact.profileImage ? /*#__PURE__*/<div className="w-44 h-44 rounded-full overflow-hidden opacity-80">{/*#__PURE__*/<img src={contact.profileImage} alt="" className="w-full h-full object-cover" />}</div> : /*#__PURE__*/<div className="w-44 h-44 flex items-center justify-center text-[160px] font-black leading-none opacity-80 tracking-tighter">{contact.firstName.charAt(0)}</div>}</div>}{/*#__PURE__*/<div className="relative z-10 flex flex-col gap-5">{/*#__PURE__*/<div className="flex flex-row items-start justify-between">{/*#__PURE__*/<div className="flex items-center gap-4">{/*#__PURE__*/<div className={`rounded-full ${avatarBg} ${theme.ring} flex-shrink-0 flex items-center justify-center text-white font-bold w-16 h-16 sm:w-18 sm:h-18 text-lg sm:text-xl shadow-md border-2 border-white/60 dark:border-slate-700/60 overflow-hidden transition-transform group-hover:scale-105`}>{contact.profileImage ? /*#__PURE__*/<img src={contact.profileImage} alt={`${contact.firstName} ${contact.lastName}`} className="w-full h-full object-cover" /> : /*#__PURE__*/<>{contact.firstName.charAt(0)} {contact.lastName.charAt(0)}</>}</div>}{/*#__PURE__*/<div className="flex flex-col">{/*#__PURE__*/<span className="text-slate-900 dark:text-white font-extrabold text-base sm:text-lg tracking-tight">{contact.firstName} {contact.lastName}</span>}{/*#__PURE__*/<span className="text-slate-500 dark:text-slate-400 tracking-wider font-mono text-xs dir-ltr mt-0.5">{contact.phone}</span>}</div>}</div>}</div>}{/*#__PURE__*/<div className="flex gap-2.5 justify-between w-full">{/*#__PURE__*/<button onClick={e => {
-                        e.stopPropagation();
-                        openContactDetail(contact, 'loans', 'contacts');
-                      }} className={`relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveLoan ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 active:scale-95 border border-blue-500/80 hover:from-blue-700 hover:to-indigo-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`}>{hasSettledLoan && /*#__PURE__*/<div className="absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700">{/*#__PURE__*/<Icon name="check" className="w-2.5 h-2.5" strokeWidth={3.5} />}</div>}{/*#__PURE__*/<Icon name="landmark" className={`w-4.5 h-4.5 ${hasActiveLoan ? 'text-white' : 'opacity-60'}`} />}{/*#__PURE__*/<span className="text-[11px] font-bold leading-none">وام‌ها</span>}</button>}{/*#__PURE__*/<button onClick={e => {
-                        e.stopPropagation();
-                        openContactDetail(contact, 'demands', 'contacts');
-                      }} className={`relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDemand ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 active:scale-95 border border-emerald-500/80 hover:from-emerald-700 hover:to-teal-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`}>{hasSettledDemand && /*#__PURE__*/<div className="absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700">{/*#__PURE__*/<Icon name="check" className="w-2.5 h-2.5" strokeWidth={3.5} />}</div>}{/*#__PURE__*/<Icon name="arrow-down-left" className={`w-4.5 h-4.5 ${hasActiveDemand ? 'text-white' : 'opacity-60'}`} />}{/*#__PURE__*/<span className="text-[11px] font-bold leading-none">طلب‌ها</span>}</button>}{/*#__PURE__*/<button onClick={e => {
-                        e.stopPropagation();
-                        openContactDetail(contact, 'debts', 'contacts');
-                      }} className={`relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDebt ? 'bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md shadow-rose-500/25 active:scale-95 border border-rose-500/80 hover:from-rose-700 hover:to-red-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`}>{hasSettledDebt && /*#__PURE__*/<div className="absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700">{/*#__PURE__*/<Icon name="check" className="w-2.5 h-2.5" strokeWidth={3.5} />}</div>}{/*#__PURE__*/<Icon name="arrow-up-right" className={`w-4.5 h-4.5 ${hasActiveDebt ? 'text-white' : 'opacity-60'}`} />}{/*#__PURE__*/<span className="text-[11px] font-bold leading-none">بدهی‌ها</span>}</button>}</div>}</div>}</div>}</SwipeToDeleteItem>;
-            })}</div>}</div>;
+        return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+          className: "space-y-4 animate-fade-in"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between py-1.5 mb-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-2"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "users",
+          className: "w-7 h-7 text-slate-800 dark:text-slate-100"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h1", {
+          className: "text-xl font-bold text-slate-900 dark:text-white"
+        }, "\u0645\u062E\u0627\u0637\u0628\u06CC\u0646")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => openStackWizard('contact', 'add'),
+          className: "w-11 h-11 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white shadow-md active:scale-95 transition-all shrink-0",
+          title: "  "
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "plus",
+          className: "w-6 h-6"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-3 mb-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 relative"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("input", {
+          type: "text",
+          value: searchQuery,
+          onChange: e => setSearchQuery(e.target.value),
+          placeholder: "...",
+          className: "w-full h-12 pr-10 pl-4 bg-slate-100/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-600/20 text-sm text-right text-slate-900 dark:text-white placeholder:text-slate-400 shadow-inner"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "search",
+          className: "w-5 h-5 absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => setSearchQuery(''),
+          className: "w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md active:scale-90 transition-transform",
+          title: " "
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "x",
+          className: "w-6 h-6"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-slate-100 dark:bg-slate-800/80 rounded-full p-1 flex items-center justify-between no-scrollbar border border-slate-200/50 dark:border-slate-700/50 text-sm font-medium mb-4 shadow-xs"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => setContactFilter(contactFilter === 'favorite' ? 'all' : 'favorite'),
+          title: "",
+          className: `flex items-center justify-center w-9 h-9 rounded-full transition-all shrink-0 ${contactFilter === 'favorite' ? 'bg-amber-100 dark:bg-amber-950 text-amber-500' : 'text-slate-400 hover:text-amber-500'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "star",
+          className: `w-5 h-5 ${contactFilter === 'favorite' ? 'fill-amber-400 text-amber-500' : 'text-slate-400'}`
+        })), [{
+          id: 'all',
+          label: 'همه',
+          activeClass: 'bg-indigo-600 text-white shadow-sm font-bold'
+        }, {
+          id: 'loan',
+          label: 'وام',
+          activeClass: 'bg-blue-600 text-white shadow-sm font-bold'
+        }, {
+          id: 'debt',
+          label: 'بدهی',
+          activeClass: 'bg-rose-600 text-white shadow-sm font-bold'
+        }, {
+          id: 'demand',
+          label: 'طلب',
+          activeClass: 'bg-emerald-600 text-white shadow-sm font-bold'
+        }, {
+          id: 'settled',
+          label: 'بایگانی',
+          activeClass: 'bg-purple-600 text-white shadow-sm font-bold'
+        }].map(tab => /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          key: tab.id,
+          onClick: () => setContactFilter(tab.id),
+          className: `py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap px-3 sm:px-4 active:scale-95 transition-all duration-200 ${contactFilter === tab.id ? tab.activeClass : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`
+        }, tab.label))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4"
+        }, filteredContacts.map(contact => {
+          const contactLoans = loans.filter(l => l.contactId === contact.id);
+          const hasActiveLoan = contactLoans.some(l => !getLoanNextDueInfo(l, transactions).isCompleted && (l.remainingAmount === undefined || l.remainingAmount > 0));
+          const hasSettledLoan = contactLoans.some(l => getLoanNextDueInfo(l, transactions).isCompleted || l.remainingAmount !== undefined && l.remainingAmount <= 0);
+          const hasSettledDemand = getSettledPeriodCount(contact.id, 'demand') > 0;
+          const hasActiveDemand = contact.totalDemand > 0;
+          const hasSettledDebt = getSettledPeriodCount(contact.id, 'debt') > 0;
+          const hasActiveDebt = contact.totalDebt > 0;
+          const colorMappings = {
+            'bg-blue-600': {
+              bg: 'bg-gradient-to-br from-blue-50/80 to-indigo-50/30 dark:from-blue-950/20 dark:to-indigo-950/10',
+              border: 'border-blue-200/80 dark:border-slate-700/60 hover:border-blue-400 dark:hover:border-blue-600',
+              watermark: 'users',
+              watermarkColor: 'text-blue-500 dark:text-blue-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-blue-500/15'
+            },
+            'bg-amber-600': {
+              bg: 'bg-gradient-to-br from-amber-50/80 to-orange-50/30 dark:from-amber-950/20 dark:to-orange-950/10',
+              border: 'border-amber-200/80 dark:border-slate-700/60 hover:border-amber-400 dark:hover:border-amber-600',
+              watermark: 'star',
+              watermarkColor: 'text-amber-500 dark:text-amber-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-amber-500/15'
+            },
+            'bg-emerald-600': {
+              bg: 'bg-gradient-to-br from-emerald-50/80 to-teal-50/30 dark:from-emerald-950/20 dark:to-teal-950/10',
+              border: 'border-emerald-200/80 dark:border-slate-700/60 hover:border-emerald-400 dark:hover:border-emerald-600',
+              watermark: 'briefcase',
+              watermarkColor: 'text-emerald-500 dark:text-emerald-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-emerald-500/15'
+            },
+            'bg-indigo-600': {
+              bg: 'bg-gradient-to-br from-indigo-50/80 to-purple-50/30 dark:from-indigo-950/20 dark:to-purple-950/10',
+              border: 'border-indigo-200/80 dark:border-slate-700/60 hover:border-indigo-400 dark:hover:border-indigo-600',
+              watermark: 'landmark',
+              watermarkColor: 'text-indigo-500 dark:text-indigo-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-indigo-500/15'
+            },
+            'bg-teal-600': {
+              bg: 'bg-gradient-to-br from-teal-50/80 to-emerald-50/30 dark:from-teal-950/20 dark:to-emerald-950/10',
+              border: 'border-teal-200/80 dark:border-slate-700/60 hover:border-teal-400 dark:hover:border-teal-600',
+              watermark: 'shield',
+              watermarkColor: 'text-teal-500 dark:text-teal-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-teal-500/15'
+            },
+            'bg-rose-600': {
+              bg: 'bg-gradient-to-br from-rose-50/80 to-pink-50/30 dark:from-rose-950/20 dark:to-pink-950/10',
+              border: 'border-rose-200/80 dark:border-slate-700/60 hover:border-rose-400 dark:hover:border-rose-600',
+              watermark: 'heart',
+              watermarkColor: 'text-rose-500 dark:text-rose-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-rose-500/15'
+            },
+            'bg-purple-600': {
+              bg: 'bg-gradient-to-br from-purple-50/80 to-fuchsia-50/30 dark:from-purple-950/20 dark:to-fuchsia-950/10',
+              border: 'border-purple-200/80 dark:border-slate-700/60 hover:border-purple-400 dark:hover:border-purple-600',
+              watermark: 'award',
+              watermarkColor: 'text-purple-500 dark:text-purple-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-purple-500/15'
+            },
+            'bg-cyan-600': {
+              bg: 'bg-gradient-to-br from-cyan-50/80 to-blue-50/30 dark:from-cyan-950/20 dark:to-blue-950/10',
+              border: 'border-cyan-200/80 dark:border-slate-700/60 hover:border-cyan-400 dark:hover:border-cyan-600',
+              watermark: 'anchor',
+              watermarkColor: 'text-cyan-500 dark:text-cyan-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-cyan-500/15'
+            },
+            'bg-orange-600': {
+              bg: 'bg-gradient-to-br from-orange-50/80 to-amber-50/30 dark:from-orange-950/20 dark:to-amber-950/10',
+              border: 'border-orange-200/80 dark:border-slate-700/60 hover:border-orange-400 dark:hover:border-orange-600',
+              watermark: 'sun',
+              watermarkColor: 'text-orange-500 dark:text-orange-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-orange-500/15'
+            },
+            'bg-violet-600': {
+              bg: 'bg-gradient-to-br from-violet-50/80 to-purple-50/30 dark:from-violet-950/20 dark:to-purple-950/10',
+              border: 'border-violet-200/80 dark:border-slate-700/60 hover:border-violet-400 dark:hover:border-violet-600',
+              watermark: 'hexagon',
+              watermarkColor: 'text-violet-500 dark:text-violet-400 opacity-[0.16] dark:opacity-[0.13]',
+              ring: 'ring-4 ring-violet-500/15'
+            }
+          };
+          const avatarBg = getAvatarColor(contact.id, contact.firstName + contact.lastName);
+          const theme = colorMappings[avatarBg] || colorMappings['bg-indigo-600'];
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
+            key: contact.id,
+            onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
+            onCardClick: () => {
+              let f = 'all';
+              if (contactFilter === 'demand') f = 'demands';else if (contactFilter === 'debt') f = 'debts';else if (contactFilter === 'loan') f = 'loans';
+              openContactDetail(contact, f, 'contacts');
+            }
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `relative overflow-hidden bg-white dark:bg-slate-800 ${theme.bg} rounded-2xl sm:rounded-[24px] border p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-sm ${theme.border} transition-all cursor-pointer group`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `absolute -bottom-8 -left-8 pointer-events-none transition-transform group-hover:scale-[1.15] duration-500 ${theme.watermarkColor}`
+          }, contact.profileImage ? /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-44 h-44 rounded-full overflow-hidden opacity-80"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("img", {
+            src: contact.profileImage,
+            alt: "",
+            className: "w-full h-full object-cover"
+          })) : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-44 h-44 flex items-center justify-center text-[160px] font-black leading-none opacity-80 tracking-tighter"
+          }, contact.firstName.charAt(0))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "relative z-10 flex flex-col gap-5"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex flex-row items-start justify-between"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center gap-4"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `rounded-full ${avatarBg} ${theme.ring} flex-shrink-0 flex items-center justify-center text-white font-bold w-16 h-16 sm:w-18 sm:h-18 text-lg sm:text-xl shadow-md border-2 border-white/60 dark:border-slate-700/60 overflow-hidden transition-transform group-hover:scale-105`
+          }, contact.profileImage ? /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("img", {
+            src: contact.profileImage,
+            alt: `${contact.firstName} ${contact.lastName}`,
+            className: "w-full h-full object-cover"
+          }) : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(React.Fragment, null, contact.firstName.charAt(0), " ", contact.lastName.charAt(0))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex flex-col"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "text-slate-900 dark:text-white font-extrabold text-base sm:text-lg tracking-tight"
+          }, contact.firstName, " ", contact.lastName), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "text-slate-500 dark:text-slate-400 tracking-wider font-mono text-xs dir-ltr mt-0.5"
+          }, contact.phone)))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex gap-2.5 justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            onClick: e => {
+              e.stopPropagation();
+              openContactDetail(contact, 'loans', 'contacts');
+            },
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveLoan ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 active:scale-95 border border-blue-500/80 hover:from-blue-700 hover:to-indigo-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
+          }, hasSettledLoan && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "check",
+            className: "w-2.5 h-2.5",
+            strokeWidth: 3.5
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "landmark",
+            className: `w-4.5 h-4.5 ${hasActiveLoan ? 'text-white' : 'opacity-60'}`
+          }), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "text-[11px] font-bold leading-none"
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            onClick: e => {
+              e.stopPropagation();
+              openContactDetail(contact, 'demands', 'contacts');
+            },
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDemand ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 active:scale-95 border border-emerald-500/80 hover:from-emerald-700 hover:to-teal-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
+          }, hasSettledDemand && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "check",
+            className: "w-2.5 h-2.5",
+            strokeWidth: 3.5
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-down-left",
+            className: `w-4.5 h-4.5 ${hasActiveDemand ? 'text-white' : 'opacity-60'}`
+          }), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "text-[11px] font-bold leading-none"
+          }, "\u0637\u0644\u0628\u200C\u0647\u0627")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            onClick: e => {
+              e.stopPropagation();
+              openContactDetail(contact, 'debts', 'contacts');
+            },
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDebt ? 'bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md shadow-rose-500/25 active:scale-95 border border-rose-500/80 hover:from-rose-700 hover:to-red-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
+          }, hasSettledDebt && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "check",
+            className: "w-2.5 h-2.5",
+            strokeWidth: 3.5
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-up-right",
+            className: `w-4.5 h-4.5 ${hasActiveDebt ? 'text-white' : 'opacity-60'}`
+          }), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "text-[11px] font-bold leading-none"
+          }, "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627"))))));
+        })));
       case 'contact-detail':
         if (!selectedContact) return null;
-        return /*#__PURE__*/<div className="space-y-4 animate-fade-in">{/*#__PURE__*/<div className="flex justify-between items-center py-1">{/*#__PURE__*/<button onClick={onBack ? () => onBack('button') : () => navigateBack(loanReturnTab === 'accounts' ? 'accounts' : 'contacts')} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">{/*#__PURE__*/<Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />}</button>}{/*#__PURE__*/<h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">پروفایل مخاطب</h3>}{/*#__PURE__*/<div className="flex items-center space-x-1.5 space-x-reverse">{/*#__PURE__*/<button onClick={() => openStackWizard('contact', 'edit', selectedContact)} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform" title=" ">{/*#__PURE__*/<Icon name="pencil" className="w-4 h-4" />}</button>}{/*#__PURE__*/<button onClick={handleDeleteContact} className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400" title=" ">{/*#__PURE__*/<Icon name="trash-2" className="w-4 h-4" />}</button>}{/*#__PURE__*/<button onClick={() => {
-                const updated = contacts.map(c => c.id === selectedContact.id ? {
-                  ...c,
-                  isFavorite: !c.isFavorite
-                } : c);
-                setContacts(updated);
-                setSelectedContact({
-                  ...selectedContact,
-                  isFavorite: !selectedContact.isFavorite
-                });
-                showToast(selectedContact.isFavorite ? 'از علاقه مندی‌ها حذف شد' : 'به علاقه‌مندی‌ها اضافه شد');
-              }} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-amber-500 active:scale-95 transition-transform" title="">{/*#__PURE__*/<Icon name="star" className={`w-5 h-5 ${selectedContact.isFavorite ? 'fill-amber-400 text-amber-400' : ''}`} />}</button>}</div>}</div>}{(() => {
-            const cardTheme = getContactCardTheme(selectedContact.id);
-            const contactInitials = (selectedContact.firstName ? selectedContact.firstName.charAt(0) : '') + (selectedContact.lastName ? selectedContact.lastName.charAt(0) : '');
-            return /*#__PURE__*/<div className={`relative overflow-hidden rounded-2xl p-4 border flex flex-col gap-3 group transition-transform duration-200 ${cardTheme.containerClass}`}>{/*#__PURE__*/<div className={`absolute -top-2 -left-2 ${cardTheme.watermarkColor}`} style={{
-                opacity: 0.08,
-                zIndex: 0,
-                pointerEvents: "none"
-              }}>{/*#__PURE__*/<Icon name="landmark" className="w-28 h-28 sm:w-32 sm:h-32" />}</div>}{/*#__PURE__*/<div className="relative z-10 w-full flex flex-col gap-3">{/*#__PURE__*/<div className="flex gap-3 items-center min-w-0">{/*#__PURE__*/<div className={`w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden ${cardTheme.avatarClass} flex items-center justify-center font-bold text-xl sm:text-2xl shadow-md border-2 border-white/60 dark:border-slate-700/60 shrink-0`}>{selectedContact.profileImage ? /*#__PURE__*/<img src={selectedContact.profileImage} alt={`${selectedContact.firstName} ${selectedContact.lastName}`} className="w-full h-full object-cover" /> : contactInitials || '؟'}</div>}{/*#__PURE__*/<div className="min-w-0 flex-1">{/*#__PURE__*/<h2 className={`text-base sm:text-lg font-bold leading-tight truncate ${cardTheme.nameClass}`}>{selectedContact.firstName} {selectedContact.lastName}</h2>}{/*#__PURE__*/<p className={`text-xs flex items-center gap-1.5 mt-0.5 ${cardTheme.phoneClass}`}>{/*#__PURE__*/<Icon name="phone" className="w-3.5 h-3.5 shrink-0" />}{/*#__PURE__*/<span dir="ltr" className="font-mono">{selectedContact.phone || 'بدون شماره تماس'}</span>}</p>}</div>}</div>}{/*#__PURE__*/<div className="space-y-2 mt-1">{/*#__PURE__*/<div className={`flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`}>{/*#__PURE__*/<div className="flex items-center gap-2 shrink-0">{/*#__PURE__*/<Icon name="credit-card" className={`w-4 h-4 shrink-0 ${cardTheme.accentColorClass}`} />}{/*#__PURE__*/<span className={`text-xs font-bold ${cardTheme.rowLabelClass}`}>کارت</span>}</div>}{/*#__PURE__*/<div className="flex items-center gap-2 min-w-0 flex-1 justify-end">{/*#__PURE__*/<span className={`font-mono text-sm sm:text-base font-bold tracking-wider dir-ltr truncate ${cardTheme.rowTextClass}`}>{selectedContact.bankCard ? selectedContact.bankCard : 'ثبت نشده'}</span>}{selectedContact.bankCard && /*#__PURE__*/<button onClick={() => copyToClipboard(selectedContact.bankCard, 'شماره کارت')} className={`${cardTheme.accentColorClass} active:opacity-50 shrink-0 p-1`} title="  ">{/*#__PURE__*/<Icon name="copy" className="w-4 h-4 shrink-0" />}</button>}</div>}</div>}{/*#__PURE__*/<div className={`flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`}>{/*#__PURE__*/<div className="flex items-center gap-2 shrink-0">{/*#__PURE__*/<Icon name="landmark" className={`w-4 h-4 shrink-0 ${cardTheme.accentColorClass}`} />}{/*#__PURE__*/<span className={`text-xs font-bold ${cardTheme.rowLabelClass}`}>شبا</span>}</div>}{/*#__PURE__*/<div className="flex items-center gap-2 min-w-0 flex-1 justify-end">{/*#__PURE__*/<span className={`font-mono text-[11px] sm:text-xs font-bold dir-ltr truncate ${cardTheme.rowTextClass}`}>{selectedContact.iban ? selectedContact.iban : 'ثبت نشده'}</span>}{selectedContact.iban && /*#__PURE__*/<button onClick={() => copyToClipboard(selectedContact.iban, 'شماره شبا')} className={`${cardTheme.accentColorClass} active:opacity-50 shrink-0 p-1`} title="  ">{/*#__PURE__*/<Icon name="copy" className="w-4 h-4 shrink-0" />}</button>}</div>}</div>}</div>}</div>}</div>;
-          })()}{/*#__PURE__*/<div className="space-y-2.5">{/*#__PURE__*/<div className="grid grid-cols-3 gap-2.5">{(() => {
-                const contactLoansCount = loans.filter(l => l.contactId === selectedContact.id).length;
-                const isActive = profileFilter === 'loans';
-                return /*#__PURE__*/<div onClick={() => setProfileFilter(prev => prev === 'loans' ? 'all' : 'loans')} className={`relative bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-indigo-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`}>{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<span className="text-xs sm:text-[13px] font-bold text-white/95">وام‌ها</span>}{/*#__PURE__*/<div className={`w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-indigo-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`}>{/*#__PURE__*/<Icon name="landmark" className="w-3 h-3" />}</div>}</div>}{/*#__PURE__*/<div className="flex flex-col items-start justify-end mt-1.5">{/*#__PURE__*/<div className="text-[15px] sm:text-base font-black tracking-tight leading-none text-white font-mono font-numeric">{toAppDigits(contactLoansCount)}</div>}{/*#__PURE__*/<div className="text-[9px] sm:text-[10px] text-indigo-100 font-medium mt-0.5">{contactLoansCount === 0 ? 'بدون وام' : 'وام فعال'}</div>}</div>}</div>;
-              })()}{(() => {
-                const isActive = profileFilter === 'debts';
-                return /*#__PURE__*/<div onClick={() => setProfileFilter(prev => prev === 'debts' ? 'all' : 'debts')} className={`relative bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-rose-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-rose-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`}>{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<span className="text-xs sm:text-[13px] font-bold text-white/95">بدهی</span>}{/*#__PURE__*/<div className={`w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-rose-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`}>{/*#__PURE__*/<Icon name="arrow-down-left" className="w-3 h-3" />}</div>}</div>}{/*#__PURE__*/<div className="flex flex-col items-start justify-end mt-1.5">{/*#__PURE__*/<div className="text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full">{formatAppNumber(selectedContact.totalDebt || 0)}</div>}{/*#__PURE__*/<div className="text-[9px] sm:text-[10px] text-rose-100 font-medium mt-0.5">تومان</div>}</div>}</div>;
-              })()}{(() => {
-                const isActive = profileFilter === 'demands';
-                return /*#__PURE__*/<div onClick={() => setProfileFilter(prev => prev === 'demands' ? 'all' : 'demands')} className={`relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-emerald-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-emerald-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`}>{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<span className="text-xs sm:text-[13px] font-bold text-white/95">طلب</span>}{/*#__PURE__*/<div className={`w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-emerald-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`}>{/*#__PURE__*/<Icon name="arrow-up-right" className="w-3 h-3" />}</div>}</div>}{/*#__PURE__*/<div className="flex flex-col items-start justify-end mt-1.5">{/*#__PURE__*/<div className="text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full">{formatAppNumber(selectedContact.totalDemand || 0)}</div>}{/*#__PURE__*/<div className="text-[9px] sm:text-[10px] text-emerald-100 font-medium mt-0.5">تومان</div>}</div>}</div>;
-              })()}</div>}</div>}{/*#__PURE__*/<div className="space-y-3">{profileFilter === 'all' && (() => {
-              const contactLoans = loans.filter(l => l.contactId === selectedContact.id);
-              const activeLoans = contactLoans.filter(l => l.remainingAmount > 0);
-              const closedLoans = contactLoans.filter(l => l.remainingAmount <= 0);
-              const totalLoanRemaining = activeLoans.reduce((acc, l) => acc + (l.remainingAmount || 0), 0);
-
-              const contactDebts = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
-              let archivedDebtPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'debt');
-              const archivedDebtTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && t.periodId);
-              const archivedDebtSum = archivedDebtPeriods.reduce((acc, p) => acc + (p.totalAmount || 0), 0) + (archivedDebtPeriods.length === 0 ? archivedDebtTxs.filter(t => t.type === 'debt').reduce((acc, t) => acc + Math.abs(t.amount), 0) : 0);
-
-              const contactDemands = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
-              let archivedDemandPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'demand');
-              const archivedDemandTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && t.periodId);
-              const archivedDemandSum = archivedDemandPeriods.reduce((acc, p) => acc + (p.totalAmount || 0), 0) + (archivedDemandPeriods.length === 0 ? archivedDemandTxs.filter(t => t.type === 'demand').reduce((acc, t) => acc + Math.abs(t.amount), 0) : 0);
-
-              const netBalance = (selectedContact.totalDemand || 0) - (selectedContact.totalDebt || 0);
-
-              return (
-                <div className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-3xl p-3.5 sm:p-4 shadow-xl border border-slate-200/80 dark:border-slate-700/60 relative overflow-hidden space-y-3 animate-fade-in mb-2">
-                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-                  <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-
-                  {/* Header & Net Balance */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-white/10 pb-3 relative z-10">
-                    <div className="flex items-center gap-2">
-                      <div className="w-9 h-9 rounded-2xl bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 flex items-center justify-center border border-indigo-200 dark:border-indigo-500/30 shrink-0 shadow-xs">
-                        <Icon name="bar-chart-3" className="w-5 h-5" />
-                      </div>
-                      <div className="text-right">
-                        <h3 className="text-sm font-black text-slate-900 dark:text-white">کارنامه و خلاصه رفتار مالی</h3>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">تحلیل وضعیت در یک نگاه</p>
-                      </div>
-                    </div>
-                    <div className={`px-3 py-1.5 rounded-full text-xs font-black flex items-center gap-1.5 border shadow-xs ${
-                      netBalance > 0 
-                        ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/40' 
-                        : netBalance < 0 
-                        ? 'bg-rose-50 dark:bg-rose-500/20 text-rose-900 dark:text-rose-300 border-rose-300 dark:border-rose-500/40' 
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-300 border-slate-300 dark:border-slate-700'
-                    }`}>
-                      <span className="w-2 h-2 rounded-full animate-pulse bg-current shrink-0" />
-                      <span className="font-numeric" dir="rtl">
-                        {netBalance > 0 ? `تراز: +${formatAppNumber(netBalance)} تومان (طلبکار)` : netBalance < 0 ? `تراز: -${formatAppNumber(Math.abs(netBalance))} تومان (بدهکار)` : 'تراز حساب: تسویه متوازن'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* 3 Summary Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10">
-                    {/* 1. Loans Summary Card */}
-                    <div 
-                      onClick={() => setProfileFilter('loans')} 
-                      className="bg-slate-50 dark:bg-slate-700/40 hover:bg-slate-100/90 dark:hover:bg-slate-700/70 rounded-2xl p-3.5 border border-slate-200/90 dark:border-slate-700/60 transition-all cursor-pointer group hover:border-indigo-400/60 flex flex-col justify-between space-y-3 shadow-xs"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-indigo-800 dark:text-indigo-300 font-black text-xs">
-                          <div className="w-7 h-7 rounded-xl bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-700 dark:text-indigo-300">
-                            <Icon name="landmark" className="w-4 h-4" />
-                          </div>
-                          <span>وام‌ها</span>
-                        </div>
-                        <span className="text-[11px] text-indigo-900 dark:text-indigo-200 bg-indigo-100 dark:bg-indigo-500/25 border border-indigo-200 dark:border-indigo-500/30 px-2.5 py-0.5 rounded-full font-black font-numeric" dir="rtl">
-                          {toAppDigits(contactLoans.length)} پرونده
-                        </span>
-                      </div>
-                      <div className="space-y-2 text-right">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-700 dark:text-slate-300 font-semibold">وام‌های در جریان:</span>
-                          <span className="font-bold text-slate-900 dark:text-slate-100 font-numeric" dir="rtl">
-                            {toAppDigits(activeLoans.length)} مورد
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-700 dark:text-slate-300 font-semibold">وام‌های تسویه‌شده:</span>
-                          <span className="font-bold text-slate-900 dark:text-slate-100 font-numeric" dir="rtl">
-                            {toAppDigits(closedLoans.length)} مورد
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs pt-1.5 border-t border-slate-200 dark:border-white/10">
-                          <span className="text-slate-700 dark:text-slate-300 font-semibold">مانده بدهی اقساط:</span>
-                          <span className="font-black text-indigo-950 dark:text-indigo-300 font-numeric" dir="rtl">
-                            {formatAppNumber(totalLoanRemaining)} تومان
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 2. Debts Summary Card */}
-                    <div 
-                      onClick={() => setProfileFilter('debts')} 
-                      className="bg-slate-50 dark:bg-slate-700/40 hover:bg-slate-100/90 dark:hover:bg-slate-700/70 rounded-2xl p-3.5 border border-slate-200/90 dark:border-slate-700/60 transition-all cursor-pointer group hover:border-rose-400/60 flex flex-col justify-between space-y-3 shadow-xs"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300 font-black text-xs">
-                          <div className="w-7 h-7 rounded-xl bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center text-rose-700 dark:text-rose-300">
-                            <Icon name="arrow-down-left" className="w-4 h-4" />
-                          </div>
-                          <span>بدهی‌ها</span>
-                        </div>
-                        <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-black border ${
-                          selectedContact.totalDebt > 0 
-                            ? 'text-rose-900 dark:text-rose-200 bg-rose-100 dark:bg-rose-500/25 border-rose-200 dark:border-rose-500/30' 
-                            : 'text-slate-800 dark:text-slate-300 bg-slate-200/80 dark:bg-slate-700 border-slate-300 dark:border-slate-600'
-                        }`}>
-                          {selectedContact.totalDebt > 0 ? 'بدهکار' : 'تسویه'}
-                        </span>
-                      </div>
-                      <div className="space-y-2 text-right">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-700 dark:text-slate-300 font-semibold">بدهی فعلی (در جریان):</span>
-                          <span className="font-black text-rose-950 dark:text-rose-400 font-numeric" dir="rtl">
-                            {formatAppNumber(selectedContact.totalDebt || 0)} تومان
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-700 dark:text-slate-300 font-semibold">بایگانی تسویه‌شده:</span>
-                          <span className="font-bold text-slate-900 dark:text-slate-100 font-numeric" dir="rtl">
-                            {archivedDebtSum > 0 ? `${formatAppNumber(archivedDebtSum)} تومان` : 'بدون بایگانی'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs pt-1.5 border-t border-slate-200 dark:border-white/10">
-                          <span className="text-slate-700 dark:text-slate-300 font-semibold">تراکنش‌های فعال:</span>
-                          <span className="font-bold text-rose-900 dark:text-rose-300 font-numeric" dir="rtl">
-                            {toAppDigits(contactDebts.length)} مورد
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 3. Demands Summary Card */}
-                    <div 
-                      onClick={() => setProfileFilter('demands')} 
-                      className="bg-slate-50 dark:bg-slate-700/40 hover:bg-slate-100/90 dark:hover:bg-slate-700/70 rounded-2xl p-3.5 border border-slate-200/90 dark:border-slate-700/60 transition-all cursor-pointer group hover:border-emerald-400/60 flex flex-col justify-between space-y-3 shadow-xs"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-black text-xs">
-                          <div className="w-7 h-7 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-700 dark:text-emerald-300">
-                            <Icon name="arrow-up-right" className="w-4 h-4" />
-                          </div>
-                          <span>طلب‌ها</span>
-                        </div>
-                        <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-black border ${
-                          selectedContact.totalDemand > 0 
-                            ? 'text-emerald-900 dark:text-emerald-200 bg-emerald-100 dark:bg-emerald-500/25 border-emerald-200 dark:border-emerald-500/30' 
-                            : 'text-slate-800 dark:text-slate-300 bg-slate-200/80 dark:bg-slate-700 border-slate-300 dark:border-slate-600'
-                        }`}>
-                          {selectedContact.totalDemand > 0 ? 'طلبکار' : 'تسویه'}
-                        </span>
-                      </div>
-                      <div className="space-y-2 text-right">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-700 dark:text-slate-300 font-semibold">طلب فعلی (در جریان):</span>
-                          <span className="font-black text-emerald-950 dark:text-emerald-400 font-numeric" dir="rtl">
-                            {formatAppNumber(selectedContact.totalDemand || 0)} تومان
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-700 dark:text-slate-300 font-semibold">بایگانی تسویه‌شده:</span>
-                          <span className="font-bold text-slate-900 dark:text-slate-100 font-numeric" dir="rtl">
-                            {archivedDemandSum > 0 ? `${formatAppNumber(archivedDemandSum)} تومان` : 'بدون بایگانی'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs pt-1.5 border-t border-slate-200 dark:border-white/10">
-                          <span className="text-slate-700 dark:text-slate-300 font-semibold">تراکنش‌های فعال:</span>
-                          <span className="font-bold text-emerald-900 dark:text-emerald-300 font-numeric" dir="rtl">
-                            {toAppDigits(contactDemands.length)} مورد
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}{profileFilter === 'loans' && /*#__PURE__*/<div className="space-y-2">{(() => {const contactLoans = loans.filter(l => l.contactId === selectedContact.id);
-                const activeLoans = contactLoans.filter(l => l.remainingAmount > 0);
-                const closedLoans = contactLoans.filter(l => l.remainingAmount <= 0);
-                return /*#__PURE__*/<div className="space-y-2.5">{/*#__PURE__*/<ActiveArchiveSegmentedControl activeLabel="وام‌های فعال" activeCount={toAppDigits(activeLoans.length)} archiveCount={closedLoans.length} currentFilter={contactLoansSubFilter} onChange={setContactLoansSubFilter} colorTheme="indigo" actions={[{
-                    label: 'ثبت وام جدید',
-                    icon: 'landmark',
-                    onClick: () => openStackWizard('loan', 'add')
-                  }, {
-                    label: 'ثبت قسط جدید',
-                    icon: 'receipt',
-                    onClick: () => openStackWizard('installment', 'add')
-                  }]} />}{contactLoansSubFilter === 'active' ? activeLoans.length > 0 ? activeLoans.map(loan => /*#__PURE__*/<div key={loan.id} onClick={() => openLoanDetail(loan)} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">{/*#__PURE__*/<div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">{/*#__PURE__*/<div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">{/*#__PURE__*/<Icon name={loan.icon || 'landmark'} className="w-6 h-6" />}</div>}{/*#__PURE__*/<div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">{/*#__PURE__*/<h3 className="text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal">{loan.title}</h3>}{/*#__PURE__*/<p className="text-xs text-slate-500 dark:text-slate-400 whitespace-normal">اقساط: {/*#__PURE__*/<span className="font-mono font-numeric">{formatAppNumber(loan.installmentAmount)}</span>} تومان</p>}</div>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="font-bold text-base leading-none text-indigo-600 dark:text-indigo-400 font-mono font-numeric">{formatAppNumber(loan.principalAmount)}</div>}{/*#__PURE__*/<div className="text-xs text-indigo-600 dark:text-indigo-400">تومان</div>}</div>}</div>) : /*#__PURE__*/<div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">هیچ وام فعالی برای این شخص ثبت نشده است.</div> : closedLoans.length > 0 ? closedLoans.map(loan => /*#__PURE__*/<div key={loan.id} onClick={() => openLoanDetail(loan)} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto">{/*#__PURE__*/<div className="flex items-center space-x-3 space-x-reverse min-w-0 flex-1">{/*#__PURE__*/<div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">{/*#__PURE__*/<Icon name="check-circle-2" className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />}</div>}{/*#__PURE__*/<div className="min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">{/*#__PURE__*/<h3 className="text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal line-through decoration-slate-400">{loan.title}</h3>}{/*#__PURE__*/<p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold whitespace-normal">تسویه کامل شد</p>}</div>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="font-bold text-base leading-none text-slate-500 font-mono font-numeric">{formatAppNumber(loan.principalAmount)}</div>}{/*#__PURE__*/<div className="text-xs text-slate-500">تومان</div>}</div>}</div>) : /*#__PURE__*/<div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">هیچ وام تسویه‌شده یا بایگانی‌شده‌ای وجود ندارد.</div>}</div>;
-              })()}</div>}{profileFilter === 'debts' && /*#__PURE__*/<div className="space-y-2">{(() => {
-                const contactDebts = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
-                let archivedDebtPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'debt');
-                const archivedDebtTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && t.periodId);
-                if (archivedDebtPeriods.length === 0 && archivedDebtTxs.length > 0) {
-                  let sum = 0;
-                  archivedDebtTxs.forEach(t => {
-                    if (t.type === 'debt') sum += Math.abs(t.amount);
-                  });
-                  archivedDebtPeriods = [{
-                    id: archivedDebtTxs[0].periodId || 'p_auto_debt_' + selectedContact.id,
-                    contactId: selectedContact.id,
-                    contactName: `${selectedContact.firstName} ${selectedContact.lastName}`,
-                    type: 'debt',
-                    title: `دوره تسویه‌شده بدهی به ${selectedContact.firstName} ${selectedContact.lastName}`,
-                    totalAmount: sum,
-                    startDate: archivedDebtTxs[archivedDebtTxs.length - 1]?.dateStr || 'نامشخص',
-                    endDate: archivedDebtTxs[0]?.dateStr || 'امروز',
-                    transactions: archivedDebtTxs
-                  }];
-                }
-                const activeDebtCount = contactDebts.length > 0 ? contactDebts.length : selectedContact.totalDebt > 0 ? 1 : 0;
-                return /*#__PURE__*/<div className="space-y-2">{/*#__PURE__*/<ActiveArchiveSegmentedControl activeLabel="بدهی‌های فعال" activeCount={activeDebtCount} archiveCount={archivedDebtPeriods.length} currentFilter={contactDebtsSubFilter} onChange={setContactDebtsSubFilter} colorTheme="rose" actions={[{
-                    label: 'ثبت بدهی جدید',
-                    icon: 'arrow-down-left',
-                    onClick: () => openStackWizard('debt', 'add')
-                  }, {
-                    label: 'ثبت بازپرداخت',
-                    icon: 'check-circle-2',
-                    onClick: () => openStackWizard('debt_repayment', 'add')
-                  }]} />}{contactDebtsSubFilter === 'active' ? contactDebts.length > 0 ? contactDebts.map(tx => {
-                    const isRepay = tx.type === 'debt_repayment';
-                    return /*#__PURE__*/<SwipeableTxCard key={tx.id} tx={tx} contacts={contacts} loans={loans} colorType="rose" hasShadow={true} isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)} onEdit={txItem => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem)} onDelete={txItem => requestDeleteTx(txItem, 'debt')} />;
-                  }) : selectedContact.totalDebt > 0 ? /*#__PURE__*/<div onClick={() => openStackWizard('debt', 'edit', {
-                    contactId: selectedContact.id,
-                    amount: selectedContact.totalDebt
-                  })} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between">{/*#__PURE__*/<div className="w-full flex flex-col gap-1">{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0">{/*#__PURE__*/<Icon name="arrow-down-left" className="w-6 h-6" />}</div>}{/*#__PURE__*/<div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">{/*#__PURE__*/<h3 className="font-bold text-slate-800 dark:text-white text-sm">ثبت بدهی جدید به {selectedContact.firstName} {selectedContact.lastName}</h3>}{/*#__PURE__*/<p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || 'توضیحات ثبت نشده'}</p>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric">{formatAppNumber(selectedContact.totalDebt)}</div>}{/*#__PURE__*/<div className="text-rose-600 dark:text-rose-400 text-xs">تومان</div>}</div>}</div>}</div>}</div> : /*#__PURE__*/<div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">هیچ بدهی فعالی برای این شخص ثبت نشده است.</div> : archivedDebtPeriods.length > 0 ? archivedDebtPeriods.map(period => /*#__PURE__*/<div key={period.id} onClick={() => openArchivedPeriodDetail(period)} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between">{/*#__PURE__*/<div className="w-full flex flex-col gap-1">{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0">{/*#__PURE__*/<Icon name="arrow-down-left" className="w-6 h-6" />}</div>}{/*#__PURE__*/<div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">{/*#__PURE__*/<h3 className="font-bold text-slate-800 dark:text-white text-sm">{period.title || 'دوره تسویه‌شده بدهی'}</h3>}{/*#__PURE__*/<p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{formatDateToNumericJalali(period.startDate)} تا {formatDateToNumericJalali(period.endDate)}</p>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric">{formatAppNumber(period.totalAmount || 0)}</div>}{/*#__PURE__*/<div className="text-rose-600 dark:text-rose-400 text-xs">تومان</div>}</div>}</div>}</div>}</div>) : /*#__PURE__*/<div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">هیچ دوره بدهی تسویه‌شده یا بایگانی‌شده‌ای وجود ندارد.</div>}</div>;
-              })()}</div>}{profileFilter === 'demands' && /*#__PURE__*/<div className="space-y-2">{(() => {
-                const contactDemands = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
-                let archivedDemandPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'demand');
-                const archivedDemandTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && t.periodId);
-                if (archivedDemandPeriods.length === 0 && archivedDemandTxs.length > 0) {
-                  let sum = 0;
-                  archivedDemandTxs.forEach(t => {
-                    if (t.type === 'demand') sum += Math.abs(t.amount);
-                  });
-                  archivedDemandPeriods = [{
-                    id: archivedDemandTxs[0].periodId || 'p_auto_demand_' + selectedContact.id,
-                    contactId: selectedContact.id,
-                    contactName: `${selectedContact.firstName} ${selectedContact.lastName}`,
-                    type: 'demand',
-                    title: `دوره تسویه‌شده طلب از ${selectedContact.firstName} ${selectedContact.lastName}`,
-                    totalAmount: sum,
-                    startDate: archivedDemandTxs[archivedDemandTxs.length - 1]?.dateStr || 'نامشخص',
-                    endDate: archivedDemandTxs[0]?.dateStr || 'امروز',
-                    transactions: archivedDemandTxs
-                  }];
-                }
-                const activeDemandCount = contactDemands.length > 0 ? contactDemands.length : selectedContact.totalDemand > 0 ? 1 : 0;
-                return /*#__PURE__*/<div className="space-y-2">{/*#__PURE__*/<ActiveArchiveSegmentedControl activeLabel="طلب‌های فعال" activeCount={activeDemandCount} archiveCount={archivedDemandPeriods.length} currentFilter={contactDemandsSubFilter} onChange={setContactDemandsSubFilter} colorTheme="emerald" actions={[{
-                    label: 'ثبت طلب جدید',
-                    icon: 'arrow-up-right',
-                    onClick: () => openStackWizard('demand', 'add')
-                  }, {
-                    label: 'ثبت بازپرداخت',
-                    icon: 'check-circle-2',
-                    onClick: () => openStackWizard('demand_repayment', 'add')
-                  }]} />}{contactDemandsSubFilter === 'active' ? contactDemands.length > 0 ? contactDemands.map(tx => {
-                    const isRepay = tx.type === 'demand_repayment';
-                    return /*#__PURE__*/<SwipeableTxCard key={tx.id} tx={tx} contacts={contacts} loans={loans} colorType="emerald" hasShadow={true} isHighlighted={highlightedTxId !== null && String(tx.id) === String(highlightedTxId)} onEdit={txItem => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem)} onDelete={txItem => requestDeleteTx(txItem, 'demand')} />;
-                  }) : selectedContact.totalDemand > 0 ? /*#__PURE__*/<div onClick={() => openStackWizard('demand', 'edit', {
-                    contactId: selectedContact.id,
-                    amount: selectedContact.totalDemand
-                  })} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between">{/*#__PURE__*/<div className="w-full flex flex-col gap-1">{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">{/*#__PURE__*/<Icon name="arrow-up-right" className="w-6 h-6" />}</div>}{/*#__PURE__*/<div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">{/*#__PURE__*/<h3 className="font-bold text-slate-800 dark:text-white text-sm">طلب شخصی</h3>}{/*#__PURE__*/<p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{selectedContact.note || `طلب از ${selectedContact.firstName} ${selectedContact.lastName}`}</p>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric">{formatAppNumber(selectedContact.totalDemand)}</div>}{/*#__PURE__*/<div className="text-emerald-600 dark:text-emerald-400 text-xs">تومان</div>}</div>}</div>}</div>}</div> : /*#__PURE__*/<div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">هیچ طلبی از این شخص ثبت نشده است.</div> : archivedDemandPeriods.length > 0 ? archivedDemandPeriods.map(period => /*#__PURE__*/<div key={period.id} onClick={() => openArchivedPeriodDetail(period)} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between">{/*#__PURE__*/<div className="w-full flex flex-col gap-1">{/*#__PURE__*/<div className="flex items-center justify-between w-full">{/*#__PURE__*/<div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0">{/*#__PURE__*/<Icon name="arrow-up-right" className="w-6 h-6" />}</div>}{/*#__PURE__*/<div className="flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2">{/*#__PURE__*/<h3 className="font-bold text-slate-800 dark:text-white text-sm">{period.title || 'دوره تسویه‌شده طلب'}</h3>}{/*#__PURE__*/<p className="text-slate-500 dark:text-slate-400 text-xs whitespace-normal">{formatDateToNumericJalali(period.startDate)} تا {formatDateToNumericJalali(period.endDate)}</p>}</div>}{/*#__PURE__*/<div className="text-left shrink-0 flex flex-col items-center">{/*#__PURE__*/<div className="text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric">{formatAppNumber(period.totalAmount || 0)}</div>}{/*#__PURE__*/<div className="text-emerald-600 dark:text-emerald-400 text-xs">تومان</div>}</div>}</div>}</div>}</div>) : /*#__PURE__*/<div className="bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60">هیچ دوره طلب تسویه‌شده یا بایگانی‌شده‌ای وجود ندارد.</div>}</div>;
-              })()}</div>}</div>}{/*#__PURE__*/<div className="h-12 shrink-0 pointer-events-none" />}</div>;
+        return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+          className: "space-y-4 animate-fade-in"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex justify-between items-center py-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: onBack ? () => onBack('button') : () => navigateBack(loanReturnTab === 'accounts' ? 'accounts' : 'contacts'),
+          className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "arrow-right",
+          className: "w-5 h-5 text-slate-700 dark:text-slate-200"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "text-sm font-bold text-slate-800 dark:text-slate-100"
+        }, "\u067E\u0631\u0648\u0641\u0627\u06CC\u0644 \u0645\u062E\u0627\u0637\u0628"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-1.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => openStackWizard('contact', 'edit', selectedContact),
+          className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform",
+          title: " "
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "pencil",
+          className: "w-4 h-4"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: handleDeleteContact,
+          className: "w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400",
+          title: " "
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "trash-2",
+          className: "w-4 h-4"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => {
+            const updated = contacts.map(c => c.id === selectedContact.id ? {
+              ...c,
+              isFavorite: !c.isFavorite
+            } : c);
+            setContacts(updated);
+            setSelectedContact({
+              ...selectedContact,
+              isFavorite: !selectedContact.isFavorite
+            });
+            showToast(selectedContact.isFavorite ? 'از علاقه مندی‌ها حذف شد' : 'به علاقه‌مندی‌ها اضافه شد');
+          },
+          className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-amber-500 active:scale-95 transition-transform",
+          title: ""
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "star",
+          className: `w-5 h-5 ${selectedContact.isFavorite ? 'fill-amber-400 text-amber-400' : ''}`
+        })))), (() => {
+          const cardTheme = getContactCardTheme(selectedContact.id);
+          const contactInitials = (selectedContact.firstName ? selectedContact.firstName.charAt(0) : '') + (selectedContact.lastName ? selectedContact.lastName.charAt(0) : '');
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            className: `relative overflow-hidden rounded-2xl p-4 border flex flex-col gap-3 group transition-transform duration-200 ${cardTheme.containerClass}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `absolute -top-2 -left-2 ${cardTheme.watermarkColor}`,
+            style: {
+              opacity: 0.08,
+              zIndex: 0,
+              pointerEvents: "none"
+            }
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "landmark",
+            className: "w-28 h-28 sm:w-32 sm:h-32"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "relative z-10 w-full flex flex-col gap-3"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex gap-3 items-center min-w-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden ${cardTheme.avatarClass} flex items-center justify-center font-bold text-xl sm:text-2xl shadow-md border-2 border-white/60 dark:border-slate-700/60 shrink-0`
+          }, selectedContact.profileImage ? /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("img", {
+            src: selectedContact.profileImage,
+            alt: `${selectedContact.firstName} ${selectedContact.lastName}`,
+            className: "w-full h-full object-cover"
+          }) : contactInitials || '؟'), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "min-w-0 flex-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h2", {
+            className: `text-base sm:text-lg font-bold leading-tight truncate ${cardTheme.nameClass}`
+          }, selectedContact.firstName, " ", selectedContact.lastName), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: `text-xs flex items-center gap-1.5 mt-0.5 ${cardTheme.phoneClass}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "phone",
+            className: "w-3.5 h-3.5 shrink-0"
+          }), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            dir: "ltr",
+            className: "font-mono"
+          }, selectedContact.phone || 'بدون شماره تماس')))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "space-y-2 mt-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center gap-2 shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "credit-card",
+            className: `w-4 h-4 shrink-0 ${cardTheme.accentColorClass}`
+          }), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: `text-xs font-bold ${cardTheme.rowLabelClass}`
+          }, "\u06A9\u0627\u0631\u062A")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center gap-2 min-w-0 flex-1 justify-end"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: `font-mono text-sm sm:text-base font-bold tracking-wider dir-ltr truncate ${cardTheme.rowTextClass}`
+          }, selectedContact.bankCard ? selectedContact.bankCard : 'ثبت نشده'), selectedContact.bankCard && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            onClick: () => copyToClipboard(selectedContact.bankCard, 'شماره کارت'),
+            className: `${cardTheme.accentColorClass} active:opacity-50 shrink-0 p-1`,
+            title: "  "
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "copy",
+            className: "w-4 h-4 shrink-0"
+          })))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `flex items-center justify-between p-2 rounded-xl backdrop-blur-sm ${cardTheme.rowClass}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center gap-2 shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "landmark",
+            className: `w-4 h-4 shrink-0 ${cardTheme.accentColorClass}`
+          }), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: `text-xs font-bold ${cardTheme.rowLabelClass}`
+          }, "\u0634\u0628\u0627")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center gap-2 min-w-0 flex-1 justify-end"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: `font-mono text-[11px] sm:text-xs font-bold dir-ltr truncate ${cardTheme.rowTextClass}`
+          }, selectedContact.iban ? selectedContact.iban : 'ثبت نشده'), selectedContact.iban && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            onClick: () => copyToClipboard(selectedContact.iban, 'شماره شبا'),
+            className: `${cardTheme.accentColorClass} active:opacity-50 shrink-0 p-1`,
+            title: "  "
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "copy",
+            className: "w-4 h-4 shrink-0"
+          })))))));
+        })(), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "grid grid-cols-3 gap-2.5"
+        }, (() => {
+          const contactLoansCount = loans.filter(l => l.contactId === selectedContact.id).length;
+          const isActive = profileFilter === 'loans';
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            onClick: () => setProfileFilter(prev => prev === 'loans' ? 'all' : 'loans'),
+            className: `relative bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-indigo-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "text-xs sm:text-[13px] font-bold text-white/95"
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627"), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-indigo-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "landmark",
+            className: "w-3 h-3"
+          }))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex flex-col items-start justify-end mt-1.5"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-[15px] sm:text-base font-black tracking-tight leading-none text-white font-mono font-numeric"
+          }, toAppDigits(contactLoansCount)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-[9px] sm:text-[10px] text-indigo-100 font-medium mt-0.5"
+          }, contactLoansCount === 0 ? 'بدون وام' : 'وام فعال')));
+        })(), (() => {
+          const isActive = profileFilter === 'debts';
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            onClick: () => setProfileFilter(prev => prev === 'debts' ? 'all' : 'debts'),
+            className: `relative bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-rose-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-rose-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "text-xs sm:text-[13px] font-bold text-white/95"
+          }, "\u0628\u062F\u0647\u06CC"), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-rose-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-down-left",
+            className: "w-3 h-3"
+          }))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex flex-col items-start justify-end mt-1.5"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
+          }, formatAppNumber(selectedContact.totalDebt || 0)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-[9px] sm:text-[10px] text-rose-100 font-medium mt-0.5"
+          }, "\u062A\u0648\u0645\u0627\u0646")));
+        })(), (() => {
+          const isActive = profileFilter === 'demands';
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            onClick: () => setProfileFilter(prev => prev === 'demands' ? 'all' : 'demands'),
+            className: `relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border overflow-hidden group ${isActive ? 'ring-2 ring-emerald-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-white/40 shadow-emerald-500/25 scale-[1.02]' : 'border-white/15 opacity-90 hover:opacity-100'}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "text-xs sm:text-[13px] font-bold text-white/95"
+          }, "\u0637\u0644\u0628"), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: `w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isActive ? 'bg-white text-emerald-700 font-bold shadow-xs' : 'bg-white/20 text-white backdrop-blur-xs group-hover:scale-110'}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-up-right",
+            className: "w-3 h-3"
+          }))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex flex-col items-start justify-end mt-1.5"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-[13px] sm:text-[14px] font-black tracking-tight leading-none text-white font-mono font-numeric truncate max-w-full"
+          }, formatAppNumber(selectedContact.totalDemand || 0)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-[9px] sm:text-[10px] text-emerald-100 font-medium mt-0.5"
+          }, "\u062A\u0648\u0645\u0627\u0646")));
+        })())), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3"
+        }, profileFilter === 'all' && (() => {
+          const contactLoans = loans.filter(l => l.contactId === selectedContact.id);
+          const activeLoans = contactLoans.filter(l => l.remainingAmount > 0);
+          const closedLoans = contactLoans.filter(l => l.remainingAmount <= 0);
+          const totalLoanRemaining = activeLoans.reduce((acc, l) => acc + (l.remainingAmount || 0), 0);
+          const contactDebts = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
+          let archivedDebtPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'debt');
+          const archivedDebtTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && t.periodId);
+          const archivedDebtSum = archivedDebtPeriods.reduce((acc, p) => acc + (p.totalAmount || 0), 0) + (archivedDebtPeriods.length === 0 ? archivedDebtTxs.filter(t => t.type === 'debt').reduce((acc, t) => acc + Math.abs(t.amount), 0) : 0);
+          const contactDemands = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
+          let archivedDemandPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'demand');
+          const archivedDemandTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && t.periodId);
+          const archivedDemandSum = archivedDemandPeriods.reduce((acc, p) => acc + (p.totalAmount || 0), 0) + (archivedDemandPeriods.length === 0 ? archivedDemandTxs.filter(t => t.type === 'demand').reduce((acc, t) => acc + Math.abs(t.amount), 0) : 0);
+          const netBalance = (selectedContact.totalDemand || 0) - (selectedContact.totalDebt || 0);
+          return /*#__PURE__*/React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-3xl p-3.5 sm:p-4 shadow-xl border border-slate-200/80 dark:border-slate-700/60 relative overflow-hidden space-y-3 animate-fade-in mb-2"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"
+          }), /*#__PURE__*/React.createElement("div", {
+            className: "absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"
+          }), /*#__PURE__*/React.createElement("div", {
+            className: "flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-white/10 pb-3 relative z-10"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center gap-2"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "w-9 h-9 rounded-2xl bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 flex items-center justify-center border border-indigo-200 dark:border-indigo-500/30 shrink-0 shadow-xs"
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "bar-chart-3",
+            className: "w-5 h-5"
+          })), /*#__PURE__*/React.createElement("div", {
+            className: "text-right"
+          }, /*#__PURE__*/React.createElement("h3", {
+            className: "text-sm font-black text-slate-900 dark:text-white"
+          }, "\u06A9\u0627\u0631\u0646\u0627\u0645\u0647 \u0648 \u062E\u0644\u0627\u0635\u0647 \u0631\u0641\u062A\u0627\u0631 \u0645\u0627\u0644\u06CC"), /*#__PURE__*/React.createElement("p", {
+            className: "text-[11px] text-slate-600 dark:text-slate-400 font-medium"
+          }, "\u062A\u062D\u0644\u06CC\u0644 \u0648\u0636\u0639\u06CC\u062A \u062F\u0631 \u06CC\u06A9 \u0646\u06AF\u0627\u0647"))), /*#__PURE__*/React.createElement("div", {
+            className: `px-3 py-1.5 rounded-full text-xs font-black flex items-center gap-1.5 border shadow-xs ${netBalance > 0 ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/40' : netBalance < 0 ? 'bg-rose-50 dark:bg-rose-500/20 text-rose-900 dark:text-rose-300 border-rose-300 dark:border-rose-500/40' : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-300 border-slate-300 dark:border-slate-700'}`
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "w-2 h-2 rounded-full animate-pulse bg-current shrink-0"
+          }), /*#__PURE__*/React.createElement("span", {
+            className: "font-numeric",
+            dir: "rtl"
+          }, netBalance > 0 ? `تراز: +${formatAppNumber(netBalance)} تومان (طلبکار)` : netBalance < 0 ? `تراز: -${formatAppNumber(Math.abs(netBalance))} تومان (بدهکار)` : 'تراز حساب: تسویه متوازن'))), /*#__PURE__*/React.createElement("div", {
+            className: "grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10"
+          }, /*#__PURE__*/React.createElement("div", {
+            onClick: () => setProfileFilter('loans'),
+            className: "bg-slate-50 dark:bg-slate-700/40 hover:bg-slate-100/90 dark:hover:bg-slate-700/70 rounded-2xl p-3.5 border border-slate-200/90 dark:border-slate-700/60 transition-all cursor-pointer group hover:border-indigo-400/60 flex flex-col justify-between space-y-3 shadow-xs"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center justify-between"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center gap-2 text-indigo-800 dark:text-indigo-300 font-black text-xs"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "w-7 h-7 rounded-xl bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-700 dark:text-indigo-300"
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "landmark",
+            className: "w-4 h-4"
+          })), /*#__PURE__*/React.createElement("span", null, "\u0648\u0627\u0645\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("span", {
+            className: "text-[11px] text-indigo-900 dark:text-indigo-200 bg-indigo-100 dark:bg-indigo-500/25 border border-indigo-200 dark:border-indigo-500/30 px-2.5 py-0.5 rounded-full font-black font-numeric",
+            dir: "rtl"
+          }, toAppDigits(contactLoans.length), " \u067E\u0631\u0648\u0646\u062F\u0647")), /*#__PURE__*/React.createElement("div", {
+            className: "space-y-2 text-right"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex justify-between items-center text-xs"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-700 dark:text-slate-300 font-semibold"
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627\u06CC \u062F\u0631 \u062C\u0631\u06CC\u0627\u0646:"), /*#__PURE__*/React.createElement("span", {
+            className: "font-bold text-slate-900 dark:text-slate-100 font-numeric",
+            dir: "rtl"
+          }, toAppDigits(activeLoans.length), " \u0645\u0648\u0631\u062F")), /*#__PURE__*/React.createElement("div", {
+            className: "flex justify-between items-center text-xs"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-700 dark:text-slate-300 font-semibold"
+          }, "\u0648\u0627\u0645\u200C\u0647\u0627\u06CC \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647:"), /*#__PURE__*/React.createElement("span", {
+            className: "font-bold text-slate-900 dark:text-slate-100 font-numeric",
+            dir: "rtl"
+          }, toAppDigits(closedLoans.length), " \u0645\u0648\u0631\u062F")), /*#__PURE__*/React.createElement("div", {
+            className: "flex justify-between items-center text-xs pt-1.5 border-t border-slate-200 dark:border-white/10"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-700 dark:text-slate-300 font-semibold"
+          }, "\u0645\u0627\u0646\u062F\u0647 \u0628\u062F\u0647\u06CC \u0627\u0642\u0633\u0627\u0637:"), /*#__PURE__*/React.createElement("span", {
+            className: "font-black text-indigo-950 dark:text-indigo-300 font-numeric",
+            dir: "rtl"
+          }, formatAppNumber(totalLoanRemaining), " \u062A\u0648\u0645\u0627\u0646")))), /*#__PURE__*/React.createElement("div", {
+            onClick: () => setProfileFilter('debts'),
+            className: "bg-slate-50 dark:bg-slate-700/40 hover:bg-slate-100/90 dark:hover:bg-slate-700/70 rounded-2xl p-3.5 border border-slate-200/90 dark:border-slate-700/60 transition-all cursor-pointer group hover:border-rose-400/60 flex flex-col justify-between space-y-3 shadow-xs"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center justify-between"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center gap-2 text-rose-800 dark:text-rose-300 font-black text-xs"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "w-7 h-7 rounded-xl bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center text-rose-700 dark:text-rose-300"
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "arrow-down-left",
+            className: "w-4 h-4"
+          })), /*#__PURE__*/React.createElement("span", null, "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("span", {
+            className: `text-[11px] px-2.5 py-0.5 rounded-full font-black border ${selectedContact.totalDebt > 0 ? 'text-rose-900 dark:text-rose-200 bg-rose-100 dark:bg-rose-500/25 border-rose-200 dark:border-rose-500/30' : 'text-slate-800 dark:text-slate-300 bg-slate-200/80 dark:bg-slate-700 border-slate-300 dark:border-slate-600'}`
+          }, selectedContact.totalDebt > 0 ? 'بدهکار' : 'تسویه')), /*#__PURE__*/React.createElement("div", {
+            className: "space-y-2 text-right"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex justify-between items-center text-xs"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-700 dark:text-slate-300 font-semibold"
+          }, "\u0628\u062F\u0647\u06CC \u0641\u0639\u0644\u06CC (\u062F\u0631 \u062C\u0631\u06CC\u0627\u0646):"), /*#__PURE__*/React.createElement("span", {
+            className: "font-black text-rose-950 dark:text-rose-400 font-numeric",
+            dir: "rtl"
+          }, formatAppNumber(selectedContact.totalDebt || 0), " \u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/React.createElement("div", {
+            className: "flex justify-between items-center text-xs"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-700 dark:text-slate-300 font-semibold"
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647:"), /*#__PURE__*/React.createElement("span", {
+            className: "font-bold text-slate-900 dark:text-slate-100 font-numeric",
+            dir: "rtl"
+          }, archivedDebtSum > 0 ? `${formatAppNumber(archivedDebtSum)} تومان` : 'بدون بایگانی')), /*#__PURE__*/React.createElement("div", {
+            className: "flex justify-between items-center text-xs pt-1.5 border-t border-slate-200 dark:border-white/10"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-700 dark:text-slate-300 font-semibold"
+          }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644:"), /*#__PURE__*/React.createElement("span", {
+            className: "font-bold text-rose-900 dark:text-rose-300 font-numeric",
+            dir: "rtl"
+          }, toAppDigits(contactDebts.length), " \u0645\u0648\u0631\u062F")))), /*#__PURE__*/React.createElement("div", {
+            onClick: () => setProfileFilter('demands'),
+            className: "bg-slate-50 dark:bg-slate-700/40 hover:bg-slate-100/90 dark:hover:bg-slate-700/70 rounded-2xl p-3.5 border border-slate-200/90 dark:border-slate-700/60 transition-all cursor-pointer group hover:border-emerald-400/60 flex flex-col justify-between space-y-3 shadow-xs"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center justify-between"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-black text-xs"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "w-7 h-7 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-700 dark:text-emerald-300"
+          }, /*#__PURE__*/React.createElement(Icon, {
+            name: "arrow-up-right",
+            className: "w-4 h-4"
+          })), /*#__PURE__*/React.createElement("span", null, "\u0637\u0644\u0628\u200C\u0647\u0627")), /*#__PURE__*/React.createElement("span", {
+            className: `text-[11px] px-2.5 py-0.5 rounded-full font-black border ${selectedContact.totalDemand > 0 ? 'text-emerald-900 dark:text-emerald-200 bg-emerald-100 dark:bg-emerald-500/25 border-emerald-200 dark:border-emerald-500/30' : 'text-slate-800 dark:text-slate-300 bg-slate-200/80 dark:bg-slate-700 border-slate-300 dark:border-slate-600'}`
+          }, selectedContact.totalDemand > 0 ? 'طلبکار' : 'تسویه')), /*#__PURE__*/React.createElement("div", {
+            className: "space-y-2 text-right"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "flex justify-between items-center text-xs"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-700 dark:text-slate-300 font-semibold"
+          }, "\u0637\u0644\u0628 \u0641\u0639\u0644\u06CC (\u062F\u0631 \u062C\u0631\u06CC\u0627\u0646):"), /*#__PURE__*/React.createElement("span", {
+            className: "font-black text-emerald-950 dark:text-emerald-400 font-numeric",
+            dir: "rtl"
+          }, formatAppNumber(selectedContact.totalDemand || 0), " \u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/React.createElement("div", {
+            className: "flex justify-between items-center text-xs"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-700 dark:text-slate-300 font-semibold"
+          }, "\u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647:"), /*#__PURE__*/React.createElement("span", {
+            className: "font-bold text-slate-900 dark:text-slate-100 font-numeric",
+            dir: "rtl"
+          }, archivedDemandSum > 0 ? `${formatAppNumber(archivedDemandSum)} تومان` : 'بدون بایگانی')), /*#__PURE__*/React.createElement("div", {
+            className: "flex justify-between items-center text-xs pt-1.5 border-t border-slate-200 dark:border-white/10"
+          }, /*#__PURE__*/React.createElement("span", {
+            className: "text-slate-700 dark:text-slate-300 font-semibold"
+          }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644:"), /*#__PURE__*/React.createElement("span", {
+            className: "font-bold text-emerald-900 dark:text-emerald-300 font-numeric",
+            dir: "rtl"
+          }, toAppDigits(contactDemands.length), " \u0645\u0648\u0631\u062F"))))));
+        })(), profileFilter === 'loans' && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-2"
+        }, (() => {
+          const contactLoans = loans.filter(l => l.contactId === selectedContact.id);
+          const activeLoans = contactLoans.filter(l => l.remainingAmount > 0);
+          const closedLoans = contactLoans.filter(l => l.remainingAmount <= 0);
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            className: "space-y-2.5"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(ActiveArchiveSegmentedControl, {
+            activeLabel: "\u0648\u0627\u0645\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
+            activeCount: toAppDigits(activeLoans.length),
+            archiveCount: closedLoans.length,
+            currentFilter: contactLoansSubFilter,
+            onChange: setContactLoansSubFilter,
+            colorTheme: "indigo",
+            actions: [{
+              label: 'ثبت وام جدید',
+              icon: 'landmark',
+              onClick: () => openStackWizard('loan', 'add')
+            }, {
+              label: 'ثبت قسط جدید',
+              icon: 'receipt',
+              onClick: () => openStackWizard('installment', 'add')
+            }]
+          }), contactLoansSubFilter === 'active' ? activeLoans.length > 0 ? activeLoans.map(loan => /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            key: loan.id,
+            onClick: () => openLoanDetail(loan),
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:shadow-md transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: loan.icon || 'landmark',
+            className: "w-6 h-6"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal"
+          }, loan.title), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-xs text-slate-500 dark:text-slate-400 whitespace-normal"
+          }, "\u0627\u0642\u0633\u0627\u0637: ", /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "font-mono font-numeric"
+          }, formatAppNumber(loan.installmentAmount)), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-left shrink-0 flex flex-col items-center"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "font-bold text-base leading-none text-indigo-600 dark:text-indigo-400 font-mono font-numeric"
+          }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-xs text-indigo-600 dark:text-indigo-400"
+          }, "\u062A\u0648\u0645\u0627\u0646")))) : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
+          }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : closedLoans.length > 0 ? closedLoans.map(loan => /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            key: loan.id,
+            onClick: () => openLoanDetail(loan),
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between gap-3 min-h-[72px] h-auto"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center space-x-3 space-x-reverse min-w-0 flex-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "check-circle-2",
+            className: "w-6 h-6 text-emerald-600 dark:text-emerald-400"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "min-w-0 flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "text-sm font-bold text-slate-800 dark:text-white leading-snug break-words whitespace-normal line-through decoration-slate-400"
+          }, loan.title), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-xs text-emerald-600 dark:text-emerald-400 font-bold whitespace-normal"
+          }, "\u062A\u0633\u0648\u06CC\u0647 \u06A9\u0627\u0645\u0644 \u0634\u062F"))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-left shrink-0 flex flex-col items-center"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "font-bold text-base leading-none text-slate-500 font-mono font-numeric"
+          }, formatAppNumber(loan.principalAmount)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-xs text-slate-500"
+          }, "\u062A\u0648\u0645\u0627\u0646")))) : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
+          }, "\u0647\u06CC\u0686 \u0648\u0627\u0645 \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647 \u06CC\u0627 \u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC\u200C\u0634\u062F\u0647\u200C\u0627\u06CC \u0648\u062C\u0648\u062F \u0646\u062F\u0627\u0631\u062F."));
+        })()), profileFilter === 'debts' && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-2"
+        }, (() => {
+          const contactDebts = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && !t.periodId);
+          let archivedDebtPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'debt');
+          const archivedDebtTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'debt' || t.type === 'debt_repayment') && t.periodId);
+          if (archivedDebtPeriods.length === 0 && archivedDebtTxs.length > 0) {
+            let sum = 0;
+            archivedDebtTxs.forEach(t => {
+              if (t.type === 'debt') sum += Math.abs(t.amount);
+            });
+            archivedDebtPeriods = [{
+              id: archivedDebtTxs[0].periodId || 'p_auto_debt_' + selectedContact.id,
+              contactId: selectedContact.id,
+              contactName: `${selectedContact.firstName} ${selectedContact.lastName}`,
+              type: 'debt',
+              title: `دوره تسویه‌شده بدهی به ${selectedContact.firstName} ${selectedContact.lastName}`,
+              totalAmount: sum,
+              startDate: archivedDebtTxs[archivedDebtTxs.length - 1]?.dateStr || 'نامشخص',
+              endDate: archivedDebtTxs[0]?.dateStr || 'امروز',
+              transactions: archivedDebtTxs
+            }];
+          }
+          const activeDebtCount = contactDebts.length > 0 ? contactDebts.length : selectedContact.totalDebt > 0 ? 1 : 0;
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            className: "space-y-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(ActiveArchiveSegmentedControl, {
+            activeLabel: "\u0628\u062F\u0647\u06CC\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
+            activeCount: activeDebtCount,
+            archiveCount: archivedDebtPeriods.length,
+            currentFilter: contactDebtsSubFilter,
+            onChange: setContactDebtsSubFilter,
+            colorTheme: "rose",
+            actions: [{
+              label: 'ثبت بدهی جدید',
+              icon: 'arrow-down-left',
+              onClick: () => openStackWizard('debt', 'add')
+            }, {
+              label: 'ثبت بازپرداخت',
+              icon: 'check-circle-2',
+              onClick: () => openStackWizard('debt_repayment', 'add')
+            }]
+          }), contactDebtsSubFilter === 'active' ? contactDebts.length > 0 ? contactDebts.map(tx => {
+            const isRepay = tx.type === 'debt_repayment';
+            return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeableTxCard, {
+              key: tx.id,
+              tx: tx,
+              contacts: contacts,
+              loans: loans,
+              colorType: "rose",
+              hasShadow: true,
+              isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
+              onEdit: txItem => openStackWizard(isRepay ? 'debt_repayment' : 'debt', 'edit', txItem),
+              onDelete: txItem => requestDeleteTx(txItem, 'debt')
+            });
+          }) : selectedContact.totalDebt > 0 ? /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            onClick: () => openStackWizard('debt', 'edit', {
+              contactId: selectedContact.id,
+              amount: selectedContact.totalDebt
+            }),
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-rose-400 transition-all cursor-pointer flex items-center justify-between"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-full flex flex-col gap-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-down-left",
+            className: "w-6 h-6"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "font-bold text-slate-800 dark:text-white text-sm"
+          }, "\u062B\u0628\u062A \u0628\u062F\u0647\u06CC \u062C\u062F\u06CC\u062F \u0628\u0647 ", selectedContact.firstName, " ", selectedContact.lastName), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
+          }, selectedContact.note || 'توضیحات ثبت نشده')), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-left shrink-0 flex flex-col items-center"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(selectedContact.totalDebt)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-rose-600 dark:text-rose-400 text-xs"
+          }, "\u062A\u0648\u0645\u0627\u0646"))))) : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
+          }, "\u0647\u06CC\u0686 \u0628\u062F\u0647\u06CC \u0641\u0639\u0627\u0644\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDebtPeriods.length > 0 ? archivedDebtPeriods.map(period => /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            key: period.id,
+            onClick: () => openArchivedPeriodDetail(period),
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-full flex flex-col gap-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-12 h-12 bg-rose-50 dark:bg-rose-950/50 rounded-2xl flex items-center justify-center text-rose-500 dark:text-rose-400 shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-down-left",
+            className: "w-6 h-6"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "font-bold text-slate-800 dark:text-white text-sm"
+          }, period.title || 'دوره تسویه‌شده بدهی'), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
+          }, formatDateToNumericJalali(period.startDate), " \u062A\u0627 ", formatDateToNumericJalali(period.endDate))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-left shrink-0 flex flex-col items-center"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-rose-600 dark:text-rose-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(period.totalAmount || 0)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-rose-600 dark:text-rose-400 text-xs"
+          }, "\u062A\u0648\u0645\u0627\u0646")))))) : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
+          }, "\u0647\u06CC\u0686 \u062F\u0648\u0631\u0647 \u0628\u062F\u0647\u06CC \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647 \u06CC\u0627 \u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC\u200C\u0634\u062F\u0647\u200C\u0627\u06CC \u0648\u062C\u0648\u062F \u0646\u062F\u0627\u0631\u062F."));
+        })()), profileFilter === 'demands' && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-2"
+        }, (() => {
+          const contactDemands = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && !t.periodId);
+          let archivedDemandPeriods = completedPeriods.filter(p => p.contactId === selectedContact.id && p.type === 'demand');
+          const archivedDemandTxs = transactions.filter(t => t.contactId === selectedContact.id && (t.type === 'demand' || t.type === 'demand_repayment') && t.periodId);
+          if (archivedDemandPeriods.length === 0 && archivedDemandTxs.length > 0) {
+            let sum = 0;
+            archivedDemandTxs.forEach(t => {
+              if (t.type === 'demand') sum += Math.abs(t.amount);
+            });
+            archivedDemandPeriods = [{
+              id: archivedDemandTxs[0].periodId || 'p_auto_demand_' + selectedContact.id,
+              contactId: selectedContact.id,
+              contactName: `${selectedContact.firstName} ${selectedContact.lastName}`,
+              type: 'demand',
+              title: `دوره تسویه‌شده طلب از ${selectedContact.firstName} ${selectedContact.lastName}`,
+              totalAmount: sum,
+              startDate: archivedDemandTxs[archivedDemandTxs.length - 1]?.dateStr || 'نامشخص',
+              endDate: archivedDemandTxs[0]?.dateStr || 'امروز',
+              transactions: archivedDemandTxs
+            }];
+          }
+          const activeDemandCount = contactDemands.length > 0 ? contactDemands.length : selectedContact.totalDemand > 0 ? 1 : 0;
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            className: "space-y-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(ActiveArchiveSegmentedControl, {
+            activeLabel: "\u0637\u0644\u0628\u200C\u0647\u0627\u06CC \u0641\u0639\u0627\u0644",
+            activeCount: activeDemandCount,
+            archiveCount: archivedDemandPeriods.length,
+            currentFilter: contactDemandsSubFilter,
+            onChange: setContactDemandsSubFilter,
+            colorTheme: "emerald",
+            actions: [{
+              label: 'ثبت طلب جدید',
+              icon: 'arrow-up-right',
+              onClick: () => openStackWizard('demand', 'add')
+            }, {
+              label: 'ثبت بازپرداخت',
+              icon: 'check-circle-2',
+              onClick: () => openStackWizard('demand_repayment', 'add')
+            }]
+          }), contactDemandsSubFilter === 'active' ? contactDemands.length > 0 ? contactDemands.map(tx => {
+            const isRepay = tx.type === 'demand_repayment';
+            return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeableTxCard, {
+              key: tx.id,
+              tx: tx,
+              contacts: contacts,
+              loans: loans,
+              colorType: "emerald",
+              hasShadow: true,
+              isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
+              onEdit: txItem => openStackWizard(isRepay ? 'demand_repayment' : 'demand', 'edit', txItem),
+              onDelete: txItem => requestDeleteTx(txItem, 'demand')
+            });
+          }) : selectedContact.totalDemand > 0 ? /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            onClick: () => openStackWizard('demand', 'edit', {
+              contactId: selectedContact.id,
+              amount: selectedContact.totalDemand
+            }),
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 hover:border-emerald-400 transition-all cursor-pointer flex items-center justify-between"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-full flex flex-col gap-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-up-right",
+            className: "w-6 h-6"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "font-bold text-slate-800 dark:text-white text-sm"
+          }, "\u0637\u0644\u0628 \u0634\u062E\u0635\u06CC"), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
+          }, selectedContact.note || `طلب از ${selectedContact.firstName} ${selectedContact.lastName}`)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-left shrink-0 flex flex-col items-center"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(selectedContact.totalDemand)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-emerald-600 dark:text-emerald-400 text-xs"
+          }, "\u062A\u0648\u0645\u0627\u0646"))))) : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
+          }, "\u0647\u06CC\u0686 \u0637\u0644\u0628\u06CC \u0627\u0632 \u0627\u06CC\u0646 \u0634\u062E\u0635 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : archivedDemandPeriods.length > 0 ? archivedDemandPeriods.map(period => /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            key: period.id,
+            onClick: () => openArchivedPeriodDetail(period),
+            className: "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm  pl-6 pr-4 py-3 opacity-75 hover:opacity-100 transition-all cursor-pointer flex items-center justify-between"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-full flex flex-col gap-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between w-full"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-up-right",
+            className: "w-6 h-6"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex-1 text-right flex flex-col gap-0.5 pl-4 pr-2"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "font-bold text-slate-800 dark:text-white text-sm"
+          }, period.title || 'دوره تسویه‌شده طلب'), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-slate-500 dark:text-slate-400 text-xs whitespace-normal"
+          }, formatDateToNumericJalali(period.startDate), " \u062A\u0627 ", formatDateToNumericJalali(period.endDate))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-left shrink-0 flex flex-col items-center"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-emerald-600 dark:text-emerald-400 font-bold text-base leading-none font-mono font-numeric"
+          }, formatAppNumber(period.totalAmount || 0)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-emerald-600 dark:text-emerald-400 text-xs"
+          }, "\u062A\u0648\u0645\u0627\u0646")))))) : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 p-3 rounded-2xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60"
+          }, "\u0647\u06CC\u0686 \u062F\u0648\u0631\u0647 \u0637\u0644\u0628 \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647 \u06CC\u0627 \u0628\u0627\u06CC\u06AF\u0627\u0646\u06CC\u200C\u0634\u062F\u0647\u200C\u0627\u06CC \u0648\u062C\u0648\u062F \u0646\u062F\u0627\u0631\u062F."));
+        })())), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "h-12 shrink-0 pointer-events-none"
+        }));
       case 'loan-detail':
         if (!selectedLoan) return null;
         const loanContactObj = contacts.find(c => c.id === selectedLoan.contactId);
@@ -9197,97 +13597,4317 @@ function App() {
         const installmentAmount = Number(selectedLoan.installmentAmount || (totalInst > 0 ? Math.round(selectedLoan.totalRepayment / totalInst) : 0));
         const nextDueInfo = getLoanNextDueInfo(selectedLoan, transactions);
         const progressPct = totalInst > 0 ? Math.min(100, Math.round(paidInst / totalInst * 100)) : 0;
-        return /*#__PURE__*/<div className="space-y-4 animate-fade-in pb-8">{/*#__PURE__*/<div className="flex justify-between items-center py-1">{/*#__PURE__*/<button onClick={onBack ? () => onBack('button') : () => navigateBack(loanReturnTab || 'accounts')} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform">{/*#__PURE__*/<Icon name="arrow-right" className="w-5 h-5 text-slate-700 dark:text-slate-200" />}</button>}{/*#__PURE__*/<h1 className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate px-2">{selectedLoan.title}</h1>}{/*#__PURE__*/<div className="flex items-center space-x-1.5 space-x-reverse shrink-0">{/*#__PURE__*/<button onClick={() => openStackWizard('loan', 'edit', selectedLoan)} className="w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform" title=" ">{/*#__PURE__*/<Icon name="pencil" className="w-4 h-4" />}</button>}{/*#__PURE__*/<button onClick={() => handleDeleteLoanClick(selectedLoan)} className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400" title=" ">{/*#__PURE__*/<Icon name="trash-2" className="w-4 h-4" />}</button>}</div>}</div>}{/*#__PURE__*/<div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-900 rounded-3xl p-5 text-white relative overflow-hidden card-shadow border border-blue-400/30 space-y-4" data-purpose="loan-summary-header">{/*#__PURE__*/<div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl pointer-events-none" />}{/*#__PURE__*/<div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />}{/*#__PURE__*/<div className="absolute left-4 bottom-1 opacity-15 pointer-events-none text-white">{/*#__PURE__*/<svg fill="currentColor" height="180" viewBox="0 0 24 24" width="180" xmlns="http://www.w3.org/2000/svg">{/*#__PURE__*/<path d="M12 2L2 7v2h20V7L12 2zm0 18H4v-9h1v9h2v-9h2v9h2v-9h2v9h2v-9h2v9h1v-9h1v9h-2zm-10-9h20v2H2v-2z" />}</svg>}</div>}{/*#__PURE__*/<div className="relative z-10 space-y-3">{/*#__PURE__*/<div className="flex items-start justify-between gap-2">{/*#__PURE__*/<div className="flex items-start gap-3 min-w-0 flex-1">{/*#__PURE__*/<div className="bg-white/15 backdrop-blur-md p-2.5 rounded-2xl border border-white/20 shrink-0 mt-0.5">{/*#__PURE__*/<Icon name={selectedLoan.icon || 'landmark'} className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-200" />}</div>}{/*#__PURE__*/<div className="min-w-0 flex-1">{/*#__PURE__*/<h2 className="text-base sm:text-lg font-bold text-white break-words leading-snug">{selectedLoan.title}</h2>}{/*#__PURE__*/<div className="flex items-center gap-1.5 text-xs opacity-90 mt-1">{/*#__PURE__*/<span className={`w-2 h-2 rounded-full ${isClosed ? 'bg-emerald-400' : 'bg-emerald-400 animate-pulse'}`} />}{/*#__PURE__*/<span className="text-indigo-200 font-medium">{isClosed ? `پرونده تسویه‌شده${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}` : `پرونده فعال${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}`}</span>}</div>}</div>}</div>}</div>}{/*#__PURE__*/<div className="bg-white/10 backdrop-blur-md rounded-2xl px-3.5 py-2 border border-white/10 flex items-center justify-between">{/*#__PURE__*/<span className="text-xs text-indigo-200 font-medium">مانده وام</span>}{/*#__PURE__*/<div className="flex items-baseline gap-1.5 font-mono font-numeric">{/*#__PURE__*/<span className="text-xl sm:text-2xl font-black text-white">{formatAppNumber(selectedLoan.remainingAmount)}</span>}{/*#__PURE__*/<span className="text-xs text-indigo-200 font-normal">تومان</span>}</div>}</div>}</div>}{/*#__PURE__*/<div className="pt-2 relative z-10 space-y-1.5">{/*#__PURE__*/<div className="flex justify-between items-center text-xs opacity-90">{/*#__PURE__*/<span className="text-indigo-200">پیشرفت پرداخت اقساط</span>}{/*#__PURE__*/<span className="text-emerald-300 font-bold">{toAppDigits(paidInst)} از {toAppDigits(totalInst)} قسط پرداخت شده</span>}</div>}{/*#__PURE__*/<div className="w-full bg-white/15 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10">{/*#__PURE__*/<div className="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500 shadow-xs" style={{
-                  width: `${progressPct}%`
-                }} />}</div>}</div>}</div>}{/*#__PURE__*/<div className="bg-white dark:bg-slate-800 rounded-2xl card-shadow border border-slate-100 dark:border-slate-700/60 p-2 sm:p-3 grid grid-cols-3 divide-x divide-x-reverse divide-slate-100 dark:divide-slate-700/60 text-center" data-purpose="loan-quick-stats">{/*#__PURE__*/<div className="px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0">{/*#__PURE__*/<div className="bg-green-50 dark:bg-green-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0">{/*#__PURE__*/<svg className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">{/*#__PURE__*/<path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />}</svg>}</div>}{/*#__PURE__*/<div className="text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center">مبلغ اصل وام</div>}{/*#__PURE__*/<div className="text-xs sm:text-sm font-bold text-green-600 dark:text-green-400 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight">{formatAppNumber(selectedLoan.principalAmount)}</div>}{/*#__PURE__*/<div className="text-[9px] text-gray-400 font-medium text-center mt-0.5">تومان</div>}</div>}{/*#__PURE__*/<div className="px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0">{/*#__PURE__*/<div className="bg-blue-50 dark:bg-blue-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0">{/*#__PURE__*/<svg className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">{/*#__PURE__*/<path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />}</svg>}</div>}{/*#__PURE__*/<div className="text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center">مبلغ هر قسط</div>}{/*#__PURE__*/<div className="text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight">{formatAppNumber(installmentAmount)}</div>}{/*#__PURE__*/<div className="text-[9px] text-gray-400 font-medium text-center mt-0.5">تومان</div>}</div>}{/*#__PURE__*/<div className="px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0">{/*#__PURE__*/<div className="bg-indigo-50 dark:bg-indigo-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0">{/*#__PURE__*/<svg className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viex��}ۖ�ƕ�{���h��A�ٝH^m�{V��X�s��hY �n"/�n������A_1/�x2�r�999�;��[���]U �
-�ټ�䶒&Y 
-uٵwƳ[�:��	������*�0�޼yvvV;k����M�^��NO*����ɏ?���_~�����&v8 �[�:d��ưC���8 ��Y��E,s`6m�X��z�2�O��_�|�%�$֩i%7�i��?~���9={r�⏧�����;R�������U!7o?��?������ࡍ�<;>��έJ��B�Y����ķύV�N����6�:Fڎǣ�:}w:dw��Q�����6����d���o�o�Q�ճ�C��!�;���X:����Xƣ1�6���ah�k-����q6���3��8�z�8h�9v���{2a�Gp���yt<�����p�9��'o���7���Ͽq��9���C;�y0����_l��ܪ�������E�� �w�wO�F[Zިn�y��5)����_�t����^��2���K���D�>~���g �o��7�����{�A�8!5�Tu���>'��.������^������wd�-�������Ϳy���[�n�w��_^|u�gx�����o	F�2,�h��@g//����qI}>��O�����q6pC�m�b�� M��73�L�&��~�v|F��A�w�C x֋غ�]'���9ƹѨ�=�mL��d� ��=2�Nh�^ ����P�2b����7�G,rbO�
-�(~mu �|��{�{���<��_Wf~ �mյd{��5��d�,�`|H0 r�93�<"��c.��!��3t4Ynq��� S���4����g0������lqt �3�ӱ�y�*��ȉp��Jo���ݝ�7�+��u�VH���iyXY��4�@�,Ӄ/�} M��A?�H�Lb"�2��-�i��47L�p�aCw�^��{�<��z�����|���g���t���O"�"@0>���+S�֎aY�geS?��!3� ����C Z]ǯ��� ���D-����3�χ Z�������h�W8����p��5�(ڥ;��:j}MP���Q�Ĳ�tl���'�U7���~�#���'�l�2���vr�K�ӪO��v�GC؎�SM������Çi���`��>�p��F���j�F	����k$��UZ(a~��d���d� шĘ�)1�A\m����K�"�ӦL��m4~�Y����?~�"�W@xs�g�$�w��;�g���5�}mt�2*�Ǌ+W�O�_ο�����T�_^^��p�ʁ;�Jr��,٪d_�����oK�kAh��T1� Q׆�o��B=���@^akX�/TD��f���a�'�C�abȐ�y�hW�<]#at��$I��"��2��M׈ⵒ$.>G����K����RBE��(Op��HI �>���_ ��N@��$_��u��Sxɟ�0G����C�{	�^���c�5�lpS>��c�P�:��L���:�[�!@�����	�_<ӹ��M��a�a{��$��ڊTn�R�@�iX�Fkh����4�/�f�V�cu��sӤ?��{�m�:�V�mп���� ���m�g�w�������#\ �O�qH[sn¹�Ϟ9}�OJ"��q���7I���K��\#��T%N��_rz�_���|zd��p&��Wp0�7�؛�R��*HD�dm�*�g�T�#�کK�$r`ʦ�]'<s�����)��E9�h����F_�L�T�m�S'�d-���������`���Y�dr�$ڝ:�V�O�6�`�-�g��K�2j�����8~㿧 �1��F�V���n-�Ӭ��v�a}��Nè��r+��xt�:��;w�k�i�m�j|��Ӗǐ#:���̧:\�F��"�|�cw��7�c��	`,&`��9}��t��F��&3:��9�ӣ]�ޤ�`X��҉l1���q�����p�L����uR�M{��x@@����y��� ��?�y�Կ rC�,pb�H�;�4J`p B���7"��F8<MO�[�ċ��$�O��S��#�DĿ��"ڗ$۳��p:�}�x�����,�z��%ܐ�D��g�ٖy�?7�4)�xṿ�tb7�����V������."�>�# U[hx��^�˹D?.�A|�9��\ⱸ^����k�������^ތs\by�J���/������)�KC$ \�Af e�D
-����!)V5�f�n���(f@�4~�G�xr[&G���� |ƙ�E���4�#2���ޓ[�@�u��'��~h�W�S�{�;.����o��ٱ�}�� }7���ӿ� ߃��.�y�PԔ����걘�ϸp�;!�o�7t�#FG�2ƇA��P%�#	������~_�ӣf�(��?������Ep��/�[ ��O?V����|�������^�)60��m ���G�H�iw���6�&_a��>9(�hK*kh�]VD��rzx:�7Z�� �N�U����I�"Ӧ��؎�����.�Zf�=6���A8��KH��H
-PX4Kh�L��Qdx](�uW+FsT�Op��U�0��{��`,�TV��ʘ�k� �rh[C��)��WEY*b�,�%O$	c�xJ�bC[�	��S�(j�8Jh<��R�7cf����?�p�8�'F��{�g�%KG�ЂpS�K��e�1G��d�֜1@����O�7efR(Ǿ^G��S��(T��,�y���a���#0�2���o�"�H-W� PE���)I�x����2�ОU�{$v'ѝ���s�G#w���wg�s�p��}�]tM��r/�1�m	���V�2< �� �m�ֳg?"�c �nx~H�{�k��Q�?'6mng���z�3g�K�Ќ+9���S��k�c�J?�eOn?��k�l$��VQ�/�~$%�`s]4@YT�߾���oMY�lC����B.���ig��ОT��l�����r7��܉��؃�:�g��@���s��
-<gg�zr����'��$�[Ϣo�	�$h�\�	��/|d��d1�)��=�d�:��A�����>y�b����7���wG'U:�]
-.�Ey��x�n@8{hS9ց��=@{���F��w~3u��]x0��+�0N�S�C�����D�NpHz�U����5���[�T�� q�E��Nn���O5�Ǥ�<v�VB�v�/"�q8�G�(����Y�)�Z�:TA�KA�Q{'��G�G8�w�bg(X0�#[��鋆�xI�@
-Y�r:���J7my�K�:�I��P���&�V�N���%A���c<��P�8�JO��3a��DZ@��G����>��#.ܒ@�[��)4�L z���[Y��^�g�l���	�O$��(.��n@Dvm2U�+��>����=�Z��Ǥ��v�-s�#|���Y �v9UIwA��cNn<�k|j��+�5i �3�8@�N{�gD��*Y>[%�Ό8x�e�j�q
-i�B,�E2�B��h�-�2������%�H����խ��^9+sU�OG=����?�7��H�/3�0���q�a�V2���@�
-��5��7e���1���DB�e�'�(�<4&p�!�0���AGZyPh2��������R����I\��``���8���6&u5��H�7�r\�o� o���G}���
-���*�F;�F-"�2���%$�G%���1J�*��F�.ҭl�g�t�6K���e�2�%)Q4��k4����n&��|��+���KQcQ���,`����=u���ޝM�~���o{U�W��2�JH/��6x�C��v1�0�6\���;)m?U�Ĺ��<�q�B�i8��
-�@��F�I-��G ��
-������l��?����/�ﰪ�@�gٱ�� ��7&���}�Ao�0�;�h߈v�#z�n�ڢ�%�P�ϻ�]����L�L�ڇ�;�c��w����_C���v����i���i'J������j���]7�x�9.8�,��(�P[�>p&��oK*��Dsl�x���3�0c�ѽU�e6�5�x2��UP�Q]�96�3�D�����B܁��n{_���T�)�p��<�\���M�h)N ��d��`����P��
-�saM�i�N�s�U���#!ť�d�j��|A��ʍCކV�u}Sڃ�'C�	����� x�s�5�V��'F8 ��ٌ�}Ʊ�wwD&]�SI�'���W�.1"JTYQ"@U�����F��q�x_�A�η	'��g�)vad��'�-��D�c�s�.=� ��Aew/c	T�5�seI�%DKJˀ�f����>��ѯȖ�e3�\�1b�c�>̅�g��@H�͋蹝�}ww��40s`<��<W~�T�uZoￋ&�mv��6��������8�75����a��u
-ӧ�M�*����Ie�52�߿� ɘ���3 0���*W�J����-fʎ���B|�PC @��,?G��bԃަ��� ��H�C'��]`)!щ��e� LU{�-��g���3$d��+m0/'�+���c9�LH��ͱ{8p�}9��$Ĝ�.:�F� �ķ�.:v�c��c<L4	���\g*�X���7u�	2�-(�c��^ԥ`�Q�H���ŝ������e	%���n�Y�-0+��P+���hU'����Bޚh�j��+o�\L`4 [@��՝�WߊW_\:�N ��Ͽ;�840����@�����`�k�P�jmq�I��t3Z32kfK;5A��z4ߥ��'0�>�=�
-����xB��Ϥh��b-��az��x0�9�a��x��wÕ��[�~��Κ�8��8���p�'�2�>���Oڽ:0�Q;@�p�zo�g�R�"�F��RA:0�J���|:�{���҆���>0��S���a�4-�U";�pY0�g%��T���˂�e�sj�m�{J��Z(,p������֡�a ,4#X >NM`�# �(aȃ
-!L�t�3ᆧ�&�@{zL�4�X@�����H�ĿG�d8���Y��H��m��Lӂim�֕�d�fֹ5)?�{�M�ڽ'}8J��}��(�} ��m�<A�F��i����?jPk1�	>�iGK�7xf6���HS�E�@d��NT��P��SRX���u���"P�vd��1�v���׳�h�������H�qk�*��,�j��SO�xXRA�����(c�D"�hf���wS-�����e�,9K�xT@�n�(gǥ��xH�h1G��Y�V&�T��(�ۋ�A�^�E$׋.��l�J(�V��3��i�3O��9���0)����S
-eD��X=�B�!ߞ�4�Ac�hz.H���{Hmq�2s�d�'T��F�����K�I:��m�gƒUS�|ؘ`��d�����5�m^��N�0��5~5�o�2v���23�*b�"=�{t������Q�M�^>:��|�Y� ���k���H/���	+`��s[xE�b�h2��A�6ؤ��u�6�Y�%�R���H .U��y�c��j����>��񗘗�J�R+�_a���B�o�.0�Ah��6�h�c��ȷ\ �F��#�������J[w��Qh�F����j�Ok�ee�W͔=-��i&0� �+�i����t�S�iƯ������ϫ��$�Q2� ��.�6���I~�WM|�J~K��<���i��i'�_q���%m�>W��3�]�1����=�s0��Y`
-ő��d���9*�$JƐ�y����#<�GTO�q&�ӕ���V�b���nfd�����3�-�m6E�x����sJSrM;K�΢M�%�,(9����)swM'���1�ǵ�
-xN�4��_���+��##�
-[�����������\��
-S����%uK���,�,�k�ZR��#?L��Pi�kR�BR��_�R�D��+@�Q?��I��)b�uc�$V�ԭ�T7(K�=[<~/��X��E��,Ϋ3ْ�`F���P[��W�2���I����?A"mo���҃����Rm�FX.�.ݜ1��"S��z̔�7��Yg��>�'W%
-�WJݬ�9搅=��C`����ZR7�P6���de���*��G�L��n�$����p]�GQ�i��ؽ�����Q��l����:�JM���q)�u�>q�	MT�<"�Z
-���5�ߒ'C9���Wib�C�!�K�s�JR���$��$;�.��d�4Φ�C�b���0�����o'�����;TnK���g�"�I��6����w��y����lv�َ��$i����	]����N���)?z��Z�Ai�8-��Ia+喒k{��ȹ�hs�W!�3���,���+�4��W�Q~u�1�ߞJ̫��1��p^��ّ��Y�Ǹ��TF-9F�GX�8�r­�	C@���bk-9~�Id*�&��̰��8��C/�a�� �)�05��Y�&�! Uޕ�~"*`�h�Z���4>j���S�&���?�Lf�6���?�V�{�_���}$��`=�{ʨ
-b�������¤�ͫ��h��q� ]��S;��<�21]�)Sո��b�Śpm	ͤ��V_K�ղQ�%0������O�#{�s6i}L�&=�g�=�u�h�b�,���[��0.�i�G��jecZ!s20��'�hȜS{�C�gAv���FjehԬZs�z���UQQ*l5�˫л�&�E�����w���gWlo;�BBě|� {�أ��2��������	����Å�\^��� �����ɠ�(��l@��/�aY�J�/'��8�C���T��Q�b�v~�V����p1 <���»'E$Zۉ��J7�N=	'S/�%r�J~sV��ɪ���T�w�0w>�.�VJL��oRy\�
-��"�*6�/ a��G�����,?m@�l:���LtR�-�&\` ���Ub�a��<n�y���Qh�B�@�KF�6�6�5�J�ef�Q������Ļ�J𨒿���R�.uu1G� �xe�¹mF�l��I�F�k?V؊�$�ɝ��pz�G;���j�<| 3)�㥋"�7}�a�#ol�s{*��^j�iI�o�ߑ��_^|��/�{�u�V�V��\|Ekg������%���cg���@Ngvo쳙W��[r���{��KT�Ŧ�:`�α��w�ڏ9hS�R�#*���R12�w䔦�'�V���h�Ӓ�h�˕8'q���xNo|B����8�j�O�,��j�C��7o���[�q��	��E�`�;��&OBg���l�؀��?�`1z z]%,�+���N&�u���'Ն���g����eG��O4j�!��6���%ͦ�`�p|r�9����>���ؓ�c������%s^L�\�+5�uRf6��@!s�H�zm:�Kz_�AEy���`�:���R�r�ò�C7��'@i��)��Xo���s��s+���g��8+uC��M��?]ĉB�,�?�! �+�]\}'j��J�b7��E�^��ԋRk[�*"D�r��'Q�yj����>�t�y*
-�9xRQ�Ø~��.3��+�@�U g��	@K�ʵ�,)����y�?J�#0У����/�fB�u��alG�.��N-Ǔ�|x��N���DZ@DԜhI��b�Y.��t�+��LfӸy]�ll橴hL�)x{�V�?�0t��������Np �"3�.�x�`�3�n���xM�&n�A\�h̅�������Տ�ć��/o�E@��*V�̆-�Z����.2�Iyg�.����Ǚ	�c�����{=s�K�Ŋeg]ŀJ����a��2CDV-�CD�0���@߬,wu_����
-(�
-р�L\�啑�*b���D�T��b>%k��@B��F�1F
-��+r�}.�}pę�/^=�C�|�zJ2A�K�x���L:Q���z؂�r�g�e�ѕĺ�m�5�x֒�k�k$4��b���`�9�7E�4v,Q5A��b�>׳6�)��~5�7^��i�I�Tt=����Zu�#q�iQԠoM�c�v��t�	Y��=��
-$)�#Fff4,�Ao�",�H<�k��Y��rl��h��Ќ`R0K��F�bZ��f��qD�ϕ ��u"�!W��)
->�'�kQ峋|N&D�r��UGUt�����ʢ�h�kk//�D1ý���'��@�b��To�P��:*f�� 4,��W��?���7�h���Q\;�];�]u�6(
-9I�d�T��uf�:�w��VޓM�4�\2R���Z���"a�R>l�w�?�`T��������-���'����.=�kW�K��Y[,�����};1��^����;�Ҍ2`-]2?�U';�� L��r(�$��u$��=,�g&/�9/y V{(A��(�,��h'xc߉�)ǔF\Oo%���d���/�������2�j��e2�N��CH?v� � ;]}Ñrr��(f�e1si"��Ä�AB!��P^�5:��J�wNb�}Ŭ�1J�UΖr�9��L@>gPji؃t�3����B��l3��5Xn%WC��J`�ܱ�J0!)��Ҋ\��8q�ˠ.F��7��M�xs$<�3ɡ(��E���k������a����M!���`q% WC������
-ܫ����#IKD�-m�����
-+o���p2�Q�շ�Ar�h�k��-7EIM{W`K�$��^)K��k����w����
-6JX�5����y�M�)ݲ{�����Mf�9�����(�%���9�p�^)1�&����ڢ�p<�ZPԢk�8�7U%O�@A���W �h-�k �4-^�RT �*�x�K(�[�6��d�ڽ'�ɵ��Z�qՕ]o*G��Q�Ad�m��ʏ�7��e^��}ě!1Ḧ́�q������#���jF��f3�WRqsdV1ə��25�H<)�0.��zkF8q{�u#���#�Ԏ�)���ک�(),�*�9>�?�J��>>��s�,'M�e����z��vA�����I���:�NvPa���*�p�����EF��3�B�me�V<.�V��zH��<�͖�P��+Q��⩒N��Yט�O`'�*�o\WI�B�� ρT�G�,���[�����LK����O�Z� �������F�R2rz���)��v�2��:M!�\6)]O���YnX�Y"�#�'�4af���^*02�)�GIyC��u128�Yh����/���d�9Ϋ���(��(��pO[�u�T�i��A'W(~\�j���C���7�.�z�|5S�uM��	�L���k2�2�z%���wT���i�����(����4�,sM����4:VO8!ִ�bed��j��4��ӟ�H"״wi��W7���.Aw�YT�u�Ks�-2ťMۣ�0�``X�wA����
-Ă|�Hh�^y�է���o���c	�6S��^�R�R��iaG�+K�#�N��XM��fyB|E�[$`7<������^�y/:zDm��G�&ӑ��
-{|ׁ��&��Ǣ9�8�k�R�Uu�`A�<�s�TU�t@��c"����b7���1!{�=:�9^�t\դC≬���c�1���x���gZ�Z*���m��]�9���i	�2��Q��k�T&�h̙�z�*[G�����`B�,�� .fvkv�(�BZ)Oj����b^i	I��즻�"��H:�8�Z��v�ܵ�q-p\u�㵮�펎��BƢ����HV$.-M�J��R�����f�Vn_��R���]\a4�5�U�	^*�
-�!����R�j1�ޢ�CJ(��C[ �h���;���Z�R)���(�i�W��[�'�P녡zQ�5�&	��[:� ?�BqL�ܩ]���viJ�bҐ\��BMx�o�P˻�S���+�F�g�A�;��0�)���;(�g>���~y��4�gu�98��H�٧.������Ŵa��;������ف	o�y���Vj(����y��ߒ#���j8����?8�8��{L�6폍���
-��ѧ.�.����^�a�����3Ь����>�O���V���;u�z�����WÇ���*���PP�1H��F4�]�;���c����ā����;C��r�#�$ߐ���>M��{�g.5�nɷvW�Eg�<����g�c��A��a����㟣Gq����uv~�&�Z8������ Ҫ���=��@/q*�c�6�=D�po�p�$�2��܎c'��{|�������s�\d/^y,Y��kC�?qB<t�V������߇u�T=��.�oHp@�d��7�p*U�o鉶�C�{c���Zy�8��b�{+��h:A�8�ɑ`�	z�;��s��aȺ��jv7����x:
-��z֒��JT�� a��)���J���䨗�uU/����Zt��j�_��ПJ�=O��� W�	l�w���-����!j?�'�i�V�:����>E쟃���>�Z`��O��Ǜp���Y��c�{��U�ތ� �)?�,�{�;sGU�W�w�,��[����XeU���jU|�A�]�xp{�P�v�kX����oz(cL,퇜�Ξ���]ǃ+_^|~�厸�{D�C���w7y�o�?�_��J.����̉yF��l��?~�����˲}	�+�ׯa�������·?ο!������_~�b���r΋�P�O�$�ȿJ���<Mb��!J&�v�d�5L���$6gIG��K���3KI�%��P#u����_�P���)�s��2��iȲG-c*4��>g>Q��b-�&����N�h�;Wl������<k����6V�ھ�c��y���,��J��l���i��Y����Ꝑ`���5��w�^����đ��x �|)4���Ř�� ®ה����,�J��j,4:6R�)eȔ�;4UY���\�!RU����J�)[��#�mhG,�~_�;e�����iP�R5$T߁�X�wC��=UG��G�ث;;)a/�/�N�M%�N�&��r�y6A�1)2���f���nDL���#����A�H�Uʞ�$ȍ�i��FM�E^6D��z�S�.{kw��7��G'4ЪH����I�N�$s'!��(��x�dZ@6�F�D�rPJP�z8(]ҫ8p�J��M�R
-%�x���rJ�%�Ɣ�5���a��؀֫�iD��Z-w�Y�!,�п�/5O�(*3V$���9w|q��8=�����xz��a�Κddת�)C�a2������%m�,�� 6��FC�k�(;n\1�-44[m��, i%~&3Þ�c�AB�G�{^��ٱ0�3�D�A�؈��ОT'�-}�����؂�X��ٚۗnIZ�!�s~�iO�Vp��l�+u��NR�,ɎL�_��i��%q�ٲ���|{R��"7�Ż��#�H+)Y�5޴�RqY8����2�@�\V��i���u���Q]��?�ӽ�u��X�3����=��g�+��3w�`���;��WK�:&�Q��!(��^�۰�*4�����dv<ս�:���0�����{�>�W�&��/e��{�{�;�C2H~<��ߧR*���X��s��Ю�ܽ�wC\��)#ja��ɘ(⩲RO�u<'��i�c����|a��:A��z0��b�̷ Ͳ�lG|T�v���N��&��0�`!4����É��<��\*����\���g����ѻ��R�����j�!���f�N�q'�
-�}X��u�{)���3o-R�$VI�xX�Q�Ū ��{j|��q��Z��L��B�R�"K��\|5��ŗd�5�����/.>�3����+2������_}���_��v�����g��݋�_�zK.>������~?��\|�k��������O-���`������v�����\|N��	Êz�a�����$nsش�([:l͊�	-�[�u������ �=<~v��)e�R�Y��' 9a��B�Ѝd7_=�к���l��LIo
-��:1</
-��b$d�y��hb?�3��
-��8���T�2�<�R�\�%�$���g�-��~]�8!,�G͚��;
-E���fs���|�"���i�XA|y4��uO�0=�v�*Xq�E�^�'l���R�}K@�Kcw$L���������C�7��ct�.~��Ke+��4%�7k�9��^�ĥp����|�_��/��2����a �+�)��v�8�:9����#2��u�ȒچZ�� s�{$� ���Gʱ$��,!0����n��[7�#����Ψ�D��g�'0��}��Ly�e^0㹯�zF�I�@{21�#���p� Q��ax<��0��Y��?� �d\�1g����3u��Z�51=n�7����lwG�1�uI�Q)t\���H�C�^3�{0H�Ԁ�Gb_�Μ>����S�!����Pبwͺ�T,����l#	kix�L�8Gwx*��)�����~/z��0���w�:���a�'�. P�T1!�L�^h���?h݄��������t (ak��m��A�6�Ё�n}�@�p��:����̪w`fM�
-ͬ��?3>�5:0�v�����G�gVm���F���|�3�dߢ�T<r4��y�ʅ��C8�ue&�ʟ�wѴ��S��i���*9�:E�+�;<��+z�G<����)r_�v����k�u	v���IF�[�}����m��e�7Fwb��s�13�
-����'N��{
-�^��g����Bv"�ER	��,2~b�9��<��	&��W�1c�����x`<tF���>v�m�Kp�^X�G�6[��w��7���H�0I����	�t���'PH_��/0��C`�{ռ	�e���M]�̛a�F�=�OQ�O�R��<�|dŴ��,���	�ٙєA�k���Uխ����?�A����?��d��p� �tq��I�|0���C�
-q��Y^E�����yu�\�5K�.y�T�_4��� }'�]jzl�x8����aW߮��珉�W��!�Q��|mS�}c����G�b��N�"0{1OmߵG��@cL=��|�ծ�oq���
-�V��
-~D�5<��������t'N�G>���>qiQ�c@�����u=*P��4Dѝݜ{�$`�wA!��9�D<Ӹ��-�1�(�L�(�41	}"U�ٓ�a/s��4�W%��	�쒷7�	�̊�țo�,O���ǯ|�?3�+�O&���1U���%�����m�N�xBt�e��D/�j��F��SUg�{F
-�{�����A�#X3h��8�/���po�ߟv�H���ek^�M�-sĉ�L����XI�,� b�;e�z裵���}�m��*�G���ޠ,�/����ޭ4�[��e,�e�/�۲;���s6UE��<9��ʷI�ܥ7(�a�Q�L6e�.���{0�SN��paZ�Q�3ZKe�IXF�����j&]ê���L)O���W5���i+��gb��<�k�	x�L���}�2�v�a�#o|����7j�]Y۾?�ڳ�"��c�o˲W��Y�,�fś��'Z���Sl70�]�����4���d�ui��ބ���z�f������PV+o�N���tQ�!O2o�O
-�J���)1y"��z�;���?��Oƣj��Ox�?�v�����[)	���R�3���^���'_ؠ�c*e��U�,X'o\>�}��jE�j��qE�뎳|���FlT�o�Ѩl5c�r�n��'xj0���x��=9ApH	����:$��Q�A�%��#tͧG�$F^���1L����a�11B0<��#�=�y�J��b���9��Y��������C��Uh�R)���7���o��<�`Ǳ�B�GH����%b�˥���*��gi��+�t�d���\�!���E(�M����|t���xx��Ҵz>w5��+SDR?��]�~Ϣ't	���ƴ	�ɋ����#M$�Z�0X����+��Q��n�<�<m���h��E$�����U�`' HZ{]�ݶ�F<üP-Id��1b����]r�x�����7�=q�B�V^麟\�9�J���Jgd���z6�:�yH���$7�D���Ϝ��)�sj
-�!&�_>!cI���ϫt���.Zk�V0 � 1E�i]�W@���KR������K��)���T!�HV\�t����N� �5Ј����N��p$���(&Y}��e���<�tX⁤�i�����H�=����Y��QkCQ^�ռ�A�b9�w���Pw_o|��"\A|@�%⃨A��x�[&�X�L�Rz�B�6�� m�B�I�_��hc��+x ٸ��Zd��~{4z�`���\�Jg��Fg��7\]�9��"�Ғ��� 5���xAgT��-�i��k|'S#s��9��!o�ϡ0���C9{֫tKc1�|c�Rdx���mB�|R��eX<�m:"Hc�h'�&�<bM����'�}G�|��:�&��I�Ϩ���;�hv��F�g㈂x�bB�g�q�<hމ�m�q}h�~�b�;~�bU���>5�����Q\��e]Q�԰��v'� �2�ky	�����_\|y�8�2s�\K�;˹={���π9�:���٢�f�c�E9�I�IRJ���pO���p�=�=I�x
-�z��b��vo������h'�!U�q���WaM�Lt_袊\Qr�893�I��%G�+x%�I�C�Y�����h�V��&�S*N��c�b=}��Ӓ�G��Nr���7��a��&����V#*�j�����䮛��&�I�:�KJë0����_J���/�?�oe=MX�޶�y��nW��e:��aa�I&����2���|�K!٬X�l$�<�"Yt�	{�9R��_�_����S�ȹ���cO�ғO�P'��8�1�\|1�?0��a����ς4�z�� ;7�h�~%뎃w��U�Ɋ� �"O#���`�~�x��|�\Z.��I��S�D��9�P�W��K��5�:h�+?��	-إ �Z��A����94;�g���ϚI&^�5����F4�Ő��NB�_��̚��w�n��!���'�����W�b�2��7B ����.����]8&�>|<9'�Yw���������\NNӯ� Y?������w�����!�e���q����?v�u�h<f�$�#.����z���Y�I�8�;7�9l��eb	��IE�3�x���8��eb�8�S:�B=ZC���x����퀮��n��$��+���� �SG�S�>�q��_�,G�����zL,򐾢�N�{�:8�!��	�� �A.{��4K����XPdP��xɸ����q�"a����	��k&�W�PX���7����	�<���7��}^�Cڢ�	j��&�E�z�D�����Q`�~��W�31S#
-�I%}����I'��[�R��h¸hx���)F`R��m���PL\��lu�f�����*
-�:{�&���@<	l�n�:�ot��$Zܤ��d	�#�A"C��h�\����D����!+y!FW�i����@��B�sN���3�*P(��(1��bV]�};�,��y���5�}ju��ҵ�fk�j�5�=LY��󥨷7��v<)��n���:!3���Q[r�����$(/x�h`��.�
-�;��Z,]�N׊>+��I��#N ���'b|�~J�F�`�!�~�����F�n�~E�w��)Ѥ\^	�R����3�CWF��8T�@aN��e��#��#��0U7_p>O�1,μ�7W?�
-pXh�I�9�(�ŕ���qa�����U�bF/��	�N��-��+�wL���n�1�P�t�.�D�E�)=�"Sr\p�+��;��w�N�ʶe��W�b�$G�8̩��}�}BgZP�az"�J��5����%�mQ�tz��e_T['�Q9�bK����bT��H��L	c~V���쨜�?U�T���k�Ԓ��/�5��J��0(���Ij�؜���`&J�=�Lp��2L�K��M&�����fq�GI ��ΝM�*Qv�u��S�9�]L�����E�YZ5�f�6N�%ϩ��Jڄ-%kF��"w V8�{8G��BI�.���RZ!���m�����L�B���[��#Z�=�k�%mjP#Bl�Jǥ����F� �]0w*����F}K���)?�n�����{uG��n��+�����,��V�Z�*�`�8���z��k����:ۂ,�XY���-�͎�'�-M�L�K`�ș����(�7��h=>xs�=�e=�Z���O��+\���Ƴ��%&��?(8W3�4H�ӂ�2A�a�� �Lgw-�<f�OfH>�^ �o��;z��#ӪCG��\'���$�����-��c>����ˡֱN����:�Q��5��4��ֿY�'9�¾)��AJ����,2%e~Ė��+���^d���
-Lj����l����T�ӛ?!�C�}n�'��S;8���u��E�����cj�d�qDN}����*��iw�R�&��c�؀^4�%��KN��6�����5	Ds+�`M�#�y����t1U��P�-��p�P�����^宨������6��xχp�=b�ܨUĽ���Pc���Fv;T��b+ˡ��G�sX�͜���s�"T�;ä��S��K��4d
-_n�d 1����T%���lW��BD$E���W�4��uk�j�h��eYgt1Z��f3.0��=�}A&pؽd��k����8��r�b��q��û��OV��:eoA"���~�캥2`����]=��%�Nx�:յ}:S)���6�+�z,g�K�m����.$����90�{s��&�9&���� g������U+?���#v���L7��c;��xz�_�u�\,�ܖ�"#]q��Z��RK!���2,_V=�o¬�ڑ�#��ҳ�d''�#{3��ȷ�q��0ɻ0}6R�5tu�K)g�#e}�r]j������ J�Zc�-�m_Lw*�ɘ>XΜZ~���x���U��=abB
-V~�/iG��ZJ����zP|�yo�Z)�Y}�/���<HR��dr���~e�1RJ�E�=���E�f���X��MI�4tu�����$������E�2�(w҉��i+@B�up�Ug���i�擷kn���3¸���Mn�]����6c�/�v,���^Z%����u�.��bQ�} ���S��h����t�.
-�kc���j��Z|/�2�|kͲ��JKT��ځ#�N�S��&�k!Y�= r;�ʴ\�>��k#V*`
-n��[+�C��G`���S��   ���][oG�~ϯ��fA!�I��1dKx�8�ʙ}�E�$:��I�R����A��covf0o�;��m~�֩K��[���������������9�	�Zr�#���"?g¼~b�䙎�\�<��ˁ"�w�ᕢ��/�0�zZ�K<�Q�G��@��7�dW �$������'�r�����8gQ�R��C�B�(��XPh=�#�����4 ���Sl3��2���;w��ރN	:��)�@;��� ��F(�����|t:h-�"�V!�x����	��P$	��t�Z�FM��f�$��U�L��$��0\55�����4p���M�8��ߛ �T�T�,�`Cò�E�S�Ī�h�c��;�m�W�:RV�{�R��1d[/�4�2{9���+2}��Oӿ�^�韧�������w��~{5}M�o��Z���m���&�ᝂ��xx��E��X$���j���ݒ`�?��?�"����S%Y��ݞ#�������B䵦�Z��-5�$��I:$',x-Dnǧ���)y��n9rh`]:��ؐIr�d�&Y�_C
-�"VX�6�д$�����lJ� 	�M$\p運#�§$ǡ��F2�8a<M�I.Y���6�oIS=SX��Ԅ� �_��!p����NME��Hg엶ˍC�F����7����ߧ�^O�>{I��_����Oo�f�q!'#i��pyi���\<���'��,wጥ�Ē+�b�+f:��~7�] �E;)�Pl(����E*���ޙ�6����,V�54ۆT&#rH$�5���u�uk�*RZg%�5��<2o���M�_M�蝡@��D���"�5	�c����#*��4`U�����-uc��x���Qe#��$��h��2L~9�Q7F�%����@�paq�Z�������To���]5BXG�4�J՛ُo�X����T�W�Ig���ط���W��$Am	h\Bd�R�' )^�v���k�6�K�J����3<C�P���p��� �p4`�@ �
-BPb�E��=/� z5\"�G)z�hށ�(���<����8Q� h*�3_F��D�	�3���g*�c5>���T�IF{�5�"=cv��)�1�N;�a����ϥ>���!-�E�ḗ�����q�t�������{���(N9v�38����|�?-���8,�O�6����s��G�@���������[�n~�j#�����y|��O���2����P5���ԉ���N��O�X�-6�h�J��|��F�j�7�z��0\�ߛ���3�ɟ�/������dM��� ��j7����΁	i
-�Ä�J&Ի�dj&f�3��)(���ي|9y�a�c[�������<��rU��.=�l[�.���aɶ�tH�v���T~?�lbmN9�7E��<�s$l����1u������k445�e0��BO�k�[ұg�|^/�R�\[��(���C���⫡yi�i��v��E-�?���s����\ꊬ�+Wpd�v1!L+ڪ8����n�M���F�u2	���)7�^G�`� ȭ(�p$(��χ�(l�%5�Hx�����ZV�������2��n>��P�ȉ
-���<�J�2J�]�B8ƸwSA���+�][��z��O��7.N�m38�~�5�Ҫ�" �J���k���e���v�J���:���truZ�kS0p�i>#D=�-� �d�ʏ:.�Yύ�1ch��U��R#�/6H�Zqh�M��2�pr%f3�����R�U:e\o�7tYt|���y�l�3*����LӪ�c�L4Hɘn]'q�e��Q�T��7A��/�HSx���7A�'A:Q����%w"�uGd(i�CZ�Ƨ!��{ʧ���~��)l�m��7l���9]OY?��}�c@�5���Nia<
-is�_���ϣ����[c��p��;�d,�N�[![|}#�5�_���3W��oT��K��&8����0?�S,�y�,A��3<�jV�7Ǫ���n�HEy2W.��K$N����`(qJ���$�H2���L�;/.ŭ���f#��4�u:2��%󔻦8��ڵ��$�ҥi���pp�gGF��R�B@���"�Ә$3a!�!�_�-����D���ދY���?��I7+�.��l��s�W��y�l�e�w�c��d��{��7�j���$�l��p�*{�s�� 3dSx�.���\j;xJ���Ď�t�j� ��̸G���O_�v�0	�I���0��fF��h���~�?���̢�U齘,Bǌo��� �[傟���"!���9�_g����~C�N8��������N��P�~�$E���$�|��UU�^j�ěLXm�74-�!Z��V�Pub[��>�;h�����>�/����ȱ�PT�c5Ŭ'��8yz�s�"_H����e� �tH�Һt@��
-�-�U?����_�^:ɖ�R�NXe1Iq�?��"��i��J�ª�@���PS���i�:�4�|�b����<0Ȫ�/���Hݠ�������ŽǹHB�XJx;He���!�N��y�y�an�y% �����' v$�wĂ�yI��/K��m���P
-	��6d���I
-�S4ΏN�dp܎zh��n 9S���y���c�ɥ��������X.-,�O�<\n�9�A�@��O��˹��\�)nA�@s�Bs�K-�[|/����h�Q�ڠ9ᧄ#̐�?7�c�Q5�'o�Nǩn�2������1a�U��U��x�9ͥ��2�M��ߚ��i��/Y�D2�o���r��^4�&SL@�l�,��_6 �QsO�r�X.R�>/�b�f؉�WǓ���j�-Z�IҀ�މ�EBXҨ��c��X:� �l�
-��Lo�~f{�3�nJB��l�:D::bȓx�#�ć7s���I���2�b�$l�*#3-��άV/�^K�oz��~� �_�yGtOؼ�$� %��j,��E?3���7/�B_��gx#�0m,^yx��%!��/�G�4!��K#�XP!*��B�-�_ᆧ#O��t� us��K�@�c)���*at�6���s�6c�â�9��m���9=�:LY�ş���G�<v}DU<TѰaڭ��Tj,����c�1]�M����<E���EwJ��,��$[��	�i�����`*C���m*3o�Dk��t��-���2=�&^�o�]u��u�f]�����ҝF'����e�<�(�%}�����?�%���^�j�ŋ2�IGc�Rg�I��o���_�o�t����(���i2����'�ɸ���tYz��T��	�mò��0��(�I�sp[��RZ�x�Hۛ�OI->�q�1����8`�*dN�ÄO����Ł��'��R�h�%��L�b<�����hϸK
-B�YS����\��A�RG�1��J=�d�NY�p�˙��7�d�V�ȣ�S?sNgl�I��شsH��m�O ��F,I�x8%>���	���I�>�à2v���e�,r�Jz�A��UڛO6!$YS�3���jH�Z�Y�7�5���+�6IS�E,(GF��Fz��:�t�g���
-ٌ~1����KB����&~d2����Ҡ���*ֲY�1$U:r��f��]LlF.$ihp�CIn�2�r{Y�W��;�Ǟ�DU��Vk�o���pI�u�.���`�&�5t�`$=�[�糌5�{FBB�cj���[BK�p��N��o{}��R��Ҁ>C�^�_L/��F[Jʡ29�FȩGµ����ݿ¨�-��ꍨXۂ=��l$�� ��ףv@��?�/�&+zsV��Kuy��o�	 ���h{u?M���ɠK^����09N�VV*�U�".r��(����g�jL���mix��ǝ�,K�V�?Md<Nf9����h�W ө�W�� q��$����]�; �Ş�
-���WFI����ʤ�;�C�6ģR�fO���t�1���*����Y�@ة����r�(q�Y_@����LM.��o��'�԰_D��d9̜(��+~�at&����o� ʊVsM�r6,�.=86T�/�LGk�YX�4"H���7�<��X�r�����ѣ��#�Z�����c�E�v^���`2�2�dm =b/^���^r�j�|�HWN3�q���d��B,w�P����U�w�`�W��q�I4O�B+��	��j��_��ۗ��a��,g�n���F�5��W70�آ��5��f*�ӛ����V�����Yq����R�/��!ݶ��ҁ���k��U��a�F�	N��b�����@I(��뮵J��un�`�bN�o*�����fm�.�a7�`�S�����`��Ik��I����a;'���fy�Q�터��E>y�BS��D�<��.��_|�*���D��eL�H
-�fm��v}�eR�$�:fd�ϏOъRZ���$�^�HD�#e@0���f$��;p�εH��B؝TCR�9*��y���"��t?L��v� �6W��*h��)��G`1��{���K�8��L+�f������	�)���:�Z�v�[˚qH�&�}��*-�D�n|&�³R���j���5S����P�6L��ͣn��tÅ�79߭��4���( H5�SԹy��aa��G�MB��[v�<�| �-����,P�긝�;cױ-Ė+��6�x��<[<�3f{mb��az�IgN�:
-�ݺE��`�>5���4�5�+#4]$pI6�N�?��:�v'�j��q�����U���M��b;�cb@��GO}��V�~Z��p��Z$��$�f;W��
-v�dvU�{��~�jz3W����ˡf� ��k�b�<�Dh�Aן�JD����a���쀉T�O���[���}���0����r{��%�R�X8��4�L.��ֲ�����f��k�t�`x6�A��[|^�F >Ōp	�^ ^Ϣ�(K'���|����3#D�B*3񞎩���"��gNZ�\�h�O�!%����Lq0P&�3�ċ�Ʉ�4�v��n.I�
-��f
-���!�,s돳 �*�}7}��j��������W,����y�	L��A�`8VvU�[�B�ʮ����Px;��S��3�����E�,���d�y݉�j)#���> F1ʉp~�#�M@aHӉ�`)8UI$�5��.4�a������$\ ����)X��i��%
-��{G=�.��;P��f�������=�n(�5	0���ȏ�Y��!ⅇ��<j������5|��u.or�Q�3���+����B���ӿL_��r�,����� �݌{����&��6�gx�?�t���~�^����;�z��I<	�_��H�E�s�����?T@��Z�����ņ�B�\��������R�!r�)� *�)�%����%� ^�x'�3�E��B�E?�㢌:����x�dϣ��e�k" c&��y"]�a�Va�$���h�0S��,`)�.)L_�^�]�od�=�~�L߰h
-�A��_�n�CA��-ۭχ� Fd����:%��;'�M��W��!��*�z]�K��!��.��1ƌ��a�(�b�=|ד��< ���7IO4T��0��������h��RW8�@�^�ޔ)AqZ�"O(E��KVM;��C����t�e!�`x����A�yy���g�.f�D��b"�/��~�a~��a�����FO�!�V~�<'�te<�� M�=�Z��Q�^I�ѡ�.����� �^��ʦz�1m�y�^��h�����6�R��d�TN-�ȋ��1] ��g~o=[ ^O :����]���#Sy�j��5���R���]_�YW�Z���}鸛Se�JL����\��>��I��Kl�*5>N��q����Kl�O#D���d͌qXA�aT�S(�L�0$
-i�<�Y��;wq�C�
-z|�"��ӊɮ[�%*�^��}m~f�^Jn/�X�>��_W�ݠ���N;(`G�I�H�(��`�_,�T��#�>�[s�OuE�i�VU�6WB6��
-;wt��I
-�Q5L6-��۰PW�ژ����DǊ��.F�U0+%h�޿�dE%w�������\�s�䴣$���|��ːP��}>��L��BY�}ox��d�U**O��"��G�t���&�9N�F�"?ؗ��`��=�/�H�qҮ�n����c��Ϡ
-�ݝ;� K�;�;���k�"Z�w�S,�����ލ�kP���s�Q&B����_~!zIC��E��R5�ig���i���ˬ�=��h����"yaO�zlY�!�&yN�������֣G�_|����;ۇ�t�
-e�pfd��>� ��ϒ'w'�'��6ew��a����5�{�7�G�C{�]��_�q�{ֱ�����  �� I�!
+        return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+          className: "space-y-4 animate-fade-in pb-8"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex justify-between items-center py-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: onBack ? () => onBack('button') : () => navigateBack(loanReturnTab || 'accounts'),
+          className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "arrow-right",
+          className: "w-5 h-5 text-slate-700 dark:text-slate-200"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h1", {
+          className: "text-sm font-bold text-slate-800 dark:text-slate-100 truncate px-2"
+        }, selectedLoan.title), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-1.5 space-x-reverse shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => openStackWizard('loan', 'edit', selectedLoan),
+          className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 active:scale-95 transition-transform",
+          title: " "
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "pencil",
+          className: "w-4 h-4"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => handleDeleteLoanClick(selectedLoan),
+          className: "w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400",
+          title: " "
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "trash-2",
+          className: "w-4 h-4"
+        })))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-900 rounded-3xl p-5 text-white relative overflow-hidden card-shadow border border-blue-400/30 space-y-4",
+          "data-purpose": "loan-summary-header"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl pointer-events-none"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "absolute left-4 bottom-1 opacity-15 pointer-events-none text-white"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          fill: "currentColor",
+          height: "180",
+          viewBox: "0 0 24 24",
+          width: "180",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M12 2L2 7v2h20V7L12 2zm0 18H4v-9h1v9h2v-9h2v9h2v-9h2v9h2v-9h2v9h1v-9h1v9h-2zm-10-9h20v2H2v-2z"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "relative z-10 space-y-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-start justify-between gap-2"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-start gap-3 min-w-0 flex-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white/15 backdrop-blur-md p-2.5 rounded-2xl border border-white/20 shrink-0 mt-0.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: selectedLoan.icon || 'landmark',
+          className: "w-5 h-5 sm:w-6 sm:h-6 text-indigo-200"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "min-w-0 flex-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h2", {
+          className: "text-base sm:text-lg font-bold text-white break-words leading-snug"
+        }, selectedLoan.title), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-1.5 text-xs opacity-90 mt-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: `w-2 h-2 rounded-full ${isClosed ? 'bg-emerald-400' : 'bg-emerald-400 animate-pulse'}`
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-indigo-200 font-medium"
+        }, isClosed ? `پرونده تسویه‌شده${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}` : `پرونده فعال${loanContactDisplayName ? ` (${loanContactDisplayName})` : ''}`))))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white/10 backdrop-blur-md rounded-2xl px-3.5 py-2 border border-white/10 flex items-center justify-between"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs text-indigo-200 font-medium"
+        }, "\u0645\u0627\u0646\u062F\u0647 \u0648\u0627\u0645"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-baseline gap-1.5 font-mono font-numeric"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xl sm:text-2xl font-black text-white"
+        }, formatAppNumber(selectedLoan.remainingAmount)), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs text-indigo-200 font-normal"
+        }, "\u062A\u0648\u0645\u0627\u0646")))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "pt-2 relative z-10 space-y-1.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex justify-between items-center text-xs opacity-90"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-indigo-200"
+        }, "\u067E\u06CC\u0634\u0631\u0641\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-emerald-300 font-bold"
+        }, toAppDigits(paidInst), " \u0627\u0632 ", toAppDigits(totalInst), " \u0642\u0633\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-full bg-white/15 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500 shadow-xs",
+          style: {
+            width: `${progressPct}%`
+          }
+        })))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white dark:bg-slate-800 rounded-2xl card-shadow border border-slate-100 dark:border-slate-700/60 p-2 sm:p-3 grid grid-cols-3 divide-x divide-x-reverse divide-slate-100 dark:divide-slate-700/60 text-center",
+          "data-purpose": "loan-quick-stats"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-green-50 dark:bg-green-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
+        }, "\u0645\u0628\u0644\u063A \u0627\u0635\u0644 \u0648\u0627\u0645"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs sm:text-sm font-bold text-green-600 dark:text-green-400 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
+        }, formatAppNumber(selectedLoan.principalAmount)), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
+        }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-blue-50 dark:bg-blue-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
+        }, "\u0645\u0628\u0644\u063A \u0647\u0631 \u0642\u0633\u0637"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
+        }, formatAppNumber(installmentAmount)), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
+        }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-indigo-50 dark:bg-indigo-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
+        }, "\u0642\u0633\u0637 \u0628\u0639\u062F\u06CC"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
+        }, nextDueInfo.isCompleted ? 'تکمیل' : formatDateToNumericJalali(nextDueInfo.nextDueDateStr)), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[9px] text-indigo-600 dark:text-indigo-400 font-medium mt-0.5 text-center leading-tight break-words"
+        }, nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? `${toAppDigits(Math.abs(nextDueInfo.daysLeft))} روز تاخیر در پرداخت` : nextDueInfo.daysLeft === 0 ? 'امروز سررسید قسط' : `${toAppDigits(nextDueInfo.daysLeft)} روز مانده تا سررسید`))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white dark:bg-slate-800 rounded-3xl p-4 card-shadow border border-slate-100 dark:border-slate-700/60 space-y-3",
+          "data-purpose": "loan-details-grid"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "grid grid-cols-2 gap-2.5 sm:gap-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
+        }, "\u0645\u0628\u0644\u063A \u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u06A9\u0644"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono font-numeric leading-tight block mt-0.5"
+        }, formatAppNumber(selectedLoan.totalRepayment), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
+        }, "\u067E\u0631\u062F\u0627\u062E\u062A\u06CC \u062A\u0627 \u0627\u0645\u0631\u0648\u0632"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-extrabold text-emerald-600 dark:text-emerald-400 font-mono font-numeric leading-tight block mt-0.5"
+        }, formatAppNumber(selectedLoan.paidAmount), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M4 6h16M4 12h16M4 18h7",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
+        }, "\u062A\u0639\u062F\u0627\u062F \u06A9\u0644 \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold text-gray-800 dark:text-slate-200 leading-tight block mt-0.5"
+        }, toAppDigits(totalInst), " \u0642\u0633\u0637"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
+        }, "\u0628\u0627\u0642\u06CC\u200C\u0645\u0627\u0646\u062F\u0647"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-extrabold text-rose-500 dark:text-rose-400 font-mono font-numeric leading-tight block mt-0.5"
+        }, formatAppNumber(selectedLoan.remainingAmount), " \u062A\u0648\u0645\u0627\u0646"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 min-w-0 text-right"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
+        }, "\u062A\u0627\u0631\u06CC\u062E \u062F\u0631\u06CC\u0627\u0641\u062A \u0648\u0627\u0645"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono font-numeric leading-tight block mt-0.5 text-right"
+        }, formatDateToNumericJalali(selectedLoan.receiveDate || selectedLoan.startDate)))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 min-w-0 text-right"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
+        }, "\u062A\u0627\u0631\u06CC\u062E \u0634\u0631\u0648\u0639 \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold text-gray-800 dark:text-slate-200 font-mono font-numeric leading-tight block mt-0.5 text-right"
+        }, formatDateToNumericJalali(getLoanNextDueInfo(selectedLoan, []).nextDueDateStr || selectedLoan.startDate)))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
+        }, "\u0645\u0648\u0639\u062F \u0642\u0633\u0637 \u062F\u0631 \u0647\u0631 \u0645\u0627\u0647"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold text-blue-600 dark:text-blue-400 leading-tight block mt-0.5"
+        }, "\u0631\u0648\u0632 ", toAppDigits(selectedLoan.dueDayOfMonth), " \u0645\u0627\u0647"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-[#F4F7FC]/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-700/70 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 block font-medium"
+        }, "\u0627\u0642\u0633\u0627\u0637 \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold text-gray-800 dark:text-slate-200 leading-tight block mt-0.5"
+        }, toAppDigits(paidInst), " \u0642\u0633\u0637")))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "p-3 bg-blue-50/70 dark:bg-indigo-950/40 rounded-2xl flex items-center gap-3 border border-blue-100/80 dark:border-indigo-900/40"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white dark:bg-indigo-900/60 p-2 rounded-xl text-blue-600 dark:text-blue-300 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-6 w-6",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex-1 min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold text-blue-700 dark:text-blue-300 block"
+        }, "\u062A\u0648\u0636\u06CC\u062D\u0627\u062A \u0648\u0627\u0645"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-[10px] text-gray-600 dark:text-slate-300 leading-relaxed break-words"
+        }, selectedLoan.notes && selectedLoan.notes.trim() ? selectedLoan.notes : 'توضیحاتی برای این وام ثبت نشده است.')))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-amber-50/50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-800/40 rounded-3xl p-4 flex items-center justify-between card-shadow",
+          "data-purpose": "reminder-banner"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-4 min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "relative shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-amber-100 dark:bg-amber-900/60 p-3 rounded-2xl"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-10 w-10 text-amber-500 fill-amber-500/20",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 4.36 6 6.92 6 10v5l-2 2v1h16v-1l-2-2z"
+        }))), !nextDueInfo.isCompleted && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-800"
+        }, toAppDigits(nextDueInfo.daysLeft < 0 ? Math.abs(nextDueInfo.daysLeft) : nextDueInfo.daysLeft))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "text-sm font-bold text-amber-800 dark:text-amber-200"
+        }, "\u0646\u0632\u062F\u06CC\u06A9\u200C\u062A\u0631\u06CC\u0646 \u06CC\u0627\u062F\u0622\u0648\u0631\u06CC"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs text-amber-700 dark:text-amber-300 mt-1 leading-snug"
+        }, nextDueInfo.isCompleted ? 'کلیه اقساط پرداخت شده‌اند' : `قسط شماره ${toAppDigits(nextDueInfo.nextDueNum)}`, !nextDueInfo.isCompleted && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("br", null), !nextDueInfo.isCompleted && formatDateToNumericJalali(nextDueInfo.nextDueDateStr)))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `text-xl sm:text-2xl font-black font-mono font-numeric ${nextDueInfo.isCompleted ? 'text-emerald-600 dark:text-emerald-400' : nextDueInfo.daysLeft < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400'}`
+        }, nextDueInfo.isCompleted ? 'تکمیل' : `${toAppDigits(Math.abs(nextDueInfo.daysLeft))} روز`), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `text-[10px] sm:text-xs font-bold mt-0.5 ${nextDueInfo.isCompleted ? 'text-emerald-700 dark:text-emerald-300' : nextDueInfo.daysLeft < 0 ? 'text-rose-700 dark:text-rose-300' : 'text-amber-700 dark:text-amber-300'}`
+        }, nextDueInfo.isCompleted ? 'تسویه‌شده' : nextDueInfo.daysLeft < 0 ? 'تاخیر در پرداخت' : 'مانده تا سررسید'), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "mt-2 bg-white/60 dark:bg-slate-800/80 px-2 py-0.5 rounded-full text-[10px] text-amber-800 dark:text-amber-200 flex items-center gap-1 justify-center"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-3 w-3",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC \u0641\u0639\u0627\u0644 \u0627\u0633\u062A")))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => openStackWizard('installment', 'add', selectedLoan),
+          disabled: isClosed,
+          className: `w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg transition-all active:scale-95 ${isClosed ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed shadow-none' : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-blue-200 dark:shadow-blue-950/50 cursor-pointer'}`,
+          "data-purpose": "submit-payment-button"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-6 w-6",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u062B\u0628\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("section", {
+          className: "space-y-3",
+          "data-purpose": "transaction-history"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-slate-200/80 dark:bg-slate-800/90 p-1 rounded-2xl flex items-center gap-1 border border-slate-300/50 dark:border-slate-700/60 shadow-inner"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => setLoanTabFilter('paid'),
+          className: `flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${loanTabFilter === 'paid' ? 'bg-blue-600 dark:bg-blue-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "check-circle-2",
+          className: "w-4 h-4"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: `text-[10px] px-1.5 py-0.5 rounded-full font-mono font-numeric ${loanTabFilter === 'paid' ? 'bg-white/20 text-white' : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`
+        }, toAppDigits(repaymentTxs.length))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => setLoanTabFilter('unpaid'),
+          className: `flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${loanTabFilter === 'unpaid' ? 'bg-amber-600 dark:bg-amber-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "clock",
+          className: "w-4 h-4"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u067E\u0631\u062F\u0627\u062E\u062A \u0646\u0634\u062F\u0647"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: `text-[10px] px-1.5 py-0.5 rounded-full font-mono font-numeric ${loanTabFilter === 'unpaid' ? 'bg-white/20 text-white' : 'bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`
+        }, toAppDigits(Math.max(0, totalInst - repaymentTxs.length))))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(AnimatePresence, {
+          mode: "wait"
+        }, loanTabFilter === 'paid' ? /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(motion.div, {
+          key: "paid-list",
+          initial: {
+            opacity: 0,
+            y: 8
+          },
+          animate: {
+            opacity: 1,
+            y: 0
+          },
+          exit: {
+            opacity: 0,
+            y: -8
+          },
+          transition: {
+            duration: 0.2
+          },
+          className: "space-y-3"
+        }, repaymentTxs.length === 0 ? /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white dark:bg-slate-800 p-6 rounded-3xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 card-shadow"
+        }, "\u0647\u0646\u0648\u0632 \u0642\u0633\u0637\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0648\u0627\u0645 \u067E\u0631\u062F\u0627\u062E\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A") : /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3"
+        }, repaymentTxs.map((tx, idx) => /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(SwipeableTxCard, {
+          key: tx.id,
+          tx: tx,
+          index: idx,
+          totalCount: repaymentTxs.length,
+          contacts: contacts,
+          loans: loans,
+          transactions: transactions,
+          colorType: "indigo",
+          isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
+          onEdit: txItem => openStackWizard('installment', 'edit', txItem),
+          onDelete: txItem => requestDeleteTx(txItem, 'loan_installment')
+        })))) : /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(motion.div, {
+          key: "unpaid-list",
+          initial: {
+            opacity: 0,
+            y: 8
+          },
+          animate: {
+            opacity: 1,
+            y: 0
+          },
+          exit: {
+            opacity: 0,
+            y: -8
+          },
+          transition: {
+            duration: 0.2
+          },
+          className: "space-y-3"
+        }, (() => {
+          const paidCount = repaymentTxs.length;
+          if (paidCount >= totalInst) {
+            return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+              className: "bg-emerald-50 dark:bg-emerald-950/40 p-6 rounded-3xl text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 card-shadow flex flex-col items-center gap-2"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("div", {
+              className: "w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400"
+            }, /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement(Icon, {
+              name: "check-circle-2",
+              className: "w-6 h-6"
+            })), /*#__PURE__*/
+            /*#__PURE__*/
+            React.createElement("span", null, "\u062A\u0645\u0627\u0645\u06CC \u0627\u0642\u0633\u0627\u0637 \u0627\u06CC\u0646 \u0648\u0627\u0645 \u0628\u0627 \u0645\u0648\u0641\u0642\u06CC\u062A \u067E\u0631\u062F\u0627\u062E\u062A \u0634\u062F\u0647\u200C\u0627\u0646\u062F"));
+          }
+          const unpaidItems = [];
+          for (let i = paidCount + 1; i <= totalInst; i++) {
+            const dueInfo = getInstallmentDueDate(selectedLoan, i);
+            unpaidItems.push({
+              instNum: i,
+              ...dueInfo
+            });
+          }
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            className: "space-y-2.5"
+          }, unpaidItems.map(item => /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            key: `unpaid-${item.instNum}`,
+            className: "bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-700/70 card-shadow flex items-center justify-between gap-3"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center gap-3 min-w-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200/60 dark:border-amber-800/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-bold text-xs"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", null, "#", toAppDigits(item.instNum))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "min-w-0"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 truncate"
+          }, "\u0642\u0633\u0637 ", toAppDigits(item.instNum), " \u0627\u0632 ", toAppDigits(totalInst)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "calendar",
+            className: "w-3.5 h-3.5 text-slate-400"
+          }), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", null, "\u0645\u0648\u0639\u062F: ", formatDateToNumericJalali(item.dateStr))))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-left shrink-0 flex flex-col items-end gap-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "font-mono font-numeric font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100 dir-ltr"
+          }, formatAppNumber(installmentAmount), " ", /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "font-sans text-[10px] text-slate-500"
+          }, "\u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: `text-[10px] font-bold px-2 py-0.5 rounded-full ${item.daysLeft < 0 ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800' : item.daysLeft === 0 ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`
+          }, item.daysLeft < 0 ? `${toAppDigits(Math.abs(item.daysLeft))} روز تاخیر` : item.daysLeft === 0 ? 'سررسید امروز' : `${toAppDigits(item.daysLeft)} روز مانده`)))));
+        })()))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => openUniversalExportModal("loan", selectedLoan),
+          className: "w-full py-3.5 sm:py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-lg shadow-blue-200 dark:shadow-blue-950/50 active:scale-95 transition-all cursor-pointer"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "file-output",
+          className: "w-5 h-5 text-white"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u062E\u0631\u0648\u062C\u06CC \u06AF\u0631\u0641\u062A\u0646 \u0627\u0632 \u06AF\u0632\u0627\u0631\u0634 \u0648\u0627\u0645")));
+      case 'archived-period-detail':
+        if (!selectedPeriod) return null;
+        const isDebt = selectedPeriod.type === 'debt';
+        const periodContactObj = contacts.find(c => c.id === selectedPeriod.contactId);
+        const contactDisplayName = periodContactObj ? `${periodContactObj.firstName || ""} ${periodContactObj.lastName || ""}`.trim() : selectedPeriod.contactName || (selectedPeriod.contact ? `${selectedPeriod.contact.firstName || ""} ${selectedPeriod.contact.lastName || ""}`.trim() : "مخاطب");
+        let periodTxs = transactions.filter(t => t.periodId === selectedPeriod.id);
+        if (periodTxs.length === 0 && selectedPeriod.transactions && selectedPeriod.transactions.length > 0) {
+          periodTxs = selectedPeriod.transactions;
+        }
+        const totalAmt = selectedPeriod.totalAmount || periodTxs.reduce((acc, t) => acc + (t.type === "debt" || t.type === "demand" ? t.amount : 0), 0);
+        return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+          className: "space-y-4 animate-fade-in pb-8"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex justify-between items-center py-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: onBack ? () => onBack("button") : () => navigateBack(loanReturnTab || "accounts"),
+          className: "w-9 h-9 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-200/60 dark:border-slate-700 active:scale-95 transition-transform"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "arrow-right",
+          className: "w-5 h-5 text-slate-700 dark:text-slate-200"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h1", {
+          className: "text-sm font-bold text-slate-800 dark:text-slate-100"
+        }, "\u067E\u0631\u0648\u0646\u062F\u0647 \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647 (", isDebt ? "بدهی" : "طلب", ")"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-1.5 space-x-reverse shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => handleDeleteArchivedPeriodClick(selectedPeriod),
+          className: "w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/60 flex items-center justify-center shadow-sm border border-red-200 dark:border-red-800/60 active:scale-95 transition-transform text-red-600 dark:text-red-400",
+          title: "  "
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "trash-2",
+          className: "w-4 h-4"
+        })))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `rounded-3xl p-5 text-white relative overflow-hidden card-shadow space-y-4 border ${isDebt ? "bg-gradient-to-br from-rose-600 via-red-600 to-rose-900 border-rose-400/30" : "bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-900 border-emerald-400/30"}`,
+          "data-purpose": "archived-period-summary-header"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 rounded-full blur-2xl pointer-events-none ${isDebt ? "bg-rose-400/20" : "bg-emerald-400/20"}`
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 rounded-full blur-2xl pointer-events-none ${isDebt ? "bg-red-500/20" : "bg-teal-500/20"}`
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "absolute left-4 bottom-1 opacity-15 pointer-events-none text-white"
+        }, isDebt ? /*#__PURE__*/
+        /*#__PURE__*/
+        /* Red Debt Watermark SVG */
+        React.createElement("svg", {
+          fill: "currentColor",
+          height: "170",
+          viewBox: "0 0 24 24",
+          width: "170",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M19 14V6c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-4zm-2 4H7V6h10v12zm-9-7h8v2H8zm0 4h5v2H8z"
+        })) : /*#__PURE__*/
+        /*#__PURE__*/
+        /* Green Demand Watermark SVG */
+        React.createElement("svg", {
+          fill: "currentColor",
+          height: "170",
+          viewBox: "0 0 24 24",
+          width: "170",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "relative z-10 space-y-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-start justify-between gap-2"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-start gap-3 min-w-0 flex-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white/15 backdrop-blur-md p-2.5 rounded-2xl border border-white/20 shrink-0 mt-0.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "user",
+          className: "h-5 w-5 sm:h-6 sm:w-6 text-white"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "min-w-0 flex-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h2", {
+          className: "text-base sm:text-lg font-bold text-white break-words leading-snug"
+        }, contactDisplayName), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-1.5 text-xs opacity-90 mt-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "w-2 h-2 rounded-full bg-emerald-400"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-white/90 font-medium"
+        }, isDebt ? "پرونده بدهی تسویه‌شده" : "پرونده طلب تسویه‌شده")))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md text-white border border-white/20 flex items-center space-x-1 space-x-reverse shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "check-circle-2",
+          className: "w-3.5 h-3.5 text-emerald-300"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white/10 backdrop-blur-md rounded-2xl px-3.5 py-2 border border-white/10 flex items-center justify-between"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs text-white/80 font-medium"
+        }, isDebt ? "مبلغ کل بدهی تسویه‌شده" : "مبلغ کل طلب تسویه‌شده"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-baseline gap-1.5 font-mono font-numeric"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xl sm:text-2xl font-black text-white"
+        }, formatAppNumber(totalAmt)), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs text-white/80 font-normal"
+        }, "\u062A\u0648\u0645\u0627\u0646")))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "pt-2 relative z-10 space-y-1.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex justify-between items-center text-xs opacity-90"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-white/80"
+        }, "\u0648\u0636\u0639\u06CC\u062A \u067E\u0631\u0648\u0646\u062F\u0647"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-emerald-300 font-bold"
+        }, "\u06F1\u06F0\u06F0\u066A \u062A\u0633\u0648\u06CC\u0647 \u06A9\u0627\u0645\u0644")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-full bg-white/15 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full w-full shadow-xs"
+        })))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white dark:bg-slate-800 rounded-2xl card-shadow border border-slate-100 dark:border-slate-700/60 p-2 sm:p-3 grid grid-cols-3 divide-x divide-x-reverse divide-slate-100 dark:divide-slate-700/60 text-center",
+          "data-purpose": "archived-period-quick-stats"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-blue-50 dark:bg-blue-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 022 2h2a2 2 0 022-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
+        }, "\u062A\u0639\u062F\u0627\u062F \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
+        }, toAppDigits(periodTxs.length)), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
+        }, "\u0645\u0648\u0631\u062F \u062B\u0628\u062A \u0634\u062F\u0647")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-indigo-50 dark:bg-indigo-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 dark:text-indigo-400",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
+        }, "\u062A\u0627\u0631\u06CC\u062E \u0634\u0631\u0648\u0639"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs sm:text-sm font-bold text-gray-800 dark:text-slate-100 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
+        }, formatDateToNumericJalali(selectedPeriod.startDate) || "نامشخص"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[9px] text-gray-400 font-medium text-center mt-0.5"
+        }, "\u0627\u0641\u062A\u062A\u0627\u062D \u067E\u0631\u0648\u0646\u062F\u0647")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "px-1 py-1.5 flex flex-col items-center justify-center text-center min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-emerald-50 dark:bg-emerald-950/60 p-2 rounded-xl inline-flex items-center justify-center mb-1.5 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[10px] text-gray-500 dark:text-slate-400 font-medium text-center"
+        }, "\u062A\u0627\u0631\u06CC\u062E \u062A\u0633\u0648\u06CC\u0647"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono font-numeric mt-0.5 break-words max-w-full text-center leading-tight"
+        }, formatDateToNumericJalali(selectedPeriod.endDate) || "امروز"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[9px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5 text-center leading-tight break-words"
+        }, "\u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("section", {
+          className: "space-y-4",
+          "data-purpose": "transaction-history"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between px-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-2"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("svg", {
+          className: "h-5 w-5 text-gray-500 dark:text-slate-400",
+          fill: "none",
+          stroke: "currentColor",
+          viewBox: "0 0 24 24",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("path", {
+          d: "M4 6h16M4 12h16M4 18h16",
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: "2"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "font-bold text-gray-800 dark:text-gray-100"
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: `${isDebt ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"} text-xs font-semibold`
+        }, toAppDigits(periodTxs.length), " \u062A\u0631\u0627\u06A9\u0646\u0634 \u062B\u0628\u062A\u200C\u0634\u062F\u0647")), periodTxs.length === 0 ? /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "bg-white dark:bg-slate-800 p-6 rounded-3xl text-center text-xs text-slate-400 border border-slate-100 dark:border-slate-700/60 card-shadow"
+        }, "\u0647\u0646\u0648\u0632 \u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u062F\u0631 \u0627\u06CC\u0646 \u062F\u0648\u0631\u0647 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.") : /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3"
+        }, periodTxs.map((tx, idx) => /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(SwipeableTxCard, {
+          key: tx.id || idx,
+          tx: tx,
+          contacts: contacts,
+          loans: loans,
+          isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
+          onEdit: txItem => openStackWizard(txItem.type === 'debt_repayment' || txItem.type === 'demand_repayment' || txItem.type === 'repayment' ? isDebt ? 'debt_repayment' : 'demand_repayment' : isDebt ? 'debt' : 'demand', 'edit', txItem),
+          onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
+        })))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => openUniversalExportModal("period", selectedPeriod),
+          className: `w-full py-3.5 sm:py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2.5 text-white shadow-lg active:scale-95 transition-all cursor-pointer ${isDebt ? "bg-rose-600 hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-500 shadow-rose-200 dark:shadow-rose-950/50" : "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-emerald-200 dark:shadow-emerald-950/50"}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "file-output",
+          className: "w-5 h-5 text-white"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, isDebt ? "خروجی گرفتن از گزارش بدهی" : "خروجی گرفتن از گزارش طلب")));
+      case 'settings':
+        return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+          className: "w-full max-w-4xl mx-auto space-y-3.5 pb-24 animate-fade-in"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h1", {
+          className: "text-xl font-black text-slate-900 dark:text-white px-1"
+        }, "\u062A\u0646\u0638\u06CC\u0645\u0627\u062A"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-full bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-sm"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-3.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(BrandAvatar, {
+          className: "w-14 h-14 rounded-2xl shadow-md border border-slate-100 dark:border-slate-700"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-right"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-2"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h2", {
+          className: "text-base sm:text-lg font-black text-slate-900 dark:text-white"
+        }, "Amir Finance")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center flex-wrap gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u0646\u0633\u062E\u0647 ", /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "font-mono tracking-tight"
+        }, toAppDigits(versionData.installedVersion || "3.2.4"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", null, "\u0628\u06CC\u0644\u062F ", /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "font-mono tracking-tight"
+        }, toAppDigits(versionData.buildNumber || "387"))), versionData.releaseChannel && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(React.Fragment, null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-indigo-600 dark:text-indigo-400 font-medium"
+        }, versionData.releaseChannel))))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-2 self-start sm:self-center"
+        }, versionData.isUpdateAvailable ? /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-xl border border-amber-200/80 dark:border-amber-800/50"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "w-2 h-2 rounded-full bg-amber-500 animate-pulse"
+        }), "\u0628\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC \u062C\u062F\u06CC\u062F \u0622\u0645\u0627\u062F\u0647 \u0627\u0633\u062A") : /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-xl border border-emerald-200/80 dark:border-emerald-800/50"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "check",
+          className: "w-3.5 h-3.5"
+        }), "\u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647 \u0646\u0635\u0628 \u0627\u0633\u062A"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center flex-wrap gap-2.5 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/60"
+        }, versionData.isUpdateAvailable && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: handleApplyUpdate,
+          disabled: isCheckingUpdate,
+          className: "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-500/20 active:scale-95 transition-all disabled:opacity-50"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "download",
+          className: "w-4 h-4"
+        }), isCheckingUpdate ? 'در حال نصب...' : 'نصب و بروزرسانی آنی'), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: handleCheckForUpdates,
+          disabled: isCheckingUpdate,
+          className: "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-700/70 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold active:scale-95 transition-all disabled:opacity-50"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "refresh-cw",
+          className: `w-4 h-4 ${isCheckingUpdate ? 'animate-spin text-indigo-600 dark:text-indigo-400' : ''}`
+        }), isCheckingUpdate ? 'در حال بررسی...' : 'بررسی بروزرسانی'), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => setIsChangelogModalOpen(true),
+          className: "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs font-bold border border-indigo-200/60 dark:border-indigo-800/50 active:scale-95 transition-all"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "sparkles",
+          className: "w-4 h-4"
+        }), "\u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647\u200C\u0647\u0627"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3.5 flex flex-col"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: () => toggleSettingsSection('appearance'),
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-3.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "palette",
+          className: "w-5 h-5"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "text-sm font-bold text-slate-900 dark:text-white"
+        }, "\u0638\u0627\u0647\u0631"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs text-slate-400 mt-0.5"
+        }, "\u062A\u0646\u0638\u06CC\u0645 \u062A\u0645 \u0648 \u067E\u0648\u0633\u062A\u0647 \u0628\u0631\u0646\u0627\u0645\u0647"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'appearance' ? 'rotate-180' : 'rotate-0'}`
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'appearance' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
+          onClick: e => e.stopPropagation()
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "overflow-hidden space-y-3"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-200 mb-2 px-1"
+        }, "\u067E\u0648\u0633\u062A\u0647 \u0628\u0631\u0646\u0627\u0645\u0647"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "grid grid-cols-3 gap-2 bg-slate-100 dark:bg-slate-900/60 p-1.5 rounded-[20px]"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => setTheme('system'),
+          id: "theme-system",
+          className: `flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${theme === 'system' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "monitor",
+          className: `w-5 h-5 mb-1 scale-90 ${theme === 'system' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs scale-90"
+        }, "\u0633\u06CC\u0633\u062A\u0645"), theme === 'system' && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => setTheme('light'),
+          id: "theme-light",
+          className: `flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${theme === 'light' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "sun",
+          className: `w-5 h-5 mb-1 scale-90 ${theme === 'light' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs scale-90"
+        }, "\u0631\u0648\u0634\u0646"), theme === 'light' && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => setTheme('dark'),
+          id: "theme-dark",
+          className: `flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${theme === 'dark' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "moon",
+          className: `w-5 h-5 mb-1 scale-90 ${theme === 'dark' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'}`
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs scale-90"
+        }, "\u062A\u06CC\u0631\u0647"), theme === 'dark' && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
+        })))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-2"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between px-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
+        }, "\u0646\u0648\u0639 \u0646\u0645\u0627\u06CC\u0634 \u0627\u0631\u0642\u0627\u0645 \u0645\u0627\u0644\u06CC \u0648 \u0641\u0648\u0646\u062A \u0627\u0639\u062F\u0627\u062F"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-[11px] text-slate-400 font-mono"
+        }, "\u0645\u0628\u0627\u0644\u063A \u0648 \u0622\u0645\u0627\u0631")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "grid grid-cols-2 gap-2 bg-slate-100 dark:bg-slate-900/60 p-1.5 rounded-[20px]"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => handleSetNumberFormat('latin'),
+          id: "num-format-latin",
+          className: `flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${numberFormat === 'latin' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-sm font-black mb-0.5 tracking-tight font-mono font-numeric"
+        }, "123,456"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs scale-90"
+        }, "\u0627\u0631\u0642\u0627\u0645 \u0644\u0627\u062A\u06CC\u0646 (\u0627\u0646\u06AF\u0644\u06CC\u0633\u06CC)"), numberFormat === 'latin' && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => handleSetNumberFormat('persian'),
+          id: "num-format-persian",
+          className: `flex flex-col items-center justify-center rounded-[14px] transition-all duration-300 active:scale-95 py-2.5 ${numberFormat === 'persian' ? 'bg-white dark:bg-slate-800 shadow-sm text-indigo-600 dark:text-indigo-400 font-bold' : 'hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-medium'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-sm font-black mb-0.5 tracking-tight font-mono font-numeric"
+        }, "\u06F1\u06F2\u06F3,\u06F4\u06F5\u06F6"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-xs scale-90"
+        }, "\u0627\u0631\u0642\u0627\u0645 \u0641\u0627\u0631\u0633\u06CC \u062E\u0648\u0627\u0646\u0627"), numberFormat === 'persian' && /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "mt-1 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400"
+        }))))))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: () => toggleSettingsSection('notifications'),
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-3.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "bell",
+          className: "w-5 h-5"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "text-sm font-bold text-slate-900 dark:text-white"
+        }, "\u0627\u0639\u0644\u0627\u0646\u200C\u0647\u0627"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs text-slate-400 mt-0.5"
+        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u06CC\u0627\u062F\u0622\u0648\u0631\u06CC\u200C\u0647\u0627 \u0648 \u0627\u0639\u0644\u0627\u0646\u200C\u0647\u0627"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'notifications' ? 'rotate-180' : 'rotate-0'}`
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'notifications' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
+          onClick: e => e.stopPropagation()
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "overflow-hidden space-y-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between p-3 bg-[#F4F7FC] dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
+        }, "\u06CC\u0627\u062F\u0622\u0648\u0631\u06CC \u0633\u0631\u0631\u0633\u06CC\u062F \u0627\u0642\u0633\u0627\u0637"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[10px] text-slate-400 mt-0.5"
+        }, "\u0647\u0634\u062F\u0627\u0631 \u067E\u06CC\u0634\u200C\u0641\u0631\u0636 \u0642\u0628\u0644 \u0627\u0632 \u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 \u0648\u0627\u0645")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => setEnableReminders(!enableReminders),
+          className: `w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableReminders ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableReminders ? '-translate-x-5' : 'translate-x-0'}`
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between p-3 bg-[#F4F7FC] dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
+        }, "\u062E\u0644\u0627\u0635\u0647 \u0631\u0648\u0632\u0627\u0646\u0647 \u062D\u0633\u0627\u0628\u200C\u0647\u0627"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-[10px] text-slate-400 mt-0.5"
+        }, "\u0627\u0639\u0644\u0627\u0646 \u0648\u0636\u0639\u06CC\u062A \u06A9\u0644\u06CC \u0627\u0642\u0633\u0627\u0637 \u0648 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          onClick: () => setEnableDailyAlerts(!enableDailyAlerts),
+          className: `w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableDailyAlerts ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableDailyAlerts ? '-translate-x-5' : 'translate-x-0'}`
+        })))))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: () => toggleSettingsSection('data'),
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-3.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-10 h-10 rounded-2xl bg-cyan-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "folder",
+          className: "w-5 h-5"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "text-sm font-bold text-slate-900 dark:text-white"
+        }, "\u062F\u0627\u062F\u0647\u200C\u0647\u0627"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs text-slate-400 mt-0.5"
+        }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u062F\u0627\u062F\u0647\u200C\u0647\u0627 \u0648 \u062D\u0627\u0641\u0638\u0647"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'data' ? 'rotate-180' : 'rotate-0'}`
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'data' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
+          onClick: e => e.stopPropagation()
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "overflow-hidden space-y-2 text-xs"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-slate-500"
+        }, "\u062A\u0639\u062F\u0627\u062F \u0645\u062E\u0627\u0637\u0628\u06CC\u0646:"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "font-bold"
+        }, contacts.length, " \u0645\u0648\u0631\u062F")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-slate-500"
+        }, "\u067E\u0631\u0648\u0646\u062F\u0647\u200C\u0647\u0627\u06CC \u0648\u0627\u0645:"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "font-bold"
+        }, loans.length, " \u0645\u0648\u0631\u062F")), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-700/50"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "text-slate-500"
+        }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u062B\u0628\u062A\u200C\u0634\u062F\u0647:"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("span", {
+          className: "font-bold"
+        }, transactions.length, " \u0645\u0648\u0631\u062F")))))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "space-y-3.5 flex flex-col"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: () => toggleSettingsSection('backup'),
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-3.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "cloud",
+          className: "w-5 h-5"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "text-sm font-bold text-slate-900 dark:text-white"
+        }, "\u067E\u0634\u062A\u06CC\u0628\u0627\u0646\u200C\u06AF\u06CC\u0631\u06CC"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs text-slate-400 mt-0.5"
+        }, "\u0628\u06A9\u0627\u067E \u0648 \u0628\u0627\u0632\u06CC\u0627\u0628\u06CC \u0627\u0637\u0644\u0627\u0639\u0627\u062A"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'backup' ? 'rotate-180' : 'rotate-0'}`
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'backup' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
+          onClick: e => e.stopPropagation()
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "overflow-hidden space-y-1"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("input", {
+          type: "file",
+          ref: restoreInputRef,
+          onChange: handleRestoreFileChange,
+          accept: ".json",
+          className: "hidden"
+        }), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "divide-y divide-slate-100 dark:divide-slate-700/60 rounded-xl overflow-hidden"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group"
+        }, React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, React.createElement("div", {
+          className: "flex items-center gap-3.5 cursor-pointer flex-1 min-w-0",
+          onClick: () => {
+            if (!gdriveSyncState.isSignedIn && window.GoogleDriveSync) {
+              window.GoogleDriveSync.signIn();
+            }
+          }
+        }, React.createElement("div", {
+          className: "w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center shadow-xs shrink-0"
+        }, React.createElement("svg", {
+          className: "w-5 h-5",
+          viewBox: "0 0 24 24"
+        }, React.createElement("path", {
+          fill: "#4285F4",
+          d: "M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+        }), React.createElement("path", {
+          fill: "#34A853",
+          d: "M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        }), React.createElement("path", {
+          fill: "#FBBC05",
+          d: "M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+        }), React.createElement("path", {
+          fill: "#EA4335",
+          d: "M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+        }))), React.createElement("div", {
+          className: "text-right min-w-0"
+        }, React.createElement("div", {
+          className: "flex items-center gap-2"
+        }, React.createElement("p", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-100"
+        }, "همگام‌سازی با گوگل"), gdriveSyncState.isSignedIn && React.createElement("span", {
+          className: "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800"
+        }, React.createElement("span", {
+          className: "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
+        }), "متصل")), React.createElement("p", {
+          className: "text-[11px] text-slate-400 mt-0.5"
+        }, gdriveSyncState.isSignedIn ? (gdriveSyncState.lastSyncTime ? ("آخرین همگام‌سازی: " + (window.GoogleDriveSync ? window.GoogleDriveSync.getLastSyncFormatted() : "به‌روز")) : "همگام‌سازی خودکار در پس‌زمینه فعال است") : "پشتیبان‌گیری ابری و امن در Google Drive"))), React.createElement("div", {
+          className: "flex items-center gap-2 shrink-0 mr-2"
+        }, !gdriveSyncState.isSignedIn ? React.createElement("button", {
+          type: "button",
+          onClick: () => {
+            if (window.GoogleDriveSync) window.GoogleDriveSync.signIn();
+          },
+          className: "px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold border border-blue-200/60 dark:border-blue-800/50 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+        }, React.createElement(Icon, {
+          name: "log-in",
+          className: "w-3.5 h-3.5"
+        }), "اتصال") : React.createElement("div", {
+          className: "flex items-center gap-1.5"
+        }, React.createElement("button", {
+          type: "button",
+          onClick: async e => {
+            e.stopPropagation();
+            if (window.GoogleDriveSync) {
+              const res = await window.GoogleDriveSync.forceSync({ isUserInitiated: true });
+              if (res && res.success) {
+                showToast("همگام‌سازی با گوگل درایو انجام شد");
+              } else {
+                showToast("خطا در همگام‌سازی با گوگل درایو");
+              }
+            }
+          },
+          disabled: gdriveSyncState.isSyncing,
+          className: "px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-bold active:scale-95 transition-all flex items-center gap-1 cursor-pointer disabled:opacity-50",
+          title: "همگام‌سازی دستی"
+        }, React.createElement(Icon, {
+          name: "refresh-cw",
+          className: "w-3 h-3 " + (gdriveSyncState.isSyncing ? "animate-spin text-blue-600" : "")
+        }), gdriveSyncState.isSyncing ? "در حال سینک..." : "سینک دستی"), React.createElement("button", {
+          type: "button",
+          onClick: e => {
+            e.stopPropagation();
+            if (window.confirm("آیا از خروج و قطع اتصال حساب گوگل اطمینان دارید؟")) {
+              if (window.GoogleDriveSync) window.GoogleDriveSync.signOut();
+              showToast("اتصال با حساب گوگل قطع شد");
+            }
+          },
+          className: "px-2 py-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg text-[11px] font-bold active:scale-95 transition-all cursor-pointer",
+          title: "قطع اتصال"
+        }, "خروج"))))), React.createElement("button", {
+          type: "button",
+          onClick: handleExportBackup,
+          className: "w-full flex items-center justify-between p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group text-right"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-3.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors text-indigo-600 dark:text-indigo-400 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "download",
+          className: "w-4 h-4"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-right min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-100"
+        }, "\u062A\u0647\u06CC\u0647 \u0646\u0633\u062E\u0647 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-[11px] text-slate-400 mt-0.5"
+        }, "\u062F\u0627\u0646\u0644\u0648\u062F \u0641\u0627\u06CC\u0644 \u06A9\u0627\u0645\u0644 \u062F\u06CC\u062A\u0627\u0628\u06CC\u0633 (JSON)"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-left",
+          className: "w-4 h-4 text-slate-400 scale-90 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: () => restoreInputRef.current && restoreInputRef.current.click(),
+          className: "w-full flex items-center justify-between p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group text-right"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-3.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors text-indigo-600 dark:text-indigo-400 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "upload",
+          className: "w-4 h-4"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-right min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-100"
+        }, "\u0628\u0627\u0632\u06CC\u0627\u0628\u06CC \u0627\u0637\u0644\u0627\u0639\u0627\u062A"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-[11px] text-slate-400 mt-0.5"
+        }, "\u062C\u0627\u06CC\u06AF\u0632\u06CC\u0646\u06CC \u062F\u06CC\u062A\u0627\u0628\u06CC\u0633 \u0627\u0632 \u0641\u0627\u06CC\u0644 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-left",
+          className: "w-4 h-4 text-slate-400 scale-90 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("button", {
+          type: "button",
+          onClick: handleResetDatabaseClick,
+          className: "w-full flex items-center justify-between p-3.5 hover:bg-rose-50/50 dark:hover:bg-rose-950/30 transition-colors group text-right"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center gap-3.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center group-hover:bg-rose-100 dark:group-hover:bg-rose-900/60 transition-colors text-rose-600 dark:text-rose-400 shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "trash-2",
+          className: "w-4 h-4"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "text-right min-w-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs font-bold text-rose-600 dark:text-rose-400"
+        }, "\u062D\u0630\u0641 \u06A9\u0644\u06CC\u0647 \u0627\u0637\u0644\u0627\u0639\u0627\u062A"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-[11px] text-slate-400 mt-0.5"
+        }, "\u067E\u0627\u06A9\u0633\u0627\u0632\u06CC \u06A9\u0627\u0645\u0644 \u06A9\u0644\u06CC\u0647 \u062D\u0633\u0627\u0628\u200C\u0647\u0627 \u0648 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-left",
+          className: "w-4 h-4 text-rose-400/60 scale-90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors shrink-0"
+        })))))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: () => toggleSettingsSection('security'),
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-3.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "shield-check",
+          className: "w-5 h-5"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "text-sm font-bold text-slate-900 dark:text-white"
+        }, "\u0627\u0645\u0646\u06CC\u062A"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs text-slate-400 mt-0.5"
+        }, "\u0642\u0641\u0644 \u0628\u0631\u0646\u0627\u0645\u0647 \u0648 \u062D\u0631\u06CC\u0645 \u062E\u0635\u0648\u0635\u06CC"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'security' ? 'rotate-180' : 'rotate-0'}`
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'security' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
+          onClick: e => e.stopPropagation()
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "overflow-hidden space-y-2.5"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs text-slate-500 dark:text-slate-400 leading-relaxed"
+        }, "\u062A\u0645\u0627\u0645\u06CC \u062F\u0627\u062F\u0647\u200C\u0647\u0627 \u0648 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0634\u0645\u0627 \u0635\u0631\u0641\u0627\u064B \u0631\u0648\u06CC \u062D\u0627\u0641\u0638\u0647 \u062F\u0633\u062A\u06AF\u0627\u0647 \u0630\u062E\u06CC\u0631\u0647 \u0645\u06CC\u200C\u0634\u0648\u0646\u062F \u0648 \u062F\u0627\u0631\u0627\u06CC \u0628\u0627\u0644\u0627\u062A\u0631\u06CC\u0646 \u0633\u0637\u062D \u062D\u0631\u06CC\u0645 \u062E\u0635\u0648\u0635\u06CC \u0645\u06CC\u200C\u0628\u0627\u0634\u0646\u062F.")))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          onClick: () => toggleSettingsSection('about'),
+          className: "bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-sm cursor-pointer transition-all hover:border-indigo-400"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center justify-between"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-center space-x-3.5 space-x-reverse"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "info",
+          className: "w-5 h-5"
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", null, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("h3", {
+          className: "text-sm font-bold text-slate-900 dark:text-white"
+        }, "\u062F\u0631\u0628\u0627\u0631\u0647 \u0628\u0631\u0646\u0627\u0645\u0647"), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-xs text-slate-400 mt-0.5"
+        }, "\u0627\u0637\u0644\u0627\u0639\u0627\u062A \u0628\u0631\u0646\u0627\u0645\u0647 \u0648 \u0627\u0631\u062A\u0628\u0627\u0637 \u0628\u0627 \u0645\u0627"))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement(Icon, {
+          name: "chevron-down",
+          className: `w-5 h-5 text-slate-400 transition-transform duration-300 ${openSettingsSection === 'about' ? 'rotate-180' : 'rotate-0'}`
+        })), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: `grid transition-all duration-300 ease-in-out ${openSettingsSection === 'about' ? 'grid-rows-[1fr] opacity-100 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`,
+          onClick: e => e.stopPropagation()
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "overflow-hidden space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed"
+        }, /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", null, "\u0628\u0631\u0646\u0627\u0645\u0647 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0645\u0627\u0644\u06CC Amir Finance \u0627\u0628\u0632\u0627\u0631\u06CC \u062C\u0647\u062A \u062B\u0628\u062A \u0648 \u0645\u062F\u06CC\u0631\u06CC\u062A \u0648\u0627\u0645\u200C\u0647\u0627\u060C \u0627\u0642\u0633\u0627\u0637\u060C \u0637\u0644\u0628\u200C\u0647\u0627 \u0648 \u0628\u062F\u0647\u06CC\u200C\u0647\u0627\u06CC \u0634\u062E\u0635\u06CC."), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("p", {
+          className: "text-[11px] text-slate-400"
+        }, "\u0637\u0631\u0627\u062D\u06CC \u0648 \u062A\u0648\u0633\u0639\u0647: Amir Finance")))))));
+      case 'all-transactions':
+        {
+          const handleBack = onBack ? () => onBack('button') : () => navigateToTab('dashboard', 'back');
+
+          // Filter transactions
+          const filteredAllTxs = transactions.filter(tx => {
+            // Type filter
+            if (allTxsFilterType === 'loan_installment') {
+              const isLoanTx = tx.type === 'repayment' || tx.type === 'loan_installment' || tx.type === 'installment' || Boolean(tx.loanId) || Boolean(tx.installmentNumber) || Boolean(tx.installmentNum);
+              if (!isLoanTx) return false;
+            } else if (allTxsFilterType === 'demand') {
+              if (tx.type !== 'demand') return false;
+            } else if (allTxsFilterType === 'demand_repayment') {
+              if (tx.type !== 'demand_repayment') return false;
+            } else if (allTxsFilterType === 'debt') {
+              if (tx.type !== 'debt') return false;
+            } else if (allTxsFilterType === 'debt_repayment') {
+              if (tx.type !== 'debt_repayment') return false;
+            }
+
+            // Search filter
+            if (allTxsSearchQuery && allTxsSearchQuery.trim()) {
+              const q = allTxsSearchQuery.trim().toLowerCase();
+              const contact = contacts.find(c => c.id === tx.contactId);
+              const contactName = contact ? `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase() : '';
+              const targetLoan = loans.find(l => String(l.id) === String(tx.loanId));
+              const loanTitle = (targetLoan ? targetLoan.title : tx.loanTitle || '').toLowerCase();
+              const titleStr = (tx.title || '').toLowerCase();
+              const notesStr = (tx.notes || tx.description || '').toLowerCase();
+              const amtStr = String(Math.abs(tx.amount || 0));
+              const matches = titleStr.includes(q) || notesStr.includes(q) || contactName.includes(q) || loanTitle.includes(q) || amtStr.includes(q);
+              if (!matches) return false;
+            }
+            return true;
+          });
+
+          // Stats
+          const totalCount = filteredAllTxs.length;
+
+          // Pagination
+          const pageSize = dynamicPageSize || 10;
+          const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+          const currentPage = Math.min(Math.max(1, allTxsPage), totalPages);
+          const pagedTxs = filteredAllTxs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+          const filterPills = [{
+            id: 'all',
+            label: 'همه'
+          }, {
+            id: 'loan_installment',
+            label: 'اقساط وام'
+          }, {
+            id: 'demand',
+            label: 'طلب‌ها'
+          }, {
+            id: 'demand_repayment',
+            label: 'بازپرداخت طلب‌ها'
+          }, {
+            id: 'debt',
+            label: 'بدهی‌ها'
+          }, {
+            id: 'debt_repayment',
+            label: 'بازپرداخت بدهی‌ها'
+          }];
+          return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+            className: "space-y-4 animate-fade-in pb-12"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between py-1.5 mb-1"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center space-x-2.5 space-x-reverse"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            onClick: handleBack,
+            className: "w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 active:scale-95 transition-all shadow-sm shrink-0",
+            title: ""
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "arrow-right",
+            className: "w-5 h-5"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", null, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center space-x-2 space-x-reverse"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h1", {
+            className: "text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white"
+          }, "\u0647\u0645\u0647 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627"), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", {
+            className: "px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/40"
+          }, totalCount)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-[11px] text-slate-400 font-medium mt-0.5"
+          }, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u06A9\u0627\u0645\u0644 \u062A\u0631\u0627\u06A9\u0646\u0634\u200C\u0647\u0627\u06CC \u0645\u0627\u0644\u06CC \u0648 \u0627\u0642\u0633\u0627\u0637"))), (allTxsSearchQuery || allTxsFilterType !== 'all') && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            onClick: () => {
+              setAllTxsSearchQuery('');
+              setAllTxsFilterType('all');
+              setAllTxsPage(1);
+            },
+            className: "text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1.5 rounded-xl border border-indigo-100 dark:border-indigo-800/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-all active:scale-95 shrink-0"
+          }, "\u062D\u0630\u0641 \u0641\u06CC\u0644\u062A\u0631\u0647\u0627")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "relative"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "search",
+            className: "w-4 h-4"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("input", {
+            type: "text",
+            value: allTxsSearchQuery,
+            onChange: e => {
+              setAllTxsSearchQuery(e.target.value);
+              setAllTxsPage(1);
+            },
+            placeholder: "        ...",
+            className: "w-full pr-10 pl-10 py-2.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-sm transition-all"
+          }), allTxsSearchQuery && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            onClick: () => {
+              setAllTxsSearchQuery('');
+              setAllTxsPage(1);
+            },
+            className: "absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "x",
+            className: "w-4 h-4"
+          }))), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center space-x-2 space-x-reverse overflow-x-auto pb-1.5 scrollbar-none -mx-1 px-1"
+          }, filterPills.map(pill => {
+            const isActive = allTxsFilterType === pill.id;
+            return /*#__PURE__*/ /*#__PURE__*/React.createElement("button", {
+              key: pill.id,
+              onClick: () => {
+                setAllTxsFilterType(pill.id);
+                setAllTxsPage(1);
+              },
+              className: `px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 shrink-0 ${isActive ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/60 hover:border-slate-300 dark:hover:border-slate-600'}`
+            }, pill.label);
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "space-y-2.5"
+          }, pagedTxs.map((tx, idx) => /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(SwipeableTxCard, {
+            key: tx.id || idx,
+            tx: tx,
+            index: idx,
+            totalCount: pagedTxs.length,
+            contacts: contacts,
+            loans: loans,
+            transactions: transactions,
+            isHighlighted: highlightedTxId !== null && String(tx.id) === String(highlightedTxId),
+            onEdit: txItem => handleTransactionClick(txItem),
+            onDelete: (txItem, confirmCb) => requestDeleteTx(txItem, txItem.type || 'tx', confirmCb)
+          })), filteredAllTxs.length === 0 && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "bg-white dark:bg-slate-800 rounded-3xl p-8 text-center space-y-3 border border-slate-200/80 dark:border-slate-700/60 shadow-sm my-4"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 dark:text-indigo-400 flex items-center justify-center mx-auto"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "receipt",
+            className: "w-7 h-7"
+          })), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("h3", {
+            className: "text-sm font-bold text-slate-800 dark:text-slate-100"
+          }, "\u062A\u0631\u0627\u06A9\u0646\u0634\u06CC \u06CC\u0627\u0641\u062A \u0646\u0634\u062F"), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("p", {
+            className: "text-xs text-slate-400 max-w-xs mx-auto"
+          }, allTxsSearchQuery || allTxsFilterType !== 'all' ? 'با توجه به فیلترها و جستجوی اعمال‌شده موردی یافت نشد.' : 'هنوز هیچ تراکنشی در سیستم ثبت نشده است.'))), totalPages > 1 && /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "flex items-center justify-between bg-white dark:bg-slate-800 rounded-2xl p-2.5 border border-slate-200/80 dark:border-slate-700/60 shadow-sm mt-4"
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            disabled: currentPage <= 1,
+            onClick: () => setAllTxsPage(prev => Math.max(1, prev - 1)),
+            className: `px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 space-x-reverse transition-all ${currentPage <= 1 ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 active:scale-95'}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "chevron-right",
+            className: "w-4 h-4"
+          }), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", null, "\u0635\u0641\u062D\u0647 \u0642\u0628\u0644")), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-xs font-bold text-slate-600 dark:text-slate-300"
+          }, "\u0635\u0641\u062D\u0647 ", toAppDigits(currentPage), " \u0627\u0632 ", toAppDigits(totalPages)), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("button", {
+            disabled: currentPage >= totalPages,
+            onClick: () => setAllTxsPage(prev => Math.min(totalPages, prev + 1)),
+            className: `px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 space-x-reverse transition-all ${currentPage >= totalPages ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 active:scale-95'}`
+          }, /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("span", null, "\u0635\u0641\u062D\u0647 \u0628\u0639\u062F"), /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement(Icon, {
+            name: "chevron-left",
+            className: "w-4 h-4"
+          }))));
+        }
+      default:
+        return null;
+    }
+  };
+  const activeCards = getCurrentWizardCards();
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+    className: `w-full h-full relative flex flex-col justify-between overflow-hidden ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#F4F7FC] text-slate-800'}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, showSplashScreen && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "app-splash-screen",
+    initial: {
+      opacity: 1,
+      scale: 1
+    },
+    animate: {
+      opacity: 1,
+      scale: 1
+    },
+    exit: {
+      opacity: 0,
+      scale: 1.05,
+      filter: 'blur(8px)'
+    },
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1]
+    },
+    className: "fixed inset-0 z-[100000] bg-[#0b101d] flex items-center justify-center overflow-hidden pointer-events-auto"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("picture", {
+    className: "w-full h-full flex items-center justify-center"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("source", {
+    media: "(orientation: landscape) and (min-aspect-ratio: 195/100)",
+    srcSet: "./apple-splash-2796-1290.png"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("source", {
+    media: "(orientation: landscape) and (min-aspect-ratio: 150/100) and (max-aspect-ratio: 195/100)",
+    srcSet: "./apple-splash-2208-1242.png"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("source", {
+    media: "(orientation: landscape) and (min-aspect-ratio: 137/100) and (max-aspect-ratio: 150/100)",
+    srcSet: "./apple-splash-2388-1668.png"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("source", {
+    media: "(orientation: landscape) and (max-aspect-ratio: 137/100)",
+    srcSet: "./apple-splash-2732-2048.png"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("source", {
+    media: "(orientation: portrait) and (min-aspect-ratio: 725/1000)",
+    srcSet: "./apple-splash-2048-2732.png"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("source", {
+    media: "(orientation: portrait) and (min-aspect-ratio: 62/100) and (max-aspect-ratio: 725/1000)",
+    srcSet: "./apple-splash-1668-2388.png"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("source", {
+    media: "(orientation: portrait) and (min-aspect-ratio: 52/100) and (max-aspect-ratio: 62/100)",
+    srcSet: "./apple-splash-1242-2208.png"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("source", {
+    media: "(orientation: portrait) and (max-aspect-ratio: 52/100)",
+    srcSet: "./apple-splash-1290-2796.png"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("img", {
+    src: "./apple-splash-1290-2796.png",
+    alt: "Amir Finance Splash Screen",
+    className: "w-full h-full object-cover object-center bg-[#050714]"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "absolute bottom-10 inset-x-0 flex flex-col items-center justify-center space-y-2 pointer-events-none z-10"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"
+  })))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[45] pointer-events-none transition-colors ${!isDark ? 'bg-[#F4F7FC]' : 'bg-slate-950'}`
+  }), toastMessage && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "absolute top-[calc(env(safe-area-inset-top,0px)+1rem)] left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white dark:bg-slate-100 dark:text-slate-900 text-xs py-2 px-4 rounded-full shadow-lg border border-slate-700/50 transition-all duration-300"
+  }, toastMessage), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex-1 relative w-full h-full overflow-hidden"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, {
+    custom: navDirection,
+    initial: false
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: currentTab + (currentTab === 'contact-detail' ? `-${selectedContact?.id}` : currentTab === 'loan-detail' ? `-${selectedLoan?.id}` : currentTab === 'archived-period-detail' ? `-${selectedPeriod?.id}` : ''),
+    custom: navDirection,
+    variants: pageSlideVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      willChange: 'transform',
+      WebkitBackfaceVisibility: 'hidden',
+      backfaceVisibility: 'hidden'
+    },
+    className: "w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden overscroll-x-none bg-[#F4F7FC] dark:bg-slate-950 z-10"
+  }, ['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex-1 relative w-full h-full"
+  }, currentTab === 'contact-detail' && selectedContact && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(SwipeBackWrapper, {
+    onBack: () => navigateToTab(loanReturnTab || 'contacts', 'none'),
+    navDirection: navDirection,
+    onRefresh: () => handleRefreshData('contact-detail'),
+    underlyingContent: renderTab(getUnderlyingTabForSubpage('contact-detail'))
+  }, ({
+    onBack
+  }) => renderTab('contact-detail', onBack)), currentTab === 'loan-detail' && selectedLoan && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(SwipeBackWrapper, {
+    onBack: () => navigateToTab(loanReturnTab || 'accounts', 'none'),
+    navDirection: navDirection,
+    onRefresh: () => handleRefreshData('loan-detail'),
+    underlyingContent: renderTab(getUnderlyingTabForSubpage('loan-detail'))
+  }, ({
+    onBack
+  }) => renderTab('loan-detail', onBack)), currentTab === 'archived-period-detail' && selectedPeriod && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(SwipeBackWrapper, {
+    onBack: () => navigateToTab(loanReturnTab || 'contact-detail', 'none'),
+    navDirection: navDirection,
+    onRefresh: () => handleRefreshData('archived-period-detail'),
+    underlyingContent: renderTab(getUnderlyingTabForSubpage('archived-period-detail'))
+  }, ({
+    onBack
+  }) => renderTab('archived-period-detail', onBack)), currentTab === 'all-transactions' && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(SwipeBackWrapper, {
+    onBack: () => navigateToTab('dashboard', 'none'),
+    navDirection: navDirection,
+    onRefresh: () => handleRefreshData('all-transactions'),
+    underlyingContent: renderTab(getUnderlyingTabForSubpage('all-transactions'))
+  }, ({
+    onBack
+  }) => renderTab('all-transactions', onBack))) : /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(PullToRefresh, {
+    onRefresh: () => handleRefreshData(currentTab),
+    className: "flex-1 px-4 pt-[calc(env(safe-area-inset-top,0px)+0.15rem)] pb-20 h-full overflow-y-auto overflow-x-hidden overscroll-x-none"
+  }, currentTab === 'dashboard' && renderTab('dashboard'), currentTab === 'accounts' && renderTab('accounts'), currentTab === 'contacts' && renderTab('contacts'), currentTab === 'settings' && renderTab('settings'))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "fab-backdrop",
+    initial: {
+      opacity: 0
+    },
+    animate: {
+      opacity: 1
+    },
+    exit: {
+      opacity: 0
+    },
+    transition: {
+      duration: 0.2
+    },
+    onClick: () => closePlusMenu(),
+    className: "absolute inset-0 bg-black/40 backdrop-blur-xs z-30"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "fixed bottom-20 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, showPlusMenu && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "genie-fixed",
+    initial: {
+      opacity: 0,
+      scaleX: 0.1,
+      scaleY: 0.05,
+      y: 100,
+      clipPath: "polygon(40% 100%, 60% 100%, 50% 100%, 50% 100%)"
+    },
+    animate: {
+      opacity: 1,
+      scaleX: 1,
+      scaleY: 1,
+      y: 0,
+      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
+    },
+    exit: {
+      opacity: 0,
+      scaleX: 0.08,
+      scaleY: 0.05,
+      y: 80,
+      clipPath: "polygon(30% 0%, 70% 0%, 55% 100%, 45% 100%)",
+      transition: {
+        duration: 0.4,
+        ease: [0.76, 0, 0.24, 1]
+      }
+    },
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 22
+    },
+    style: {
+      transformOrigin: "bottom center"
+    },
+    className: "pointer-events-auto w-[310px] sm:w-[330px] bg-white/95 dark:bg-slate-800/95 backdrop-blur-3xl border border-slate-200/90 dark:border-slate-700/80 shadow-2xl p-5 mb-2 flex flex-col gap-3 rounded-3xl text-slate-800 dark:text-slate-100"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "text-center font-extrabold text-slate-900 dark:text-white text-sm mb-0.5"
+  }, "\u062B\u0628\u062A \u0648 \u0645\u062F\u06CC\u0631\u06CC\u062A \u062C\u062F\u06CC\u062F"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => closePlusMenu(() => openStackWizard('contact', 'add', {
+      fromFab: true
+    })),
+    className: "w-full bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center justify-between border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-8.5 h-8.5 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "user-plus",
+    className: "w-4 h-4"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-center min-w-0 flex-1 px-1"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-bold text-xs text-slate-800 dark:text-slate-100 block"
+  }, "\u0645\u062E\u0627\u0637\u0628 \u062C\u062F\u06CC\u062F"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "text-[10px] text-slate-400 font-normal truncate block"
+  }, "\u0627\u0641\u0632\u0648\u062F\u0646 \u0634\u062E\u0635 \u062C\u062F\u06CC\u062F \u0628\u0647 \u062F\u0641\u062A\u0631 \u0645\u062E\u0627\u0637\u0628\u06CC\u0646")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-8.5 h-8.5 shrink-0"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => closePlusMenu(() => openStackWizard('demand', 'add', {
+      fromFab: true
+    })),
+    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-400 active:scale-[0.97] transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "arrow-up-right",
+    className: "w-4 h-4"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-bold text-xs text-slate-800 dark:text-slate-100"
+  }, "\u062B\u0628\u062A \u0637\u0644\u0628")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => closePlusMenu(() => openStackWizard('demand_repayment', 'add', {
+      fromFab: true
+    })),
+    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-teal-400 active:scale-[0.97] transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "check-circle-2",
+    className: "w-4 h-4"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-bold text-xs text-slate-800 dark:text-slate-100"
+  }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0637\u0644\u0628"))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => closePlusMenu(() => openStackWizard('debt', 'add', {
+      fromFab: true
+    })),
+    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-rose-400 active:scale-[0.97] transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-8 h-8 rounded-xl bg-rose-500/15 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "arrow-down-left",
+    className: "w-4 h-4"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-bold text-xs text-slate-800 dark:text-slate-100"
+  }, "\u062B\u0628\u062A \u0628\u062F\u0647\u06CC")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => closePlusMenu(() => openStackWizard('debt_repayment', 'add', {
+      fromFab: true
+    })),
+    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-amber-400 active:scale-[0.97] transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "corner-down-left",
+    className: "w-4 h-4"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-bold text-xs text-slate-800 dark:text-slate-100"
+  }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0628\u062F\u0647\u06CC"))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "grid grid-cols-2 gap-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => closePlusMenu(() => openStackWizard('loan', 'add', {
+      fromFab: true
+    })),
+    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "landmark",
+    className: "w-4 h-4"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-bold text-xs text-slate-800 dark:text-slate-100"
+  }, "\u062B\u0628\u062A \u0648\u0627\u0645")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => closePlusMenu(() => openStackWizard('installment', 'add', {
+      fromFab: true
+    })),
+    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-purple-400 active:scale-[0.97] transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "receipt",
+    className: "w-4 h-4"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-bold text-xs text-slate-800 dark:text-slate-100"
+  }, "\u067E\u0631\u062F\u0627\u062E\u062A \u0642\u0633\u0637"))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => closePlusMenu(),
+    className: "w-full py-1 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641")))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 h-14 flex items-center justify-center"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-full flex items-center justify-around px-2 h-14 max-w-lg mx-auto"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(NavRippleButton, {
+    id: "nav-btn-home",
+    onClick: () => navigateToTab('dashboard', 'none'),
+    isActive: currentTab === 'dashboard',
+    iconName: "home",
+    label: "خانه"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(NavRippleButton, {
+    id: "nav-btn-accounts",
+    onClick: () => navigateToTab('accounts', 'none'),
+    isActive: currentTab === 'accounts',
+    iconName: "wallet",
+    label: "حساب‌ها"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "relative flex items-center justify-center w-14 h-14 shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.button, {
+    whileTap: {
+      scale: 0.85
+    },
+    onClick: () => {
+      if (showPlusMenu) {
+        closePlusMenu();
+      } else {
+        setShowPlusMenu(true);
+      }
+    },
+    className: `w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg absolute -top-3 z-[50] transition-colors duration-300 ${showPlusMenu ? 'bg-red-500 hover:bg-red-600 shadow-red-500/35 ring-4 ring-red-500/25' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30'}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    className: "flex items-center justify-center w-full h-full leading-none shrink-0",
+    animate: {
+      rotate: showPlusMenu ? 135 : 0
+    },
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 20
+    }
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "plus",
+    className: "w-6 h-6 shrink-0 block"
+  })))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(NavRippleButton, {
+    id: "nav-btn-contacts",
+    onClick: () => navigateToTab('contacts', 'none'),
+    isActive: currentTab === 'contacts',
+    iconName: "users",
+    label: "مخاطبین"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(NavRippleButton, {
+    id: "nav-btn-settings",
+    onClick: () => navigateToTab('settings', 'none'),
+    isActive: currentTab === 'settings',
+    iconName: "settings",
+    label: "تنظیمات"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, showStackWizard && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "stack-wizard-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: `absolute inset-0 z-50 flex flex-col justify-start items-center px-3 pb-2 pt-[calc(env(safe-area-inset-top,0px)+4px)] overflow-hidden ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d]/90 backdrop-blur-md'}`
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[60] ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d] backdrop-blur-md'}`
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "stack-wizard-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      transformOrigin: "center center"
+    },
+    className: "w-full max-w-md md:max-w-2xl flex flex-col items-center mx-auto h-full pt-0.5"
+  }, wizardMode === 'edit' || wizardViewStyle === 'stacked' ? /*#__PURE__*/
+  /*#__PURE__*/
+  /* Premium Mobile Vertical Sticky Stacked Cards Editing View */
+  React.createElement("div", {
+    className: "w-full flex flex-col items-center h-full max-h-[96vh] relative"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    ref: editCardsContainerRef,
+    className: `w-full flex-1 hide-scrollbar pt-0.5 px-1 space-y-4 relative pb-2 ${editingCardId !== null ? "overflow-hidden touch-none" : "overflow-y-auto overflow-x-hidden overscroll-x-none"}`
+  }, activeCards.map((card, index) => {
+    const isLastCard = index === activeCards.length - 1;
+    const isEditingThis = editingCardId === card.id;
+    const isOtherCardBlur = editingCardId !== null && editingCardId !== card.id;
+    const isModified = modifiedCardIds.includes(card.id);
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      key: card.id,
+      id: `sticky-card-${card.id}`,
+      className: "sticky w-[96%] max-w-md mx-auto",
+      style: {
+        top: `${index * 8}px`,
+        zIndex: isEditingThis ? 200 : index + 10,
+        transform: isEditingThis ? 'translate3d(0,0,1px)' : 'none',
+        WebkitTransform: isEditingThis ? 'translate3d(0,0,1px)' : 'none'
+      }
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(motion.div, {
+      initial: {
+        y: 20
+      },
+      animate: {
+        opacity: isOtherCardBlur ? 0.6 : 1,
+        scale: isEditingThis ? 1.0 : isOtherCardBlur ? 0.95 : 0.98,
+        y: peekAnim && index > 0 ? -80 : 0
+      },
+      transition: {
+        type: "spring",
+        stiffness: 380,
+        damping: 26
+      },
+      className: `w-full rounded-3xl p-5 sm:p-6 border transition-all duration-200 ease-out bg-white dark:bg-slate-800 h-[385px] max-h-[385px] flex flex-col justify-between overflow-hidden ${isEditingThis ? 'shadow-2xl shadow-indigo-500/20 ring-2 ring-indigo-500/50 border-indigo-500 dark:border-indigo-400' : 'shadow-[0_-12px_28px_rgba(15,23,42,0.16)] dark:shadow-[0_-12px_32px_rgba(0,0,0,0.65)] border-slate-200/80 dark:border-slate-700/80 border-t-white dark:border-t-slate-700/90 hover:border-indigo-300 dark:hover:border-indigo-600 cursor-pointer'} ${isOtherCardBlur ? 'pointer-events-none select-none' : ''} ${shakeCardId === card.id ? 'animate-shake' : ''}`,
+      onClick: e => {
+        if (!isEditingThis && editingCardId === null) {
+          handleStartEditingCard(card);
+        }
+      }
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: `flex-1 min-h-0 py-1 overflow-y-auto hide-scrollbar transition-all duration-200 ${!isEditingThis ? 'pointer-events-none opacity-95' : ''}`
+    }, card.render()), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "pt-2.5 mt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between shrink-0 h-12"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(AnimatePresence, {
+      mode: "wait"
+    }, isEditingThis ? /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(motion.div, {
+      key: "editing-actions",
+      initial: {
+        opacity: 0,
+        y: 5
+      },
+      animate: {
+        opacity: 1,
+        y: 0
+      },
+      exit: {
+        opacity: 0,
+        y: -5
+      },
+      transition: {
+        duration: 0.18
+      },
+      className: "w-full flex items-center space-x-2 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: e => {
+        e.stopPropagation();
+        cancelEditingCard();
+      },
+      className: "flex-1 py-2.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-all active:scale-95 cursor-pointer flex items-center justify-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "x",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, "\u0627\u0646\u0635\u0631\u0627\u0641")), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: e => {
+        e.stopPropagation();
+        saveEditingCard(card);
+      },
+      className: "flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center space-x-1.5 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "check",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, "\u062B\u0628\u062A \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A"))) : /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(motion.div, {
+      key: "view-actions",
+      initial: {
+        opacity: 0,
+        y: -5
+      },
+      animate: {
+        opacity: 1,
+        y: 0
+      },
+      exit: {
+        opacity: 0,
+        y: 5
+      },
+      transition: {
+        duration: 0.18
+      },
+      className: "w-full flex items-center justify-between"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex items-center space-x-2 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-xs font-extrabold text-slate-500 dark:text-slate-400"
+    }, "\u06A9\u0627\u0631\u062A ", toAppDigits(index + 1), " \u0627\u0632 ", toAppDigits(activeCards.length), ": ", card.title), isModified && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "inline-flex items-center gap-1 bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-emerald-500/30"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "check",
+      className: "w-3 h-3"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, "\u0627\u0635\u0644\u0627\u062D\u200C\u0634\u062F\u0647"))), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: e => {
+        e.stopPropagation();
+        handleStartEditingCard(card);
+      },
+      className: "px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 text-xs font-bold transition-all cursor-pointer flex items-center space-x-1 space-x-reverse"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "edit-2",
+      className: "w-3.5 h-3.5 shrink-0"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, "\u0648\u06CC\u0631\u0627\u06CC\u0634")))))));
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    "aria-hidden": "true",
+    className: "w-full shrink-0 pointer-events-none",
+    style: {
+      height: editCardsContainerHeight > 0 ? `${Math.max(24, Math.round(editCardsContainerHeight - 385 - (activeCards.length - 1) * 8 + 8))}px` : `max(24px, calc(100vh - ${385 + (activeCards.length - 1) * 8 + 120}px))`
+    }
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-full flex justify-center items-center py-2 shrink-0 z-40 relative"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.button, {
+    type: "button",
+    whileTap: {
+      scale: 0.88
+    },
+    onClick: () => closeStackWizard(false),
+    className: "w-12 h-12 rounded-full bg-slate-900/85 hover:bg-slate-900 active:scale-90 text-white flex items-center justify-center border border-white/20 shadow-2xl transition-all cursor-pointer backdrop-blur-lg",
+    title: ""
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "x",
+    className: "w-6 h-6"
+  })))) : /*#__PURE__*/
+  /*#__PURE__*/
+  /* Step-by-Step Stack Card Mode */
+  React.createElement("div", {
+    className: "w-full flex flex-col items-center pt-0.5"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: `card-stack-container w-full ${isFinalSubmitting ? 'card-stack-fall-submit' : ''}`
+  }, activeCards.map((card, index) => /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(StackCardItem, {
+    key: card.id,
+    card: card,
+    index: index,
+    currentCardIdx: currentCardIdx,
+    animatingCard: animatingCard,
+    animatingPrevCard: animatingPrevCard,
+    handlePrevCard: handlePrevCard,
+    handleNextCard: () => handleNextCard(activeCards),
+    totalCards: activeCards.length,
+    showStackWizard: showStackWizard,
+    shakeCardId: shakeCardId
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex justify-center items-center space-x-1.5 space-x-reverse mt-2.5"
+  }, activeCards.map((_, i) => /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    key: i,
+    className: `h-1.5 rounded-full transition-all duration-300 ${i === currentCardIdx ? 'w-6 bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]' : 'w-1.5 bg-slate-400/40'}`
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex justify-center items-center mt-3.5 mb-1"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.button, {
+    type: "button",
+    whileTap: {
+      scale: 0.88
+    },
+    onClick: () => closeStackWizard(false),
+    className: "w-12 h-12 rounded-full bg-slate-900/85 hover:bg-slate-900 active:scale-90 text-white flex items-center justify-center border border-white/20 shadow-2xl transition-all cursor-pointer backdrop-blur-lg",
+    title: ""
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "x",
+    className: "w-6 h-6"
+  }))))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, showUnsavedConfirmDialog && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "unsaved-confirm-backdrop",
+    initial: {
+      opacity: 0
+    },
+    animate: {
+      opacity: 1
+    },
+    exit: {
+      opacity: 0
+    },
+    className: "fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "unsaved-confirm-panel",
+    initial: {
+      scale: 0.88,
+      opacity: 0
+    },
+    animate: {
+      scale: 1,
+      opacity: 1
+    },
+    exit: {
+      scale: 0.88,
+      opacity: 0
+    },
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 28
+    },
+    className: "bg-white dark:bg-slate-800 rounded-3xl p-5 max-w-xs w-full text-center space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 mx-auto flex items-center justify-center"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "alert-triangle",
+    className: "w-6 h-6"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", null, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "font-extrabold text-slate-800 dark:text-white text-sm"
+  }, "\u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0630\u062E\u06CC\u0631\u0647\u200C\u0646\u0634\u062F\u0647"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed"
+  }, "\u0634\u0645\u0627 ", modifiedCardIds.length, " \u062A\u063A\u06CC\u06CC\u0631 \u0630\u062E\u06CC\u0631\u0647\u200C\u0646\u0634\u062F\u0647 \u062F\u0627\u0631\u06CC\u062F. \u0622\u06CC\u0627 \u0645\u0627\u06CC\u0644\u06CC\u062F \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0627\u062F\u06CC\u062F\u0647 \u06AF\u0631\u0641\u062A\u0647 \u0634\u0648\u0646\u062F \u0648 \u062E\u0627\u0631\u062C \u0634\u0648\u06CC\u062F\u061F")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex gap-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => setShowUnsavedConfirmDialog(false),
+    className: "flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+  }, "\u0627\u062F\u0627\u0645\u0647 \u0648\u06CC\u0631\u0627\u06CC\u0634"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => closeStackWizard(true),
+    className: "flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors"
+  }, "\u062E\u0631\u0648\u062C \u0628\u062F\u0648\u0646 \u0630\u062E\u06CC\u0631\u0647"))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, (exportModalConfig?.isOpen || showExportModal) && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "universal-export-modal-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "universal-export-modal-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      transformOrigin: "center center"
+    },
+    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "font-extrabold text-slate-900 dark:text-white text-base"
+  }, "\u062F\u0631\u06CC\u0627\u0641\u062A \u062E\u0631\u0648\u062C\u06CC \u06AF\u0632\u0627\u0631\u0634"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-xs text-slate-400 mt-1"
+  }, "\u0641\u0631\u0645\u062A \u0645\u0648\u0631\u062F \u0646\u0638\u0631 \u062E\u0648\u062F \u062C\u0647\u062A \u0630\u062E\u06CC\u0631\u0647\u200C\u0633\u0627\u0632\u06CC \u0631\u0627 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "space-y-2.5"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => {
+      const type = exportModalConfig?.type || 'loan';
+      const targetData = exportModalConfig?.data || selectedLoan;
+      if (type === 'period') {
+        const periodContact = contacts.find(c => c.id === targetData?.contactId) || {
+          firstName: targetData?.contactName || 'مخاطب',
+          lastName: '',
+          phone: targetData?.phone || ''
+        };
+        let fullPeriod = {
+          ...targetData
+        };
+        if (!fullPeriod.transactions || fullPeriod.transactions.length === 0) {
+          fullPeriod.transactions = transactions.filter(t => String(t.periodId) === String(targetData?.id));
+        }
+        exportPeriodAsExcel(fullPeriod, periodContact);
+        showToast('خروجی اکسل با موفقیت دانلود شد');
+      } else {
+        exportLoanToCSV(targetData, transactions);
+        showToast('خروجی اکسل وام با موفقیت دانلود شد');
+      }
+      setExportModalConfig(null);
+      setShowExportModal(false);
+    },
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 p-3.5 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-700 transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center space-x-3 space-x-reverse"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-300 font-bold text-xs flex items-center justify-center"
+  }, "CSV"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-right"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "font-bold text-xs text-slate-800 dark:text-slate-100"
+  }, "\u062F\u0627\u0646\u0644\u0648\u062F \u0641\u0627\u06CC\u0644 \u0627\u06A9\u0633\u0644 / CSV"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-[10px] text-slate-400"
+  }, "\u0645\u0646\u0627\u0633\u0628 \u062C\u0647\u062A \u0628\u0631\u0631\u0633\u06CC \u0648 \u0628\u0627\u0632 \u06A9\u0631\u062F\u0646 \u062F\u0631 \u0627\u06A9\u0633\u0644"))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "download",
+    className: "w-4 h-4 text-slate-400"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => {
+      const type = exportModalConfig?.type || 'loan';
+      const targetData = exportModalConfig?.data || selectedLoan;
+      if (type === 'period') {
+        const periodContact = contacts.find(c => c.id === targetData?.contactId) || {
+          firstName: targetData?.contactName || 'مخاطب',
+          lastName: '',
+          phone: targetData?.phone || ''
+        };
+        let fullPeriod = {
+          ...targetData
+        };
+        if (!fullPeriod.transactions || fullPeriod.transactions.length === 0) {
+          fullPeriod.transactions = transactions.filter(t => String(t.periodId) === String(targetData?.id));
+        }
+        exportPeriodAsPNG(fullPeriod, periodContact);
+        showToast('خروجی تصویر باکیفیت با موفقیت دانلود شد');
+      } else {
+        exportLoanAsPNG(targetData, transactions);
+        showToast('خروجی تصویر باکیفیت وام با موفقیت دانلود شد');
+      }
+      setExportModalConfig(null);
+      setShowExportModal(false);
+    },
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 p-3.5 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-700 transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center space-x-3 space-x-reverse"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 font-bold text-xs flex items-center justify-center"
+  }, "PNG"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-right"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "font-bold text-xs text-slate-800 dark:text-slate-100"
+  }, "\u062F\u0627\u0646\u0644\u0648\u062F \u062A\u0635\u0648\u06CC\u0631 \u06AF\u0631\u0627\u0641\u06CC\u06A9\u06CC (PNG)"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-[10px] text-slate-400"
+  }, "\u062A\u0635\u0648\u06CC\u0631 \u0628\u0627 \u0648\u0636\u0648\u062D \u0628\u0627\u0644\u0627 \u0647\u0645\u0631\u0627\u0647 \u0628\u0627 \u06A9\u0627\u0631\u062A \u0627\u0637\u0644\u0627\u0639\u0627\u062A \u0648 \u067E\u0631\u062F\u0627\u062E\u062A\u06CC\u200C\u0647\u0627"))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "download",
+    className: "w-4 h-4 text-slate-400"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => {
+      setExportModalConfig(null);
+      setShowExportModal(false);
+    },
+    className: "w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641")))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, showCompletedExportModal.show && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "completed-export-modal-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "completed-export-modal-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      transformOrigin: "center center"
+    },
+    className: "w-full max-w-sm bg-white dark:bg-slate-900 rounded-[28px] p-5 pb-8 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl max-h-[85vh] overflow-y-auto overflow-x-hidden overscroll-x-none"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "font-extrabold text-slate-900 dark:text-white text-base"
+  }, "\u062E\u0631\u0648\u062C\u06CC \u062F\u0648\u0631\u0647\u200C\u0647\u0627\u06CC \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647 ", showCompletedExportModal.type === 'debt' ? 'بدهی' : 'طلب'), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-xs text-slate-400 mt-1"
+  }, "\u0645\u062E\u0627\u0637\u0628: ", showCompletedExportModal.contact ? `${showCompletedExportModal.contact.firstName} ${showCompletedExportModal.contact.lastName}` : '-')), (() => {
+    const contact = showCompletedExportModal.contact;
+    const type = showCompletedExportModal.type;
+    if (!contact) return null;
+    let periods = completedPeriods.filter(p => p.contactId === contact.id && p.type === type);
+    if (periods.length === 0) {
+      const contactTxs = transactions.filter(t => t.contactId === contact.id && (t.type === type || t.type === `${type}_repayment`));
+      if (contactTxs.length > 0) {
+        let sum = 0;
+        let initialSum = 0;
+        contactTxs.forEach(t => {
+          if (t.type === type) {
+            sum += Math.abs(t.amount);
+            initialSum += Math.abs(t.amount);
+          }
+          if (t.type === `${type}_repayment`) {
+            sum -= Math.abs(t.amount);
+          }
+        });
+        if (sum <= 0 && initialSum > 0) {
+          periods = [{
+            id: 'p_auto_' + Date.now(),
+            contactId: contact.id,
+            contactName: `${contact.firstName} ${contact.lastName}`,
+            type: type,
+            title: `دوره تسویه‌شده ${type === 'debt' ? 'بدهی' : 'طلب'}`,
+            totalAmount: initialSum,
+            startDate: contactTxs[contactTxs.length - 1]?.dateStr || 'نامشخص',
+            endDate: contactTxs[0]?.dateStr || 'امروز',
+            transactions: contactTxs
+          }];
+        }
+      }
+    }
+    if (periods.length === 0) {
+      return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+        className: "bg-[#F4F7FC] dark:bg-slate-800/60 p-6 rounded-2xl text-center text-xs text-slate-400"
+      }, "\u0647\u0646\u0648\u0632 \u0647\u06CC\u0686 \u062F\u0648\u0631\u0647 \u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647\u200C\u0627\u06CC \u0628\u0631\u0627\u06CC \u0627\u06CC\u0646 \u0645\u062E\u0627\u0637\u0628 \u062B\u0628\u062A \u0646\u0634\u062F\u0647 \u0627\u0633\u062A.");
+    }
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      className: "space-y-3"
+    }, periods.map(period => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      key: period.id,
+      className: "bg-[#F4F7FC] dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/80 space-y-2"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex justify-between items-center"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-xs font-bold text-slate-900 dark:text-white"
+    }, period.title), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/80 px-2 py-0.5 rounded-full"
+    }, "\u062A\u0633\u0648\u06CC\u0647\u200C\u0634\u062F\u0647")), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "text-[11px] text-slate-500 dark:text-slate-400 space-y-0.5"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, "\u0645\u0628\u0644\u063A \u06A9\u0644 \u062F\u0648\u0631\u0647: ", /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("strong", {
+      className: "text-slate-800 dark:text-slate-200"
+    }, Number(period.totalAmount).toLocaleString(), " \u062A\u0648\u0645\u0627\u0646")), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, "\u0628\u0627\u0632\u0647 \u0632\u0645\u0627\u0646\u06CC: ", period.startDate, " \u062A\u0627 ", period.endDate), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", null, "\u062A\u0639\u062F\u0627\u062F \u067E\u0631\u062F\u0627\u062E\u062A\u06CC\u200C\u0647\u0627: ", period.transactions ? period.transactions.length : 0, " \u0645\u0648\u0631\u062F")), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("button", {
+      onClick: () => {
+        exportPeriodAsPNG(period);
+        showToast('خروجی PNG دوره تسویه ساخته و دانلود شد');
+      },
+      className: "w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 space-x-reverse shadow-md transition-colors"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: "download",
+      className: "w-3.5 h-3.5"
+    }), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", null, "\u062F\u0627\u0646\u0644\u0648\u062F \u062E\u0631\u0648\u062C\u06CC PNG")))));
+  })(), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => setShowCompletedExportModal({
+      show: false,
+      contact: null,
+      type: 'debt'
+    }),
+    className: "w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641")))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, deleteTxModal.show && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "delete-tx-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "delete-tx-panel",
+    initial: {
+      scale: 0.9,
+      opacity: 0
+    },
+    animate: {
+      scale: 1,
+      opacity: 1
+    },
+    exit: {
+      scale: 0.9,
+      opacity: 0
+    },
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 25
+    },
+    className: "bg-white dark:bg-slate-800 w-full max-w-xs rounded-3xl p-5 space-y-4 text-center shadow-2xl border border-slate-100 dark:border-slate-700"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "trash-2",
+    className: "w-6 h-6"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", null, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h4", {
+    className: "font-extrabold text-slate-900 dark:text-white text-sm"
+  }, "\u062D\u0630\u0641 \u062A\u0631\u0627\u06A9\u0646\u0634"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-xs text-slate-500 dark:text-slate-400 mt-1"
+  }, "\u0622\u06CC\u0627 \u0627\u0632 \u062D\u0630\u0641 \u0627\u0637\u0645\u06CC\u0646\u0627\u0646 \u062F\u0627\u0631\u06CC\u062F\u061F"), deleteTxModal.tx && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "mt-2 p-2.5 bg-[#F4F7FC] dark:bg-slate-900 rounded-xl text-[11px] font-bold text-slate-700 dark:text-slate-300"
+  }, deleteTxModal.tx.title, " (", Math.abs(deleteTxModal.tx.amount).toLocaleString(), " \u062A\u0648\u0645\u0627\u0646)")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex space-x-2 space-x-reverse pt-1"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: handleConfirmDeleteTx,
+    className: "flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-colors"
+  }, "\u0628\u0644\u0647"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => setDeleteTxModal({
+      show: false,
+      tx: null,
+      type: null
+    }),
+    className: "flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs hover:bg-slate-200 transition-colors"
+  }, "\u062E\u06CC\u0631"))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, showAddContactModal && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "add-contact-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden overscroll-x-none"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "add-contact-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      transformOrigin: "center center"
+    },
+    className: "bg-white dark:bg-slate-800 w-full rounded-3xl p-5 space-y-3 mt-0 shadow-2xl"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "text-sm font-bold text-slate-900 dark:text-white"
+  }, "\u0627\u0641\u0632\u0648\u062F\u0646 \u0645\u062E\u0627\u0637\u0628 \u062C\u062F\u06CC\u062F"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    placeholder: "",
+    value: newContactForm.firstName,
+    onChange: e => setNewContactForm({
+      ...newContactForm,
+      firstName: e.target.value
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    placeholder: " ",
+    value: newContactForm.lastName,
+    onChange: e => setNewContactForm({
+      ...newContactForm,
+      lastName: e.target.value
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "tel",
+    inputMode: "tel",
+    dir: "ltr",
+    placeholder: " ",
+    value: newContactForm.phone,
+    onChange: e => setNewContactForm({
+      ...newContactForm,
+      phone: normalizePhoneNumber(e.target.value)
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    placeholder: "  /  (  )",
+    value: newContactForm.bankName,
+    onChange: e => setNewContactForm({
+      ...newContactForm,
+      bankName: e.target.value
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    inputMode: "numeric",
+    dir: "ltr",
+    placeholder: "  ()",
+    value: newContactForm.bankCard,
+    onChange: e => {
+      const val = e.target.value;
+      const formatted = formatCardNumber(val);
+      const detectedBank = getBankNameFromCard(val) || newContactForm.bankName;
+      setNewContactForm({
+        ...newContactForm,
+        bankCard: formatted,
+        bankName: detectedBank
+      });
+    },
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    dir: "ltr",
+    placeholder: "  ()",
+    value: newContactForm.iban,
+    onChange: e => setNewContactForm({
+      ...newContactForm,
+      iban: normalizeIBAN(e.target.value)
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex space-x-2 space-x-reverse pt-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: handleCreateContact,
+    className: "flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold"
+  }, "\u0630\u062E\u06CC\u0631\u0647"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => setShowAddContactModal(false),
+    className: "flex-1 bg-slate-100 dark:bg-slate-700 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300"
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641"))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, showEditContactModal && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "edit-contact-backdrop",
+    variants: iosBackdropVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    className: "absolute inset-0 bg-black/50 z-50 flex items-start justify-center p-4 pt-6 overflow-y-auto overflow-x-hidden overscroll-x-none"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "edit-contact-panel",
+    variants: iosModalVariants,
+    initial: "initial",
+    animate: "animate",
+    exit: "exit",
+    style: {
+      transformOrigin: "center center"
+    },
+    className: "bg-white dark:bg-slate-800 w-full rounded-3xl p-5 space-y-3 mt-0 shadow-2xl"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex justify-between items-center pb-1"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "text-sm font-bold text-slate-900 dark:text-white"
+  }, "\u0648\u06CC\u0631\u0627\u06CC\u0634 \u0627\u0637\u0644\u0627\u0639\u0627\u062A \u0645\u062E\u0627\u0637\u0628"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: handleDeleteContact,
+    className: "bg-red-500 hover:bg-red-600 active:scale-95 text-white px-3 py-1.5 rounded-xl text-[11px] font-bold shadow-sm flex items-center space-x-1 space-x-reverse transition-all"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "trash-2",
+    className: "w-3.5 h-3.5"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u062D\u0630\u0641 \u0645\u062E\u0627\u0637\u0628"))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    placeholder: "",
+    value: editContactForm.firstName,
+    onChange: e => setEditContactForm({
+      ...editContactForm,
+      firstName: e.target.value
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    placeholder: " ",
+    value: editContactForm.lastName,
+    onChange: e => setEditContactForm({
+      ...editContactForm,
+      lastName: e.target.value
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "tel",
+    inputMode: "tel",
+    dir: "ltr",
+    placeholder: " ",
+    value: editContactForm.phone,
+    onChange: e => setEditContactForm({
+      ...editContactForm,
+      phone: normalizePhoneNumber(e.target.value)
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    placeholder: "  /  (  )",
+    value: editContactForm.bankName,
+    onChange: e => setEditContactForm({
+      ...editContactForm,
+      bankName: e.target.value
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    inputMode: "numeric",
+    dir: "ltr",
+    placeholder: " ",
+    value: editContactForm.bankCard,
+    onChange: e => {
+      const val = e.target.value;
+      const formatted = formatCardNumber(val);
+      const detectedBank = getBankNameFromCard(val) || editContactForm.bankName;
+      setEditContactForm({
+        ...editContactForm,
+        bankCard: formatted,
+        bankName: detectedBank
+      });
+    },
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("input", {
+    type: "text",
+    dir: "ltr",
+    placeholder: " ",
+    value: editContactForm.iban,
+    onChange: e => setEditContactForm({
+      ...editContactForm,
+      iban: normalizeIBAN(e.target.value)
+    }),
+    className: "w-full bg-[#F4F7FC] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs ltr font-mono"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex space-x-2 space-x-reverse pt-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: handleUpdateContact,
+    className: "flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold"
+  }, "\u0628\u0647\u200C\u0631\u0648\u0632\u0631\u0633\u0627\u0646\u06CC"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => setShowEditContactModal(false),
+    className: "flex-1 bg-slate-100 dark:bg-slate-700 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300"
+  }, "\u0627\u0646\u0635\u0631\u0627\u0641"))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, isChangelogModalOpen && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "changelog-backdrop",
+    initial: {
+      opacity: 0
+    },
+    animate: {
+      opacity: 1
+    },
+    exit: {
+      opacity: 0
+    },
+    onClick: () => setIsChangelogModalOpen(false),
+    className: "fixed inset-0 bg-black/60 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 sm:p-6"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "changelog-modal-panel",
+    initial: {
+      scale: 0.92,
+      opacity: 0,
+      y: 10
+    },
+    animate: {
+      scale: 1,
+      opacity: 1,
+      y: 0
+    },
+    exit: {
+      scale: 0.92,
+      opacity: 0,
+      y: 10
+    },
+    transition: {
+      type: "spring",
+      stiffness: 320,
+      damping: 28
+    },
+    onClick: e => e.stopPropagation(),
+    className: "bg-white dark:bg-slate-800 w-full max-w-lg rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border border-slate-100 dark:border-slate-700/80 flex flex-col max-h-[85vh] relative overflow-hidden font-vazir"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center justify-between pb-3.5 border-b border-slate-200/80 dark:border-slate-700/80 shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => setIsChangelogModalOpen(false),
+    className: "p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700/70 text-slate-500 dark:text-slate-400 transition-colors",
+    "aria-label": ""
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "x",
+    className: "w-5 h-5"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h3", {
+    className: "font-extrabold text-lg sm:text-xl text-slate-900 dark:text-white font-vazir"
+  }, "\u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u0646\u0633\u062E\u0647\u200C\u0647\u0627")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "overflow-y-auto flex-1 my-3.5 py-1 pr-1 space-y-3.5 text-right dir-rtl custom-scrollbar"
+  }, versionData.history && versionData.history.map((ver, idx) => {
+    const isLatest = idx === 0;
+    const isExpanded = expandedChangelogVersion === ver.version || isLatest && expandedChangelogVersion === null;
+    let dateDisplay = '';
+    try {
+      if (ver.releaseDate) {
+        const parts = ver.releaseDate.split('-');
+        if (parts.length === 3) {
+          const y = parseInt(parts[0], 10);
+          const m = parseInt(parts[1], 10);
+          const d = parseInt(parts[2], 10);
+          if (y > 1700) {
+            const {
+              jy,
+              jm
+            } = gregorianToJalali(y, m, d);
+            dateDisplay = `(${jalaliMonths[jm - 1]} ${toAppDigits(jy)})`;
+          } else {
+            dateDisplay = `(${jalaliMonths[m - 1] || m} ${toAppDigits(y)})`;
+          }
+        } else {
+          dateDisplay = `(${toAppDigits(ver.releaseDate)})`;
+        }
+      }
+    } catch (e) {
+      dateDisplay = ver.releaseDate ? `(${toAppDigits(ver.releaseDate)})` : '';
+    }
+    return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
+      key: ver.version || idx,
+      className: `rounded-[20px] border transition-all duration-300 overflow-hidden ${isExpanded ? 'border-emerald-300 dark:border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 shadow-2xs' : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800'}`
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("button", {
+      type: "button",
+      onClick: () => {
+        if (isExpanded) {
+          setExpandedChangelogVersion('closed_all');
+        } else {
+          setExpandedChangelogVersion(ver.version);
+        }
+      },
+      className: "w-full p-3.5 sm:p-4 flex items-center justify-between text-right cursor-pointer select-none"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: `w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${isExpanded ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300'}`
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(Icon, {
+      name: isExpanded ? "chevron-up" : "chevron-down",
+      className: "w-4 h-4"
+    })), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "flex items-center space-x-2 space-x-reverse flex-wrap gap-1.5 min-w-0"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "font-bold text-sm sm:text-base text-slate-900 dark:text-white font-vazir"
+    }, "\u0646\u0633\u062E\u0647 ", toAppDigits(ver.version)), isLatest && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-[11px] font-bold bg-[#d1fae5] text-[#047857] dark:bg-emerald-900/60 dark:text-emerald-300 px-2.5 py-0.5 rounded-full whitespace-nowrap font-vazir"
+    }, "\u062C\u062F\u06CC\u062F\u062A\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647"), dateDisplay && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-xs text-slate-400 dark:text-slate-500 font-medium font-vazir"
+    }, dateDisplay))), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(AnimatePresence, {
+      initial: false
+    }, isExpanded && /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement(motion.div, {
+      initial: {
+        height: 0,
+        opacity: 0
+      },
+      animate: {
+        height: "auto",
+        opacity: 1
+      },
+      exit: {
+        height: 0,
+        opacity: 0
+      },
+      transition: {
+        duration: 0.22,
+        ease: "easeInOut"
+      },
+      className: "overflow-hidden"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "px-4 pb-4 pt-0"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      className: "border-t border-emerald-200/80 dark:border-emerald-800/60 pt-3 space-y-2.5"
+    }, ver.changes && ver.changes.map((change, cIdx) => /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("div", {
+      key: cIdx,
+      className: "flex items-start space-x-2.5 space-x-reverse text-right"
+    }, /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-slate-500 dark:text-slate-400 font-bold text-sm shrink-0 mt-0.5"
+    }, "\u2022"), /*#__PURE__*/
+    /*#__PURE__*/
+    React.createElement("span", {
+      className: "text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-vazir"
+    }, change))))))));
+  }), (!versionData.history || versionData.history.length === 0) && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "text-center py-8 text-slate-400 text-xs font-vazir"
+  }, "\u062A\u0627\u0631\u06CC\u062E\u0686\u0647\u200C\u0627\u06CC \u0628\u0631\u0627\u06CC \u0646\u0645\u0627\u06CC\u0634 \u0648\u062C\u0648\u062F \u0646\u062F\u0627\u0631\u062F")), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "pt-3.5 border-t border-slate-200/80 dark:border-slate-700/80 shrink-0 flex justify-start"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    type: "button",
+    onClick: () => setIsChangelogModalOpen(false),
+    className: "bg-[#f1f5f9] hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-8 py-2 rounded-full text-sm font-bold active:scale-95 transition-all shadow-2xs font-vazir"
+  }, "\u0628\u0633\u062A\u0646"))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, showBackupPopover && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "fixed inset-0 z-50 flex items-end justify-center pointer-events-auto"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "backup-sheet-backdrop",
+    initial: {
+      opacity: 0
+    },
+    animate: {
+      opacity: 1
+    },
+    exit: {
+      opacity: 0
+    },
+    transition: {
+      duration: 0.25
+    },
+    className: "fixed inset-0 bg-black/50 backdrop-blur-xs z-50",
+    onClick: () => {
+      setShowBackupPopover(false);
+      setBackupError(null);
+    }
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "backup-sheet-content",
+    initial: {
+      y: "100%",
+      opacity: 0
+    },
+    animate: {
+      y: 0,
+      opacity: 1
+    },
+    exit: {
+      y: "100%",
+      opacity: 0
+    },
+    transition: {
+      type: "spring",
+      stiffness: 350,
+      damping: 32
+    },
+    className: "relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-t-[32px] p-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] shadow-[0_-12px_40px_rgba(0,0,0,0.22)] dark:shadow-[0_-12px_40px_rgba(0,0,0,0.65)] border-t border-x border-slate-200/90 dark:border-slate-700/80 z-[51] text-right overflow-hidden flex flex-col mx-auto",
+    dir: "rtl"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-12 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full mx-auto mb-3.5 shrink-0"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700/60 shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center gap-2.5"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "shield-alert",
+    className: "w-5 h-5"
+  })), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", null, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("h4", {
+    className: "text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100"
+  }, "\u0646\u06CC\u0627\u0632 \u0628\u0647 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646\u200C\u06AF\u06CC\u0631\u06CC"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "text-xs text-amber-600 dark:text-amber-400 font-medium"
+  }, "\u0627\u0637\u0644\u0627\u0639\u0627\u062A \u062A\u063A\u06CC\u06CC\u0631 \u06CC\u0627\u0641\u062A\u0647"))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => {
+      setShowBackupPopover(false);
+      setBackupError(null);
+    },
+    className: "w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700/60 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition-colors cursor-pointer active:scale-95"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "x",
+    className: "w-4 h-4"
+  }))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "py-3.5 space-y-3 max-h-[55vh] overflow-y-auto pr-0.5"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl p-3 border border-amber-200/60 dark:border-amber-800/40"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-xs sm:text-sm font-bold text-amber-900 dark:text-amber-200"
+  }, toAppDigits(backupStatus?.unbackedChangesCount || 0), " \u062A\u063A\u06CC\u06CC\u0631 \u067E\u0633 \u0627\u0632 \u0622\u062E\u0631\u06CC\u0646 \u0646\u0633\u062E\u0647 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-xs text-amber-700 dark:text-amber-300/90 mt-1 leading-relaxed"
+  }, "\u062C\u0647\u062A \u062D\u0641\u0638 \u0627\u0645\u0646\u06CC\u062A \u0627\u0637\u0644\u0627\u0639\u0627\u062A \u0645\u0627\u0644\u06CC \u0648 \u062C\u0644\u0648\u06AF\u06CC\u0631\u06CC \u0627\u0632 \u067E\u0627\u06A9 \u0634\u062F\u0646 \u062F\u0627\u062F\u0647\u200C\u0647\u0627\u060C \u0641\u0627\u06CC\u0644 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646 \u062C\u062F\u06CC\u062F \u0631\u0627 \u062A\u0647\u06CC\u0647 \u0648 \u0630\u062E\u06CC\u0631\u0647 \u0646\u0645\u0627\u06CC\u06CC\u062F.")), backupStatus?.categoryCounts && Object.keys(backupStatus.categoryCounts).length > 0 && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "space-y-2 pt-0.5"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "text-xs font-bold text-slate-500 dark:text-slate-400"
+  }, "\u062E\u0644\u0627\u0635\u0647 \u062A\u063A\u06CC\u06CC\u0631\u0627\u062A \u062B\u0628\u062A\u200C\u0634\u062F\u0647:"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "space-y-1.5 max-h-40 overflow-y-auto pr-0.5"
+  }, Object.entries(backupStatus.categoryCounts).filter(([_, count]) => count > 0).map(([categoryLabel, count]) => /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    key: categoryLabel,
+    className: "flex items-center justify-between text-xs py-2 px-3 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700/40 text-slate-700 dark:text-slate-200"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center gap-2 truncate"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "w-2 h-2 rounded-full bg-red-500 shrink-0"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "truncate font-medium"
+  }, categoryLabel)), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-bold text-red-600 dark:text-red-400 shrink-0 mr-2 font-sans text-xs"
+  }, count, " \u0645\u0648\u0631\u062F"))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "pt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/60"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u0622\u062E\u0631\u06CC\u0646 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646:"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "font-medium text-slate-700 dark:text-slate-200"
+  }, backupStatus?.lastBackupFormatted || 'هنوز فایلی ذخیره نشده')), backupError && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-2xl p-2.5 text-center text-rose-600 dark:text-rose-400 text-xs"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "font-bold"
+  }, "\u062E\u0637\u0627 \u062F\u0631 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646\u200C\u06AF\u06CC\u0631\u06CC"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("p", {
+    className: "text-[11px] mt-0.5"
+  }, "\u0641\u0627\u06CC\u0644 \u067E\u0634\u062A\u06CC\u0628\u0627\u0646 \u0630\u062E\u06CC\u0631\u0647 \u0646\u0634\u062F. \u0644\u0637\u0641\u0627\u064B \u0645\u062C\u062F\u062F\u0627\u064B \u0627\u0645\u062A\u062D\u0627\u0646 \u06A9\u0646\u06CC\u062F."))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "pt-2 shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    disabled: isBackingUp,
+    onClick: async () => {
+      setIsBackingUp(true);
+      setBackupError(null);
+      try {
+        const success = handleExportBackup();
+        if (success) {
+          setShowBackupPopover(false);
+        } else {
+          setBackupError('خطا در دانلود یا ایجاد فایل');
+        }
+      } catch (err) {
+        setBackupError('خطا در پشتیبان‌گیری');
+      } finally {
+        setIsBackingUp(false);
+      }
+    },
+    className: "w-full py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 transition-all disabled:opacity-50 cursor-pointer"
+  }, isBackingUp ? /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(React.Fragment, null, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "loader",
+    className: "w-4.5 h-4.5 animate-spin"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, "\u062F\u0631 \u062D\u0627\u0644 \u0622\u0645\u0627\u062F\u0647\u200C\u0633\u0627\u0632\u06CC \u0641\u0627\u06CC\u0644...")) : /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(React.Fragment, null, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "download",
+    className: "w-4.5 h-4.5"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", null, backupError ? 'تلاش مجدد' : 'پشتیبان‌گیری اکنون'))))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(LoanIconSelectorModal, {
+    isOpen: showLoanIconSelector,
+    onClose: () => setShowLoanIconSelector(false),
+    onSelect: icon => setLoanForm(prev => ({
+      ...prev,
+      icon
+    })),
+    selectedIcon: loanForm.icon
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(ContactImageCropperModal, {
+    isOpen: showContactImageCropper,
+    imageSrc: contactImageCropperSrc,
+    onConfirm: croppedImage => {
+      setContactWizardForm(prev => ({
+        ...prev,
+        profileImage: croppedImage
+      }));
+      setShowContactImageCropper(false);
+      setContactImageCropperSrc(null);
+    },
+    onCancel: () => {
+      setShowContactImageCropper(false);
+      setContactImageCropperSrc(null);
+    }
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(AnimatePresence, null, undoState && /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(motion.div, {
+    key: "undo-snackbar",
+    initial: {
+      y: 50,
+      opacity: 0
+    },
+    animate: {
+      y: 0,
+      opacity: 1
+    },
+    exit: {
+      y: 50,
+      opacity: 0
+    },
+    drag: "x",
+    dragConstraints: {
+      left: -100,
+      right: 100
+    },
+    dragElastic: 0.2,
+    onDragEnd: (e, {
+      offset,
+      velocity
+    }) => {
+      if (Math.abs(offset.x) > 100 || Math.abs(velocity.x) > 500) {
+        setUndoState(null);
+      }
+    },
+    className: "fixed bottom-[calc(env(safe-area-inset-bottom,0px)+4.5rem)] left-0 right-0 z-[100] px-4 pointer-events-none flex justify-center"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-full max-w-sm bg-slate-900 dark:bg-slate-800 text-white shadow-xl shadow-slate-900/20 dark:shadow-black/40 rounded-2xl p-2.5 flex items-center justify-between pointer-events-auto border border-slate-700 dark:border-slate-600",
+    dir: "rtl"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center gap-3 overflow-hidden pl-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "check-circle",
+    className: "w-5 h-5 shrink-0 text-emerald-400"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("span", {
+    className: "text-xs sm:text-sm font-medium text-slate-100 truncate pb-0.5"
+  }, undoState.message)), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "flex items-center gap-1 shrink-0 mr-2"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: handleUndo,
+    className: "px-3 py-1.5 rounded-xl bg-indigo-500/20 text-indigo-300 dark:text-indigo-400 hover:bg-indigo-500/30 active:scale-95 transition-all font-bold text-xs"
+  }, "\u0628\u0627\u0632\u06AF\u0631\u062F\u0627\u0646\u06CC"), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("div", {
+    className: "w-[1px] h-4 bg-slate-700 mx-1 shrink-0"
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement("button", {
+    onClick: () => setUndoState(null),
+    className: "w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors active:scale-95 shrink-0"
+  }, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(Icon, {
+    name: "x",
+    className: "w-4 h-4"
+  })))))), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(GlobalConfirmDialog, null));
+}
+function RootApp() {
+  return /*#__PURE__*/ /*#__PURE__*/React.createElement(ErrorBoundary, null, /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(App, null));
+}
+if (typeof document !== 'undefined' && document.getElementById('root')) {
+  const rootEl = document.getElementById('root');
+  try {
+    if (ReactDOM.createRoot) {
+      ReactDOM.createRoot(rootEl).render(/*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(RootApp, null));
+    } else {
+      ReactDOM.render(/*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(RootApp, null), rootEl);
+    }
+    window.__APP_MOUNTED__ = true;
+  } catch (err) {
+    console.error('Error mounting React app:', err);
+    try {
+      ReactDOM.render(/*#__PURE__*/
+      /*#__PURE__*/
+      React.createElement(RootApp, null), rootEl);
+      window.__APP_MOUNTED__ = true;
+    } catch (e2) {
+      console.error('Fallback render error:', e2);
+    }
+  }
+}

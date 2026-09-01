@@ -851,6 +851,9 @@
         .ios-stagger-5 { animation: iosStaggerUp 400ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both; }
 
     </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js" async defer></script>
+  <script src="gdrive.js"></script>
 </head>
 <body class="bg-[#F4F7FC] dark:bg-slate-950 text-slate-800 dark:text-slate-100 w-full h-full flex flex-col p-0 m-0 overflow-hidden">
     <!-- Instant HTML Splash Screen overlay for zero-delay startup in Preview & PWA -->
@@ -891,7 +894,7 @@
     <div id="root" class="w-full h-full flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=3.2.8-b458"></script>
+    <script src="app.compiled.js?v=3.2.8-b460"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>
