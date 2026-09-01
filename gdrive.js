@@ -5,9 +5,19 @@
  */
 
 (function () {
-  const CLIENT_ID = '759840178251-4td2a33e3slede05eslfmmsnaio61t7v.apps.googleusercontent.com';
+  const DEFAULT_CLIENT_ID = '759840178251-4td2a33e3slede05eslfmmsnaio61t7v.apps.googleusercontent.com';
   const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
   const BACKUP_FILE_NAME = 'amir-finance-backup.json';
+
+  function getEffectiveClientId() {
+    try {
+      const custom = localStorage.getItem('amir_fin_custom_client_id');
+      if (custom && custom.trim().length > 10) {
+        return custom.trim();
+      }
+    } catch (e) {}
+    return DEFAULT_CLIENT_ID;
+  }
 
   // --- State ---
   let tokenClient = null;
@@ -108,8 +118,9 @@
     if (typeof window === 'undefined') return;
     if (window.google && window.google.accounts && window.google.accounts.oauth2) {
       try {
+        const activeClientId = getEffectiveClientId();
         tokenClient = window.google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
+          client_id: activeClientId,
           scope: SCOPES,
           callback: async (tokenResponse) => {
             if (tokenResponse && tokenResponse.access_token) {
@@ -458,6 +469,31 @@
     },
     forceSync: async function (options) {
       return await executeSync(options || { isUserInitiated: true });
+    },
+    getClientId: function () {
+      return getEffectiveClientId();
+    },
+    getCustomClientId: function () {
+      try {
+        return localStorage.getItem('amir_fin_custom_client_id') || '';
+      } catch (e) {
+        return '';
+      }
+    },
+    getDefaultClientId: function () {
+      return DEFAULT_CLIENT_ID;
+    },
+    setCustomClientId: function (newId) {
+      try {
+        if (newId && typeof newId === 'string' && newId.trim().length > 10) {
+          localStorage.setItem('amir_fin_custom_client_id', newId.trim());
+        } else {
+          localStorage.removeItem('amir_fin_custom_client_id');
+        }
+      } catch (e) {}
+      tokenClient = null;
+      initGIS();
+      notifyListeners();
     },
     subscribe: function (listener) {
       if (typeof listener === 'function') {
