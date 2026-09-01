@@ -5,7 +5,7 @@
  */
 
 (function () {
-  const DEFAULT_CLIENT_ID = '759840178251-4td2a33e3slede05eslfmmsnaio61t7v.apps.googleusercontent.com';
+  const DEFAULT_CLIENT_ID = '854434128560-kimu77i3h604seki8b4fi3vsjr4kogvk.apps.googleusercontent.com';
   const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
   const BACKUP_FILE_NAME = 'amir-finance-backup.json';
 

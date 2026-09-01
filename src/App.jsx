@@ -6441,8 +6441,6 @@ function App() {
     syncStatus: 'idle',
     lastSyncTime: null
   });
-  const [showGdriveConfigModal, setShowGdriveConfigModal] = useState(false);
-  const [customClientIdInput, setCustomClientIdInput] = useState(() => (typeof window !== 'undefined' && window.GoogleDriveSync ? window.GoogleDriveSync.getCustomClientId() : ''));
 
   useEffect(() => {
     let unsub = null;
@@ -6513,12 +6511,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.2.8",
-    "buildNumber": 463,
+    "buildNumber": 464,
     "releaseDate": "2026-08-22",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.2.8",
-    "latestBuild": 463,
+    "latestBuild": 464,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.2.8",
@@ -6809,7 +6807,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 463;
+    const EMBEDDED_BUILD = 464;
     const EMBEDDED_VERSION = "3.2.8";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -15447,21 +15445,7 @@ function App() {
           className: "text-[11px] text-slate-400 mt-0.5"
         }, gdriveSyncState.isSignedIn ? (gdriveSyncState.lastSyncTime ? ("آخرین همگام‌سازی: " + (window.GoogleDriveSync ? window.GoogleDriveSync.getLastSyncFormatted() : "به‌روز")) : "همگام‌سازی خودکار در پس‌زمینه فعال است") : "پشتیبان‌گیری ابری و امن در Google Drive"))), React.createElement("div", {
           className: "flex items-center gap-2 shrink-0 mr-2"
-        }, React.createElement("button", {
-          type: "button",
-          onClick: e => {
-            e.stopPropagation();
-            if (window.GoogleDriveSync) {
-              setCustomClientIdInput(window.GoogleDriveSync.getCustomClientId() || '');
-            }
-            setShowGdriveConfigModal(true);
-          },
-          className: "p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer",
-          title: "تنظیمات دامنه و Client ID (برای GitHub Pages)"
-        }, React.createElement(Icon, {
-          name: "settings",
-          className: "w-3.5 h-3.5"
-        })), !gdriveSyncState.isSignedIn ? React.createElement("button", {
+        }, !gdriveSyncState.isSignedIn ? React.createElement("button", {
           type: "button",
           onClick: () => {
             if (window.GoogleDriveSync) window.GoogleDriveSync.signIn();
@@ -17064,130 +17048,6 @@ function App() {
     }),
     className: "w-full py-2 text-center font-bold text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
   }, "\u0627\u0646\u0635\u0631\u0627\u0641")))), /*#__PURE__*/
-  /*#__PURE__*/
-  React.createElement(AnimatePresence, null, showGdriveConfigModal && /*#__PURE__*/
-  React.createElement(motion.div, {
-    key: "gdrive-config-modal-backdrop",
-    variants: iosBackdropVariants,
-    initial: "initial",
-    animate: "animate",
-    exit: "exit",
-    className: "fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4"
-  }, React.createElement(motion.div, {
-    key: "gdrive-config-modal-panel",
-    variants: iosModalVariants,
-    initial: "initial",
-    animate: "animate",
-    exit: "exit",
-    style: {
-      transformOrigin: "center center"
-    },
-    className: "w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] p-5 space-y-4 border border-slate-100 dark:border-slate-800 shadow-2xl text-right max-h-[90vh] overflow-y-auto"
-  }, React.createElement("div", {
-    className: "w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto"
-  }), React.createElement("div", {
-    className: "flex items-center justify-between"
-  }, React.createElement("div", {
-    className: "flex items-center gap-2.5"
-  }, React.createElement("div", {
-    className: "w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0"
-  }, React.createElement(Icon, {
-    name: "globe",
-    className: "w-5 h-5"
-  })), React.createElement("div", null, React.createElement("h3", {
-    className: "font-extrabold text-slate-900 dark:text-white text-sm"
-  }, "تنظیمات اتصال به گوگل و GitHub Pages"), React.createElement("p", {
-    className: "text-[11px] text-slate-400"
-  }, "رفع خطای origin_mismatch در دامنه اختصاصی"))), React.createElement("button", {
-    type: "button",
-    onClick: () => setShowGdriveConfigModal(false),
-    className: "w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white bg-slate-100 dark:bg-slate-800 cursor-pointer"
-  }, React.createElement(Icon, {
-    name: "x",
-    className: "w-4 h-4"
-  }))), React.createElement("div", {
-    className: "p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-800/50 space-y-1.5"
-  }, React.createElement("div", {
-    className: "flex items-center gap-1.5 text-amber-700 dark:text-amber-300 font-bold text-xs"
-  }, React.createElement(Icon, {
-    name: "alert-triangle",
-    className: "w-4 h-4"
-  }), React.createElement("span", null, "علت خطای origin_mismatch")), React.createElement("p", {
-    className: "text-[11px] text-amber-900/80 dark:text-amber-200/80 leading-relaxed"
-  }, "سرویس ورود گوگل، دامنهٔ فعلی سایت را با شناسهٔ کلاینت بررسی می‌کند. برای اجرا روی گیت‌هاب پیجز (amirhd2.github.io) یا دامنه اختصاصی، شناسه Client ID گوگل خود را وارد نمایید.")), React.createElement("div", {
-    className: "p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-1.5"
-  }, React.createElement("span", {
-    className: "text-[11px] text-slate-400 font-bold"
-  }, "دامنهٔ فعلی شناسایی‌شده:"), React.createElement("div", {
-    className: "flex items-center justify-between bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 font-mono text-xs text-blue-600 dark:text-blue-400 font-semibold"
-  }, React.createElement("span", {
-    dir: "ltr",
-    className: "truncate select-all"
-  }, typeof window !== 'undefined' ? window.location.origin : 'https://amirhd2.github.io'), React.createElement("button", {
-    type: "button",
-    onClick: () => {
-      if (typeof window !== 'undefined') copyToClipboard(window.location.origin, 'دامنه');
-    },
-    className: "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-[11px] font-sans font-bold mr-2 shrink-0 cursor-pointer"
-  }, "کپی"))), React.createElement("div", {
-    className: "space-y-1.5"
-  }, React.createElement("label", {
-    className: "text-xs font-bold text-slate-700 dark:text-slate-200 block"
-  }, "شناسه کلاینت گوگل (Google OAuth Client ID):"), React.createElement("input", {
-    type: "text",
-    dir: "ltr",
-    placeholder: "759840178251-...apps.googleusercontent.com",
-    value: customClientIdInput,
-    onChange: e => setCustomClientIdInput(e.target.value),
-    className: "w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono focus:outline-none focus:border-blue-500 transition-colors"
-  }), React.createElement("p", {
-    className: "text-[10px] text-slate-400"
-  }, "در صورت خالی بودن، از شناسه پیش‌فرض برنامه استفاده می‌شود.")), React.createElement("div", {
-    className: "p-3 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 space-y-2 text-[11px] text-slate-600 dark:text-slate-300"
-  }, React.createElement("p", {
-    className: "font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1"
-  }, React.createElement(Icon, {
-    name: "help-circle",
-    className: "w-3.5 h-3.5"
-  }), "راهنمای ساخت Client ID رایگان در گوگل:"), React.createElement("ol", {
-    className: "list-decimal list-inside space-y-1 text-slate-600 dark:text-slate-400 pr-1 text-[11px] leading-relaxed"
-  }, React.createElement("li", null, "به ", React.createElement("a", {
-    href: "https://console.cloud.google.com/apis/credentials",
-    target: "_blank",
-    rel: "noopener noreferrer",
-    className: "text-blue-600 dark:text-blue-400 underline font-bold"
-  }, "Google Cloud Console"), " بروید."), React.createElement("li", null, "روی ", React.createElement("strong", {
-    className: "text-slate-700 dark:text-slate-200"
-  }, "Create Credentials ⟵ OAuth client ID"), " کلیک و نوع را ", React.createElement("strong", {
-    className: "text-slate-700 dark:text-slate-200"
-  }, "Web application"), " بگذارید."), React.createElement("li", null, "در فیلد ", React.createElement("strong", {
-    className: "text-slate-700 dark:text-slate-200"
-  }, "Authorized JavaScript origins"), " آدرس ", React.createElement("code", {
-    dir: "ltr",
-    className: "px-1 py-0.5 bg-white dark:bg-slate-900 rounded text-blue-600 dark:text-blue-400 font-mono font-bold"
-  }, typeof window !== 'undefined' ? window.location.origin : 'https://amirhd2.github.io'), " را اضافه کنید."), React.createElement("li", null, "شناسه کلاینت ایجاد شده را در کادر بالا کپی کرده و ذخیره نمایید."))), React.createElement("div", {
-    className: "flex items-center gap-2 pt-2"
-  }, React.createElement("button", {
-    type: "button",
-    onClick: () => {
-      if (window.GoogleDriveSync) {
-        window.GoogleDriveSync.setCustomClientId(customClientIdInput);
-        showToast("شناسه کلاینت با موفقیت ذخیره و فعال شد");
-        setShowGdriveConfigModal(false);
-      }
-    },
-    className: "flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
-  }, "ذخیره و اعمال شناسه"), React.createElement("button", {
-    type: "button",
-    onClick: () => {
-      if (window.GoogleDriveSync) {
-        window.GoogleDriveSync.setCustomClientId("");
-        setCustomClientIdInput("");
-        showToast("شناسه به حالت پیش‌فرض بازگردانی شد");
-      }
-    },
-    className: "px-3 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer"
-  }, "پیش‌فرض"))))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(AnimatePresence, null, deleteTxModal.show && /*#__PURE__*/
   /*#__PURE__*/
