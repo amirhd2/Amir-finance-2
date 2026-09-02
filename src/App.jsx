@@ -6793,15 +6793,27 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.9",
-    "buildNumber": 477,
+    "installedVersion": "3.3.0",
+    "buildNumber": 490,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.9",
-    "latestBuild": 477,
+    "latestVersion": "3.3.0",
+    "latestBuild": 490,
     "isUpdateAvailable": false,
     "history": [{
+      "version": "3.3.0",
+      "buildNumber": 490,
+      "releaseDate": "2026-09-02",
+      "releaseChannel": "Stable",
+      "commitHash": "v330stable",
+      "commitMessage": "feat: release version 3.3.0 with robust activity-driven Google Drive token renewal and smart numeric keyboard stability",
+      "changes": [
+        "حل ریشه‌ای و دائمی مشکل انقضای توکن گوگل درایو پس از چند ساعت عدم فعالیت با مکانیسم تجدید خودکار پیش‌دستانه (Activity-Driven Token Renewal) در هنگام تعامل با صفحه و عملیات Pull-to-Refresh",
+        "رفع مشکل بسته شدن ناخواسته کیبورد عددی هوشمند هنگام تایپ و بهبود پایداری آن روی تمامی فیلدهای عددی، تلفن و شبا",
+        "انتشار رسمی نسخه ۳.۳.۰"
+      ]
+    }, {
       "version": "3.2.9",
       "buildNumber": 462,
       "releaseDate": "2026-09-02",
@@ -7104,7 +7116,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 477;
+    const EMBEDDED_BUILD = 479;
     const EMBEDDED_VERSION = "3.2.9";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
