@@ -1,7 +1,7 @@
 /**
  * Amir Finance - Google Drive Cloud Sync Module
  * Integrated with Google Identity Services (GIS) & Google Drive REST API v3 (appDataFolder)
- * Fully headless - Controlled via React UI (Settings & Pull-To-Refresh)
+ * Supports persistent authentication, silent background token refresh, proactive renewal, and resilient sync
  */
 
 (function () {
@@ -23,22 +23,27 @@
   let tokenClient = null;
   let accessToken = null;
   let tokenExpiresAt = 0;
-  let isSignedIn = false;
+  let isConnected = false;
   let isSyncing = false;
   let syncStatus = 'idle'; // 'idle' | 'syncing' | 'success' | 'error'
   let isDirty = false;
   let lastLocalChange = 0;
   let syncInterval = null;
+  let proactiveRefreshTimer = null;
+  let refreshPromise = null;
   const listeners = new Set();
 
-  // Restore stored session if still valid
+  // Restore stored session if user was connected
   try {
+    const savedConnected = localStorage.getItem('amir_fin_gdrive_connected') === 'true';
     const savedToken = localStorage.getItem('amir_fin_gdrive_access_token');
     const savedExpiry = parseInt(localStorage.getItem('amir_fin_gdrive_token_expires') || '0', 10);
-    if (savedToken && savedExpiry > Date.now()) {
-      accessToken = savedToken;
-      tokenExpiresAt = savedExpiry;
-      isSignedIn = true;
+    if (savedConnected) {
+      isConnected = true;
+      if (savedToken && savedExpiry > Date.now()) {
+        accessToken = savedToken;
+        tokenExpiresAt = savedExpiry;
+      }
     }
   } catch (e) {
     console.warn('[GDrive] Could not restore cached session:', e);
@@ -75,7 +80,8 @@
   // --- Listener Notification ---
   function notifyListeners() {
     const state = {
-      isSignedIn: Boolean(isSignedIn && accessToken && tokenExpiresAt > Date.now()),
+      isSignedIn: Boolean(isConnected),
+      isTokenValid: Boolean(accessToken && tokenExpiresAt > Date.now()),
       isSyncing: isSyncing,
       syncStatus: syncStatus,
       lastSyncTime: localStorage.getItem('amir_fin_gdrive_sync_time') || null
@@ -113,6 +119,114 @@
     }
   }
 
+  // --- Token Management & Proactive Refresh ---
+  function scheduleProactiveRefresh(expiresInSeconds) {
+    if (proactiveRefreshTimer) {
+      clearTimeout(proactiveRefreshTimer);
+      proactiveRefreshTimer = null;
+    }
+    // Refresh 5 minutes before expiration (or half the duration if less than 10 mins)
+    const safetyBuffer = Math.min(300, Math.floor(expiresInSeconds * 0.2));
+    const delayMs = Math.max(15000, (expiresInSeconds - safetyBuffer) * 1000);
+    
+    proactiveRefreshTimer = setTimeout(() => {
+      if (isConnected) {
+        console.log('[GDrive] Proactively refreshing Google access token before expiration...');
+        refreshTokenSilently().catch(err => {
+          console.warn('[GDrive] Proactive token refresh failed, will retry on next sync:', err);
+        });
+      }
+    }, delayMs);
+  }
+
+  function refreshTokenSilently() {
+    if (refreshPromise) return refreshPromise;
+
+    refreshPromise = new Promise((resolve, reject) => {
+      if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+        refreshPromise = null;
+        return reject(new Error('Google Identity Services not loaded'));
+      }
+
+      if (!tokenClient) {
+        initGIS();
+      }
+
+      if (!tokenClient) {
+        refreshPromise = null;
+        return reject(new Error('Token client could not be initialized'));
+      }
+
+      const timeoutId = setTimeout(() => {
+        refreshPromise = null;
+        reject(new Error('Silent token refresh timed out'));
+      }, 12000);
+
+      const previousCallback = tokenClient.callback;
+      tokenClient.callback = (tokenResponse) => {
+        clearTimeout(timeoutId);
+        tokenClient.callback = previousCallback;
+        refreshPromise = null;
+
+        if (tokenResponse && tokenResponse.access_token) {
+          accessToken = tokenResponse.access_token;
+          const expiresIn = parseInt(tokenResponse.expires_in || '3599', 10);
+          tokenExpiresAt = Date.now() + (expiresIn * 1000);
+          isConnected = true;
+
+          try {
+            localStorage.setItem('amir_fin_gdrive_connected', 'true');
+            localStorage.setItem('amir_fin_gdrive_access_token', accessToken);
+            localStorage.setItem('amir_fin_gdrive_token_expires', String(tokenExpiresAt));
+          } catch (e) {}
+
+          scheduleProactiveRefresh(expiresIn);
+          notifyListeners();
+          console.log('[GDrive] Silent token refresh successful.');
+          resolve(accessToken);
+        } else {
+          console.warn('[GDrive] Silent refresh received error or rejection:', tokenResponse);
+          reject(new Error(tokenResponse?.error || 'Silent token refresh failed'));
+        }
+      };
+
+      try {
+        // Request token silently without showing user interaction prompt
+        tokenClient.requestAccessToken({ prompt: '' });
+      } catch (err) {
+        clearTimeout(timeoutId);
+        tokenClient.callback = previousCallback;
+        refreshPromise = null;
+        reject(err);
+      }
+    });
+
+    return refreshPromise;
+  }
+
+  async function ensureValidToken() {
+    // If token is currently valid with at least 90 seconds safety margin
+    if (accessToken && (tokenExpiresAt - Date.now() > 90000)) {
+      return accessToken;
+    }
+
+    // If user is supposed to be connected, attempt silent token refresh
+    if (isConnected) {
+      try {
+        return await refreshTokenSilently();
+      } catch (e) {
+        console.warn('[GDrive] ensureValidToken silent refresh failed:', e);
+        // If cached token still has qualche seconds, return it as fallback
+        if (accessToken && tokenExpiresAt > Date.now()) {
+          return accessToken;
+        }
+        return null;
+      }
+    }
+
+    return null;
+  }
+
   // --- Google Identity Services Initialization ---
   function initGIS() {
     if (typeof window === 'undefined') return;
@@ -127,8 +241,9 @@
               accessToken = tokenResponse.access_token;
               const expiresIn = parseInt(tokenResponse.expires_in || '3599', 10);
               tokenExpiresAt = Date.now() + (expiresIn * 1000);
-              isSignedIn = true;
+              isConnected = true;
               try {
+                localStorage.setItem('amir_fin_gdrive_connected', 'true');
                 localStorage.setItem('amir_fin_gdrive_access_token', accessToken);
                 localStorage.setItem('amir_fin_gdrive_token_expires', String(tokenExpiresAt));
               } catch (e) {}
@@ -137,6 +252,7 @@
                 window.showAppToast('اتصال با حساب گوگل با موفقیت برقرار شد');
               }
 
+              scheduleProactiveRefresh(expiresIn);
               notifyListeners();
 
               if (!syncInterval) {
@@ -156,6 +272,23 @@
           }
         });
         console.log('[GDrive] Google Identity Services client initialized successfully.');
+
+        // If user was previously connected but token is expired, trigger silent background re-authentication
+        if (isConnected) {
+          if (!syncInterval) {
+            syncInterval = setInterval(autoSyncLoop, 15000);
+          }
+          if (!accessToken || tokenExpiresAt <= Date.now()) {
+            ensureValidToken().then(token => {
+              if (token) {
+                executeSync({ isUserInitiated: false });
+              }
+            }).catch(() => {});
+          } else {
+            const remainingSeconds = Math.floor((tokenExpiresAt - Date.now()) / 1000);
+            scheduleProactiveRefresh(remainingSeconds);
+          }
+        }
       } catch (err) {
         console.warn('[GDrive] GIS init error:', err);
       }
@@ -166,7 +299,7 @@
   function getLocalBackupData() {
     return {
       appName: "Amir Finance",
-      version: "3.2.8",
+      version: "3.2.9",
       exportDate: new Date().toISOString(),
       contacts: JSON.parse(localStorage.getItem('amir_fin_contacts_v3') || '[]'),
       loans: JSON.parse(localStorage.getItem('amir_fin_loans_v3') || '[]'),
@@ -209,19 +342,44 @@
     }
   }
 
+  // --- Authenticated Fetch Helper with Auto-Retry on 401 ---
+  async function fetchWithAuth(url, options = {}) {
+    let token = await ensureValidToken();
+    if (!token) {
+      throw new Error('Not authenticated');
+    }
+
+    let headers = {
+      ...(options.headers || {}),
+      Authorization: 'Bearer ' + token
+    };
+
+    let res = await fetch(url, { ...options, headers });
+
+    // If 401 Unauthorized, token may have been revoked or invalidated on server
+    if (res.status === 401 && isConnected) {
+      console.log('[GDrive] 401 Unauthorized received. Attempting silent token renewal...');
+      accessToken = null;
+      tokenExpiresAt = 0;
+      token = await ensureValidToken();
+      if (token) {
+        headers = {
+          ...(options.headers || {}),
+          Authorization: 'Bearer ' + token
+        };
+        res = await fetch(url, { ...options, headers });
+      }
+    }
+
+    return res;
+  }
+
   // --- Google Drive REST API Calls ---
   async function findBackupFile() {
-    if (!accessToken) return null;
     try {
       const url = 'https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name%3D%27' + 
                   encodeURIComponent(BACKUP_FILE_NAME) + '%27+and+trashed%3Dfalse&fields=files(id,name,modifiedTime)&pageSize=1';
-      const res = await fetch(url, {
-        headers: { Authorization: 'Bearer ' + accessToken }
-      });
-      if (res.status === 401) {
-        handleTokenExpired();
-        return null;
-      }
+      const res = await fetchWithAuth(url);
       if (!res.ok) return null;
       const data = await res.json();
       return (data.files && data.files.length > 0) ? data.files[0] : null;
@@ -232,7 +390,6 @@
   }
 
   async function uploadToDrive() {
-    if (!accessToken) throw new Error('Not authenticated');
     const backupObj = getLocalBackupData();
     const jsonString = JSON.stringify(backupObj);
     const blob = new Blob([jsonString], { type: 'application/json' });
@@ -251,16 +408,11 @@
       ? `https://www.googleapis.com/upload/drive/v3/files/${existingFile.id}?uploadType=multipart&fields=id,modifiedTime`
       : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,modifiedTime`;
 
-    const res = await fetch(url, {
+    const res = await fetchWithAuth(url, {
       method: existingFile ? 'PATCH' : 'POST',
-      headers: { Authorization: 'Bearer ' + accessToken },
       body: form
     });
 
-    if (res.status === 401) {
-      handleTokenExpired();
-      throw new Error('Token expired');
-    }
     if (!res.ok) {
       throw new Error(`Upload failed with status ${res.status}`);
     }
@@ -272,16 +424,10 @@
   }
 
   async function downloadFromDrive(file) {
-    if (!accessToken || !file) return false;
+    if (!file) return false;
     const url = `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`;
-    const res = await fetch(url, {
-      headers: { Authorization: 'Bearer ' + accessToken }
-    });
+    const res = await fetchWithAuth(url);
 
-    if (res.status === 401) {
-      handleTokenExpired();
-      return false;
-    }
     if (!res.ok) return false;
 
     const data = await res.json();
@@ -293,25 +439,17 @@
     return ok;
   }
 
-  function handleTokenExpired() {
-    accessToken = null;
-    isSignedIn = false;
-    tokenExpiresAt = 0;
-    try {
-      localStorage.removeItem('amir_fin_gdrive_access_token');
-      localStorage.removeItem('amir_fin_gdrive_token_expires');
-    } catch (e) {}
-    notifyListeners();
-  }
-
   // --- Unified Sync Execution ---
   async function executeSync({ isUserInitiated = false } = {}) {
-    if (!isSignedIn || !accessToken || tokenExpiresAt <= Date.now()) {
-      if (isSignedIn && tokenExpiresAt <= Date.now()) {
-        handleTokenExpired();
-      }
+    if (!isConnected) {
       return { success: false, action: 'not_signed_in' };
     }
+
+    const token = await ensureValidToken();
+    if (!token) {
+      return { success: false, action: 'token_unavailable' };
+    }
+
     if (isSyncing) {
       return { success: true, action: 'already_syncing' };
     }
@@ -382,18 +520,21 @@
 
   // --- Background Periodic Auto-Sync ---
   async function autoSyncLoop() {
-    if (isSyncing || !isSignedIn || !accessToken || tokenExpiresAt <= Date.now()) return;
+    if (isSyncing || !isConnected) return;
     try {
       if (isDirty) {
         if (Date.now() - lastLocalChange > 3500) {
           await executeSync({ isUserInitiated: false });
         }
       } else {
-        const file = await findBackupFile();
-        if (file) {
-          const localSyncTime = localStorage.getItem('amir_fin_gdrive_sync_time');
-          if (!localSyncTime || new Date(file.modifiedTime).getTime() > new Date(localSyncTime).getTime()) {
-            await executeSync({ isUserInitiated: false });
+        const token = await ensureValidToken();
+        if (token) {
+          const file = await findBackupFile();
+          if (file) {
+            const localSyncTime = localStorage.getItem('amir_fin_gdrive_sync_time');
+            if (!localSyncTime || new Date(file.modifiedTime).getTime() > new Date(localSyncTime).getTime()) {
+              await executeSync({ isUserInitiated: false });
+            }
           }
         }
       }
@@ -406,7 +547,10 @@
   window.GoogleDriveSync = {
     init: initGIS,
     isSignedIn: function () {
-      return Boolean(isSignedIn && accessToken && tokenExpiresAt > Date.now());
+      return Boolean(isConnected);
+    },
+    isTokenValid: function () {
+      return Boolean(accessToken && tokenExpiresAt > Date.now());
     },
     isSyncing: function () {
       return isSyncing;
@@ -429,7 +573,7 @@
       }
       if (tokenClient) {
         try {
-          tokenClient.requestAccessToken({ prompt: 'consent' });
+          tokenClient.requestAccessToken({ prompt: 'select_account' });
         } catch (e) {
           console.error('[GDrive] requestAccessToken error:', e);
           if (typeof window.showAppToast === 'function') {
@@ -440,7 +584,7 @@
         setTimeout(() => {
           if (!tokenClient) initGIS();
           if (tokenClient) {
-            tokenClient.requestAccessToken({ prompt: 'consent' });
+            tokenClient.requestAccessToken({ prompt: 'select_account' });
           } else {
             console.warn('[GDrive] Google Identity Services script not yet loaded.');
             if (typeof window.showAppToast === 'function') {
@@ -456,8 +600,17 @@
           window.google.accounts.oauth2.revoke(accessToken, () => {});
         } catch (e) {}
       }
-      handleTokenExpired();
+      isConnected = false;
+      accessToken = null;
+      tokenExpiresAt = 0;
+      if (proactiveRefreshTimer) {
+        clearTimeout(proactiveRefreshTimer);
+        proactiveRefreshTimer = null;
+      }
       try {
+        localStorage.removeItem('amir_fin_gdrive_connected');
+        localStorage.removeItem('amir_fin_gdrive_access_token');
+        localStorage.removeItem('amir_fin_gdrive_token_expires');
         localStorage.removeItem('amir_fin_gdrive_sync_time');
       } catch (e) {}
       if (syncInterval) {
@@ -499,7 +652,8 @@
       if (typeof listener === 'function') {
         listeners.add(listener);
         listener({
-          isSignedIn: Boolean(isSignedIn && accessToken && tokenExpiresAt > Date.now()),
+          isSignedIn: Boolean(isConnected),
+          isTokenValid: Boolean(accessToken && tokenExpiresAt > Date.now()),
           isSyncing: isSyncing,
           syncStatus: syncStatus,
           lastSyncTime: localStorage.getItem('amir_fin_gdrive_sync_time') || null
@@ -529,7 +683,7 @@
     }
   }, 500);
 
-  if (isSignedIn) {
+  if (isConnected) {
     syncInterval = setInterval(autoSyncLoop, 15000);
   }
 })();

@@ -7,11 +7,12 @@ function updateVersionTags() {
   const indexHtmlPath = path.join(process.cwd(), 'index.html');
   const swPath = path.join(process.cwd(), 'sw.js');
   const appJsxPath = path.join(process.cwd(), 'src', 'App.jsx');
+  const gdriveJsPath = path.join(process.cwd(), 'gdrive.js');
 
   if (fs.existsSync(versionPath)) {
     try {
       const vData = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
-      const versionTag = `${vData.installedVersion || '3.1.9'}-b${vData.buildNumber || 328}`;
+      const versionTag = `${vData.installedVersion || '3.2.9'}-b${vData.buildNumber || 462}`;
 
       if (fs.existsSync(indexHtmlPath)) {
         let html = fs.readFileSync(indexHtmlPath, 'utf8');
@@ -27,16 +28,23 @@ function updateVersionTags() {
         console.log(`[compile-app] Updated sw.js CACHE_NAME to amir-finance-v${versionTag}`);
       }
 
+      if (fs.existsSync(gdriveJsPath)) {
+        let gdrive = fs.readFileSync(gdriveJsPath, 'utf8');
+        gdrive = gdrive.replace(/version:\s*['"][^'"]*['"]/, `version: "${vData.installedVersion || '3.2.9'}"`);
+        fs.writeFileSync(gdriveJsPath, gdrive, 'utf8');
+        console.log(`[compile-app] Updated gdrive.js version to ${vData.installedVersion || '3.2.9'}`);
+      }
+
       if (fs.existsSync(appJsxPath)) {
         let jsx = fs.readFileSync(appJsxPath, 'utf8');
-        jsx = jsx.replace(/const EMBEDDED_BUILD = \d+;/, `const EMBEDDED_BUILD = ${vData.buildNumber || 328};`);
-        jsx = jsx.replace(/const EMBEDDED_VERSION = ['"][^'"]*['"];/, `const EMBEDDED_VERSION = "${vData.installedVersion || '3.1.9'}";`);
+        jsx = jsx.replace(/const EMBEDDED_BUILD = \d+;/, `const EMBEDDED_BUILD = ${vData.buildNumber || 462};`);
+        jsx = jsx.replace(/const EMBEDDED_VERSION = ['"][^'"]*['"];/, `const EMBEDDED_VERSION = "${vData.installedVersion || '3.2.9'}";`);
         
         // Update defaultVersionData installedVersion and buildNumber inside App.jsx
-        jsx = jsx.replace(/"installedVersion":\s*['"][^'"]*['"]/, `"installedVersion": "${vData.installedVersion || '3.1.9'}"`);
-        jsx = jsx.replace(/"buildNumber":\s*\d+/, `"buildNumber": ${vData.buildNumber || 328}`);
-        jsx = jsx.replace(/"latestVersion":\s*['"][^'"]*['"]/, `"latestVersion": "${vData.installedVersion || '3.1.9'}"`);
-        jsx = jsx.replace(/"latestBuild":\s*\d+/, `"latestBuild": ${vData.buildNumber || 328}`);
+        jsx = jsx.replace(/"installedVersion":\s*['"][^'"]*['"]/, `"installedVersion": "${vData.installedVersion || '3.2.9'}"`);
+        jsx = jsx.replace(/"buildNumber":\s*\d+/, `"buildNumber": ${vData.buildNumber || 462}`);
+        jsx = jsx.replace(/"latestVersion":\s*['"][^'"]*['"]/, `"latestVersion": "${vData.installedVersion || '3.2.9'}"`);
+        jsx = jsx.replace(/"latestBuild":\s*\d+/, `"latestBuild": ${vData.buildNumber || 462}`);
         
         fs.writeFileSync(appJsxPath, jsx, 'utf8');
         console.log(`[compile-app] Synchronized App.jsx constants with version ${vData.installedVersion} (Build ${vData.buildNumber})`);

@@ -6511,14 +6511,28 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.2.9",
-    "buildNumber": 461,
-    "releaseDate": "2026-08-22",
+    "buildNumber": 465,
+    "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.2.9",
-    "latestBuild": 461,
+    "latestBuild": 465,
     "isUpdateAvailable": false,
     "history": [{
+      "version": "3.2.9",
+      "buildNumber": 462,
+      "releaseDate": "2026-09-02",
+      "releaseChannel": "Stable",
+      "commitHash": "v329b462",
+      "commitMessage": "feat: persistent google drive authentication with silent background token renewal, redesign google drive sync card in settings, fix delete-all-data confirmation dialog & database reset, release v3.2.9",
+      "changes": [
+        "حفظ دائمی نشست اتصال گوگل درایو و تمدید خودکار و نامحسوس توکن در پس‌زمینه بدون نیاز به ورود مجدد بعد از ۲ یا ۳ ساعت",
+        "بازطراحی و ارتقای بخش همگام‌سازی ابری گوگل درایو در تنظیمات با کارت مدرن، نشانگر وضعیت فعال و دکمه‌های کنترل سریع",
+        "رفع کامل مشکل عدم باز شدن کادر تایید و اجرای قطعی دکمه «حذف کلیه اطلاعات» و پاکسازی کامل دیتابیس",
+        "اتصال یکپارچه پنجره سراسری تایید عملیات (GlobalConfirmDialog) برای پاکسازی داده‌ها و قطع اتصال حساب ابری",
+        "انتشار رسمی نسخه 3.2.9"
+      ]
+    }, {
       "version": "3.2.8",
       "buildNumber": 458,
       "releaseDate": "2026-08-27",
@@ -6807,7 +6821,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 461;
+    const EMBEDDED_BUILD = 465;
     const EMBEDDED_VERSION = "3.2.9";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -11488,7 +11502,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
-        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.2.0'))))), (() => {
+        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.2.9'))))), (() => {
           const loanReminders = loans.map(loan => {
             const nextDueInfo = getLoanNextDueInfo(loan, transactions);
             if (nextDueInfo.isCompleted) return null;
@@ -14906,7 +14920,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, toAppDigits(versionData.installedVersion || "3.2.4"))), /*#__PURE__*/
+        }, toAppDigits(versionData.installedVersion || "3.2.9"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
@@ -14916,7 +14930,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, toAppDigits(versionData.buildNumber || "387"))), versionData.releaseChannel && /*#__PURE__*/
+        }, toAppDigits(versionData.buildNumber || "462"))), versionData.releaseChannel && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(React.Fragment, null, /*#__PURE__*/
         /*#__PURE__*/
@@ -15511,10 +15525,26 @@ function App() {
                 type: "button",
                 onClick: e => {
                   e.stopPropagation();
-                  if (window.confirm("آیا از خروج و قطع اتصال حساب گوگل اطمینان دارید؟")) {
-                    if (window.GoogleDriveSync) window.GoogleDriveSync.signOut();
-                    showToast("اتصال با حساب گوگل قطع شد");
-                  }
+                  setConfirmConfig({
+                    title: "قطع اتصال حساب گوگل",
+                    message: "آیا از خروج و قطع اتصال حساب Google Drive اطمینان دارید؟ اطلاعات شما روی دستگاه باقی می‌ماند اما همگام‌سازی ابری متوقف خواهد شد.",
+                    details: [
+                      "توقف همگام‌سازی خودکار ابری",
+                      "حفظ کامل اطلاعات محلی در دستگاه",
+                      "امکان اتصال مجدد در هر زمان"
+                    ],
+                    iconName: "log-out",
+                    iconBgColor: "bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400",
+                    confirmLabel: "قطع اتصال",
+                    cancelLabel: "انصراف",
+                    isDestructive: true,
+                    onConfirm: () => {
+                      if (window.GoogleDriveSync) window.GoogleDriveSync.signOut();
+                      showToast("اتصال با حساب گوگل قطع شد");
+                      setConfirmConfig(null);
+                    },
+                    onCancel: () => setConfirmConfig(null)
+                  });
                 },
                 className: "px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-bold border border-rose-200/60 dark:border-rose-800/50 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
               },

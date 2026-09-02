@@ -6442,12 +6442,28 @@ function App() {
     lastSyncTime: null
   });
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.GoogleDriveSync && typeof window.GoogleDriveSync.subscribe === 'function') {
-      const unsub = window.GoogleDriveSync.subscribe(state => {
-        setGdriveSyncState(state);
-      });
-      return () => unsub();
+    let unsub = null;
+    const bindSync = () => {
+      if (typeof window !== 'undefined' && window.GoogleDriveSync && typeof window.GoogleDriveSync.subscribe === 'function') {
+        unsub = window.GoogleDriveSync.subscribe(state => {
+          setGdriveSyncState(state);
+        });
+        return true;
+      }
+      return false;
+    };
+    if (!bindSync()) {
+      const timer = setInterval(() => {
+        if (bindSync()) clearInterval(timer);
+      }, 300);
+      return () => {
+        clearInterval(timer);
+        if (unsub) unsub();
+      };
     }
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
   useEffect(() => {
     const handleRemoteUpdated = () => {
@@ -6491,15 +6507,23 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.8",
-    "buildNumber": 458,
-    "releaseDate": "2026-08-22",
+    "installedVersion": "3.2.9",
+    "buildNumber": 464,
+    "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.8",
-    "latestBuild": 458,
+    "latestVersion": "3.2.9",
+    "latestBuild": 464,
     "isUpdateAvailable": false,
     "history": [{
+      "version": "3.2.9",
+      "buildNumber": 462,
+      "releaseDate": "2026-09-02",
+      "releaseChannel": "Stable",
+      "commitHash": "v329b462",
+      "commitMessage": "feat: persistent google drive authentication with silent background token renewal, redesign google drive sync card in settings, fix delete-all-data confirmation dialog & database reset, release v3.2.9",
+      "changes": ["حفظ دائمی نشست اتصال گوگل درایو و تمدید خودکار و نامحسوس توکن در پس‌زمینه بدون نیاز به ورود مجدد بعد از ۲ یا ۳ ساعت", "بازطراحی و ارتقای بخش همگام‌سازی ابری گوگل درایو در تنظیمات با کارت مدرن، نشانگر وضعیت فعال و دکمه‌های کنترل سریع", "رفع کامل مشکل عدم باز شدن کادر تایید و اجرای قطعی دکمه «حذف کلیه اطلاعات» و پاکسازی کامل دیتابیس", "اتصال یکپارچه پنجره سراسری تایید عملیات (GlobalConfirmDialog) برای پاکسازی داده‌ها و قطع اتصال حساب ابری", "انتشار رسمی نسخه 3.2.9"]
+    }, {
       "version": "3.2.8",
       "buildNumber": 458,
       "releaseDate": "2026-08-27",
@@ -6788,8 +6812,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 458;
-    const EMBEDDED_VERSION = "3.2.8";
+    const EMBEDDED_BUILD = 464;
+    const EMBEDDED_VERSION = "3.2.9";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -8018,17 +8042,8 @@ function App() {
     setReminders([]);
     setCompletedPeriods([]);
     localStorage.setItem('amir_fin_data_cleared', 'true');
-    localStorage.removeItem('amir_fin_contacts_v3');
-    localStorage.removeItem('amir_fin_loans_v3');
-    localStorage.removeItem('amir_fin_txs_v3');
-    localStorage.removeItem('amir_fin_completed_periods_v3');
-    localStorage.removeItem('amir_fin_contacts_v2');
-    localStorage.removeItem('amir_fin_loans_v2');
-    localStorage.removeItem('amir_fin_txs_v2');
-    localStorage.removeItem('amir_fin_completed_periods');
-    localStorage.removeItem('amir_fin_contacts');
-    localStorage.removeItem('amir_fin_loans');
-    localStorage.removeItem('amir_fin_tx');
+    const keysToRemove = ['amir_fin_contacts_v3', 'amir_fin_loans_v3', 'amir_fin_txs_v3', 'amir_fin_completed_periods_v3', 'amir_fin_contacts_v2', 'amir_fin_loans_v2', 'amir_fin_txs_v2', 'amir_fin_completed_periods_v2', 'amir_fin_contacts', 'amir_fin_loans', 'amir_fin_tx', 'amir_fin_completed_periods', 'amir_fin_reminders', 'amir_fin_reminders_v1', 'amir_fin_reminders_v2', 'amir_fin_reminders_v3'];
+    keysToRemove.forEach(k => localStorage.removeItem(k));
     const resetStatus = {
       unbackedChangesCount: 0,
       lastBackupTimestamp: null,
@@ -8039,8 +8054,15 @@ function App() {
     try {
       localStorage.setItem('amir_fin_backup_status_v1', JSON.stringify(resetStatus));
     } catch (e) {}
+    if (window.GoogleDriveSync && window.GoogleDriveSync.isSignedIn()) {
+      try {
+        window.GoogleDriveSync.forceSync({
+          isUserInitiated: true
+        });
+      } catch (e) {}
+    }
     setShowResetConfirmModal(false);
-    showToast('کل اطلاعات برنامه با موفقیت پاک شد');
+    showToast('کلیه اطلاعات با موفقیت حذف و دیتابیس پاکسازی شد');
     setTimeout(() => {
       isRestoringOrClearingRef.current = false;
     }, 500);
@@ -8061,6 +8083,12 @@ function App() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 2800);
   }
+  useEffect(() => {
+    window.showAppToast = showToast;
+    return () => {
+      window.showAppToast = null;
+    };
+  }, []);
   const copyToClipboard = (text, label) => {
     if (!text) return;
     const dummy = document.createElement('textarea');
@@ -11460,7 +11488,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
-        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.2.0'))))), (() => {
+        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.2.9'))))), (() => {
           const loanReminders = loans.map(loan => {
             const nextDueInfo = getLoanNextDueInfo(loan, transactions);
             if (nextDueInfo.isCompleted) return null;
@@ -14878,7 +14906,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, toAppDigits(versionData.installedVersion || "3.2.4"))), /*#__PURE__*/
+        }, toAppDigits(versionData.installedVersion || "3.2.9"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
@@ -14888,7 +14916,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, toAppDigits(versionData.buildNumber || "387"))), versionData.releaseChannel && /*#__PURE__*/
+        }, toAppDigits(versionData.buildNumber || "462"))), versionData.releaseChannel && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(React.Fragment, null, /*#__PURE__*/
         /*#__PURE__*/
@@ -15379,18 +15407,18 @@ function App() {
         }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
-          className: "p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group"
+          className: "p-4 space-y-3 bg-[#F4F7FC]/60 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-700/60"
         }, React.createElement("div", {
-          className: "flex items-center justify-between"
+          className: "flex items-start justify-between gap-3"
         }, React.createElement("div", {
-          className: "flex items-center gap-3.5 cursor-pointer flex-1 min-w-0",
+          className: "flex items-center gap-3 min-w-0 cursor-pointer flex-1",
           onClick: () => {
             if (!gdriveSyncState.isSignedIn && window.GoogleDriveSync) {
               window.GoogleDriveSync.signIn();
             }
           }
         }, React.createElement("div", {
-          className: "w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center shadow-xs shrink-0"
+          className: "w-10 h-10 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center shadow-xs shrink-0"
         }, React.createElement("svg", {
           className: "w-5 h-5",
           viewBox: "0 0 24 24"
@@ -15407,31 +15435,29 @@ function App() {
           fill: "#EA4335",
           d: "M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
         }))), React.createElement("div", {
-          className: "text-right min-w-0"
+          className: "text-right min-w-0 space-y-1 flex-1"
         }, React.createElement("div", {
-          className: "flex items-center gap-2"
+          className: "flex items-center gap-2 flex-wrap"
         }, React.createElement("p", {
-          className: "text-xs font-bold text-slate-800 dark:text-slate-100"
-        }, "همگام‌سازی با گوگل"), gdriveSyncState.isSignedIn && React.createElement("span", {
-          className: "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800"
+          className: "text-xs font-bold text-slate-900 dark:text-white"
+        }, "همگام‌سازی با گوگل درایو"), gdriveSyncState.isSignedIn && React.createElement("span", {
+          className: "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800"
         }, React.createElement("span", {
           className: "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
         }), "متصل")), React.createElement("p", {
-          className: "text-[11px] text-slate-400 mt-0.5"
-        }, gdriveSyncState.isSignedIn ? gdriveSyncState.lastSyncTime ? "آخرین همگام‌سازی: " + (window.GoogleDriveSync ? window.GoogleDriveSync.getLastSyncFormatted() : "به‌روز") : "همگام‌سازی خودکار در پس‌زمینه فعال است" : "پشتیبان‌گیری ابری و امن در Google Drive"))), React.createElement("div", {
-          className: "flex items-center gap-2 shrink-0 mr-2"
+          className: "text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed"
+        }, gdriveSyncState.isSignedIn ? gdriveSyncState.lastSyncTime ? "آخرین همگام‌سازی: " + (window.GoogleDriveSync ? window.GoogleDriveSync.getLastSyncFormatted() : "به‌روز") : "همگام‌سازی خودکار در پس‌زمینه فعال است" : "پشتیبان‌گیری ابری و امن اطلاعات مالی در Google Drive")))), React.createElement("div", {
+          className: "flex items-center gap-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50"
         }, !gdriveSyncState.isSignedIn ? React.createElement("button", {
           type: "button",
           onClick: () => {
             if (window.GoogleDriveSync) window.GoogleDriveSync.signIn();
           },
-          className: "px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold border border-blue-200/60 dark:border-blue-800/50 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+          className: "w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
         }, React.createElement(Icon, {
           name: "log-in",
-          className: "w-3.5 h-3.5"
-        }), "اتصال") : React.createElement("div", {
-          className: "flex items-center gap-1.5"
-        }, React.createElement("button", {
+          className: "w-4 h-4"
+        }), "اتصال به حساب گوگل") : React.createElement(React.Fragment, null, React.createElement("button", {
           type: "button",
           onClick: async e => {
             e.stopPropagation();
@@ -15447,23 +15473,36 @@ function App() {
             }
           },
           disabled: gdriveSyncState.isSyncing,
-          className: "px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-bold active:scale-95 transition-all flex items-center gap-1 cursor-pointer disabled:opacity-50",
-          title: "همگام‌سازی دستی"
+          className: "flex-1 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold border border-blue-200/60 dark:border-blue-800/50 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
         }, React.createElement(Icon, {
           name: "refresh-cw",
-          className: "w-3 h-3 " + (gdriveSyncState.isSyncing ? "animate-spin text-blue-600" : "")
+          className: "w-3.5 h-3.5 " + (gdriveSyncState.isSyncing ? "animate-spin" : "")
         }), gdriveSyncState.isSyncing ? "در حال سینک..." : "سینک دستی"), React.createElement("button", {
           type: "button",
           onClick: e => {
             e.stopPropagation();
-            if (window.confirm("آیا از خروج و قطع اتصال حساب گوگل اطمینان دارید؟")) {
-              if (window.GoogleDriveSync) window.GoogleDriveSync.signOut();
-              showToast("اتصال با حساب گوگل قطع شد");
-            }
+            setConfirmConfig({
+              title: "قطع اتصال حساب گوگل",
+              message: "آیا از خروج و قطع اتصال حساب Google Drive اطمینان دارید؟ اطلاعات شما روی دستگاه باقی می‌ماند اما همگام‌سازی ابری متوقف خواهد شد.",
+              details: ["توقف همگام‌سازی خودکار ابری", "حفظ کامل اطلاعات محلی در دستگاه", "امکان اتصال مجدد در هر زمان"],
+              iconName: "log-out",
+              iconBgColor: "bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400",
+              confirmLabel: "قطع اتصال",
+              cancelLabel: "انصراف",
+              isDestructive: true,
+              onConfirm: () => {
+                if (window.GoogleDriveSync) window.GoogleDriveSync.signOut();
+                showToast("اتصال با حساب گوگل قطع شد");
+                setConfirmConfig(null);
+              },
+              onCancel: () => setConfirmConfig(null)
+            });
           },
-          className: "px-2 py-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg text-[11px] font-bold active:scale-95 transition-all cursor-pointer",
-          title: "قطع اتصال"
-        }, "خروج"))))), React.createElement("button", {
+          className: "px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-bold border border-rose-200/60 dark:border-rose-800/50 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+        }, React.createElement(Icon, {
+          name: "log-out",
+          className: "w-3.5 h-3.5"
+        }), "قطع اتصال")))), React.createElement("button", {
           type: "button",
           onClick: handleExportBackup,
           className: "w-full flex items-center justify-between p-3.5 hover:bg-[#F4F7FC] dark:hover:bg-slate-700/40 transition-colors group text-right"
@@ -17856,7 +17895,19 @@ function App() {
     className: "w-4 h-4"
   })))))), /*#__PURE__*/
   /*#__PURE__*/
-  React.createElement(GlobalConfirmDialog, null));
+  React.createElement(GlobalConfirmDialog, {
+    isOpen: Boolean(confirmConfig),
+    title: confirmConfig?.title,
+    message: confirmConfig?.message,
+    details: confirmConfig?.details,
+    iconName: confirmConfig?.iconName,
+    iconBgColor: confirmConfig?.iconBgColor,
+    confirmLabel: confirmConfig?.confirmLabel,
+    cancelLabel: confirmConfig?.cancelLabel,
+    isDestructive: confirmConfig?.isDestructive,
+    onConfirm: confirmConfig?.onConfirm,
+    onCancel: confirmConfig?.onCancel || (() => setConfirmConfig(null))
+  }));
 }
 function RootApp() {
   return /*#__PURE__*/ /*#__PURE__*/React.createElement(ErrorBoundary, null, /*#__PURE__*/

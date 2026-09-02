@@ -4,7 +4,7 @@ import path from 'path';
 const versionPath = path.join(process.cwd(), 'version.json');
 const pkgPath = path.join(process.cwd(), 'package.json');
 
-let pkgVersion = '3.1.9';
+let pkgVersion = '3.2.9';
 if (fs.existsSync(pkgPath)) {
   try {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
@@ -12,74 +12,101 @@ if (fs.existsSync(pkgPath)) {
   } catch (e) {}
 }
 
+const CURRENT_CHANGELOG = {
+  "3.2.9": {
+    commitMessage: "feat: persistent google drive authentication with silent background token renewal, redesign google drive sync card in settings, fix delete-all-data confirmation dialog & database reset, release v3.2.9",
+    changes: [
+      "حفظ دائمی نشست اتصال گوگل درایو و تمدید خودکار و نامحسوس توکن در پس‌زمینه بدون نیاز به ورود مجدد بعد از ۲ یا ۳ ساعت",
+      "بازطراحی و ارتقای بخش همگام‌سازی ابری گوگل درایو در تنظیمات با کارت مدرن، نشانگر وضعیت فعال و دکمه‌های کنترل سریع",
+      "رفع کامل مشکل عدم باز شدن کادر تایید و اجرای قطعی دکمه «حذف کلیه اطلاعات» و پاکسازی کامل دیتابیس",
+      "اتصال یکپارچه پنجره سراسری تایید عملیات (GlobalConfirmDialog) برای پاکسازی داده‌ها و قطع اتصال حساب ابری",
+      "انتشار رسمی نسخه 3.2.9"
+    ]
+  },
+  "3.2.8": {
+    commitMessage: "feat: comprehensive contact photo & loan icon backup audit, enhanced loan icon catalog with 90+ categorized icons, and release v3.2.8",
+    changes: [
+      "بررسی جامع و اعتبارسنجی ۱۰۰٪ جریان‌های پشتیبان‌گیری، بازیابی و حذف داده برای تصاویر مخاطبین و آیکون‌های وام",
+      "توسعه اساسی پالت آیکون‌های وام به بیش از ۹۰ آیکون متنوع و تخصصی با دسته‌بندی موضوعی (بانکی، نقلیه، مسکن، خرید، کار، خانواده و عمومی)",
+      "افزودن قابلیت جستجوی زنده در موضوعات و کلمات کلیدی آیکون‌های وام",
+      "اصلاح و جایگزینی کامل آیکون خالی/سفید با آیکون‌های استاندارد Lucide",
+      "بهبود هماهنگی نام‌گذاری ۳ خطی تراکنش‌ها و ارتقای یکپارچه به نسخه 3.2.8"
+    ]
+  }
+};
+
 let vData = {
   appName: "Amir Finance",
   appLogo: "apple-touch-icon.png",
   installedVersion: pkgVersion,
-  buildNumber: 330,
+  buildNumber: 462,
   releaseDate: new Date().toISOString().split('T')[0],
   releaseChannel: "Stable",
   channelLabel: "نسخه پایدار",
   latestVersion: pkgVersion,
-  latestBuild: 330,
+  latestBuild: 462,
   isUpdateAvailable: false,
-  history: [
-    {
-      version: pkgVersion,
-      buildNumber: 350,
-      releaseDate: new Date().toISOString().split('T')[0],
-      releaseChannel: "Stable",
-      commitHash: "v3120stable",
-      commitMessage: "fix: prevent entire page horizontal shift during swipe-to-delete",
-      changes: [
-        "رفع کامل جابجایی افقی کل صفحه هنگام سوایپ کارت‌ها برای حذف در موبایل",
-        "محدودسازی و کانتینمنت دقیق محدوده ترنسفرم کارت با overflow-hidden و rounded-2xl",
-        "اصلاح و جایگزینی جامع overflow-x: hidden در تمام تب‌ها، صفحات و پنجره‌های اسکرول",
-        "بهبود رویدادهای لمسی و جلوگیری از انتشار ناخواسته رویداد سوایپ به کانتینر والد"
-      ]
-    }
-  ]
+  history: []
 };
 
 if (fs.existsSync(versionPath)) {
   try {
     const existing = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
+    const nextBuild = Math.max(462, (existing.buildNumber || 460) + 1);
     vData = {
       ...vData,
       ...existing,
       installedVersion: pkgVersion,
       latestVersion: pkgVersion,
-      buildNumber: Math.max(330, (existing.buildNumber || 329) + 1),
+      buildNumber: nextBuild,
+      latestBuild: nextBuild,
       releaseDate: new Date().toISOString().split('T')[0],
       isUpdateAvailable: false
     };
-    vData.latestBuild = vData.buildNumber;
-    
-    // Ensure current version is top of history
-    if (Array.isArray(existing.history) && existing.history.length > 0) {
-      const otherHistory = existing.history.filter(h => h.buildNumber !== vData.buildNumber && h.version !== pkgVersion);
-      vData.history = [
-        {
-          version: pkgVersion,
-          buildNumber: vData.buildNumber,
-          releaseDate: vData.releaseDate,
-          releaseChannel: "Stable",
-          commitHash: `v${pkgVersion.replace(/\./g, '')}b${vData.buildNumber}`,
-          commitMessage: "feat: implement corner micro-badge and installment counter inside icon, sync naming in all transactions, release v3.2.6",
-          changes: [
-            "حذف برچسب‌های کپسولی فشرده‌کننده از خط اول و جایگزینی با نشانگر گوشه‌ای هوشمند (Corner Micro-Badge)",
-            "نمایش شماره قسط وام مستقیماً درون باکس مربعی آیکون (Number-Inside-Box)",
-            "همگام‌سازی کامل شماره اقساط و نام‌گذاری ۳ خطی در صفحه همه تراکنش‌ها دقیقا مطابق صفحه اختصاصی وام",
-            "انتشار رسمی نسخه 3.2.6"
-          ]
-        },
-        ...otherHistory
-      ];
+
+    let existingHistory = Array.isArray(existing.history) ? existing.history : [];
+    if (existingHistory.length === 0 && Array.isArray(existing.versionHistory)) {
+      existingHistory = existing.versionHistory;
     }
+
+    // Filter out entries that match the current version to put the fresh entry at the top
+    const otherHistory = existingHistory.filter(h => h.version !== pkgVersion);
+
+    // Make sure 3.2.8 is in otherHistory if not present
+    if (!otherHistory.some(h => h.version === '3.2.8')) {
+      otherHistory.unshift({
+        version: "3.2.8",
+        buildNumber: 458,
+        releaseDate: "2026-08-27",
+        releaseChannel: "Stable",
+        commitHash: "v328b458",
+        commitMessage: CURRENT_CHANGELOG["3.2.8"].commitMessage,
+        changes: CURRENT_CHANGELOG["3.2.8"].changes
+      });
+    }
+
+    const currentDetails = CURRENT_CHANGELOG[pkgVersion] || {
+      commitMessage: `release version ${pkgVersion}`,
+      changes: [`انتشار رسمی نسخه ${pkgVersion}`]
+    };
+
+    vData.history = [
+      {
+        version: pkgVersion,
+        buildNumber: vData.buildNumber,
+        releaseDate: vData.releaseDate,
+        releaseChannel: "Stable",
+        commitHash: `v${pkgVersion.replace(/\./g, '')}b${vData.buildNumber}`,
+        commitMessage: currentDetails.commitMessage,
+        changes: currentDetails.changes
+      },
+      ...otherHistory
+    ];
   } catch (e) {
-    console.warn('Could not read version.json, creating clean one');
+    console.warn('Could not read version.json, creating clean one', e);
   }
 }
 
 fs.writeFileSync(versionPath, JSON.stringify(vData, null, 2), 'utf8');
 console.log(`[generate-version] Updated version to ${vData.installedVersion} (Build ${vData.buildNumber})`);
+
