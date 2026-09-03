@@ -661,6 +661,19 @@ const drawRoundRect = (ctx, x, y, w, h, r) => {
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
 };
+const drawCanvasText = (ctx, text, x, y, maxWidth, align = 'right') => {
+  ctx.textAlign = align;
+  let str = String(text ?? '').trim();
+  if (!str) str = '-';
+  if (!maxWidth || ctx.measureText(str).width <= maxWidth) {
+    ctx.fillText(str, x, y);
+    return;
+  }
+  while (str.length > 0 && ctx.measureText(str + '...').width > maxWidth) {
+    str = str.slice(0, -1);
+  }
+  ctx.fillText(str + '...', x, y);
+};
 const exportLoanAsPNG = (loan, txList) => {
   if (!loan) return;
   try {
@@ -723,23 +736,29 @@ const exportLoanAsPNG = (loan, txList) => {
     ctx.font = 'bold 15px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.fillText('ریز سوابق پرداخت اقساط', width - 35, 242);
 
-    // Table Header
+    // Table Header - Auto-width compact columns with "توضیحات" immediately to the left of "عنوان / بابت"
     const tableTop = 252;
     ctx.fillStyle = '#4f46e5';
     ctx.fillRect(35, tableTop, width - 70, 38);
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
-    ctx.fillText('ردیف', width - 60, tableTop + 24);
-    ctx.fillText('عنوان / بابت', width - 140, tableTop + 24);
-    ctx.fillText('تاریخ پرداخت', width - 420, tableTop + 24);
-    ctx.fillText('مبلغ (تومان)', width - 620, tableTop + 24);
+    ctx.textAlign = 'center';
+    ctx.fillText('ردیف', 742, tableTop + 24);
+    ctx.textAlign = 'right';
+    ctx.fillText('عنوان / بابت', 710, tableTop + 24);
+    ctx.fillText('توضیحات', 545, tableTop + 24);
+    ctx.textAlign = 'center';
+    ctx.fillText('تاریخ پرداخت', 235, tableTop + 24);
+    ctx.textAlign = 'left';
+    ctx.fillText('مبلغ (تومان)', 50, tableTop + 24);
     let currentY = tableTop + 38;
     if (repayments.length === 0) {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(35, currentY, width - 70, 44);
       ctx.fillStyle = '#94a3b8';
       ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
-      ctx.fillText('هیچ قسطی تاکنون برای این وام ثبت نشده است', width / 2 + 100, currentY + 28);
+      ctx.textAlign = 'center';
+      ctx.fillText('هیچ قسطی تاکنون برای این وام ثبت نشده است', width / 2, currentY + 28);
       currentY += 44;
     } else {
       repayments.forEach((tx, idx) => {
@@ -747,14 +766,34 @@ const exportLoanAsPNG = (loan, txList) => {
         ctx.fillRect(35, currentY, width - 70, rowHeight);
         ctx.strokeStyle = '#f1f5f9';
         ctx.strokeRect(35, currentY, width - 70, rowHeight);
+
+        // 1. Index
+        ctx.fillStyle = '#64748b';
+        ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(toAppDigits(idx + 1)), 742, currentY + 26);
+
+        // 2. Title
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        drawCanvasText(ctx, tx.title || `پرداخت قسط ${idx + 1}`, 710, currentY + 26, 155, 'right');
+
+        // 3. Description / Notes (left of title)
+        ctx.fillStyle = '#64748b';
+        ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        drawCanvasText(ctx, tx.notes || tx.description || '-', 545, currentY + 26, 245, 'right');
+
+        // 4. Date
         ctx.fillStyle = '#334155';
         ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
-        ctx.fillText(String(toAppDigits(idx + 1)), width - 60, currentY + 26);
-        ctx.fillText(tx.title || 'پرداخت قسط', width - 140, currentY + 26);
-        ctx.fillText(formatDateToNumericJalali(tx.dateStr), width - 420, currentY + 26);
+        ctx.textAlign = 'center';
+        ctx.fillText(formatDateToNumericJalali(tx.dateStr) || '-', 235, currentY + 26);
+
+        // 5. Amount
         ctx.fillStyle = '#16a34a';
         ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
-        ctx.fillText(formatAppNumber(tx.amount || 0), width - 620, currentY + 26);
+        ctx.textAlign = 'left';
+        ctx.fillText(formatAppNumber(tx.amount || 0), 50, currentY + 26);
         currentY += rowHeight;
       });
     }
@@ -764,6 +803,7 @@ const exportLoanAsPNG = (loan, txList) => {
     const reportDateStr = formatDateToNumericJalali(`${nowJalali.day} ${nowJalali.month} ${nowJalali.year}`);
     ctx.fillStyle = '#94a3b8';
     ctx.font = '11px Vazir, Vazirmatn, Tahoma, sans-serif';
+    ctx.textAlign = 'right';
     ctx.fillText(`تاریخ صدور گزارش: ${reportDateStr}    •    برنامه مدیریت مالی شخصی`, width - 35, currentY + 30);
     const imageURI = canvas.toDataURL('image/png');
     const link = document.createElement('a');
@@ -779,7 +819,7 @@ const exportLoanAsPNG = (loan, txList) => {
 const exportPeriodAsPNG = (period, contact) => {
   if (!period) return;
   try {
-    const contactName = contact ? `${contact.firstName} ${contact.lastName}` : period.contactName || 'مخاطب';
+    const contactName = contact ? `${contact.firstName || ''} ${contact.lastName || ''}`.trim() : period.contactName || (period.contact ? `${period.contact.firstName || ''} ${period.contact.lastName || ''}`.trim() : 'مخاطب');
     const phone = contact ? contact.phone || '-' : period.phone || '-';
     const periodTxs = period.transactions || [];
     const isDebt = period.type === 'debt';
@@ -833,23 +873,29 @@ const exportPeriodAsPNG = (period, contact) => {
     ctx.font = 'bold 15px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.fillText('ریز تراکنش‌ها و دریافتی/پرداختی‌های این دوره', width - 35, 222);
 
-    // Table Header
+    // Table Header - Auto width columns with "توضیحات" placed directly to the left of "عنوان"
     const tableTop = 232;
     ctx.fillStyle = isDebt ? '#e11d48' : '#10b981';
     ctx.fillRect(35, tableTop, width - 70, 38);
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
-    ctx.fillText('ردیف', width - 60, tableTop + 24);
-    ctx.fillText('عنوان تراکنش', width - 140, tableTop + 24);
-    ctx.fillText('تاریخ', width - 420, tableTop + 24);
-    ctx.fillText('مبلغ (تومان)', width - 620, tableTop + 24);
+    ctx.textAlign = 'center';
+    ctx.fillText('ردیف', 742, tableTop + 24);
+    ctx.textAlign = 'right';
+    ctx.fillText('عنوان', 710, tableTop + 24);
+    ctx.fillText('توضیحات', 555, tableTop + 24);
+    ctx.textAlign = 'center';
+    ctx.fillText('تاریخ', 235, tableTop + 24);
+    ctx.textAlign = 'left';
+    ctx.fillText('مبلغ (تومان)', 50, tableTop + 24);
     let currentY = tableTop + 38;
     if (periodTxs.length === 0) {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(35, currentY, width - 70, 44);
       ctx.fillStyle = '#94a3b8';
       ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
-      ctx.fillText('هیچ تراکنشی در این دوره ثبت نشده است', width / 2 + 100, currentY + 28);
+      ctx.textAlign = 'center';
+      ctx.fillText('هیچ تراکنشی در این دوره ثبت نشده است', width / 2, currentY + 28);
       currentY += 44;
     } else {
       periodTxs.forEach((tx, idx) => {
@@ -857,14 +903,37 @@ const exportPeriodAsPNG = (period, contact) => {
         ctx.fillRect(35, currentY, width - 70, rowHeight);
         ctx.strokeStyle = '#f1f5f9';
         ctx.strokeRect(35, currentY, width - 70, rowHeight);
+
+        // 1. Index
+        ctx.fillStyle = '#64748b';
+        ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(toAppDigits(idx + 1)), 742, currentY + 26);
+
+        // 2. Title: Strictly "ثبت طلب جدید" / "ثبت بدهی جدید" for new entries, and "بازپرداخت جدید" for repayments
+        const isRepayment = tx.type === 'debt_repayment' || tx.type === 'demand_repayment' || tx.type === 'repayment';
+        const titleStr = isRepayment ? 'بازپرداخت جدید' : isDebt ? 'ثبت بدهی جدید' : 'ثبت طلب جدید';
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        drawCanvasText(ctx, titleStr, 710, currentY + 26, 145, 'right');
+
+        // 3. Notes (strictly to the left of Title)
+        const notesStr = tx.notes || tx.description || '-';
+        ctx.fillStyle = '#64748b';
+        ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
+        drawCanvasText(ctx, notesStr, 555, currentY + 26, 255, 'right');
+
+        // 4. Date
         ctx.fillStyle = '#334155';
         ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
-        ctx.fillText(String(toAppDigits(idx + 1)), width - 60, currentY + 26);
-        ctx.fillText(tx.title || (isDebt ? 'بازپرداخت بدهی' : 'دریافت طلب'), width - 140, currentY + 26);
-        ctx.fillText(formatDateToNumericJalali(tx.dateStr), width - 420, currentY + 26);
-        ctx.fillStyle = isDebt ? '#e11d48' : '#10b981';
+        ctx.textAlign = 'center';
+        ctx.fillText(formatDateToNumericJalali(tx.dateStr) || '-', 235, currentY + 26);
+
+        // 5. Amount
+        ctx.fillStyle = isRepayment ? '#16a34a' : isDebt ? '#e11d48' : '#059669';
         ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
-        ctx.fillText(formatAppNumber(Math.abs(tx.amount || 0)), width - 620, currentY + 26);
+        ctx.textAlign = 'left';
+        ctx.fillText(formatAppNumber(Math.abs(tx.amount || 0)), 50, currentY + 26);
         currentY += rowHeight;
       });
     }
@@ -874,10 +943,11 @@ const exportPeriodAsPNG = (period, contact) => {
     const reportDateStr = formatDateToNumericJalali(`${nowJalali.day} ${nowJalali.month} ${nowJalali.year}`);
     ctx.fillStyle = '#94a3b8';
     ctx.font = '11px Vazir, Vazirmatn, Tahoma, sans-serif';
+    ctx.textAlign = 'right';
     ctx.fillText(`تاریخ صدور گزارش: ${reportDateStr}    •    برنامه مدیریت مالی شخصی`, width - 35, currentY + 30);
     const imageURI = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.download = `تسویه‌حساب_${contactName.replace(/\s+/g, '_')}_${period.id}.png`;
+    link.download = `تسویه‌حساب_${isDebt ? 'بدهی' : 'طلب'}_${contactName.replace(/\s+/g, '_')}_${period.id || 'export'}.png`;
     link.href = imageURI;
     document.body.appendChild(link);
     link.click();
@@ -889,17 +959,23 @@ const exportPeriodAsPNG = (period, contact) => {
 const exportPeriodAsExcel = (period, contact) => {
   if (!period) return;
   try {
-    let csv = '\﻿';
-    const contactName = contact ? `${contact.firstName} ${contact.lastName}` : period.contactName || 'مخاطب';
+    let csv = '\uFEFF';
+    const contactName = contact ? `${contact.firstName || ''} ${contact.lastName || ''}`.trim() : period.contactName || (period.contact ? `${period.contact.firstName || ''} ${period.contact.lastName || ''}`.trim() : 'مخاطب');
+    const isDebt = period.type === 'debt';
     csv += `تسویه‌حساب آرشیو شده,${contactName}\n`;
     csv += `تاریخ شروع,${formatDateToNumericJalali(period.startDate) || '-'}\n`;
     csv += `تاریخ تسویه,${formatDateToNumericJalali(period.endDate) || '-'}\n`;
-    csv += `نوع تسویه,${period.type === 'demand' ? 'طلب (دریافت)' : 'بدهی (پرداخت)'}\n`;
+    csv += `نوع تسویه,${isDebt ? 'تسویه بدهی (پرداخت‌شده)' : 'تسویه طلب (دریافت‌شده)'}\n`;
     csv += `مبلغ کل,${period.totalAmount || 0}\n\n`;
-    csv += `ردیف,عنوان,تاریخ,مبلغ (تومان),نوع,توضیحات\n`;
+    csv += `ردیف,عنوان,توضیحات,تاریخ,مبلغ (تومان)\n`;
     const txs = period.transactions || [];
     txs.forEach((tx, idx) => {
-      csv += `${idx + 1},"${tx.title || ''}","${tx.dateStr || ''}",${Math.abs(tx.amount || 0)},"${tx.type || ''}","${tx.notes || ''}"\n`;
+      const isRepayment = tx.type === 'debt_repayment' || tx.type === 'demand_repayment' || tx.type === 'repayment';
+      const title = isRepayment ? 'بازپرداخت جدید' : isDebt ? 'ثبت بدهی جدید' : 'ثبت طلب جدید';
+      const notes = (tx.notes || tx.description || '').replace(/"/g, '""');
+      const date = tx.dateStr || '-';
+      const amount = Math.abs(tx.amount || 0);
+      csv += `${idx + 1},"${title}","${notes}","${date}",${amount}\n`;
     });
     const blob = new Blob([csv], {
       type: 'text/csv;charset=utf-8;'
@@ -907,7 +983,7 @@ const exportPeriodAsExcel = (period, contact) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `تسویه_حساب_${contactName.replace(/\s+/g, '_')}_${period.id}.csv`;
+    a.download = `تسویه_حساب_${isDebt ? 'بدهی' : 'طلب'}_${contactName.replace(/\s+/g, '_')}_${period.id || 'export'}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -947,8 +1023,13 @@ const exportLoanAsPDF = (loan, txList) => {
                             .label { color: #64748b; }
                             .value { font-weight: bold; color: #0f172a; }
                             table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-                            th { background: #4f46e5; color: #fff; text-align: right; padding: 10px; }
-                            td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+                            th { background: #4f46e5; color: #fff; text-align: right; padding: 10px 12px; }
+                            td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; }
+                            th.col-idx, td.col-idx { width: 1%; white-space: nowrap; text-align: center; }
+                            th.col-title, td.col-title { width: 25%; }
+                            th.col-notes, td.col-notes { width: auto; color: #64748b; }
+                            th.col-date, td.col-date { width: 1%; white-space: nowrap; text-align: center; }
+                            th.col-amount, td.col-amount { width: 1%; white-space: nowrap; text-align: left; }
                             tr:nth-child(even) { background: #f8fafc; }
                             .amount { font-weight: bold; color: #16a34a; }
                             .footer { margin-top: 30px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 12px; }
@@ -981,21 +1062,23 @@ const exportLoanAsPDF = (loan, txList) => {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>ردیف</th>
-                                    <th>عنوان / بابت</th>
-                                    <th>تاریخ پرداخت</th>
-                                    <th>مبلغ (تومان)</th>
+                                    <th class="col-idx">ردیف</th>
+                                    <th class="col-title">عنوان / بابت</th>
+                                    <th class="col-notes">توضیحات</th>
+                                    <th class="col-date">تاریخ پرداخت</th>
+                                    <th class="col-amount">مبلغ (تومان)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${repayments.length === 0 ? `
-                                    <tr><td colspan="4" style="text-align:center; color:#94a3b8;">هیچ قسطی تاکنون ثبت نشده است</td></tr>
+                                    <tr><td colspan="5" style="text-align:center; color:#94a3b8;">هیچ قسطی تاکنون ثبت نشده است</td></tr>
                                 ` : repayments.map((tx, i) => `
                                     <tr>
-                                        <td>${toAppDigits(i + 1)}</td>
-                                        <td>${tx.title || 'پرداخت قسط'} ${tx.notes ? ' - ' + tx.notes : ''}</td>
-                                        <td>${formatDateToNumericJalali(tx.dateStr) || '-'}</td>
-                                        <td class="amount">${formatAppNumber(tx.amount || 0)}</td>
+                                        <td class="col-idx">${toAppDigits(i + 1)}</td>
+                                        <td class="col-title">${tx.title || `پرداخت قسط ${i + 1}`}</td>
+                                        <td class="col-notes">${tx.notes || tx.description || '-'}</td>
+                                        <td class="col-date">${formatDateToNumericJalali(tx.dateStr) || '-'}</td>
+                                        <td class="col-amount amount">${formatAppNumber(tx.amount || 0)}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -1031,17 +1114,21 @@ const exportLoanAsExcel = (loan, txList) => {
   if (!loan) return;
   try {
     const repayments = (txList || []).filter(t => t.loanId === loan.id && t.type === 'repayment');
-    let csv = '\﻿';
-    csv += `عنوان وام,${loan.title || ''}\n`;
+    let csv = '\uFEFF';
+    csv += `صورت‌حساب پرونده وام,${loan.title || ''}\n`;
     csv += `طرف حساب,${loan.contactName || ''}\n`;
     csv += `شماره تماس,${loan.phone || ''}\n`;
     csv += `اصل مبلغ وام,${loan.principalAmount || 0}\n`;
     csv += `کل مبلغ بازپرداخت,${loan.totalRepayment || 0}\n`;
     csv += `پرداختی تا امروز,${loan.paidAmount || 0}\n`;
     csv += `باقی‌مانده,${loan.remainingAmount || 0}\n\n`;
-    csv += `ردیف,عنوان,تاریخ پرداخت,مبلغ (تومان),توضیحات\n`;
+    csv += `ردیف,عنوان,توضیحات,تاریخ پرداخت,مبلغ (تومان)\n`;
     repayments.forEach((tx, idx) => {
-      csv += `${idx + 1},"${tx.title || 'پرداخت قسط'}","${tx.dateStr || ''}",${tx.amount || 0},"${tx.notes || ''}"\n`;
+      const title = (tx.title || `پرداخت قسط ${idx + 1}`).replace(/"/g, '""');
+      const notes = (tx.notes || tx.description || '').replace(/"/g, '""');
+      const date = tx.dateStr || '-';
+      const amount = tx.amount || 0;
+      csv += `${idx + 1},"${title}","${notes}","${date}",${amount}\n`;
     });
     const blob = new Blob([csv], {
       type: 'text/csv;charset=utf-8;'
@@ -1057,6 +1144,7 @@ const exportLoanAsExcel = (loan, txList) => {
     console.error("Export Excel error:", err);
   }
 };
+const exportLoanToCSV = exportLoanAsExcel;
 const initialContacts = [{
   id: 1,
   firstName: 'محمد',
@@ -6390,7 +6478,156 @@ function NavRippleButton({
     className: "text-[10px] mt-0.5 font-medium tracking-tight"
   }, label));
 }
+function VirtualNumericKeyboard({
+  isOpen,
+  onClose,
+  onKeyPress,
+  isDark
+}) {
+  return /*#__PURE__*/React.createElement(AnimatePresence, null, isOpen && /*#__PURE__*/React.createElement(motion.div, {
+    key: "virtual-numeric-keyboard-modal",
+    initial: {
+      y: 300,
+      opacity: 0
+    },
+    animate: {
+      y: 0,
+      opacity: 1
+    },
+    exit: {
+      y: 300,
+      opacity: 0
+    },
+    transition: {
+      type: "spring",
+      stiffness: 420,
+      damping: 32
+    },
+    className: "fixed bottom-0 inset-x-0 z-[9999] flex justify-center p-2 sm:p-3 pointer-events-none"
+  }, /*#__PURE__*/React.createElement("div", {
+    onMouseDown: e => e.preventDefault(),
+    onTouchStart: e => e.preventDefault(),
+    className: `w-full max-w-sm sm:max-w-md ${isDark ? 'bg-slate-900/98 text-white border-slate-800 shadow-black/80' : 'bg-white/98 text-slate-900 border-slate-200 shadow-slate-900/20'} backdrop-blur-2xl border rounded-t-3xl shadow-2xl p-3 sm:p-4 pointer-events-auto flex flex-col space-y-2 select-none font-vazir`,
+    dir: "rtl"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-800/80 px-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "hash",
+    className: "w-4 h-4 text-indigo-500"
+  }), /*#__PURE__*/React.createElement("span", null, "\u06A9\u06CC\u0628\u0648\u0631\u062F \u0639\u062F\u062F\u06CC \u0647\u0648\u0634\u0645\u0646\u062F")), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => onKeyPress('clear'),
+    className: "px-2.5 py-1 text-xs font-bold rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/25 active:scale-95 transition-all cursor-pointer"
+  }, "\u067E\u0627\u06A9 \u06A9\u0631\u062F\u0646 \u06A9\u0644"), /*#__PURE__*/React.createElement("button", {
+    onClick: onClose,
+    className: "flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer shadow-md shadow-indigo-500/20"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "check",
+    className: "w-3.5 h-3.5"
+  }), /*#__PURE__*/React.createElement("span", null, "\u062A\u0627\u06CC\u06CC\u062F")))), /*#__PURE__*/React.createElement("div", {
+    className: "grid grid-cols-3 gap-2 pt-1"
+  }, ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => /*#__PURE__*/React.createElement("button", {
+    key: num,
+    onClick: () => onKeyPress(num),
+    className: `h-12 sm:h-13 rounded-2xl font-mono text-xl sm:text-2xl font-bold flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700/60' : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200/80'}`
+  }, num)), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onKeyPress('000'),
+    className: `h-12 sm:h-13 rounded-2xl font-mono text-base sm:text-lg font-bold flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-indigo-950/70 hover:bg-indigo-900/70 text-indigo-300 border border-indigo-800/50' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200'}`
+  }, "\u06F0\u06F0\u06F0"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onKeyPress('0'),
+    className: `h-12 sm:h-13 rounded-2xl font-mono text-xl sm:text-2xl font-bold flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700/60' : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200/80'}`
+  }, "0"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onKeyPress('backspace'),
+    className: `h-12 sm:h-13 rounded-2xl flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-rose-400 border border-slate-700/60' : 'bg-slate-100 hover:bg-slate-200 text-rose-600 border border-slate-200/80'}`
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "delete",
+    className: "w-6 h-6"
+  }))))));
+}
 function App() {
+  const [showVirtualKeyboard, setShowVirtualKeyboard] = useState(false);
+  const activeNumericInputRef = useRef(null);
+  useEffect(() => {
+    const handleFocusIn = e => {
+      const target = e.target;
+      if (target && target.tagName === 'INPUT') {
+        const inputMode = target.getAttribute('inputmode');
+        const origMode = target.dataset.originalInputMode;
+        const type = target.getAttribute('type');
+        const isNumeric = inputMode === 'numeric' || inputMode === 'tel' || inputMode === 'none' || origMode === 'numeric' || origMode === 'tel' || type === 'number' || type === 'tel' || target.classList.contains('numeric-input') || target.name?.includes('amount') || target.name?.includes('price') || target.name?.includes('phone') || target.name?.includes('card') || target.name?.includes('iban') || target.name?.includes('year') || target.name?.includes('day') || target.id?.includes('amount') || target.id?.includes('price') || target.id?.includes('phone') || target.id?.includes('card') || target.id?.includes('year') || target.placeholder?.includes('مبلغ') || target.placeholder?.includes('تومان') || target.placeholder?.includes('شماره') || target.placeholder?.includes('09') || target.placeholder?.includes('IR');
+        if (isNumeric) {
+          activeNumericInputRef.current = target;
+          if (!target.dataset.originalInputMode) {
+            target.dataset.originalInputMode = inputMode || type || 'numeric';
+          }
+          target.setAttribute('inputmode', 'none');
+          setShowVirtualKeyboard(true);
+        } else {
+          setShowVirtualKeyboard(false);
+          activeNumericInputRef.current = null;
+        }
+      } else if (target && (target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+        setShowVirtualKeyboard(false);
+        activeNumericInputRef.current = null;
+      }
+    };
+    document.addEventListener('focusin', handleFocusIn);
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn);
+    };
+  }, []);
+  const handleVirtualKeyPress = keyValue => {
+    const input = activeNumericInputRef.current;
+    if (!input) return;
+    const currentRaw = parseRawNumber(input.value || '');
+    let newRaw = currentRaw;
+    if (keyValue === 'clear') {
+      newRaw = '';
+    } else if (keyValue === 'backspace') {
+      newRaw = currentRaw.slice(0, -1);
+    } else if (keyValue === '000') {
+      if (!currentRaw) {
+        newRaw = '1000';
+      } else {
+        newRaw = currentRaw + '000';
+      }
+    } else {
+      if (currentRaw === '0') {
+        newRaw = keyValue;
+      } else {
+        newRaw = currentRaw + keyValue;
+      }
+    }
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+    if (nativeInputValueSetter) {
+      nativeInputValueSetter.call(input, newRaw);
+    } else {
+      input.value = newRaw;
+    }
+    input.dispatchEvent(new Event('input', {
+      bubbles: true
+    }));
+    input.dispatchEvent(new Event('change', {
+      bubbles: true
+    }));
+    input.focus();
+  };
+  const handleCloseVirtualKeyboard = () => {
+    setShowVirtualKeyboard(false);
+    if (activeNumericInputRef.current) {
+      const orig = activeNumericInputRef.current.dataset.originalInputMode;
+      if (orig) {
+        activeNumericInputRef.current.setAttribute('inputmode', orig);
+      } else {
+        activeNumericInputRef.current.removeAttribute('inputmode');
+      }
+      activeNumericInputRef.current.blur();
+      activeNumericInputRef.current = null;
+    }
+  };
   const [currentTab, setCurrentTab] = useState('dashboard');
   const [navDirection, setNavDirection] = useState('forward');
   const [selectedContact, setSelectedContact] = useState(null);
@@ -6507,15 +6744,23 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.2.9",
-    "buildNumber": 464,
+    "installedVersion": "3.3.0",
+    "buildNumber": 491,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.2.9",
-    "latestBuild": 464,
+    "latestVersion": "3.3.0",
+    "latestBuild": 491,
     "isUpdateAvailable": false,
     "history": [{
+      "version": "3.3.0",
+      "buildNumber": 490,
+      "releaseDate": "2026-09-02",
+      "releaseChannel": "Stable",
+      "commitHash": "v330stable",
+      "commitMessage": "feat: release version 3.3.0 with robust activity-driven Google Drive token renewal and smart numeric keyboard stability",
+      "changes": ["حل ریشه‌ای و دائمی مشکل انقضای توکن گوگل درایو پس از چند ساعت عدم فعالیت با مکانیسم تجدید خودکار پیش‌دستانه (Activity-Driven Token Renewal) در هنگام تعامل با صفحه و عملیات Pull-to-Refresh", "رفع مشکل بسته شدن ناخواسته کیبورد عددی هوشمند هنگام تایپ و بهبود پایداری آن روی تمامی فیلدهای عددی، تلفن و شبا", "انتشار رسمی نسخه ۳.۳.۰"]
+    }, {
       "version": "3.2.9",
       "buildNumber": 462,
       "releaseDate": "2026-09-02",
@@ -6812,20 +7057,20 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 464;
-    const EMBEDDED_VERSION = "3.2.9";
+    const EMBEDDED_BUILD = 491;
+    const EMBEDDED_VERSION = "3.3.0";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
     // If local build is missing or older than current running code bundle, synchronize it
-    if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD) {
+    if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD || localVersion !== EMBEDDED_VERSION) {
       localStorage.setItem('amir_installed_build', EMBEDDED_BUILD.toString());
       localStorage.setItem('amir_installed_version', EMBEDDED_VERSION);
       localBuildStr = EMBEDDED_BUILD.toString();
       localVersion = EMBEDDED_VERSION;
     }
     const localBuild = Math.max(EMBEDDED_BUILD, parseInt(localBuildStr || '0', 10));
-    const activeVersion = localBuild > EMBEDDED_BUILD && localVersion ? localVersion : EMBEDDED_VERSION;
+    const activeVersion = localBuild >= EMBEDDED_BUILD ? EMBEDDED_VERSION : localVersion || EMBEDDED_VERSION;
     try {
       const res = await fetch('version.json?t=' + Date.now(), {
         cache: 'no-store',
@@ -8225,94 +8470,6 @@ function App() {
     }
     triggerUndo('تراکنش با موفقیت حذف گردید');
   };
-  const exportPeriodAsPNG = period => {
-    if (!period) return;
-    try {
-      const isDebt = period.type === 'debt';
-      const txs = period.transactions || [];
-      const canvas = document.createElement('canvas');
-      const width = 800;
-      const rowHeight = 44;
-      const headerHeight = 220;
-      const tableHeaderHeight = 42;
-      const footerHeight = 60;
-      const height = headerHeight + tableHeaderHeight + Math.max(1, txs.length) * rowHeight + footerHeight;
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = isDebt ? '#e11d48' : '#059669';
-      ctx.fillRect(0, 0, width, 12);
-      ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 22px Vazir, Vazirmatn, Tahoma, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(`صورت‌حساب دوره تسویه‌شده ${isDebt ? 'قرض / بدهی' : 'طلب'}`, width - 35, 52);
-      ctx.fillStyle = '#64748b';
-      ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
-      ctx.fillText(`نام مخاطب: ${period.contactName || ''}    •    بازه زمانی: از ${formatDateToNumericJalali(period.startDate)} تا ${formatDateToNumericJalali(period.endDate)}`, width - 35, 78);
-      ctx.fillStyle = isDebt ? '#fff1f2' : '#ecfdf5';
-      drawRoundRect(ctx, 35, 96, width - 70, 100, 14);
-      ctx.fill();
-      ctx.strokeStyle = isDebt ? '#fecdd3' : '#a7f3d0';
-      ctx.stroke();
-      ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 16px Vazir, Vazirmatn, Tahoma, sans-serif';
-      ctx.fillText(`مبلغ کل دوره: ${formatAppNumber(period.totalAmount || 0)} تومان`, width - 60, 132);
-      ctx.fillStyle = isDebt ? '#be123c' : '#047857';
-      ctx.font = 'bold 14px Vazir, Vazirmatn, Tahoma, sans-serif';
-      ctx.fillText(`وضعیت: تسویه‌شده و کامل (مانده: ۰ تومان)`, width - 60, 168);
-      const tableTop = 216;
-      ctx.fillStyle = isDebt ? '#e11d48' : '#059669';
-      ctx.fillRect(35, tableTop, width - 70, 38);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
-      ctx.fillText('ردیف', width - 60, tableTop + 24);
-      ctx.fillText('شرح / عنوان تراکنش', width - 140, tableTop + 24);
-      ctx.fillText('تاریخ', width - 420, tableTop + 24);
-      ctx.fillText('مبلغ (تومان)', width - 620, tableTop + 24);
-      let currentY = tableTop + 38;
-      if (txs.length === 0) {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(35, currentY, width - 70, 44);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '13px Vazir, Vazirmatn, Tahoma, sans-serif';
-        ctx.fillText('هیچ تراکنشی در این دوره ثبت نشده است', width / 2 + 80, currentY + 28);
-        currentY += 44;
-      } else {
-        txs.forEach((tx, idx) => {
-          ctx.fillStyle = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
-          ctx.fillRect(35, currentY, width - 70, rowHeight);
-          ctx.strokeStyle = '#f1f5f9';
-          ctx.strokeRect(35, currentY, width - 70, rowHeight);
-          ctx.fillStyle = '#334155';
-          ctx.font = '12px Vazir, Vazirmatn, Tahoma, sans-serif';
-          ctx.fillText(String(toAppDigits(idx + 1)), width - 60, currentY + 26);
-          ctx.fillText(tx.title || 'تراکنش', width - 140, currentY + 26);
-          ctx.fillText(formatDateToNumericJalali(tx.dateStr), width - 420, currentY + 26);
-          const isRepay = tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
-          ctx.fillStyle = isRepay ? '#16a34a' : '#e11d48';
-          ctx.font = 'bold 12px Vazir, Vazirmatn, Tahoma, sans-serif';
-          ctx.fillText(formatAppNumber(Math.abs(tx.amount) || 0), width - 620, currentY + 26);
-          currentY += rowHeight;
-        });
-      }
-      const nowJalali = getDeviceJalaliDate();
-      const periodDateStr = formatDateToNumericJalali(`${nowJalali.day} ${nowJalali.month} ${nowJalali.year}`);
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '11px Vazir, Vazirmatn, Tahoma, sans-serif';
-      ctx.fillText(`تاریخ صدور: ${periodDateStr}    •    برنامه مدیریت مالی شخصی`, width - 35, currentY + 32);
-      const imageURI = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.download = `خروجی_تسویه_${isDebt ? 'بدهی' : 'طلب'}_${(period.contactName || '').replace(/\s+/g, '_')}.png`;
-      link.href = imageURI;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (err) {
-      console.error("Export Period PNG error:", err);
-    }
-  };
   const handleSetupNotification = optionVal => {
     if ('Notification' in window) {
       Notification.requestPermission().then(permission => {
@@ -9448,12 +9605,6 @@ function App() {
   };
   const handleStartEditingCard = card => {
     if (editingCardId !== null) return;
-
-    // 1. Immediately enter editing mode synchronously to preserve user gesture context for keyboard
-    startEditingCard(card);
-
-    // 2. Immediately focus the input on the user tap/click stack
-    focusCardElementInput(card.id);
     const container = editCardsContainerRef.current;
     const cardElem = document.getElementById(`sticky-card-${card.id}`);
     if (container && cardElem) {
@@ -9462,11 +9613,20 @@ function App() {
       const topOffset = cardIndex >= 0 ? cardIndex * 8 : 0;
       const targetScrollTop = Math.max(0, cardElem.offsetTop - topOffset);
 
-      // 3. Smoothly glide card to its docked position at the top of the stack
+      // 1. Smoothly glide card to its docked position at the top of the stack first
       container.scrollTo({
         top: targetScrollTop,
         behavior: 'smooth'
       });
+
+      // 2. After scroll animation finishes, activate editing and focus input
+      setTimeout(() => {
+        startEditingCard(card);
+        focusCardElementInput(card.id);
+      }, 280);
+    } else {
+      startEditingCard(card);
+      focusCardElementInput(card.id);
     }
   };
 
@@ -11488,7 +11648,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
-        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.2.9'))))), (() => {
+        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.3.0'))))), (() => {
           const loanReminders = loans.map(loan => {
             const nextDueInfo = getLoanNextDueInfo(loan, transactions);
             if (nextDueInfo.isCompleted) return null;
@@ -14906,7 +15066,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, toAppDigits(versionData.installedVersion || "3.2.9"))), /*#__PURE__*/
+        }, toAppDigits(versionData.installedVersion || "3.3.0"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
@@ -14916,7 +15076,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, toAppDigits(versionData.buildNumber || "462"))), versionData.releaseChannel && /*#__PURE__*/
+        }, toAppDigits(versionData.buildNumber || "490"))), versionData.releaseChannel && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(React.Fragment, null, /*#__PURE__*/
         /*#__PURE__*/
@@ -17042,8 +17202,8 @@ function App() {
     /*#__PURE__*/
     React.createElement("button", {
       onClick: () => {
-        exportPeriodAsPNG(period);
-        showToast('خروجی PNG دوره تسویه ساخته و دانلود شد');
+        exportPeriodAsPNG(period, contact);
+        showToast('خروجی PNG دوره تسویه با موفقیت دانلود شد');
       },
       className: "w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 space-x-reverse shadow-md transition-colors"
     }, /*#__PURE__*/
@@ -17907,6 +18067,13 @@ function App() {
     isDestructive: confirmConfig?.isDestructive,
     onConfirm: confirmConfig?.onConfirm,
     onCancel: confirmConfig?.onCancel || (() => setConfirmConfig(null))
+  }), /*#__PURE__*/
+  /*#__PURE__*/
+  React.createElement(VirtualNumericKeyboard, {
+    isOpen: showVirtualKeyboard,
+    onClose: handleCloseVirtualKeyboard,
+    onKeyPress: handleVirtualKeyPress,
+    isDark: isDark
   }));
 }
 function RootApp() {

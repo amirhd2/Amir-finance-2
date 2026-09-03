@@ -12,7 +12,7 @@ function updateVersionTags() {
   if (fs.existsSync(versionPath)) {
     try {
       const vData = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
-      const versionTag = `${vData.installedVersion || '3.2.9'}-b${vData.buildNumber || 462}`;
+      const versionTag = `${vData.installedVersion || '3.3.0'}-b${vData.buildNumber || 490}`;
 
       if (fs.existsSync(indexHtmlPath)) {
         let html = fs.readFileSync(indexHtmlPath, 'utf8');
@@ -30,21 +30,21 @@ function updateVersionTags() {
 
       if (fs.existsSync(gdriveJsPath)) {
         let gdrive = fs.readFileSync(gdriveJsPath, 'utf8');
-        gdrive = gdrive.replace(/version:\s*['"][^'"]*['"]/, `version: "${vData.installedVersion || '3.2.9'}"`);
+        gdrive = gdrive.replace(/version:\s*['"][^'"]*['"]/, `version: "${vData.installedVersion || '3.3.0'}"`);
         fs.writeFileSync(gdriveJsPath, gdrive, 'utf8');
-        console.log(`[compile-app] Updated gdrive.js version to ${vData.installedVersion || '3.2.9'}`);
+        console.log(`[compile-app] Updated gdrive.js version to ${vData.installedVersion || '3.3.0'}`);
       }
 
       if (fs.existsSync(appJsxPath)) {
         let jsx = fs.readFileSync(appJsxPath, 'utf8');
-        jsx = jsx.replace(/const EMBEDDED_BUILD = \d+;/, `const EMBEDDED_BUILD = ${vData.buildNumber || 462};`);
-        jsx = jsx.replace(/const EMBEDDED_VERSION = ['"][^'"]*['"];/, `const EMBEDDED_VERSION = "${vData.installedVersion || '3.2.9'}";`);
+        jsx = jsx.replace(/const EMBEDDED_BUILD = \d+;/, `const EMBEDDED_BUILD = ${vData.buildNumber || 490};`);
+        jsx = jsx.replace(/const EMBEDDED_VERSION = ['"][^'"]*['"];/, `const EMBEDDED_VERSION = "${vData.installedVersion || '3.3.0'}";`);
         
         // Update defaultVersionData installedVersion and buildNumber inside App.jsx
-        jsx = jsx.replace(/"installedVersion":\s*['"][^'"]*['"]/, `"installedVersion": "${vData.installedVersion || '3.2.9'}"`);
-        jsx = jsx.replace(/"buildNumber":\s*\d+/, `"buildNumber": ${vData.buildNumber || 462}`);
-        jsx = jsx.replace(/"latestVersion":\s*['"][^'"]*['"]/, `"latestVersion": "${vData.installedVersion || '3.2.9'}"`);
-        jsx = jsx.replace(/"latestBuild":\s*\d+/, `"latestBuild": ${vData.buildNumber || 462}`);
+        jsx = jsx.replace(/"installedVersion":\s*['"][^'"]*['"]/, `"installedVersion": "${vData.installedVersion || '3.3.0'}"`);
+        jsx = jsx.replace(/"buildNumber":\s*\d+/, `"buildNumber": ${vData.buildNumber || 490}`);
+        jsx = jsx.replace(/"latestVersion":\s*['"][^'"]*['"]/, `"latestVersion": "${vData.installedVersion || '3.3.0'}"`);
+        jsx = jsx.replace(/"latestBuild":\s*\d+/, `"latestBuild": ${vData.buildNumber || 490}`);
         
         fs.writeFileSync(appJsxPath, jsx, 'utf8');
         console.log(`[compile-app] Synchronized App.jsx constants with version ${vData.installedVersion} (Build ${vData.buildNumber})`);

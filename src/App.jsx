@@ -6794,12 +6794,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.0",
-    "buildNumber": 490,
+    "buildNumber": 493,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.0",
-    "latestBuild": 490,
+    "latestBuild": 493,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7116,20 +7116,20 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 479;
-    const EMBEDDED_VERSION = "3.2.9";
+    const EMBEDDED_BUILD = 493;
+    const EMBEDDED_VERSION = "3.3.0";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
     // If local build is missing or older than current running code bundle, synchronize it
-    if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD) {
+    if (!localBuildStr || parseInt(localBuildStr, 10) < EMBEDDED_BUILD || localVersion !== EMBEDDED_VERSION) {
       localStorage.setItem('amir_installed_build', EMBEDDED_BUILD.toString());
       localStorage.setItem('amir_installed_version', EMBEDDED_VERSION);
       localBuildStr = EMBEDDED_BUILD.toString();
       localVersion = EMBEDDED_VERSION;
     }
     const localBuild = Math.max(EMBEDDED_BUILD, parseInt(localBuildStr || '0', 10));
-    const activeVersion = localBuild > EMBEDDED_BUILD && localVersion ? localVersion : EMBEDDED_VERSION;
+    const activeVersion = localBuild >= EMBEDDED_BUILD ? EMBEDDED_VERSION : (localVersion || EMBEDDED_VERSION);
     try {
       const res = await fetch('version.json?t=' + Date.now(), {
         cache: 'no-store',
@@ -11713,7 +11713,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight mt-0.5"
-        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.2.9'))))), (() => {
+        }, "\u0646\u0633\u062E\u0647 ", toAppDigits(versionData.installedVersion || '3.3.0'))))), (() => {
           const loanReminders = loans.map(loan => {
             const nextDueInfo = getLoanNextDueInfo(loan, transactions);
             if (nextDueInfo.isCompleted) return null;
@@ -15131,7 +15131,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, toAppDigits(versionData.installedVersion || "3.2.9"))), /*#__PURE__*/
+        }, toAppDigits(versionData.installedVersion || "3.3.0"))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("span", {
           className: "w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
@@ -15141,7 +15141,7 @@ function App() {
         /*#__PURE__*/
         React.createElement("span", {
           className: "font-mono tracking-tight"
-        }, toAppDigits(versionData.buildNumber || "462"))), versionData.releaseChannel && /*#__PURE__*/
+        }, toAppDigits(versionData.buildNumber || "490"))), versionData.releaseChannel && /*#__PURE__*/
         /*#__PURE__*/
         React.createElement(React.Fragment, null, /*#__PURE__*/
         /*#__PURE__*/

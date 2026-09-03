@@ -299,7 +299,7 @@
   function getLocalBackupData() {
     return {
       appName: "Amir Finance",
-      version: "3.2.9",
+      version: "3.3.0",
       exportDate: new Date().toISOString(),
       contacts: JSON.parse(localStorage.getItem('amir_fin_contacts_v3') || '[]'),
       loans: JSON.parse(localStorage.getItem('amir_fin_loans_v3') || '[]'),

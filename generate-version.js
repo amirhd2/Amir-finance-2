@@ -4,7 +4,7 @@ import path from 'path';
 const versionPath = path.join(process.cwd(), 'version.json');
 const pkgPath = path.join(process.cwd(), 'package.json');
 
-let pkgVersion = '3.2.9';
+let pkgVersion = '3.3.0';
 if (fs.existsSync(pkgPath)) {
   try {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
@@ -13,6 +13,14 @@ if (fs.existsSync(pkgPath)) {
 }
 
 const CURRENT_CHANGELOG = {
+  "3.3.0": {
+    commitMessage: "feat: release version 3.3.0 with robust activity-driven Google Drive token renewal and smart numeric keyboard stability",
+    changes: [
+      "حل ریشه‌ای و دائمی مشکل انقضای توکن گوگل درایو پس از چند ساعت عدم فعالیت با مکانیسم تجدید خودکار پیش‌دستانه (Activity-Driven Token Renewal) در هنگام تعامل با صفحه و عملیات Pull-to-Refresh",
+      "رفع مشکل بسته شدن ناخواسته کیبورد عددی هوشمند هنگام تایپ و بهبود پایداری آن روی تمامی فیلدهای عددی، تلفن و شبا",
+      "انتشار رسمی نسخه ۳.۳.۰"
+    ]
+  },
   "3.2.9": {
     commitMessage: "feat: persistent google drive authentication with silent background token renewal, redesign google drive sync card in settings, fix delete-all-data confirmation dialog & database reset, release v3.2.9",
     changes: [

@@ -1,15 +1,28 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.2.9",
-  "buildNumber": 465,
-  "releaseDate": "2026-09-02",
+  "installedVersion": "3.3.0",
+  "buildNumber": 493,
+  "releaseDate": "2026-09-03",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.2.9",
-  "latestBuild": 465,
+  "latestVersion": "3.3.0",
+  "latestBuild": 493,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "3.3.0",
+      "buildNumber": 493,
+      "releaseDate": "2026-09-03",
+      "releaseChannel": "Stable",
+      "commitHash": "v330b493",
+      "commitMessage": "feat: release version 3.3.0 with robust activity-driven Google Drive token renewal and smart numeric keyboard stability",
+      "changes": [
+        "حل ریشه‌ای و دائمی مشکل انقضای توکن گوگل درایو پس از چند ساعت عدم فعالیت با مکانیسم تجدید خودکار پیش‌دستانه (Activity-Driven Token Renewal) در هنگام تعامل با صفحه و عملیات Pull-to-Refresh",
+        "رفع مشکل بسته شدن ناخواسته کیبورد عددی هوشمند هنگام تایپ و بهبود پایداری آن روی تمامی فیلدهای عددی، تلفن و شبا",
+        "انتشار رسمی نسخه ۳.۳.۰"
+      ]
+    },
     {
       "version": "3.2.9",
       "buildNumber": 465,

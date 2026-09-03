@@ -299,7 +299,7 @@
   function getLocalBackupData() {
     return {
       appName: "Amir Finance",
-      version: "3.2.9",
+      version: "3.3.0",
       exportDate: new Date().toISOString(),
       contacts: JSON.parse(localStorage.getItem('amir_fin_contacts_v3') || '[]'),
       loans: JSON.parse(localStorage.getItem('amir_fin_loans_v3') || '[]'),
@@ -685,5 +685,35 @@
 
   if (isConnected) {
     syncInterval = setInterval(autoSyncLoop, 15000);
+  }
+
+  // --- Proactive Activity-Driven Token Renewal ---
+  let lastActivityRenewal = 0;
+  function checkAndRenewTokenOnActivity() {
+    if (!isConnected) return;
+    const now = Date.now();
+    // Throttle to once every 30 seconds
+    if (now - lastActivityRenewal < 30000) return;
+
+    if (!accessToken || tokenExpiresAt <= now + 120000) {
+      lastActivityRenewal = now;
+      console.log('[GDrive] User activity or page focus detected and token expired/expiring soon. Triggering silent refresh...');
+      refreshTokenSilently().catch(err => {
+        console.warn('[GDrive] Activity-triggered silent refresh failed:', err);
+      });
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('touchstart', checkAndRenewTokenOnActivity, { passive: true });
+    window.addEventListener('pointerdown', checkAndRenewTokenOnActivity, { passive: true });
+    window.addEventListener('focus', () => {
+      checkAndRenewTokenOnActivity();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkAndRenewTokenOnActivity();
+      }
+    });
   }
 })();
