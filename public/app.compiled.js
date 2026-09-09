@@ -6528,24 +6528,25 @@ function VirtualNumericKeyboard({
     name: "check",
     className: "w-3.5 h-3.5"
   }), /*#__PURE__*/React.createElement("span", null, "\u062A\u0627\u06CC\u06CC\u062F")))), /*#__PURE__*/React.createElement("div", {
-    className: "grid grid-cols-3 gap-2 pt-1"
+    className: "grid grid-cols-3 gap-2 pt-1",
+    dir: "ltr"
   }, ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => /*#__PURE__*/React.createElement("button", {
     key: num,
     onClick: () => onKeyPress(num),
     className: `h-12 sm:h-13 rounded-2xl font-mono text-xl sm:text-2xl font-bold flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700/60' : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200/80'}`
   }, num)), /*#__PURE__*/React.createElement("button", {
-    onClick: () => onKeyPress('000'),
-    className: `h-12 sm:h-13 rounded-2xl font-mono text-base sm:text-lg font-bold flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-indigo-950/70 hover:bg-indigo-900/70 text-indigo-300 border border-indigo-800/50' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200'}`
-  }, "\u06F0\u06F0\u06F0"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => onKeyPress('0'),
-    className: `h-12 sm:h-13 rounded-2xl font-mono text-xl sm:text-2xl font-bold flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700/60' : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200/80'}`
-  }, "0"), /*#__PURE__*/React.createElement("button", {
     onClick: () => onKeyPress('backspace'),
     className: `h-12 sm:h-13 rounded-2xl flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-rose-400 border border-slate-700/60' : 'bg-slate-100 hover:bg-slate-200 text-rose-600 border border-slate-200/80'}`
   }, /*#__PURE__*/React.createElement(Icon, {
     name: "delete",
     className: "w-6 h-6"
-  }))))));
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onKeyPress('0'),
+    className: `h-12 sm:h-13 rounded-2xl font-mono text-xl sm:text-2xl font-bold flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700/60' : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200/80'}`
+  }, "0"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onKeyPress('000'),
+    className: `h-12 sm:h-13 rounded-2xl font-mono text-base sm:text-lg font-bold flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-sm ${isDark ? 'bg-indigo-950/70 hover:bg-indigo-900/70 text-indigo-300 border border-indigo-800/50' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200'}`
+  }, "000")))));
 }
 function App() {
   const [showVirtualKeyboard, setShowVirtualKeyboard] = useState(false);
@@ -6745,12 +6746,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.0",
-    "buildNumber": 491,
+    "buildNumber": 497,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.0",
-    "latestBuild": 491,
+    "latestBuild": 497,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7057,7 +7058,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 491;
+    const EMBEDDED_BUILD = 497;
     const EMBEDDED_VERSION = "3.3.0";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -9954,7 +9955,7 @@ function App() {
     /*#__PURE__*/
     React.createElement("input", {
       type: "text",
-      placeholder: ":     ",
+      placeholder: "مثال: وام مسکن یا ازدواج",
       value: loanForm.title,
       onChange: e => {
         const val = e.target.value;
@@ -10061,7 +10062,7 @@ function App() {
     React.createElement("input", {
       type: "text",
       inputMode: "numeric",
-      placeholder: ": ,,",
+      placeholder: "مبلغ را وارد کنید",
       value: formatWithCommas(loanForm.principalAmount),
       onChange: e => {
         const raw = parseRawNumber(e.target.value);
@@ -10079,7 +10080,7 @@ function App() {
           });
         }
       },
-      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.principal_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500/80 placeholder:font-normal placeholder:text-sm focus:outline-none transition-all ${validationErrors.principal_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
     }), validationErrors.principal_amount && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
@@ -10120,7 +10121,7 @@ function App() {
     React.createElement("input", {
       type: "text",
       inputMode: "numeric",
-      placeholder: ": ,,",
+      placeholder: "مبلغ را وارد کنید",
       value: formatWithCommas(loanForm.totalRepayment),
       onChange: e => {
         const raw = parseRawNumber(e.target.value);
@@ -10138,7 +10139,7 @@ function App() {
           });
         }
       },
-      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.total_repayment ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500/80 placeholder:font-normal placeholder:text-sm focus:outline-none transition-all ${validationErrors.total_repayment ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
     }), validationErrors.total_repayment && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
@@ -10179,7 +10180,7 @@ function App() {
     React.createElement("input", {
       type: "text",
       inputMode: "numeric",
-      placeholder: ": ,,",
+      placeholder: "مبلغ را وارد کنید",
       value: formatWithCommas(loanForm.installmentAmount),
       onChange: e => {
         const raw = parseRawNumber(e.target.value);
@@ -10197,7 +10198,7 @@ function App() {
           });
         }
       },
-      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.installment_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500/80 placeholder:font-normal placeholder:text-sm focus:outline-none transition-all ${validationErrors.installment_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
     }), validationErrors.installment_amount && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
@@ -10594,7 +10595,7 @@ function App() {
     React.createElement("input", {
       type: "text",
       inputMode: "numeric",
-      placeholder: ": ,,",
+      placeholder: "مبلغ را وارد کنید",
       value: formatWithCommas(demandDebtForm.amount),
       onChange: e => {
         const raw = parseRawNumber(e.target.value);
@@ -10612,7 +10613,7 @@ function App() {
           });
         }
       },
-      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.demand_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500/80 placeholder:font-normal placeholder:text-sm focus:outline-none transition-all ${validationErrors.demand_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
     }), validationErrors.demand_amount && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
@@ -10721,7 +10722,7 @@ function App() {
     React.createElement("input", {
       type: "text",
       inputMode: "numeric",
-      placeholder: ": ,,",
+      placeholder: "مبلغ را وارد کنید",
       value: formatWithCommas(demandDebtForm.amount),
       onChange: e => {
         const raw = parseRawNumber(e.target.value);
@@ -10739,7 +10740,7 @@ function App() {
           });
         }
       },
-      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.debt_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+      className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500/80 placeholder:font-normal placeholder:text-sm focus:outline-none transition-all ${validationErrors.debt_amount ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
     }), validationErrors.debt_amount && /*#__PURE__*/
     /*#__PURE__*/
     React.createElement("p", {
@@ -10882,6 +10883,7 @@ function App() {
       React.createElement("input", {
         type: "text",
         inputMode: "numeric",
+        placeholder: "مبلغ را وارد کنید",
         value: formatWithCommas(installmentForm.amount),
         onChange: e => {
           const raw = parseRawNumber(e.target.value);
@@ -10899,7 +10901,7 @@ function App() {
             });
           }
         },
-        className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.inst_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+        className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500/80 placeholder:font-normal placeholder:text-sm focus:outline-none transition-all ${validationErrors.inst_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
       }), validationErrors.inst_amount && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("p", {
@@ -11022,7 +11024,7 @@ function App() {
       React.createElement("input", {
         type: "text",
         inputMode: "numeric",
-        placeholder: ": ,",
+        placeholder: "مبلغ را وارد کنید",
         value: formatWithCommas(repaymentForm.amount),
         onChange: e => {
           const raw = parseRawNumber(e.target.value);
@@ -11040,7 +11042,7 @@ function App() {
             });
           }
         },
-        className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.debt_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+        className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500/80 placeholder:font-normal placeholder:text-sm focus:outline-none transition-all ${validationErrors.debt_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
       }), validationErrors.debt_repay_amount && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("p", {
@@ -11182,7 +11184,7 @@ function App() {
       React.createElement("input", {
         type: "text",
         inputMode: "numeric",
-        placeholder: ": ,,",
+        placeholder: "مبلغ را وارد کنید",
         value: formatWithCommas(repaymentForm.amount),
         onChange: e => {
           const raw = parseRawNumber(e.target.value);
@@ -11200,7 +11202,7 @@ function App() {
             });
           }
         },
-        className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white focus:outline-none transition-all ${validationErrors.demand_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
+        className: `w-full font-mono text-lg font-bold bg-[#F4F7FC] dark:bg-slate-900 border rounded-xl p-3 text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500/80 placeholder:font-normal placeholder:text-sm focus:outline-none transition-all ${validationErrors.demand_repay_amount || isOver ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700'}`
       }), validationErrors.demand_repay_amount && /*#__PURE__*/
       /*#__PURE__*/
       React.createElement("p", {
