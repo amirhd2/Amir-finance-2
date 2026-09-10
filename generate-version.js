@@ -13,6 +13,15 @@ if (fs.existsSync(pkgPath)) {
 }
 
 const CURRENT_CHANGELOG = {
+  "3.3.1": {
+    commitMessage: "feat: redesign virtual numeric keyboard header with symmetrical action buttons and release version 3.3.1",
+    changes: [
+      "حذف عنوان و آیکون هدر کیبورد عددی هوشمند جهت خلوت‌سازی و زیبایی بصری رابط کاربری",
+      "انتقال دکمه پاک کردن به سمت چپ کیبورد و متقارن‌سازی با دکمه تایید",
+      "یکسان‌سازی دقیق اندازه عرض و استایل دکمه‌های تایید و پاک کردن",
+      "انتشار رسمی نسخه ۳.۳.۱"
+    ]
+  },
   "3.3.0": {
     commitMessage: "feat: release version 3.3.0 with robust activity-driven Google Drive token renewal and smart numeric keyboard stability",
     changes: [

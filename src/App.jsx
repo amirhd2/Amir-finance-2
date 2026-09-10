@@ -6502,25 +6502,22 @@ function VirtualNumericKeyboard({ isOpen, onClose, onKeyPress, isDark }) {
             dir="rtl"
           >
             <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-800/80 px-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
-                <Icon name="hash" className="w-4 h-4 text-indigo-500" />
-                <span>کیبورد عددی هوشمند</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => onKeyPress('clear')}
-                  className="px-2.5 py-1 text-xs font-bold rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/25 active:scale-95 transition-all cursor-pointer"
-                >
-                  پاک کردن کل
-                </button>
-                <button
-                  onClick={onClose}
-                  className="flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer shadow-md shadow-indigo-500/20"
-                >
-                  <Icon name="check" className="w-3.5 h-3.5" />
-                  <span>تایید</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-28 sm:w-32 py-1.5 px-3 flex items-center justify-center gap-1.5 text-xs font-bold rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer shadow-md shadow-indigo-500/20 whitespace-nowrap"
+              >
+                <Icon name="check" className="w-3.5 h-3.5" />
+                <span>تایید</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onKeyPress('clear')}
+                className="w-28 sm:w-32 py-1.5 px-3 flex items-center justify-center gap-1.5 text-xs font-bold rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 active:scale-95 transition-all cursor-pointer border border-rose-200/60 dark:border-rose-900/40 whitespace-nowrap"
+              >
+                <Icon name="delete" className="w-3.5 h-3.5" />
+                <span>پاک کردن</span>
+              </button>
             </div>
             <div className="grid grid-cols-3 gap-2 pt-1" dir="ltr">
               {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => (
