@@ -70,7 +70,7 @@ function syncPublicFiles() {
     'web-app-manifest-192x192.png', 'web-app-manifest-512x512.png',
     'maskable-icon-512x512.png', 'splash-portrait.png', 'splash-landscape.png',
     'splash-portrait.jpg', 'splash-landscape.jpg',
-    'app.compiled.js', 'gdrive.js'
+    'app.compiled.js', 'gdrive.js', 'fcm-client.js', 'firebase-messaging-sw.js'
   ];
 
   for (const file of filesToCopy) {

@@ -1,15 +1,29 @@
 {
   "appName": "Amir Finance",
   "appLogo": "apple-touch-icon.png",
-  "installedVersion": "3.3.0",
-  "buildNumber": 498,
-  "releaseDate": "2026-09-09",
+  "installedVersion": "3.3.1",
+  "buildNumber": 502,
+  "releaseDate": "2026-09-14",
   "releaseChannel": "Stable",
   "channelLabel": "نسخه پایدار",
-  "latestVersion": "3.3.0",
-  "latestBuild": 498,
+  "latestVersion": "3.3.1",
+  "latestBuild": 502,
   "isUpdateAvailable": false,
   "history": [
+    {
+      "version": "3.3.1",
+      "buildNumber": 502,
+      "releaseDate": "2026-09-14",
+      "releaseChannel": "Stable",
+      "commitHash": "v331b502",
+      "commitMessage": "feat: redesign virtual numeric keyboard header with symmetrical action buttons and release version 3.3.1",
+      "changes": [
+        "حذف عنوان و آیکون هدر کیبورد عددی هوشمند جهت خلوت‌سازی و زیبایی بصری رابط کاربری",
+        "انتقال دکمه پاک کردن به سمت چپ کیبورد و متقارن‌سازی با دکمه تایید",
+        "یکسان‌سازی دقیق اندازه عرض و استایل دکمه‌های تایید و پاک کردن",
+        "انتشار رسمی نسخه ۳.۳.۱"
+      ]
+    },
     {
       "version": "3.3.0",
       "buildNumber": 498,

@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "express": "^4.19.2",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.4.0",
     "jpeg-js": "^0.4.4",
+    "node-cron": "^4.6.0",
     "pngjs": "^7.0.0"
   },
   "devDependencies": {

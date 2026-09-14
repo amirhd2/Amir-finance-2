@@ -1,30 +1,28 @@
 const fs = require('fs');
-let text = fs.readFileSync('src/App.jsx', 'utf-8');
 
-const startIdx = text.indexOf('{/*#__PURE__*/<GDriveSyncButton');
-const endIdx = text.indexOf('/>}', startIdx) + 3;
+let content = fs.readFileSync('gdrive.js', 'utf8');
 
-if (startIdx !== -1) {
-    const btnText = text.substring(startIdx, endIdx - 1); // remove the trailing } from `/>}`
-    // wait, `btnText` is `{/*#__PURE__*/<GDriveSyncButton ... />`
-    
-    // The problem area:
-    // ...</div>}</div>}</div>{/*#__PURE__*/<GDriveSyncButton ... />}}{(() => {
-    
-    // We will extract it completely first:
-    const toRemove = text.substring(startIdx, endIdx + 1); // up to the extra }
-    text = text.substring(0, startIdx) + text.substring(endIdx + 1);
-    
-    // Now the text is: ...</div>}</div>}</div>{(() => {
-    // We want to insert `btnText` (which is just `{/*...*/<... />}`) BEFORE `{(() => {`
-    // And actually it needs to be inside the parent JSX tree, which is a `<div className="space-y-3">`.
-    // Wait, `{(() => {` is an expression. `{btnText}` is an expression if we wrap it in braces? No, `<GDriveSyncButton />` is a JSX element. Since it's inside `<div>`, we can just write `{/*...*/<GDriveSyncButton />}`
-    
-    const insertIdx = text.indexOf('{(() => {', startIdx - 10);
-    const newInject = btnText + '}'; // Wait, btnText starts with `{`, so we add `}` at the end to make it a valid JSX expression.
-    
-    text = text.substring(0, insertIdx) + newInject + text.substring(insertIdx);
-    
-    fs.writeFileSync('src/App.jsx', text, 'utf-8');
-    console.log("Fixed successfully!");
-}
+// Update executeSync to set local sync time when up to date and user initiated
+const upToDateTarget = `      // 5. Already synchronized
+      isSyncing = false;
+      syncStatus = 'success';
+      notifyListeners();
+      return { success: true, action: 'up_to_date' };`;
+
+const upToDateReplacement = `      // 5. Already synchronized
+      if (isUserInitiated) {
+        originalSetItem.call(localStorage, 'amir_fin_gdrive_sync_time', new Date().toISOString());
+      }
+      isSyncing = false;
+      syncStatus = 'success';
+      notifyListeners();
+      return { success: true, action: 'up_to_date' };`;
+
+content = content.replace(upToDateTarget, upToDateReplacement);
+
+// Fix the prompt issue: use empty prompt instead of 'select_account' 
+// to allow auto-login flash instead of forcing user to pick account every time.
+content = content.replace(/prompt: 'select_account'/g, `prompt: ''`);
+
+fs.writeFileSync('gdrive.js', content);
+console.log("Patched gdrive.js");

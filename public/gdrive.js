@@ -504,6 +504,9 @@
       }
 
       // 5. Already synchronized
+      if (isUserInitiated) {
+        originalSetItem.call(localStorage, 'amir_fin_gdrive_sync_time', new Date().toISOString());
+      }
       isSyncing = false;
       syncStatus = 'success';
       notifyListeners();
@@ -573,7 +576,7 @@
       }
       if (tokenClient) {
         try {
-          tokenClient.requestAccessToken({ prompt: 'select_account' });
+          tokenClient.requestAccessToken({ prompt: '' });
         } catch (e) {
           console.error('[GDrive] requestAccessToken error:', e);
           if (typeof window.showAppToast === 'function') {
@@ -584,7 +587,7 @@
         setTimeout(() => {
           if (!tokenClient) initGIS();
           if (tokenClient) {
-            tokenClient.requestAccessToken({ prompt: 'select_account' });
+            tokenClient.requestAccessToken({ prompt: '' });
           } else {
             console.warn('[GDrive] Google Identity Services script not yet loaded.');
             if (typeof window.showAppToast === 'function') {

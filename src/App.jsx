@@ -6785,13 +6785,13 @@ function App() {
   const defaultVersionData = {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
-    "installedVersion": "3.3.0",
-    "buildNumber": 499,
+    "installedVersion": "3.3.1",
+    "buildNumber": 502,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
-    "latestVersion": "3.3.0",
-    "latestBuild": 499,
+    "latestVersion": "3.3.1",
+    "latestBuild": 502,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7108,8 +7108,8 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 499;
-    const EMBEDDED_VERSION = "3.3.0";
+    const EMBEDDED_BUILD = 502;
+    const EMBEDDED_VERSION = "3.3.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
 
@@ -7532,6 +7532,27 @@ function App() {
   const [contacts, setContacts] = useState(() => loadSavedArray('amir_fin_contacts_v3', ['amir_fin_contacts_v2', 'amir_fin_contacts'], initialContacts));
   const [loans, setLoans] = useState(() => loadSavedArray('amir_fin_loans_v3', ['amir_fin_loans_v2', 'amir_fin_loans'], initialLoans));
   const [transactions, setTransactions] = useState(() => loadSavedArray('amir_fin_txs_v3', ['amir_fin_txs_v2', 'amir_fin_tx'], initialTransactions));
+
+  // --- Start: FCM Push Notification Reminders Sync ---
+  useEffect(() => {
+    try {
+      const syncPayload = loans.map(loan => {
+        const info = getLoanNextDueInfo(loan, transactions);
+        return {
+          id: loan.id,
+          name: loan.name,
+          targetName: loan.targetName || '',
+          nextDueDateStr: info.nextDueDateStr,
+          isCompleted: info.isCompleted,
+          nextDueNum: info.nextDueNum
+        };
+      });
+      localStorage.setItem('amir_fin_fcm_reminders', JSON.stringify(syncPayload));
+      window.dispatchEvent(new Event('amir_fin_reminders_updated'));
+    } catch (e) { console.error('Reminders sync error:', e); }
+  }, [loans, transactions]);
+  // --- End: FCM Push Notification Reminders Sync ---
+
 
   // Backup Status & Unsaved Changes Tracking State
   const initialBackupStatus = (() => {
@@ -15487,7 +15508,51 @@ function App() {
         /*#__PURE__*/
         React.createElement("div", {
           className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableDailyAlerts ? '-translate-x-5' : 'translate-x-0'}`
-        })))))), /*#__PURE__*/
+        }))), /*#__PURE__*/
+        /*#__PURE__*/
+        React.createElement("div", {
+          className: "flex items-start gap-3 p-3 bg-purple-50/50 dark:bg-purple-900/20 rounded-2xl border border-purple-100 dark:border-purple-800/50 mt-2"
+        },
+          React.createElement("div", {
+            className: "w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center flex-shrink-0 border border-purple-200 dark:border-purple-800/50"
+          },
+            React.createElement(Icon, {
+              name: "bell",
+              className: "w-4.5 h-4.5 text-purple-600 dark:text-purple-400"
+            })
+          ),
+          React.createElement("div", {
+            className: "text-right min-w-0 flex-1 space-y-1"
+          },
+            React.createElement("p", {
+              className: "text-xs font-bold text-slate-900 dark:text-white"
+            }, "اعلان هوشمند اقساط (Push)"),
+            React.createElement("p", {
+              className: "text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mb-2"
+            }, "با فعال‌سازی این بخش، موعد اقساط به صورت نوتیفیکیشن روی گوشی شما یادآوری می‌شود."),
+            React.createElement("button", {
+              type: "button",
+              onClick: async () => {
+                if (window.requestNotificationPermission) {
+                  const token = await window.requestNotificationPermission();
+                  if (token) {
+                    if (typeof window.showToast === 'function') window.showToast('اعلان‌ها با موفقیت فعال شدند');
+                    else alert('اعلان‌ها با موفقیت فعال شدند');
+                  } else {
+                    if (typeof window.showToast === 'function') window.showToast('دسترسی اعلان رد شد یا خطایی رخ داد');
+                    else alert('دسترسی اعلان رد شد یا خطایی رخ داد');
+                  }
+                } else {
+                  alert('امکان فعال‌سازی اعلان در این نسخه پشتیبانی نمی‌شود');
+                }
+              },
+              className: "w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer mt-1.5"
+            },
+              "فعال‌سازی اعلان‌ها"
+            )
+          )
+        )
+        ))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           onClick: () => toggleSettingsSection('data'),

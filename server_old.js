@@ -132,6 +132,18 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('*', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.sendFile(path.join(rootPath, 'index.html'));
+});
+
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
+});
+
+
 
 import admin from 'firebase-admin';
 
@@ -166,6 +178,7 @@ app.get('/api/send-reminders', async (req, res) => {
 
     let messagesSent = 0;
     
+    // Use native JS Intl for Persian date formatting
     const todayJalaliFormatter = new Intl.DateTimeFormat('en-US-u-ca-persian', { year: 'numeric', month: '2-digit', day: '2-digit' });
     const todayParts = todayJalaliFormatter.formatToParts(new Date());
     let jYear, jMonth, jDay;
@@ -174,7 +187,7 @@ app.get('/api/send-reminders', async (req, res) => {
         if (p.type === 'month') jMonth = p.value;
         if (p.type === 'day') jDay = p.value;
     });
-    const todayStr = `${jYear}/${jMonth}/${jDay}`; 
+    const todayStr = `${jYear}/${jMonth}/${jDay}`; // Expected format: 1403/06/25
 
     for (const doc of snapshot.docs) {
       const data = doc.data();
@@ -210,15 +223,3 @@ app.get('/api/send-reminders', async (req, res) => {
     res.status(500).json({ error: "Server error executing reminders." });
   }
 });
-
-app.get('*', (req, res) => {
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.sendFile(path.join(rootPath, 'index.html'));
-});
-
-app.listen(PORT, HOST, () => {
-  console.log(`Server running on http://${HOST}:${PORT}`);
-});
-

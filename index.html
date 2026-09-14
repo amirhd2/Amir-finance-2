@@ -854,6 +854,7 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="gdrive.js"></script>
+  <script type="module" src="./fcm-client.js"></script>
 </head>
 <body class="bg-[#F4F7FC] dark:bg-slate-950 text-slate-800 dark:text-slate-100 w-full h-full flex flex-col p-0 m-0 overflow-hidden">
     <!-- Instant HTML Splash Screen overlay for zero-delay startup in Preview & PWA -->
@@ -894,7 +895,7 @@
     <div id="root" class="w-full h-full flex-1 bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col border-none shadow-none m-0 p-0"></div>
 
     <!-- Production Pre-compiled React Script for Instant Zero-Delay Boot -->
-    <script src="app.compiled.js?v=3.3.1-b499"></script>
+    <script src="app.compiled.js?v=3.3.1-b502"></script>
 
     <!-- Fail-safe PWA / Standalone Execution & Auto-Recovery Script -->
     <script>
