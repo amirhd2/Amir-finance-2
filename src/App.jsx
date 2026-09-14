@@ -6786,12 +6786,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.1",
-    "buildNumber": 502,
+    "buildNumber": 503,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.1",
-    "latestBuild": 502,
+    "latestBuild": 503,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7108,7 +7108,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 502;
+    const EMBEDDED_BUILD = 503;
     const EMBEDDED_VERSION = "3.3.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -15536,14 +15536,12 @@ function App() {
                 if (window.requestNotificationPermission) {
                   const token = await window.requestNotificationPermission();
                   if (token) {
-                    if (typeof window.showToast === 'function') window.showToast('اعلان‌ها با موفقیت فعال شدند');
-                    else alert('اعلان‌ها با موفقیت فعال شدند');
+                    showToast('اعلان‌ها با موفقیت فعال شدند');
                   } else {
-                    if (typeof window.showToast === 'function') window.showToast('دسترسی اعلان رد شد یا خطایی رخ داد');
-                    else alert('دسترسی اعلان رد شد یا خطایی رخ داد');
+                    showToast('دسترسی اعلان رد شد یا خطایی رخ داد');
                   }
                 } else {
-                  alert('امکان فعال‌سازی اعلان در این نسخه پشتیبانی نمی‌شود');
+                  showToast('امکان فعال‌سازی اعلان در این نسخه پشتیبانی نمی‌شود');
                 }
               },
               className: "w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer mt-1.5"

@@ -21,6 +21,10 @@ let fcmToken = null;
 
 export async function requestNotificationPermission() {
   try {
+    if (!('Notification' in window)) {
+      alert('مرورگر شما از اعلان‌ها پشتیبانی نمی‌کند. اگر کاربر آیفون هستید، ابتدا باید برنامه را از طریق منوی Share به صفحه اصلی (Add to Home Screen) اضافه کنید.');
+      return null;
+    }
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
       console.log('Notification permission granted.');
@@ -28,7 +32,8 @@ export async function requestNotificationPermission() {
         console.warn('VAPID_KEY is not set. Push notifications require a VAPID key from Firebase Console.');
         return null;
       }
-      fcmToken = await getToken(messaging, { vapidKey: VAPID_KEY });
+      const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      fcmToken = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
       console.log('FCM Token:', fcmToken);
       await syncRemindersToFirestore();
       return fcmToken;
@@ -38,6 +43,7 @@ export async function requestNotificationPermission() {
     }
   } catch (error) {
     console.error('Error requesting notification permission:', error);
+    alert('خطا در ارتباط با سرور اعلان: ' + error.message);
     return null;
   }
 }
