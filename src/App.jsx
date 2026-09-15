@@ -675,6 +675,52 @@ const drawCanvasText = (ctx, text, x, y, maxWidth, align = 'right') => {
   ctx.fillText(str + '...', x, y);
 };
 
+const shareOrDownloadCanvasPng = (canvas, fileName, shareTitle) => {
+  if (!canvas) return;
+  const triggerFallbackDownload = () => {
+    try {
+      const imageURI = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = imageURI;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) {
+      console.warn('Fallback download PNG failed:', e);
+    }
+  };
+
+  if (typeof canvas.toBlob === 'function') {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        triggerFallbackDownload();
+        return;
+      }
+      let file = null;
+      try {
+        file = new File([blob], fileName, { type: 'image/png' });
+      } catch (e) {
+        file = null;
+      }
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: shareTitle || 'تصویر گزارش',
+        }).catch(err => {
+          if (err && (err.name === 'AbortError' || err.message?.toLowerCase().includes('abort'))) return;
+          console.warn('Share PNG failed, falling back to download:', err);
+          triggerFallbackDownload();
+        });
+        return;
+      }
+      triggerFallbackDownload();
+    }, 'image/png');
+    return;
+  }
+  triggerFallbackDownload();
+};
+
 const exportLoanAsPNG = (loan, txList) => {
   if (!loan) return;
   try {
@@ -808,13 +854,8 @@ const exportLoanAsPNG = (loan, txList) => {
     ctx.font = '11px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText(`تاریخ صدور گزارش: ${reportDateStr}    •    برنامه مدیریت مالی شخصی`, width - 35, currentY + 30);
-    const imageURI = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.download = `پرونده_وام_${(loan.title || 'وام').replace(/\s+/g, '_')}.png`;
-    link.href = imageURI;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const pngFileName = `پرونده_وام_${(loan.title || 'وام').replace(/\s+/g, '_')}.png`;
+    shareOrDownloadCanvasPng(canvas, pngFileName, `پرونده وام ${loan.title || ''}`);
   } catch (err) {
     console.error("Export PNG error:", err);
   }
@@ -951,13 +992,8 @@ const exportPeriodAsPNG = (period, contact) => {
     ctx.font = '11px Vazir, Vazirmatn, Tahoma, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText(`تاریخ صدور گزارش: ${reportDateStr}    •    برنامه مدیریت مالی شخصی`, width - 35, currentY + 30);
-    const imageURI = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.download = `تسویه‌حساب_${isDebt ? 'بدهی' : 'طلب'}_${contactName.replace(/\s+/g, '_')}_${period.id || 'export'}.png`;
-    link.href = imageURI;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const pngFileName = `تسویه‌حساب_${isDebt ? 'بدهی' : 'طلب'}_${contactName.replace(/\s+/g, '_')}_${period.id || 'export'}.png`;
+    shareOrDownloadCanvasPng(canvas, pngFileName, `تسویه‌حساب ${isDebt ? 'بدهی' : 'طلب'} - ${contactName}`);
   } catch (err) {
     console.error("Export Period PNG error:", err);
   }
@@ -6820,12 +6856,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.1",
-    "buildNumber": 508,
+    "buildNumber": 511,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.1",
-    "latestBuild": 508,
+    "latestBuild": 511,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7142,7 +7178,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 508;
+    const EMBEDDED_BUILD = 511;
     const EMBEDDED_VERSION = "3.3.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -17226,10 +17262,10 @@ function App() {
           fullPeriod.transactions = transactions.filter(t => String(t.periodId) === String(targetData?.id));
         }
         exportPeriodAsExcel(fullPeriod, periodContact);
-        showToast('خروجی اکسل با موفقیت دانلود شد');
+        showToast('خروجی اکسل با موفقیت آماده شد');
       } else {
         exportLoanToCSV(targetData, transactions);
-        showToast('خروجی اکسل وام با موفقیت دانلود شد');
+        showToast('خروجی اکسل وام با موفقیت آماده شد');
       }
       setExportModalConfig(null);
       setShowExportModal(false);
@@ -17279,10 +17315,10 @@ function App() {
           fullPeriod.transactions = transactions.filter(t => String(t.periodId) === String(targetData?.id));
         }
         exportPeriodAsPNG(fullPeriod, periodContact);
-        showToast('خروجی تصویر باکیفیت با موفقیت دانلود شد');
+        showToast('خروجی تصویر با موفقیت آماده شد');
       } else {
         exportLoanAsPNG(targetData, transactions);
-        showToast('خروجی تصویر باکیفیت وام با موفقیت دانلود شد');
+        showToast('خروجی تصویر وام با موفقیت آماده شد');
       }
       setExportModalConfig(null);
       setShowExportModal(false);
@@ -17437,7 +17473,7 @@ function App() {
     React.createElement("button", {
       onClick: () => {
         exportPeriodAsPNG(period, contact);
-        showToast('خروجی PNG دوره تسویه با موفقیت دانلود شد');
+        showToast('خروجی تصویر دوره تسویه با موفقیت آماده شد');
       },
       className: "w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 space-x-reverse shadow-md transition-colors"
     }, /*#__PURE__*/
