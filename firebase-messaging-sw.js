@@ -13,10 +13,30 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  const notificationTitle = payload.notification?.title || 'یادآوری امیر فایننس';
+  const notificationTitle = payload.notification?.title || payload.data?.title || 'یادآوری امیر فایننس';
   const notificationOptions = {
-    body: payload.notification?.body,
-    icon: '/icon-192x192.png'
+    body: payload.notification?.body || payload.data?.body || 'موعد قسط وام یا سررسید حساب شما فرا رسیده است.',
+    icon: './icon-192x192.png',
+    badge: './favicon-96x96.png',
+    data: payload.data || {},
+    tag: 'loan-reminder-' + Date.now(),
+    renotify: true
   };
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('./');
+      }
+    })
+  );
 });

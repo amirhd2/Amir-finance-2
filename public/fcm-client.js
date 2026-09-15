@@ -32,11 +32,49 @@ export async function requestNotificationPermission() {
         console.warn('VAPID_KEY is not set. Push notifications require a VAPID key from Firebase Console.');
         return null;
       }
-      const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-      fcmToken = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
-      console.log('FCM Token:', fcmToken);
-      await syncRemindersToFirestore();
-      return fcmToken;
+    // Step 1: Find or ensure the active service worker registration
+    let reg = null;
+    try {
+      reg = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+      ]);
+    } catch (e) {
+      console.warn('[FCM] serviceWorker.ready wait error or timeout:', e);
+    }
+
+    if (!reg) {
+      try {
+        reg = await navigator.serviceWorker.getRegistration();
+      } catch (e) {
+        console.warn('[FCM] getRegistration error:', e);
+      }
+    }
+
+    if (!reg) {
+      // Register relative sw.js so it works on GitHub Pages subpaths as well
+      const swUrl = new URL('./sw.js', window.location.href).href;
+      reg = await navigator.serviceWorker.register(swUrl);
+      if (reg.installing || reg.waiting) {
+        await new Promise((resolve) => {
+          const worker = reg.installing || reg.waiting;
+          if (!worker || worker.state === 'activated') return resolve();
+          worker.addEventListener('statechange', () => {
+            if (worker.state === 'activated') resolve();
+          });
+          setTimeout(resolve, 2500);
+        });
+      }
+    }
+
+    // Step 2: Get FCM token using the active service worker
+    fcmToken = await getToken(messaging, { 
+      vapidKey: VAPID_KEY, 
+      serviceWorkerRegistration: reg 
+    });
+    console.log('FCM Token:', fcmToken);
+    await syncRemindersToFirestore();
+    return fcmToken;
     } else {
       console.log('Unable to get permission to notify.');
       return null;

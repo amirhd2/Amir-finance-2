@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amir-finance-v3.3.1-b503';
+const CACHE_NAME = 'amir-finance-v3.3.1-b505';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -24,6 +24,8 @@ const ASSETS_TO_CACHE = [
   './web-app-manifest-512x512.png',
   './splash-portrait.png',
   './splash-landscape.png',
+  './fcm-client.js',
+  './firebase-messaging-sw.js',
 
   // Local Offline Vendor Dependencies
   './vendor/material-symbols.css',
@@ -173,6 +175,85 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+});
+
+// --- Firebase Cloud Messaging (FCM) Background Push Notifications ---
+let fcmInitialized = false;
+try {
+  importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js');
+  importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging-compat.js');
+
+  const firebaseConfig = {
+    projectId: "gen-lang-client-0095210864",
+    apiKey: "AIzaSyDCxwfdom8Uwe5Q0C-EH7pAYNQN3B9c5gY",
+    appId: "1:759840178251:web:139a44353950e56ae34dce",
+    messagingSenderId: "759840178251"
+  };
+
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+    messaging.onBackgroundMessage((payload) => {
+      console.log('[sw.js] Received FCM background message:', payload);
+      const title = payload.notification?.title || payload.data?.title || 'یادآوری امیر فایننس';
+      const body = payload.notification?.body || payload.data?.body || 'موعد قسط وام یا سررسید حساب شما فرا رسیده است.';
+      return self.registration.showNotification(title, {
+        body: body,
+        icon: './icon-192x192.png',
+        badge: './favicon-96x96.png',
+        data: payload.data || {},
+        tag: 'loan-reminder-' + Date.now(),
+        renotify: true
+      });
+    });
+    fcmInitialized = true;
+  }
+} catch (fcmErr) {
+  console.warn('[sw.js] FCM compat scripts load warning (normal if offline):', fcmErr);
+}
+
+// Fallback push event handler if FCM compat script could not be loaded
+if (!fcmInitialized) {
+  self.addEventListener('push', (event) => {
+    let title = 'یادآوری امیر فایننس';
+    let body = 'موعد قسط وام یا سررسید حساب شما فرا رسیده است.';
+    let data = {};
+    if (event.data) {
+      try {
+        const parsed = event.data.json();
+        title = parsed.notification?.title || parsed.title || title;
+        body = parsed.notification?.body || parsed.body || body;
+        data = parsed;
+      } catch (e) {
+        body = event.data.text() || body;
+      }
+    }
+    event.waitUntil(
+      self.registration.showNotification(title, {
+        body: body,
+        icon: './icon-192x192.png',
+        badge: './favicon-96x96.png',
+        data: data
+      })
+    );
+  });
+}
+
+// Focus or open app on notification click
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('./');
+      }
+    })
+  );
 });
 
 
