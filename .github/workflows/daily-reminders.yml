@@ -1,0 +1,27 @@
+name: Daily Loan Reminders
+
+on:
+  schedule:
+    # Runs at 06:30 UTC every day (which corresponds to 10:00 AM Iran Standard Time UTC+3:30)
+    - cron: '30 6 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  send-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install firebase-admin --no-audit --no-fund
+
+      - name: Execute Daily Reminder Check
+        env:
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+        run: node scripts/send-reminders.js

@@ -6819,12 +6819,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.1",
-    "buildNumber": 510,
+    "buildNumber": 513,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.1",
-    "latestBuild": 510,
+    "latestBuild": 513,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7131,7 +7131,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 510;
+    const EMBEDDED_BUILD = 513;
     const EMBEDDED_VERSION = "3.3.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -7558,14 +7558,14 @@ function App() {
   const [loans, setLoans] = useState(() => loadSavedArray('amir_fin_loans_v3', ['amir_fin_loans_v2', 'amir_fin_loans'], initialLoans));
   const [transactions, setTransactions] = useState(() => loadSavedArray('amir_fin_txs_v3', ['amir_fin_txs_v2', 'amir_fin_tx'], initialTransactions));
 
-  // --- Start: FCM Push Notification Reminders Sync ---
+  // --- Start: FCM Push Notification Reminders Sync & Client-Side Trigger ---
   useEffect(() => {
     try {
       const syncPayload = loans.map(loan => {
         const info = getLoanNextDueInfo(loan, transactions);
         return {
           id: loan.id,
-          name: loan.name,
+          name: loan.title || loan.name || 'وام',
           targetName: loan.targetName || '',
           nextDueDateStr: info.nextDueDateStr,
           isCompleted: info.isCompleted,
@@ -7574,11 +7574,42 @@ function App() {
       });
       localStorage.setItem('amir_fin_fcm_reminders', JSON.stringify(syncPayload));
       window.dispatchEvent(new Event('amir_fin_reminders_updated'));
+
+      // Check for today's due loans on client launch
+      const deviceDate = getDeviceJalaliDate();
+      const todayStr = `${deviceDate.year}/${String(jalaliMonths.indexOf(deviceDate.month) + 1).padStart(2, '0')}/${String(deviceDate.day).padStart(2, '0')}`;
+      const dueToday = syncPayload.filter(r => !r.isCompleted && r.nextDueDateStr === todayStr);
+      if (dueToday.length > 0 && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        const lastNotified = localStorage.getItem('amir_fin_last_local_notify_date');
+        if (lastNotified !== todayStr) {
+          const names = dueToday.map(r => r.name).join(' و ');
+          const title = "یادآوری اقساط وام";
+          const body = dueToday.length > 1 ? `امروز موعد پرداخت قسط وام‌های ${names} است.` : `امروز موعد پرداخت قسط وام ${names} است.`;
+          if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+            navigator.serviceWorker.ready.then(reg => {
+              reg.showNotification(title, {
+                body: body,
+                icon: './icon-192x192.png',
+                badge: './favicon-96x96.png',
+                tag: 'loan-reminder-' + todayStr
+              });
+            }).catch(e => console.warn('SW local notification error:', e));
+          } else {
+            try {
+              new Notification(title, {
+                body,
+                icon: './icon-192x192.png'
+              });
+            } catch (e) {}
+          }
+          localStorage.setItem('amir_fin_last_local_notify_date', todayStr);
+        }
+      }
     } catch (e) {
       console.error('Reminders sync error:', e);
     }
   }, [loans, transactions]);
-  // --- End: FCM Push Notification Reminders Sync ---
+  // --- End: FCM Push Notification Reminders Sync & Client-Side Trigger ---
 
   // Backup Status & Unsaved Changes Tracking State
   const initialBackupStatus = (() => {
