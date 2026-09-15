@@ -984,13 +984,30 @@ const exportPeriodAsExcel = (period, contact) => {
       const amount = Math.abs(tx.amount || 0);
       csv += `${idx + 1},"${title}","${notes}","${date}",${amount}\n`;
     });
+    const fileName = `تسویه_حساب_${isDebt ? 'بدهی' : 'طلب'}_${contactName.replace(/\s+/g, '_')}_${period.id || 'export'}.csv`;
+    let file = null;
+    try {
+      file = new File([csv], fileName, { type: 'text/csv;charset=utf-8;' });
+    } catch (e) {
+      file = null;
+    }
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({
+        files: [file],
+        title: `تسویه حساب ${isDebt ? 'بدهی' : 'طلب'} - ${contactName}`,
+      }).catch(err => {
+        if (err && (err.name === 'AbortError' || err.message?.toLowerCase().includes('abort'))) return;
+        console.warn('Share CSV failed:', err);
+      });
+      return;
+    }
     const blob = new Blob([csv], {
       type: 'text/csv;charset=utf-8;'
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `تسویه_حساب_${isDebt ? 'بدهی' : 'طلب'}_${contactName.replace(/\s+/g, '_')}_${period.id || 'export'}.csv`;
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1139,13 +1156,30 @@ const exportLoanAsExcel = (loan, txList) => {
       const amount = tx.amount || 0;
       csv += `${idx + 1},"${title}","${notes}","${date}",${amount}\n`;
     });
+    const fileName = `پرونده_وام_${(loan.title || 'وام').replace(/\s+/g, '_')}.csv`;
+    let file = null;
+    try {
+      file = new File([csv], fileName, { type: 'text/csv;charset=utf-8;' });
+    } catch (e) {
+      file = null;
+    }
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({
+        files: [file],
+        title: `پرونده وام ${(loan.title || 'وام')}`,
+      }).catch(err => {
+        if (err && (err.name === 'AbortError' || err.message?.toLowerCase().includes('abort'))) return;
+        console.warn('Share CSV failed:', err);
+      });
+      return;
+    }
     const blob = new Blob([csv], {
       type: 'text/csv;charset=utf-8;'
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `پرونده_وام_${(loan.title || 'وام').replace(/\s+/g, '_')}.csv`;
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -6786,12 +6820,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.1",
-    "buildNumber": 505,
+    "buildNumber": 508,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.1",
-    "latestBuild": 505,
+    "latestBuild": 508,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7108,7 +7142,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 505;
+    const EMBEDDED_BUILD = 508;
     const EMBEDDED_VERSION = "3.3.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -8241,7 +8275,7 @@ function App() {
       if (document.documentElement) document.documentElement.style.backgroundColor = activeColor;
     }
   }, [isAnyModalOpen, isDark, showStackWizard]);
-  const handleExportBackup = () => {
+  const handleExportBackup = async () => {
     try {
       const data = {
         appName: "Amir Finance",
@@ -8255,14 +8289,44 @@ function App() {
         theme
       };
       const jsonStr = JSON.stringify(data, null, 2);
+      const now = getDeviceJalaliDate();
+      const fileName = `amir-finance-backup-${now.year}-${now.month}-${now.day}.json`;
+
+      let file = null;
+      try {
+        file = new File([jsonStr], fileName, {
+          type: 'application/json'
+        });
+      } catch (fileErr) {
+        file = null;
+      }
+
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'پشتیبان امیر فایننس',
+            text: `فایل نسخه پشتیبان حساب‌ها - تاریخ ${now.year}/${now.month}/${now.day}`
+          });
+          markBackupAsSuccessful();
+          showToast('فایل پشتیبان با موفقیت به اشتراک گذاشته شد');
+          return true;
+        } catch (shareErr) {
+          if (shareErr && (shareErr.name === 'AbortError' || (shareErr.message && shareErr.message.toLowerCase().includes('abort')))) {
+            // User intentionally closed/canceled the share sheet, do not trigger download
+            return false;
+          }
+          console.warn('Share API failed, falling back to download:', shareErr);
+        }
+      }
+
       const blob = new Blob([jsonStr], {
         type: 'application/json'
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      const now = getDeviceJalaliDate();
-      a.download = `amir-finance-backup-${now.year}-${now.month}-${now.day}.json`;
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -18113,11 +18177,9 @@ function App() {
       setIsBackingUp(true);
       setBackupError(null);
       try {
-        const success = handleExportBackup();
+        const success = await handleExportBackup();
         if (success) {
           setShowBackupPopover(false);
-        } else {
-          setBackupError('خطا در دانلود یا ایجاد فایل');
         }
       } catch (err) {
         setBackupError('خطا در پشتیبان‌گیری');
