@@ -4144,8 +4144,12 @@ function SwipeableTxCard({
 }) {
   const isRepay = tx.type === 'repayment' || tx.type === 'debt_repayment' || tx.type === 'demand_repayment';
 
+  // Check for loan creation vs loan installment
+  const isLoanCreation = tx.type === 'loan_creation' || tx.type === 'creation' || (Boolean(tx.loanId) && String(tx.title || '').startsWith('ثبت'));
+
   // Resolve target loan and calculated installment number for loan repayments
-  const isLoanTx = tx.type === 'repayment' || tx.type === 'loan_installment' || tx.type === 'installment' || Boolean(tx.loanId);
+  const isLoanInstallmentTx = !isLoanCreation && (tx.type === 'repayment' || tx.type === 'loan_installment' || tx.type === 'installment' || Boolean(tx.loanId));
+  const isLoanTx = isLoanCreation || isLoanInstallmentTx;
   let targetLoan = null;
   if (isLoanTx) {
     targetLoan = tx.loan || (tx.loanId && Array.isArray(loans) && loans.length > 0 ? loans.find(l => Number(l.id) === Number(tx.loanId)) : null);
@@ -4154,7 +4158,7 @@ function SwipeableTxCard({
     }
   }
   let instNum = null;
-  if (isLoanTx) {
+  if (isLoanInstallmentTx) {
     if (tx.installmentNum) {
       instNum = tx.installmentNum;
     } else if (tx.installmentNumber) {
@@ -4190,7 +4194,26 @@ function SwipeableTxCard({
     let l1 = '';
     let l2 = '';
     let l3 = tx.notes && tx.notes.trim() ? tx.notes.trim() : tx.description && tx.description.trim() ? tx.description.trim() : 'توضیحات ثبت نشده';
-    if (isLoanTx) {
+    if (isLoanCreation) {
+      let loanName = targetLoan ? targetLoan.title : tx.loanTitle || (tx.loan ? tx.loan.title : '');
+      if (!loanName && tx.title) {
+        loanName = tx.title.replace(/^ثبت\s*(?:وام\s*)?/, '').trim();
+      }
+      if (!loanName) loanName = 'وام';
+      let loanNameClean = loanName.replace(/^وام\s*/, '').trim();
+      if (!loanNameClean) loanNameClean = 'بانک';
+      l1 = `وام جدید ${loanNameClean} ثبت شد`;
+      let contactInfo = rawContactName.trim();
+      if (!contactInfo && targetLoan) {
+        if (targetLoan.contactId && Array.isArray(contacts)) {
+          const foundC = contacts.find(c => c.id === targetLoan.contactId);
+          if (foundC) contactInfo = `${foundC.firstName || ''} ${foundC.lastName || ''}`.trim();
+        }
+        if (!contactInfo && targetLoan.contactName) contactInfo = targetLoan.contactName.trim();
+        if (!contactInfo && targetLoan.lender) contactInfo = targetLoan.lender.trim();
+      }
+      l2 = contactInfo ? contactInfo : loanName || 'وام';
+    } else if (isLoanInstallmentTx) {
       // Get exact loan title from the loans section
       let loanName = targetLoan ? targetLoan.title : tx.loanTitle || (tx.loan ? tx.loan.title : '');
       if (!loanName && tx.title) {
@@ -4247,9 +4270,23 @@ function SwipeableTxCard({
   })();
   const txVisualConfig = (() => {
     const type = tx.type;
+    if (isLoanCreation) {
+      return {
+        isLoan: true,
+        isCreation: true,
+        iconBg: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/40',
+        iconName: 'landmark',
+        microBadgeIcon: 'plus',
+        microBadgeClass: 'bg-indigo-600 text-white',
+        borderAccent: 'border-r-indigo-500 dark:border-r-indigo-400',
+        amountClass: 'text-indigo-700 dark:text-indigo-300',
+        sign: ''
+      };
+    }
     if (type === 'repayment' || type === 'loan_installment' || type === 'installment' || tx.loanId) {
       return {
         isLoan: true,
+        isCreation: false,
         iconBg: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/40',
         iconName: 'receipt',
         microBadgeIcon: 'check',
@@ -6826,13 +6863,13 @@ function App() {
   // Page Slide Transition Animation Variants (Matching reference code smooth slide & fade)
   const pageSlideVariants = {
     initial: direction => ({
-      x: direction === 'none' ? '0px' : direction === 'back' ? '-50px' : '50px',
-      opacity: direction === 'none' ? 1 : 0
+      x: direction === 'none' || direction === 'subpage' ? '0px' : direction === 'back' ? '-50px' : '50px',
+      opacity: direction === 'none' || direction === 'subpage' ? 1 : 0
     }),
     animate: direction => ({
       x: '0px',
       opacity: 1,
-      transition: direction === 'none' ? {
+      transition: direction === 'none' || direction === 'subpage' ? {
         duration: 0
       } : {
         duration: 0.32,
@@ -6840,9 +6877,9 @@ function App() {
       }
     }),
     exit: direction => ({
-      x: direction === 'none' ? '0px' : direction === 'back' ? '50px' : '-50px',
-      opacity: 0,
-      transition: direction === 'none' ? {
+      x: direction === 'none' || direction === 'subpage' ? '0px' : direction === 'back' ? '50px' : '-50px',
+      opacity: direction === 'none' || direction === 'subpage' ? 1 : 0,
+      transition: direction === 'none' || direction === 'subpage' ? {
         duration: 0
       } : {
         duration: 0.22,
@@ -6856,12 +6893,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.1",
-    "buildNumber": 514,
+    "buildNumber": 520,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.1",
-    "latestBuild": 514,
+    "latestBuild": 520,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7178,7 +7215,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 514;
+    const EMBEDDED_BUILD = 520;
     const EMBEDDED_VERSION = "3.3.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -8193,11 +8230,18 @@ function App() {
       const timer = setTimeout(() => {
         const els = document.querySelectorAll(`[id="tx-card-${highlightedTxId}"]`);
         if (els.length > 0) {
-          const el = els[els.length - 1]; // Always pick the one in the foreground/active page
-          el.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
+          // Filter to only elements in the active visible foreground (not in background page1 of SwipeBackWrapper)
+          const validEls = Array.from(els).filter(el => {
+            if (el.closest('.page-view:not(.z-20)')) return false;
+            return el.offsetParent !== null;
           });
+          if (validEls.length > 0) {
+            const el = validEls[validEls.length - 1];
+            el.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }
         }
       }, 450);
       const clearTimer = setTimeout(() => {
@@ -8212,12 +8256,18 @@ function App() {
   const handleTransactionClick = tx => {
     if (!tx) return;
 
-    // Set highlighted transaction ID for blinking effect
-    setHighlightedTxId(tx.id);
+    const isCreationTx = tx.type === 'loan_creation' || tx.type === 'creation' || (Boolean(tx.loanId) && String(tx.title || '').startsWith('ثبت'));
+
+    // Set highlighted transaction ID for blinking effect only on non-creation transactions
+    if (!isCreationTx) {
+      setHighlightedTxId(tx.id);
+    } else {
+      setHighlightedTxId(null);
+    }
 
     // 1. If transaction belongs to a Loan
     if (tx.loanId) {
-      const targetLoan = loans.find(l => l.id === tx.loanId);
+      const targetLoan = loans.find(l => String(l.id) === String(tx.loanId));
       if (targetLoan) {
         setLoanTabFilter('paid');
         openLoanDetail(targetLoan, currentTab);
@@ -16511,13 +16561,13 @@ function App() {
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(AnimatePresence, {
-    custom: navDirection,
+    custom: ['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? 'subpage' : navDirection,
     initial: false
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.div, {
     key: currentTab + (currentTab === 'contact-detail' ? `-${selectedContact?.id}` : currentTab === 'loan-detail' ? `-${selectedLoan?.id}` : currentTab === 'archived-period-detail' ? `-${selectedPeriod?.id}` : ''),
-    custom: navDirection,
+    custom: ['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? 'subpage' : navDirection,
     variants: pageSlideVariants,
     initial: "initial",
     animate: "animate",
