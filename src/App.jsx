@@ -6903,12 +6903,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.1",
-    "buildNumber": 531,
+    "buildNumber": 532,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.1",
-    "latestBuild": 531,
+    "latestBuild": 532,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7225,7 +7225,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 531;
+    const EMBEDDED_BUILD = 532;
     const EMBEDDED_VERSION = "3.3.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -12473,7 +12473,7 @@ function App() {
             className: "absolute left-0 top-11 sm:top-12 z-50 w-60 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 shadow-2xl p-2 space-y-1 text-sm font-medium animate-in fade-in zoom-in-95 duration-150 text-right"
           }, [{
             id: 'nextDue',
-            label: 'نزدیک‌ترین زمان سررسید قسط'
+            label: 'زمان سررسید قسط'
           }, {
             id: 'createdAt',
             label: 'زمان ثبت وام'
