@@ -6820,12 +6820,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.1",
-    "buildNumber": 527,
+    "buildNumber": 531,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.1",
-    "latestBuild": 527,
+    "latestBuild": 531,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7142,7 +7142,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 527;
+    const EMBEDDED_BUILD = 531;
     const EMBEDDED_VERSION = "3.3.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -12802,27 +12802,8 @@ function App() {
           }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: "relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-slate-200/90 dark:border-slate-700/80 p-4 sm:p-5 shadow-[0_8px_25px_rgba(15,23,42,0.08),0_2px_6px_rgba(15,23,42,0.04)] dark:shadow-[0_8px_25px_rgba(0,0,0,0.4)] hover:shadow-[0_12px_32px_rgba(15,23,42,0.12),0_4px_8px_rgba(15,23,42,0.06)] dark:hover:shadow-[0_12px_32px_rgba(0,0,0,0.55)] hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 cursor-pointer group"
+            className: "relative bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-slate-200/90 dark:border-slate-700/80 p-4 sm:p-5 shadow-[0_8px_25px_rgba(15,23,42,0.08),0_2px_6px_rgba(15,23,42,0.04)] dark:shadow-[0_8px_25px_rgba(0,0,0,0.4)] hover:shadow-[0_12px_32px_rgba(15,23,42,0.12),0_4px_8px_rgba(15,23,42,0.06)] dark:hover:shadow-[0_12px_32px_rgba(0,0,0,0.55)] hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 cursor-pointer group"
           }, /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement("div", {
-            className: `absolute pointer-events-none select-none transition-transform group-hover:scale-[1.08] duration-500 text-slate-900/10 dark:text-white/10 ${contact.profileImage ? '-top-2 -left-2' : 'top-2.5 left-3 sm:top-3 sm:left-4'}`
-          }, contact.profileImage ? /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement("div", {
-            className: "w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden opacity-80"
-          }, /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement("img", {
-            src: contact.profileImage,
-            alt: "",
-            className: "w-full h-full object-cover"
-          })) : /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement("div", {
-            className: "text-5xl sm:text-6xl font-black leading-none opacity-80 tracking-tight"
-          }, ((contact.firstName ? contact.firstName.charAt(0) : '') + (contact.lastName ? ' ' + contact.lastName.charAt(0) : '')).trim() || contact.firstName?.charAt(0) || '؟')), /*#__PURE__*/
-          /*#__PURE__*/
           React.createElement("div", {
             className: "relative z-10 flex flex-col gap-5"
           }, /*#__PURE__*/
@@ -12868,16 +12849,16 @@ function App() {
               e.stopPropagation();
               openContactDetail(contact, 'loans', 'contacts');
             },
-            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveLoan ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 active:scale-95 border border-blue-500/80 hover:from-blue-700 hover:to-indigo-700 font-extrabold' : 'bg-slate-50 dark:bg-slate-750/60 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-700/50 shadow-2xs cursor-default'}`
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all ${hasActiveLoan ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 active:scale-95 border border-blue-500/80 hover:from-blue-700 hover:to-indigo-700 font-extrabold' : 'bg-slate-50 dark:bg-slate-750/60 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-700/50 shadow-2xs cursor-default'}`
           }, hasSettledLoan && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
+            className: "absolute -top-1.5 -right-1.5 w-[18px] h-[18px] bg-blue-600 text-white rounded-full flex items-center justify-center shadow-xs z-20 border-2 border-white dark:border-slate-800"
           }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "check",
-            className: "w-2.5 h-2.5",
+            className: "w-2.5 h-2.5 text-white",
             strokeWidth: 3.5
           })), /*#__PURE__*/
           /*#__PURE__*/
@@ -12895,16 +12876,16 @@ function App() {
               e.stopPropagation();
               openContactDetail(contact, 'demands', 'contacts');
             },
-            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDemand ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 active:scale-95 border border-emerald-500/80 hover:from-emerald-700 hover:to-teal-700 font-extrabold' : 'bg-slate-50 dark:bg-slate-750/60 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-700/50 shadow-2xs cursor-default'}`
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all ${hasActiveDemand ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 active:scale-95 border border-emerald-500/80 hover:from-emerald-700 hover:to-teal-700 font-extrabold' : 'bg-slate-50 dark:bg-slate-750/60 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-700/50 shadow-2xs cursor-default'}`
           }, hasSettledDemand && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
+            className: "absolute -top-1.5 -right-1.5 w-[18px] h-[18px] bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xs z-20 border-2 border-white dark:border-slate-800"
           }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "check",
-            className: "w-2.5 h-2.5",
+            className: "w-2.5 h-2.5 text-white",
             strokeWidth: 3.5
           })), /*#__PURE__*/
           /*#__PURE__*/
@@ -12922,16 +12903,16 @@ function App() {
               e.stopPropagation();
               openContactDetail(contact, 'debts', 'contacts');
             },
-            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDebt ? 'bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md shadow-rose-500/25 active:scale-95 border border-rose-500/80 hover:from-rose-700 hover:to-red-700 font-extrabold' : 'bg-slate-50 dark:bg-slate-750/60 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-700/50 shadow-2xs cursor-default'}`
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all ${hasActiveDebt ? 'bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md shadow-rose-500/25 active:scale-95 border border-rose-500/80 hover:from-rose-700 hover:to-red-700 font-extrabold' : 'bg-slate-50 dark:bg-slate-750/60 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-700/50 shadow-2xs cursor-default'}`
           }, hasSettledDebt && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: "absolute top-1.5 right-1.5 w-[14px] h-[14px] bg-white dark:bg-slate-800 rounded-full flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-sm z-10 border border-slate-100 dark:border-slate-700"
+            className: "absolute -top-1.5 -right-1.5 w-[18px] h-[18px] bg-rose-600 text-white rounded-full flex items-center justify-center shadow-xs z-20 border-2 border-white dark:border-slate-800"
           }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "check",
-            className: "w-2.5 h-2.5",
+            className: "w-2.5 h-2.5 text-white",
             strokeWidth: 3.5
           })), /*#__PURE__*/
           /*#__PURE__*/
