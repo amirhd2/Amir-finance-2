@@ -127,92 +127,19 @@ const getContactCardTheme = contactId => {
   } else if (contactId) {
     idNum = String(contactId).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
   }
-  const themes = [
-  // 1: Building Watermark (Light Surface)
-  {
+  return {
     watermark: 'apartment',
-    containerClass: 'bg-slate-100 dark:bg-slate-800/95 text-slate-900 dark:text-white border-slate-200/80 dark:border-slate-700/80 shadow-sm',
+    containerClass: 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200/90 dark:border-slate-700/80 shadow-[0_8px_25px_rgba(15,23,42,0.08),0_2px_6px_rgba(15,23,42,0.04)] dark:shadow-[0_8px_25px_rgba(0,0,0,0.4)]',
     avatarClass: 'bg-indigo-600 text-white',
-    nameClass: 'text-slate-900 dark:text-white',
+    nameClass: 'text-slate-900 dark:text-white font-extrabold',
     phoneClass: 'text-slate-500 dark:text-slate-400',
-    buttonClass: 'bg-white/70 dark:bg-slate-700/70 text-slate-700 dark:text-slate-200 hover:bg-white',
-    rowClass: 'bg-white/70 dark:bg-slate-700/50',
+    buttonClass: 'bg-slate-100 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 hover:bg-slate-200',
+    rowClass: 'bg-slate-50 dark:bg-slate-750/50',
     rowLabelClass: 'text-slate-500 dark:text-slate-400',
     rowTextClass: 'text-slate-900 dark:text-white',
     accentColorClass: 'text-indigo-600 dark:text-indigo-400',
     watermarkColor: 'text-slate-900 dark:text-white'
-  },
-  // 2: Wallet Watermark (Amber Warm)
-  {
-    watermark: 'account_balance_wallet',
-    containerClass: 'bg-amber-600 dark:bg-amber-800 text-white border-amber-500 dark:border-amber-700 shadow-md',
-    avatarClass: 'bg-amber-100 text-amber-900 font-black',
-    nameClass: 'text-white font-bold',
-    phoneClass: 'text-amber-100 dark:text-amber-200',
-    buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
-    rowClass: 'bg-white/15 dark:bg-black/20',
-    rowLabelClass: 'text-amber-100 dark:text-amber-200',
-    rowTextClass: 'text-white font-bold',
-    accentColorClass: 'text-amber-200',
-    watermarkColor: 'text-white'
-  },
-  // 3: Handshake Watermark (Tinted Surface)
-  {
-    watermark: 'handshake',
-    containerClass: 'bg-indigo-100/90 dark:bg-indigo-950/80 text-indigo-950 dark:text-indigo-100 border-indigo-200 dark:border-indigo-900 shadow-sm',
-    avatarClass: 'bg-indigo-600 text-white',
-    nameClass: 'text-indigo-950 dark:text-indigo-100',
-    phoneClass: 'text-indigo-700 dark:text-indigo-300',
-    buttonClass: 'bg-white/60 dark:bg-indigo-900/60 text-indigo-900 dark:text-indigo-200 hover:bg-white/80',
-    rowClass: 'bg-white/60 dark:bg-indigo-900/50',
-    rowLabelClass: 'text-indigo-700 dark:text-indigo-300',
-    rowTextClass: 'text-indigo-950 dark:text-indigo-100',
-    accentColorClass: 'text-indigo-600 dark:text-indigo-400',
-    watermarkColor: 'text-indigo-600 dark:text-indigo-400'
-  },
-  // 4: Briefcase Watermark (Emerald Green)
-  {
-    watermark: 'work',
-    containerClass: 'bg-emerald-600 dark:bg-emerald-800 text-white border-emerald-500 dark:border-emerald-700 shadow-md',
-    avatarClass: 'bg-emerald-100 text-emerald-950 font-black',
-    nameClass: 'text-white font-bold',
-    phoneClass: 'text-emerald-100 dark:text-emerald-200',
-    buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
-    rowClass: 'bg-white/15 dark:bg-black/20',
-    rowLabelClass: 'text-emerald-100 dark:text-emerald-200',
-    rowTextClass: 'text-white font-bold',
-    accentColorClass: 'text-emerald-200',
-    watermarkColor: 'text-white'
-  },
-  // 5: Team Watermark (Blue / Indigo)
-  {
-    watermark: 'groups',
-    containerClass: 'bg-blue-600 dark:bg-blue-800 text-white border-blue-500 dark:border-blue-700 shadow-md',
-    avatarClass: 'bg-sky-100 text-blue-950 font-black',
-    nameClass: 'text-white font-bold',
-    phoneClass: 'text-blue-100 dark:text-blue-200',
-    buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
-    rowClass: 'bg-white/15 dark:bg-black/20',
-    rowLabelClass: 'text-blue-100 dark:text-blue-200',
-    rowTextClass: 'text-white font-bold',
-    accentColorClass: 'text-sky-200',
-    watermarkColor: 'text-white'
-  },
-  // 6: Document Watermark (Rose Pink/Red)
-  {
-    watermark: 'description',
-    containerClass: 'bg-rose-600 dark:bg-rose-800 text-white border-rose-500 dark:border-rose-700 shadow-md',
-    avatarClass: 'bg-rose-100 text-rose-950 font-black',
-    nameClass: 'text-white font-bold',
-    phoneClass: 'text-rose-100 dark:text-rose-200',
-    buttonClass: 'bg-white/20 hover:bg-white/30 text-white',
-    rowClass: 'bg-white/15 dark:bg-black/20',
-    rowLabelClass: 'text-rose-100 dark:text-rose-200',
-    rowTextClass: 'text-white font-bold',
-    accentColorClass: 'text-rose-200',
-    watermarkColor: 'text-white'
-  }];
-  return themes[Math.abs(idNum) % themes.length];
+  };
 };
 const jalaliMonths = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
 const gregorianToJalali = (gy, gm, gd) => {
@@ -6893,12 +6820,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.1",
-    "buildNumber": 520,
+    "buildNumber": 527,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.1",
-    "latestBuild": 520,
+    "latestBuild": 527,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7215,7 +7142,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 520;
+    const EMBEDDED_BUILD = 527;
     const EMBEDDED_VERSION = "3.3.1";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -11901,9 +11828,15 @@ function App() {
           dir: "ltr"
         }, /*#__PURE__*/
         /*#__PURE__*/
-        React.createElement(BrandAvatar, {
-          className: "w-[44px] h-[44px] sm:w-[48px] sm:h-[48px] rounded-2xl object-cover shadow-sm shrink-0",
-          logoUrl: "favicon-96x96.png"
+        React.createElement("img", {
+          src: "assets/illustrations/coin.webp",
+          onError: e => {
+            if (!e.currentTarget.src.includes('public/')) {
+              e.currentTarget.src = "public/assets/illustrations/coin.webp";
+            }
+          },
+          alt: "Amir Finance",
+          className: "h-[44px] sm:h-[48px] w-auto object-contain shrink-0 active:scale-95 transition-transform select-none"
         }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
@@ -12095,14 +12028,16 @@ function App() {
           className: "relative bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
         }, /*#__PURE__*/
         /*#__PURE__*/
-        React.createElement("div", {
-          className: "absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300"
-        }, /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement(Icon, {
-          name: "landmark",
-          className: "w-16 h-16 sm:w-18 sm:h-18"
-        })), /*#__PURE__*/
+        React.createElement("img", {
+          src: "assets/illustrations/loan.webp",
+          onError: e => {
+            if (!e.currentTarget.src.includes('public/')) {
+              e.currentTarget.src = "public/assets/illustrations/loan.webp";
+            }
+          },
+          alt: "وام‌ها",
+          className: "absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-[62px] h-[62px] sm:w-[68px] sm:h-[68px] object-contain pointer-events-none select-none opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center justify-between w-full relative z-10"
@@ -12132,14 +12067,18 @@ function App() {
           className: "relative bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
         }, /*#__PURE__*/
         /*#__PURE__*/
-        React.createElement("div", {
-          className: "absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300"
-        }, /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement(Icon, {
-          name: "arrow-down-left",
-          className: "w-16 h-16 sm:w-18 sm:h-18"
-        })), /*#__PURE__*/
+        React.createElement("img", {
+          src: "assets/illustrations/debt.webp",
+          onError: e => {
+            if (!e.currentTarget.src.includes('loan.webp')) {
+              e.currentTarget.src = "assets/illustrations/loan.webp";
+            } else if (!e.currentTarget.src.includes('public/')) {
+              e.currentTarget.src = "public/assets/illustrations/loan.webp";
+            }
+          },
+          alt: "بدهی",
+          className: "absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-[62px] h-[62px] sm:w-[68px] sm:h-[68px] object-contain pointer-events-none select-none opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center justify-between w-full relative z-10"
@@ -12169,14 +12108,16 @@ function App() {
           className: "relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 text-white rounded-2xl p-2.5 sm:p-3 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer flex flex-col justify-between min-h-[82px] border border-white/15 overflow-hidden group"
         }, /*#__PURE__*/
         /*#__PURE__*/
-        React.createElement("div", {
-          className: "absolute -left-2.5 -bottom-2.5 pointer-events-none text-white/20 group-hover:text-white/30 group-hover:scale-110 transition-all duration-300"
-        }, /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement(Icon, {
-          name: "arrow-up-right",
-          className: "w-16 h-16 sm:w-18 sm:h-18"
-        })), /*#__PURE__*/
+        React.createElement("img", {
+          src: "assets/illustrations/demand.webp",
+          onError: e => {
+            if (!e.currentTarget.src.includes('public/')) {
+              e.currentTarget.src = "public/assets/illustrations/demand.webp";
+            }
+          },
+          alt: "طلب",
+          className: "absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-[62px] h-[62px] sm:w-[68px] sm:h-[68px] object-contain pointer-events-none select-none opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
+        }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "flex items-center justify-between w-full relative z-10"
@@ -12849,80 +12790,7 @@ function App() {
           const hasActiveDemand = contact.totalDemand > 0;
           const hasSettledDebt = getSettledPeriodCount(contact.id, 'debt') > 0;
           const hasActiveDebt = contact.totalDebt > 0;
-          const colorMappings = {
-            'bg-blue-600': {
-              bg: 'bg-gradient-to-br from-blue-50/80 to-indigo-50/30 dark:from-blue-950/20 dark:to-indigo-950/10',
-              border: 'border-blue-200/80 dark:border-slate-700/60 hover:border-blue-400 dark:hover:border-blue-600',
-              watermark: 'users',
-              watermarkColor: 'text-blue-500 dark:text-blue-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-blue-500/15'
-            },
-            'bg-amber-600': {
-              bg: 'bg-gradient-to-br from-amber-50/80 to-orange-50/30 dark:from-amber-950/20 dark:to-orange-950/10',
-              border: 'border-amber-200/80 dark:border-slate-700/60 hover:border-amber-400 dark:hover:border-amber-600',
-              watermark: 'star',
-              watermarkColor: 'text-amber-500 dark:text-amber-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-amber-500/15'
-            },
-            'bg-emerald-600': {
-              bg: 'bg-gradient-to-br from-emerald-50/80 to-teal-50/30 dark:from-emerald-950/20 dark:to-teal-950/10',
-              border: 'border-emerald-200/80 dark:border-slate-700/60 hover:border-emerald-400 dark:hover:border-emerald-600',
-              watermark: 'briefcase',
-              watermarkColor: 'text-emerald-500 dark:text-emerald-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-emerald-500/15'
-            },
-            'bg-indigo-600': {
-              bg: 'bg-gradient-to-br from-indigo-50/80 to-purple-50/30 dark:from-indigo-950/20 dark:to-purple-950/10',
-              border: 'border-indigo-200/80 dark:border-slate-700/60 hover:border-indigo-400 dark:hover:border-indigo-600',
-              watermark: 'landmark',
-              watermarkColor: 'text-indigo-500 dark:text-indigo-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-indigo-500/15'
-            },
-            'bg-teal-600': {
-              bg: 'bg-gradient-to-br from-teal-50/80 to-emerald-50/30 dark:from-teal-950/20 dark:to-emerald-950/10',
-              border: 'border-teal-200/80 dark:border-slate-700/60 hover:border-teal-400 dark:hover:border-teal-600',
-              watermark: 'shield',
-              watermarkColor: 'text-teal-500 dark:text-teal-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-teal-500/15'
-            },
-            'bg-rose-600': {
-              bg: 'bg-gradient-to-br from-rose-50/80 to-pink-50/30 dark:from-rose-950/20 dark:to-pink-950/10',
-              border: 'border-rose-200/80 dark:border-slate-700/60 hover:border-rose-400 dark:hover:border-rose-600',
-              watermark: 'heart',
-              watermarkColor: 'text-rose-500 dark:text-rose-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-rose-500/15'
-            },
-            'bg-purple-600': {
-              bg: 'bg-gradient-to-br from-purple-50/80 to-fuchsia-50/30 dark:from-purple-950/20 dark:to-fuchsia-950/10',
-              border: 'border-purple-200/80 dark:border-slate-700/60 hover:border-purple-400 dark:hover:border-purple-600',
-              watermark: 'award',
-              watermarkColor: 'text-purple-500 dark:text-purple-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-purple-500/15'
-            },
-            'bg-cyan-600': {
-              bg: 'bg-gradient-to-br from-cyan-50/80 to-blue-50/30 dark:from-cyan-950/20 dark:to-blue-950/10',
-              border: 'border-cyan-200/80 dark:border-slate-700/60 hover:border-cyan-400 dark:hover:border-cyan-600',
-              watermark: 'anchor',
-              watermarkColor: 'text-cyan-500 dark:text-cyan-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-cyan-500/15'
-            },
-            'bg-orange-600': {
-              bg: 'bg-gradient-to-br from-orange-50/80 to-amber-50/30 dark:from-orange-950/20 dark:to-amber-950/10',
-              border: 'border-orange-200/80 dark:border-slate-700/60 hover:border-orange-400 dark:hover:border-orange-600',
-              watermark: 'sun',
-              watermarkColor: 'text-orange-500 dark:text-orange-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-orange-500/15'
-            },
-            'bg-violet-600': {
-              bg: 'bg-gradient-to-br from-violet-50/80 to-purple-50/30 dark:from-violet-950/20 dark:to-purple-950/10',
-              border: 'border-violet-200/80 dark:border-slate-700/60 hover:border-violet-400 dark:hover:border-violet-600',
-              watermark: 'hexagon',
-              watermarkColor: 'text-violet-500 dark:text-violet-400 opacity-[0.16] dark:opacity-[0.13]',
-              ring: 'ring-4 ring-violet-500/15'
-            }
-          };
           const avatarBg = getAvatarColor(contact.id, contact.firstName + contact.lastName);
-          const theme = colorMappings[avatarBg] || colorMappings['bg-indigo-600'];
           return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
             key: contact.id,
             onDelete: confirmCb => handleDeleteContact(contact, confirmCb),
@@ -12934,15 +12802,15 @@ function App() {
           }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: `relative overflow-hidden bg-white dark:bg-slate-800 ${theme.bg} rounded-2xl sm:rounded-[24px] border p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-sm ${theme.border} transition-all cursor-pointer group`
+            className: "relative overflow-hidden bg-white dark:bg-slate-800 rounded-2xl sm:rounded-[24px] border border-slate-200/90 dark:border-slate-700/80 p-4 sm:p-5 shadow-[0_8px_25px_rgba(15,23,42,0.08),0_2px_6px_rgba(15,23,42,0.04)] dark:shadow-[0_8px_25px_rgba(0,0,0,0.4)] hover:shadow-[0_12px_32px_rgba(15,23,42,0.12),0_4px_8px_rgba(15,23,42,0.06)] dark:hover:shadow-[0_12px_32px_rgba(0,0,0,0.55)] hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 cursor-pointer group"
           }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: `absolute -bottom-8 -left-8 pointer-events-none transition-transform group-hover:scale-[1.15] duration-500 ${theme.watermarkColor}`
+            className: `absolute pointer-events-none select-none transition-transform group-hover:scale-[1.08] duration-500 text-slate-900/10 dark:text-white/10 ${contact.profileImage ? '-top-2 -left-2' : 'top-2.5 left-3 sm:top-3 sm:left-4'}`
           }, contact.profileImage ? /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: "w-44 h-44 rounded-full overflow-hidden opacity-80"
+            className: "w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden opacity-80"
           }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("img", {
@@ -12952,8 +12820,8 @@ function App() {
           })) : /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: "w-44 h-44 flex items-center justify-center text-[160px] font-black leading-none opacity-80 tracking-tighter"
-          }, contact.firstName.charAt(0))), /*#__PURE__*/
+            className: "text-5xl sm:text-6xl font-black leading-none opacity-80 tracking-tight"
+          }, ((contact.firstName ? contact.firstName.charAt(0) : '') + (contact.lastName ? ' ' + contact.lastName.charAt(0) : '')).trim() || contact.firstName?.charAt(0) || '؟')), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "relative z-10 flex flex-col gap-5"
@@ -12968,7 +12836,7 @@ function App() {
           }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: `rounded-full ${avatarBg} ${theme.ring} flex-shrink-0 flex items-center justify-center text-white font-bold w-16 h-16 sm:w-18 sm:h-18 text-lg sm:text-xl shadow-md border-2 border-white/60 dark:border-slate-700/60 overflow-hidden transition-transform group-hover:scale-105`
+            className: `rounded-full ${avatarBg} ring-4 ring-slate-100 dark:ring-slate-700/60 flex-shrink-0 flex items-center justify-center text-white font-bold w-16 h-16 sm:w-18 sm:h-18 text-lg sm:text-xl shadow-md border-2 border-white dark:border-slate-700 overflow-hidden transition-transform group-hover:scale-105`
           }, contact.profileImage ? /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("img", {
@@ -13000,7 +12868,7 @@ function App() {
               e.stopPropagation();
               openContactDetail(contact, 'loans', 'contacts');
             },
-            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveLoan ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 active:scale-95 border border-blue-500/80 hover:from-blue-700 hover:to-indigo-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveLoan ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 active:scale-95 border border-blue-500/80 hover:from-blue-700 hover:to-indigo-700 font-extrabold' : 'bg-slate-50 dark:bg-slate-750/60 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-700/50 shadow-2xs cursor-default'}`
           }, hasSettledLoan && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
@@ -13027,7 +12895,7 @@ function App() {
               e.stopPropagation();
               openContactDetail(contact, 'demands', 'contacts');
             },
-            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDemand ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 active:scale-95 border border-emerald-500/80 hover:from-emerald-700 hover:to-teal-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDemand ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 active:scale-95 border border-emerald-500/80 hover:from-emerald-700 hover:to-teal-700 font-extrabold' : 'bg-slate-50 dark:bg-slate-750/60 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-700/50 shadow-2xs cursor-default'}`
           }, hasSettledDemand && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
@@ -13054,7 +12922,7 @@ function App() {
               e.stopPropagation();
               openContactDetail(contact, 'debts', 'contacts');
             },
-            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDebt ? 'bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md shadow-rose-500/25 active:scale-95 border border-rose-500/80 hover:from-rose-700 hover:to-red-700 font-extrabold' : 'bg-white/90 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 border border-white dark:border-slate-700/50 shadow-sm cursor-default'}`
+            className: `relative flex-1 flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-[18px] transition-all overflow-hidden ${hasActiveDebt ? 'bg-gradient-to-br from-rose-600 to-red-600 text-white shadow-md shadow-rose-500/25 active:scale-95 border border-rose-500/80 hover:from-rose-700 hover:to-red-700 font-extrabold' : 'bg-slate-50 dark:bg-slate-750/60 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-700/50 shadow-2xs cursor-default'}`
           }, hasSettledDebt && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
@@ -13148,24 +13016,31 @@ function App() {
           className: `w-5 h-5 ${selectedContact.isFavorite ? 'fill-amber-400 text-amber-400' : ''}`
         })))), (() => {
           const cardTheme = getContactCardTheme(selectedContact.id);
-          const contactInitials = (selectedContact.firstName ? selectedContact.firstName.charAt(0) : '') + (selectedContact.lastName ? selectedContact.lastName.charAt(0) : '');
+          const contactInitials = ((selectedContact.firstName ? selectedContact.firstName.charAt(0) : '') + (selectedContact.lastName ? ' ' + selectedContact.lastName.charAt(0) : '')).trim() || (selectedContact.firstName ? selectedContact.firstName.charAt(0) : '');
           return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
             className: `relative overflow-hidden rounded-2xl p-4 border flex flex-col gap-3 group transition-transform duration-200 ${cardTheme.containerClass}`
           }, /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: `absolute -top-2 -left-2 ${cardTheme.watermarkColor}`,
+            className: `absolute pointer-events-none select-none ${cardTheme.watermarkColor} ${selectedContact.profileImage ? '-top-8 -left-8 sm:-top-10 sm:-left-10' : 'top-2 left-3 sm:top-2.5 sm:left-4'}`,
             style: {
-              opacity: 0.08,
-              zIndex: 0,
-              pointerEvents: "none"
+              opacity: 0.16,
+              zIndex: 0
             }
-          }, /*#__PURE__*/
+          }, selectedContact.profileImage ? /*#__PURE__*/
           /*#__PURE__*/
-          React.createElement(Icon, {
-            name: "landmark",
-            className: "w-28 h-28 sm:w-32 sm:h-32"
-          })), /*#__PURE__*/
+          React.createElement("div", {
+            className: "w-[330px] h-[330px] sm:w-[380px] sm:h-[380px] rounded-full overflow-hidden"
+          }, /*#__PURE__*/
+          React.createElement("img", {
+            src: selectedContact.profileImage,
+            alt: "",
+            className: "w-full h-full object-cover"
+          })) : /*#__PURE__*/
+          /*#__PURE__*/
+          React.createElement("div", {
+            className: "text-7xl sm:text-8xl font-black leading-none tracking-tight"
+          }, contactInitials || '؟')), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
             className: "relative z-10 w-full flex flex-col gap-3"
@@ -14090,20 +13965,19 @@ function App() {
         }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
-          className: "absolute left-4 bottom-1 opacity-15 pointer-events-none text-white"
+          className: "absolute left-4 bottom-1 opacity-15 pointer-events-none select-none"
         }, /*#__PURE__*/
         /*#__PURE__*/
-        React.createElement("svg", {
-          fill: "currentColor",
-          height: "180",
-          viewBox: "0 0 24 24",
-          width: "180",
-          xmlns: "http://www.w3.org/2000/svg"
-        }, /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("path", {
-          d: "M12 2L2 7v2h20V7L12 2zm0 18H4v-9h1v9h2v-9h2v9h2v-9h2v9h2v-9h2v9h1v-9h1v9h-2zm-10-9h20v2H2v-2z"
-        }))), /*#__PURE__*/
+        React.createElement("img", {
+          src: "assets/illustrations/loan.webp",
+          onError: e => {
+            if (!e.currentTarget.src.includes('public/')) {
+              e.currentTarget.src = "public/assets/illustrations/loan.webp";
+            }
+          },
+          alt: "وام",
+          className: "w-[180px] h-[180px] object-contain pointer-events-none select-none"
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "relative z-10 space-y-3"
@@ -14989,34 +14863,30 @@ function App() {
         }), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
-          className: "absolute left-4 bottom-1 opacity-15 pointer-events-none text-white"
+          className: "absolute left-4 bottom-1 opacity-15 pointer-events-none select-none"
         }, isDebt ? /*#__PURE__*/
         /*#__PURE__*/
-        /* Red Debt Watermark SVG */
-        React.createElement("svg", {
-          fill: "currentColor",
-          height: "170",
-          viewBox: "0 0 24 24",
-          width: "170",
-          xmlns: "http://www.w3.org/2000/svg"
-        }, /*#__PURE__*/
+        React.createElement("img", {
+          src: "assets/illustrations/debt.webp",
+          onError: e => {
+            if (!e.currentTarget.src.includes('public/')) {
+              e.currentTarget.src = "public/assets/illustrations/debt.webp";
+            }
+          },
+          alt: "بدهی بایگانی شده",
+          className: "w-[170px] h-[170px] object-contain pointer-events-none select-none"
+        }) : /*#__PURE__*/
         /*#__PURE__*/
-        React.createElement("path", {
-          d: "M19 14V6c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-4zm-2 4H7V6h10v12zm-9-7h8v2H8zm0 4h5v2H8z"
-        })) : /*#__PURE__*/
-        /*#__PURE__*/
-        /* Green Demand Watermark SVG */
-        React.createElement("svg", {
-          fill: "currentColor",
-          height: "170",
-          viewBox: "0 0 24 24",
-          width: "170",
-          xmlns: "http://www.w3.org/2000/svg"
-        }, /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("path", {
-          d: "M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
-        }))), /*#__PURE__*/
+        React.createElement("img", {
+          src: "assets/illustrations/demand.webp",
+          onError: e => {
+            if (!e.currentTarget.src.includes('public/')) {
+              e.currentTarget.src = "public/assets/illustrations/demand.webp";
+            }
+          },
+          alt: "طلب بایگانی شده",
+          className: "w-[170px] h-[170px] object-contain pointer-events-none select-none"
+        })), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           className: "relative z-10 space-y-3"
@@ -16463,7 +16333,7 @@ function App() {
   };
   const activeCards = getCurrentWizardCards();
   return /*#__PURE__*/ /*#__PURE__*/React.createElement("div", {
-    className: `w-full h-full relative flex flex-col justify-between overflow-hidden ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-[#F4F7FC] text-slate-800'}`
+    className: `w-full h-full relative flex flex-col justify-between overflow-hidden ${isDark ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-200 text-slate-800'}`
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(AnimatePresence, null, showSplashScreen && /*#__PURE__*/
@@ -16549,7 +16419,7 @@ function App() {
   })))), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
-    className: `fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[45] pointer-events-none transition-colors ${!isDark ? 'bg-[#F4F7FC]' : 'bg-slate-950'}`
+    className: `fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[45] pointer-events-none transition-colors ${!isDark ? 'bg-slate-200' : 'bg-slate-950'}`
   }), toastMessage && /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
@@ -16577,7 +16447,7 @@ function App() {
       WebkitBackfaceVisibility: 'hidden',
       backfaceVisibility: 'hidden'
     },
-    className: "w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden overscroll-x-none bg-[#F4F7FC] dark:bg-slate-950 z-10"
+    className: "w-full h-full absolute inset-0 overflow-y-auto overflow-x-hidden overscroll-x-none bg-slate-200 dark:bg-slate-950 z-10"
   }, ['contact-detail', 'loan-detail', 'archived-period-detail', 'all-transactions'].includes(currentTab) ? /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
@@ -16697,7 +16567,7 @@ function App() {
     onClick: () => closePlusMenu(() => openStackWizard('contact', 'add', {
       fromFab: true
     })),
-    className: "w-full bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center justify-between border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all"
+    className: "w-full bg-slate-100 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center justify-between border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
@@ -16733,7 +16603,7 @@ function App() {
     onClick: () => closePlusMenu(() => openStackWizard('demand', 'add', {
       fromFab: true
     })),
-    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-400 active:scale-[0.97] transition-all"
+    className: "bg-slate-100 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
@@ -16753,7 +16623,7 @@ function App() {
     onClick: () => closePlusMenu(() => openStackWizard('demand_repayment', 'add', {
       fromFab: true
     })),
-    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-teal-400 active:scale-[0.97] transition-all"
+    className: "bg-slate-100 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-teal-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
@@ -16777,7 +16647,7 @@ function App() {
     onClick: () => closePlusMenu(() => openStackWizard('debt', 'add', {
       fromFab: true
     })),
-    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-rose-400 active:scale-[0.97] transition-all"
+    className: "bg-slate-100 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-rose-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
@@ -16797,7 +16667,7 @@ function App() {
     onClick: () => closePlusMenu(() => openStackWizard('debt_repayment', 'add', {
       fromFab: true
     })),
-    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-amber-400 active:scale-[0.97] transition-all"
+    className: "bg-slate-100 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-amber-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
@@ -16821,7 +16691,7 @@ function App() {
     onClick: () => closePlusMenu(() => openStackWizard('loan', 'add', {
       fromFab: true
     })),
-    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all"
+    className: "bg-slate-100 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-indigo-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
@@ -16841,7 +16711,7 @@ function App() {
     onClick: () => closePlusMenu(() => openStackWizard('installment', 'add', {
       fromFab: true
     })),
-    className: "bg-[#F4F7FC]/90 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-purple-400 active:scale-[0.97] transition-all"
+    className: "bg-slate-100 dark:bg-slate-900/60 p-2.5 rounded-2xl flex items-center space-x-2 space-x-reverse border border-slate-200/80 dark:border-slate-700/60 hover:border-purple-400 active:scale-[0.97] transition-all"
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
@@ -16945,11 +16815,11 @@ function App() {
     initial: "initial",
     animate: "animate",
     exit: "exit",
-    className: `absolute inset-0 z-50 flex flex-col justify-start items-center px-3 pb-2 pt-[calc(env(safe-area-inset-top,0px)+4px)] overflow-hidden ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d]/90 backdrop-blur-md'}`
+    className: `absolute inset-0 z-50 flex flex-col justify-start items-center px-3 pb-2 pt-[calc(env(safe-area-inset-top,0px)+4px)] overflow-hidden ${!isDark ? 'bg-slate-200' : 'bg-[#0b101d]/90 backdrop-blur-md'}`
   }, /*#__PURE__*/
   /*#__PURE__*/
   React.createElement("div", {
-    className: `fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[60] ${!isDark ? 'bg-[#F4F7FC]' : 'bg-[#0b101d] backdrop-blur-md'}`
+    className: `fixed top-0 inset-x-0 h-[env(safe-area-inset-top,0px)] z-[60] ${!isDark ? 'bg-slate-200' : 'bg-[#0b101d] backdrop-blur-md'}`
   }), /*#__PURE__*/
   /*#__PURE__*/
   React.createElement(motion.div, {
