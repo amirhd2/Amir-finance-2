@@ -13,6 +13,16 @@ if (fs.existsSync(pkgPath)) {
 }
 
 const CURRENT_CHANGELOG = {
+  "3.3.2": {
+    commitMessage: "feat: add contact and loan sorting options, enhance UI styling and mobile card opacity, and release version 3.3.2",
+    changes: [
+      "افزودن قابلیت مرتب‌سازی مخاطبین (بر اساس تاریخ ایجاد، نام و نام خانوادگی به صورت صعودی و نزولی) در صفحه مخاطبین",
+      "افزودن منوی مرتب‌سازی وام‌ها (بر اساس زمان سررسید قسط و زمان ثبت وام به صورت صعودی و نزولی) در کنار باکس کپسولی وام‌ها در صفحه حساب‌ها",
+      "اصلاح تصویر اختصاصی کارت بدهی در صفحه اصلی و تنظیم شفافیت واترمارک کارت‌ها روی ۳۰ درصد در دستگاه‌های موبایل",
+      "تفکیک و بازگردانی رنگ‌های کارت‌های خلاصه وضعیت در صفحه پروفایل مخاطب (نیلی برای وام، قرمز برای بدهی و زمردی برای طلب)",
+      "انتشار رسمی نسخه ۳.۳.۲"
+    ]
+  },
   "3.3.1": {
     commitMessage: "feat: redesign virtual numeric keyboard header with symmetrical action buttons and release version 3.3.1",
     changes: [
