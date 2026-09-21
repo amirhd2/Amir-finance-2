@@ -613,9 +613,14 @@ const getLoanNextDueInfo = (loan, txList) => {
   }
   const nextDueNum = paidInst + 1;
   const dueInfo = getInstallmentDueDate(loan, nextDueNum);
+  const nextDueDateIso = dueInfo.year && dueInfo.monthIdx !== undefined && dueInfo.day ? `${dueInfo.year}/${String(dueInfo.monthIdx + 1).padStart(2, '0')}/${String(dueInfo.day).padStart(2, '0')}` : dueInfo.dateStr;
   return {
     nextDueNum,
     nextDueDateStr: dueInfo.dateStr,
+    nextDueDateIso: nextDueDateIso,
+    dueYear: dueInfo.year,
+    dueMonth: dueInfo.monthIdx !== undefined ? dueInfo.monthIdx + 1 : undefined,
+    dueDay: dueInfo.day,
     daysLeft: dueInfo.daysLeft,
     totalInst,
     paidInst,
@@ -6856,12 +6861,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.2",
-    "buildNumber": 534,
+    "buildNumber": 536,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.2",
-    "latestBuild": 534,
+    "latestBuild": 536,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7120,6 +7125,24 @@ function App() {
   const toggleSettingsSection = sectionName => {
     setOpenSettingsSection(prev => prev === sectionName ? null : sectionName);
   };
+  const [notifPermission, setNotifPermission] = useState(() => typeof Notification !== 'undefined' ? Notification.permission : 'default');
+  const [isSendingTestNotif, setIsSendingTestNotif] = useState(false);
+  useEffect(() => {
+    const handlePermissionChange = e => {
+      if (e?.detail?.permission) {
+        setNotifPermission(e.detail.permission);
+      } else if (typeof Notification !== 'undefined') {
+        setNotifPermission(Notification.permission);
+      }
+    };
+    window.addEventListener('fcm_permission_changed', handlePermissionChange);
+    window.addEventListener('fcm_token_ready', () => {
+      if (typeof Notification !== 'undefined') setNotifPermission(Notification.permission);
+    });
+    return () => {
+      window.removeEventListener('fcm_permission_changed', handlePermissionChange);
+    };
+  }, []);
 
   // Register Service Worker and monitor updates
   useEffect(() => {
@@ -7168,7 +7191,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 534;
+    const EMBEDDED_BUILD = 536;
     const EMBEDDED_VERSION = "3.3.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -7399,6 +7422,8 @@ function App() {
         clearTimeout(t1);
         clearTimeout(t2);
       };
+    } else {
+      handleCloseVirtualKeyboard();
     }
   }, [showStackWizard, wizardMode, wizardType]);
 
@@ -7597,6 +7622,7 @@ function App() {
 
   // --- Start: FCM Push Notification Reminders Sync & Client-Side Trigger ---
   useEffect(() => {
+    let checkInterval = null;
     try {
       const syncPayload = loans.map(loan => {
         const info = getLoanNextDueInfo(loan, transactions);
@@ -7605,6 +7631,11 @@ function App() {
           name: loan.title || loan.name || 'وام',
           targetName: loan.targetName || '',
           nextDueDateStr: info.nextDueDateStr,
+          nextDueDateIso: info.nextDueDateIso,
+          dueYear: info.dueYear,
+          dueMonth: info.dueMonth,
+          dueDay: info.dueDay,
+          daysLeft: info.daysLeft,
           isCompleted: info.isCompleted,
           nextDueNum: info.nextDueNum
         };
@@ -7612,39 +7643,77 @@ function App() {
       localStorage.setItem('amir_fin_fcm_reminders', JSON.stringify(syncPayload));
       window.dispatchEvent(new Event('amir_fin_reminders_updated'));
 
-      // Check for today's due loans on client launch
-      const deviceDate = getDeviceJalaliDate();
-      const todayStr = `${deviceDate.year}/${String(jalaliMonths.indexOf(deviceDate.month) + 1).padStart(2, '0')}/${String(deviceDate.day).padStart(2, '0')}`;
-      const dueToday = syncPayload.filter(r => !r.isCompleted && r.nextDueDateStr === todayStr);
-      if (dueToday.length > 0 && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-        const lastNotified = localStorage.getItem('amir_fin_last_local_notify_date');
-        if (lastNotified !== todayStr) {
-          const names = dueToday.map(r => r.name).join(' و ');
-          const title = "یادآوری اقساط وام";
-          const body = dueToday.length > 1 ? `امروز موعد پرداخت قسط وام‌های ${names} است.` : `امروز موعد پرداخت قسط وام ${names} است.`;
-          if (navigator.serviceWorker && navigator.serviceWorker.ready) {
-            navigator.serviceWorker.ready.then(reg => {
-              reg.showNotification(title, {
-                body: body,
-                icon: './icon-192x192.png',
-                badge: './favicon-96x96.png',
-                tag: 'loan-reminder-' + todayStr
-              });
-            }).catch(e => console.warn('SW local notification error:', e));
-          } else {
-            try {
-              new Notification(title, {
-                body,
-                icon: './icon-192x192.png'
-              });
-            } catch (e) {}
+      // Core checker for today's due loans (triggered at 10:00 AM or later)
+      const checkAndNotifyDueToday = () => {
+        try {
+          if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+          const now = new Date();
+          const tehranHourStr = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Tehran',
+            hour: 'numeric',
+            hour12: false
+          }).format(now);
+          const currentHour = parseInt(tehranHourStr, 10);
+
+          // Notifications for due installments are scheduled for 10:00 AM
+          if (currentHour < 10) return;
+          const deviceDate = getDeviceJalaliDate();
+          const monthNum = jalaliMonths.indexOf(deviceDate.month) + 1;
+          const todayIso = `${deviceDate.year}/${String(monthNum).padStart(2, '0')}/${String(deviceDate.day).padStart(2, '0')}`;
+          const dueToday = syncPayload.filter(r => {
+            if (r.isCompleted) return false;
+            if (r.nextDueDateIso && r.nextDueDateIso === todayIso) return true;
+            if (r.dueYear === deviceDate.year && r.dueMonth === monthNum && r.dueDay === deviceDate.day) return true;
+            if (r.nextDueDateStr === todayIso) return true;
+            if (typeof r.daysLeft === 'number' && r.daysLeft === 0) return true;
+            return false;
+          });
+          if (dueToday.length > 0) {
+            const lastNotified = localStorage.getItem('amir_fin_last_local_notify_date');
+            if (lastNotified !== todayIso) {
+              const names = dueToday.map(r => r.name || 'وام').join(' و ');
+              const title = "یادآوری اقساط وام";
+              const body = dueToday.length > 1 ? `امروز موعد پرداخت قسط وام‌های ${names} است.` : `امروز موعد پرداخت قسط وام ${names} است.`;
+              if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+                navigator.serviceWorker.ready.then(reg => {
+                  reg.showNotification(title, {
+                    body: body,
+                    icon: './icon-192x192.png',
+                    badge: './favicon-96x96.png',
+                    tag: 'loan-reminder-' + todayIso,
+                    renotify: true,
+                    dir: 'rtl',
+                    lang: 'fa'
+                  });
+                }).catch(e => console.warn('SW local notification error:', e));
+              } else {
+                try {
+                  new Notification(title, {
+                    body,
+                    icon: './icon-192x192.png'
+                  });
+                } catch (e) {}
+              }
+              localStorage.setItem('amir_fin_last_local_notify_date', todayIso);
+              console.log(`[Notification] Daily installment reminder notified for ${todayIso}:`, names);
+            }
           }
-          localStorage.setItem('amir_fin_last_local_notify_date', todayStr);
+        } catch (checkErr) {
+          console.error('Error during daily reminder check:', checkErr);
         }
-      }
+      };
+
+      // Run immediate check
+      checkAndNotifyDueToday();
+
+      // Check periodically every 30 seconds so if the app is open before 10 AM, it triggers at 10:00 AM sharp
+      checkInterval = setInterval(checkAndNotifyDueToday, 30000);
     } catch (e) {
       console.error('Reminders sync error:', e);
     }
+    return () => {
+      if (checkInterval) clearInterval(checkInterval);
+    };
   }, [loans, transactions]);
   // --- End: FCM Push Notification Reminders Sync & Client-Side Trigger ---
 
@@ -9802,6 +9871,7 @@ function App() {
       setShowUnsavedConfirmDialog(true);
       return;
     }
+    handleCloseVirtualKeyboard();
     setEditingCardId(null);
     setModifiedCardIds([]);
     setCardFormBackup(null);
@@ -9893,6 +9963,7 @@ function App() {
     }
   }, [editingCardId]);
   const cancelEditingCard = () => {
+    handleCloseVirtualKeyboard();
     if (cardFormBackup) {
       setLoanForm(cardFormBackup.loanForm);
       setDemandDebtForm(cardFormBackup.demandDebtForm);
@@ -9984,6 +10055,7 @@ function App() {
     if (wizardMode === 'edit') {
       saveWizardData();
     }
+    handleCloseVirtualKeyboard();
     setEditingCardId(null);
     showToast('تغییرات کارت ثبت شد');
   };
@@ -15698,7 +15770,9 @@ function App() {
         }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
-          className: "flex items-start gap-3 p-3 bg-purple-50/50 dark:bg-purple-900/20 rounded-2xl border border-purple-100 dark:border-purple-800/50 mt-2"
+          className: "flex flex-col gap-2.5 p-3.5 bg-purple-50/60 dark:bg-purple-900/20 rounded-2xl border border-purple-100 dark:border-purple-800/50 mt-2"
+        }, React.createElement("div", {
+          className: "flex items-start gap-3"
         }, React.createElement("div", {
           className: "w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center flex-shrink-0 border border-purple-200 dark:border-purple-800/50"
         }, React.createElement(Icon, {
@@ -15706,26 +15780,70 @@ function App() {
           className: "w-4.5 h-4.5 text-purple-600 dark:text-purple-400"
         })), React.createElement("div", {
           className: "text-right min-w-0 flex-1 space-y-1"
+        }, React.createElement("div", {
+          className: "flex items-center justify-between gap-2"
         }, React.createElement("p", {
           className: "text-xs font-bold text-slate-900 dark:text-white"
-        }, "اعلان هوشمند اقساط (Push)"), React.createElement("p", {
-          className: "text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mb-2"
-        }, "با فعال‌سازی این بخش، موعد اقساط به صورت نوتیفیکیشن روی گوشی شما یادآوری می‌شود."), React.createElement("button", {
+        }, "اعلان هوشمند اقساط (Push)"), notifPermission === 'granted' ? React.createElement("span", {
+          className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+        }, "فعال (ساعت ۱۰:۰۰ صبح)") : notifPermission === 'denied' ? React.createElement("span", {
+          className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
+        }, "مسدود شده") : React.createElement("span", {
+          className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+        }, "غیرفعال")), React.createElement("p", {
+          className: "text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed"
+        }, notifPermission === 'granted' ? "سیستم اعلان فعال است. اقساط سررسید شده هر روز ساعت ۱۰:۰۰ صبح به صورت اعلان روی گوشی شما ارسال می‌شوند." : notifPermission === 'denied' ? "دسترسی به اعلان‌ها مسدود شده است. لطفاً از بخش تنظیمات سایت/مرورگر، دسترسی Notifications را مجاز کنید." : "با فعال‌سازی این بخش، موعد پرداخت اقساط هر روز در ساعت ۱۰:۰۰ صبح به عنوان اعلان یادآوری می‌شود."))), notifPermission === 'granted' ? React.createElement("div", {
+          className: "flex items-center gap-2 pt-1"
+        }, React.createElement("button", {
+          type: "button",
+          disabled: isSendingTestNotif,
+          onClick: async () => {
+            setIsSendingTestNotif(true);
+            try {
+              if (window.sendTestNotification) {
+                await window.sendTestNotification();
+                showToast('اعلان آزمایشی ارسال شد');
+              } else {
+                showToast('سیستم اعلان در دسترس نیست');
+              }
+            } catch (e) {
+              showToast(e.message || 'خطا در ارسال اعلان آزمایشی');
+            } finally {
+              setIsSendingTestNotif(false);
+            }
+          },
+          className: "flex-1 py-2 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+        }, isSendingTestNotif ? "در حال ارسال..." : "ارسال اعلان آزمایشی (تست)"), React.createElement("button", {
+          type: "button",
+          onClick: async () => {
+            try {
+              if (window.syncRemindersToFirestore) {
+                await window.syncRemindersToFirestore();
+                showToast('اقساط با سرور اعلان همگام شدند');
+              }
+            } catch (e) {
+              showToast('خطا در همگام‌سازی: ' + e.message);
+            }
+          },
+          className: "px-3 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1"
+        }, "همگام‌سازی با سرور")) : React.createElement("button", {
           type: "button",
           onClick: async () => {
             if (window.requestNotificationPermission) {
               const token = await window.requestNotificationPermission();
               if (token) {
-                showToast('اعلان‌ها با موفقیت فعال شدند');
+                setNotifPermission('granted');
+                showToast('اعلان‌ها با موفقیت فعال شدند (ساعت ۱۰:۰۰ صبح)');
               } else {
-                showToast('دسترسی اعلان رد شد یا خطایی رخ داد');
+                if (typeof Notification !== 'undefined') setNotifPermission(Notification.permission);
+                showToast('دسترسی اعلان تایید نشد');
               }
             } else {
               showToast('امکان فعال‌سازی اعلان در این نسخه پشتیبانی نمی‌شود');
             }
           },
-          className: "w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer mt-1.5"
-        }, "فعال‌سازی اعلان‌ها")))))), /*#__PURE__*/
+          className: "w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer mt-1"
+        }, "فعال‌سازی اعلان هوشمند اقساط (ساعت ۱۰:۰۰)"))))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           onClick: () => toggleSettingsSection('data'),

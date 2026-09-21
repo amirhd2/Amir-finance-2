@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amir-finance-v3.3.2-b535';
+const CACHE_NAME = 'amir-finance-v3.3.2-b536';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -212,32 +212,34 @@ try {
   console.warn('[sw.js] FCM compat scripts load warning (normal if offline):', fcmErr);
 }
 
-// Fallback push event handler if FCM compat script could not be loaded
-if (!fcmInitialized) {
-  self.addEventListener('push', (event) => {
-    let title = 'یادآوری امیر فایننس';
-    let body = 'موعد قسط وام یا سررسید حساب شما فرا رسیده است.';
-    let data = {};
-    if (event.data) {
-      try {
-        const parsed = event.data.json();
-        title = parsed.notification?.title || parsed.title || title;
-        body = parsed.notification?.body || parsed.body || body;
-        data = parsed;
-      } catch (e) {
-        body = event.data.text() || body;
-      }
+// Dedicated push event handler to guarantee notification delivery on all devices & browsers
+self.addEventListener('push', (event) => {
+  let title = 'یادآوری اقساط وام';
+  let body = 'موعد پرداخت قسط وام شما فرا رسیده است.';
+  let data = {};
+  if (event.data) {
+    try {
+      const parsed = event.data.json();
+      title = parsed.notification?.title || parsed.title || title;
+      body = parsed.notification?.body || parsed.body || body;
+      data = parsed.data || parsed;
+    } catch (e) {
+      body = event.data.text() || body;
     }
-    event.waitUntil(
-      self.registration.showNotification(title, {
-        body: body,
-        icon: './icon-192x192.png',
-        badge: './favicon-96x96.png',
-        data: data
-      })
-    );
-  });
-}
+  }
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: body,
+      icon: './icon-192x192.png',
+      badge: './favicon-96x96.png',
+      tag: 'loan-reminder-' + Date.now(),
+      renotify: true,
+      dir: 'rtl',
+      lang: 'fa',
+      data: data
+    })
+  );
+});
 
 // Focus or open app on notification click
 self.addEventListener('notificationclick', (event) => {

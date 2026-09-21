@@ -2,24 +2,32 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import cron from 'node-cron';
-import admin from 'firebase-admin';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import { getMessaging } from 'firebase-admin/messaging';
 
 const app = express();
 const PORT = 3000;
 const HOST = '0.0.0.0';
-
 const rootPath = process.cwd();
 
+// Firestore Named Database ID for this project
+const FIRESTORE_DB_ID = 'ai-studio-newfinanceapp-374c3a0a-cf0b-49f8-895c-4c25e6036db1';
+
 // Firebase Admin Initialization
-let isFirebaseAdminInitialized = false;
+let firebaseAdminApp = null;
+let firestoreDb = null;
+let firebaseMessaging = null;
+
 try {
   if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    });
-    isFirebaseAdminInitialized = true;
-    console.log("Firebase Admin initialized successfully.");
+    firebaseAdminApp = getApps().length > 0
+      ? getApps()[0]
+      : initializeApp({ credential: cert(serviceAccount) });
+    firestoreDb = getFirestore(firebaseAdminApp, FIRESTORE_DB_ID);
+    firebaseMessaging = getMessaging(firebaseAdminApp);
+    console.log(`Firebase Admin initialized successfully with database: ${FIRESTORE_DB_ID}`);
   } else {
     console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is not set. Push notifications via backend will not work.");
   }
@@ -27,82 +35,157 @@ try {
   console.error("Error initializing Firebase Admin:", error);
 }
 
+// Helper to get today's Jalali date in Asia/Tehran timezone
+function getTehranJalaliDate() {
+  const todayJalaliFormatter = new Intl.DateTimeFormat('en-US-u-ca-persian', {
+    timeZone: 'Asia/Tehran',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const todayParts = todayJalaliFormatter.formatToParts(new Date());
+  let jYear = '1405', jMonth = '01', jDay = '01';
+  todayParts.forEach(p => {
+    if (p.type === 'year') jYear = p.value;
+    if (p.type === 'month') jMonth = p.value;
+    if (p.type === 'day') jDay = p.value;
+  });
+  return {
+    iso: `${jYear}/${jMonth}/${jDay}`,
+    year: parseInt(jYear, 10),
+    month: parseInt(jMonth, 10),
+    day: parseInt(jDay, 10)
+  };
+}
+
 // Core function to execute reminders
 async function executeSendReminders() {
-  if (!isFirebaseAdminInitialized) {
+  if (!firebaseAdminApp || !firestoreDb || !firebaseMessaging) {
     throw new Error("Firebase Admin is not configured. Please set FIREBASE_SERVICE_ACCOUNT_KEY in your env variables.");
   }
 
-  const db = admin.firestore();
-  const snapshot = await db.collection('fcm_reminders').get();
-  
+  const snapshot = await firestoreDb.collection('fcm_reminders').get();
   if (snapshot.empty) {
-    return { success: true, count: 0, message: "No users configured for reminders." };
+    return { success: true, count: 0, message: "No registered devices in fcm_reminders." };
   }
 
   let messagesSent = 0;
-  
-  const todayJalaliFormatter = new Intl.DateTimeFormat('en-US-u-ca-persian', { year: 'numeric', month: '2-digit', day: '2-digit' });
-  const todayParts = todayJalaliFormatter.formatToParts(new Date());
-  let jYear, jMonth, jDay;
-  todayParts.forEach(p => {
-      if (p.type === 'year') jYear = p.value;
-      if (p.type === 'month') jMonth = p.value;
-      if (p.type === 'day') jDay = p.value;
-  });
-  const todayStr = `${jYear}/${jMonth}/${jDay}`; 
+  const errors = [];
+  const tehranDate = getTehranJalaliDate();
+  const todayStr = tehranDate.iso;
 
   for (const doc of snapshot.docs) {
     const data = doc.data();
     const token = data.token;
     const reminders = data.reminders || [];
-    
-    const dueToday = reminders.filter(r => !r.isCompleted && r.nextDueDateStr === todayStr);
-    
+
+    // Filter reminders due today: support nextDueDateIso, nextDueDateStr, year/month/day, or daysLeft === 0
+    const dueToday = reminders.filter(r => {
+      if (r.isCompleted) return false;
+      if (r.nextDueDateIso && r.nextDueDateIso === todayStr) return true;
+      if (r.dueYear === tehranDate.year && r.dueMonth === tehranDate.month && r.dueDay === tehranDate.day) return true;
+      if (r.nextDueDateStr === todayStr) return true;
+      if (typeof r.daysLeft === 'number' && r.daysLeft === 0) return true;
+      return false;
+    });
+
     if (dueToday.length > 0 && token) {
-      const names = dueToday.map(r => r.name).join(' و ');
-      const text = dueToday.length > 1 
+      const names = dueToday.map(r => r.name || r.title || 'وام').join(' و ');
+      const text = dueToday.length > 1
         ? `امروز موعد پرداخت قسط وام‌های ${names} است.`
         : `امروز موعد پرداخت قسط وام ${names} است.`;
-      
+
       try {
-        await admin.messaging().send({
+        await firebaseMessaging.send({
           token: token,
           notification: {
             title: "یادآوری اقساط وام",
             body: text
+          },
+          data: {
+            type: 'loan_reminder',
+            date: todayStr,
+            names: names
+          },
+          webpush: {
+            notification: {
+              title: "یادآوری اقساط وام",
+              body: text,
+              icon: '/icon-192x192.png',
+              badge: '/favicon-96x96.png',
+              tag: 'loan-reminder-' + todayStr,
+              renotify: true
+            }
           }
         });
         messagesSent++;
       } catch (e) {
         console.error("Failed to send message to token", token, e);
+        errors.push({ token: token.substring(0, 15) + '...', error: e.message });
       }
     }
   }
-  
-  return { 
-    success: true, 
-    count: messagesSent, 
+
+  return {
+    success: true,
+    count: messagesSent,
     todayStr,
-    message: `Executed successfully. Sent ${messagesSent} reminders for date ${todayStr}.` 
+    totalDevices: snapshot.size,
+    errors: errors.length > 0 ? errors : undefined,
+    message: `Executed successfully. Sent ${messagesSent} reminders for date ${todayStr} across ${snapshot.size} device(s).`
   };
 }
 
-// Setup internal automatic cron job at 10:00 AM every day
+// Setup internal automatic cron job at 10:00 AM Asia/Tehran every day
+let lastCronRunDate = null;
 try {
   cron.schedule('0 10 * * *', async () => {
-    console.log('[Internal Cron] Running scheduled daily reminder check at 10:00 AM...');
+    const today = getTehranJalaliDate().iso;
+    console.log(`[Internal Cron] Running scheduled daily reminder check at 10:00 AM (Tehran Time) for date ${today}...`);
     try {
       const result = await executeSendReminders();
+      lastCronRunDate = today;
       console.log('[Internal Cron Result]:', result);
     } catch (err) {
       console.error('[Internal Cron Error]:', err.message);
     }
+  }, {
+    timezone: 'Asia/Tehran'
   });
-  console.log('[Internal Cron] Daily reminder schedule registered (10:00 AM).');
+  console.log('[Internal Cron] Daily reminder schedule registered (10:00 AM Asia/Tehran).');
 } catch (cronErr) {
   console.warn('[Internal Cron] Failed to register cron schedule:', cronErr);
 }
+
+// Safety check: if server container boots up or wakes up after 10:00 AM Tehran time and today's run has not happened yet
+function checkAndRunIfMissed10AM() {
+  try {
+    if (!firebaseAdminApp || !firestoreDb || !firebaseMessaging) return;
+    const now = new Date();
+    const tehranHourStr = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Tehran',
+      hour: 'numeric',
+      hour12: false
+    }).format(now);
+    const tehranHour = parseInt(tehranHourStr, 10);
+    const today = getTehranJalaliDate().iso;
+
+    if (tehranHour >= 10 && lastCronRunDate !== today) {
+      console.log(`[Safety Check] Current Tehran hour is ${tehranHour} (>=10:00 AM) and date (${today}) not yet checked. Executing reminder check now...`);
+      lastCronRunDate = today;
+      executeSendReminders()
+        .then(res => console.log('[Safety Check Result]:', res))
+        .catch(err => {
+          lastCronRunDate = null; // allow retry if failed
+          console.error('[Safety Check Error]:', err.message);
+        });
+    }
+  } catch (e) {
+    console.warn('[Safety Check Error]:', e);
+  }
+}
+setInterval(checkAndRunIfMissed10AM, 10 * 60 * 1000);
+setTimeout(checkAndRunIfMissed10AM, 4000);
 
 // CORS & Middleware for API routes
 app.use((req, res, next) => {
@@ -115,20 +198,68 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Endpoint for External Cron triggers (e.g. cron-job.org)
+// JSON body parser for POST API endpoints
+app.use(express.json());
+
+// API Endpoint for External Cron triggers (e.g. cron-job.org) or manual triggers
 app.all(['/api/send-reminders', '/api/send-reminders/'], async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=UTF-8');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
-
   try {
     const result = await executeSendReminders();
     return res.status(200).json(result);
   } catch (err) {
     console.error('API Send Reminders Error:', err);
-    return res.status(500).json({ 
-      success: false, 
-      error: err.message || "Server error executing reminders." 
+    return res.status(500).json({
+      success: false,
+      error: err.message || "Server error executing reminders."
     });
+  }
+});
+
+// API Endpoint for testing push notification immediately from UI
+app.post('/api/send-test-push', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+  try {
+    if (!firebaseAdminApp || !firebaseMessaging) {
+      return res.status(400).json({ success: false, error: 'Firebase Admin پیکربندی نشده است.' });
+    }
+    let token = req.body?.token;
+    if (!token && firestoreDb) {
+      const snap = await firestoreDb.collection('fcm_reminders').limit(1).get();
+      if (!snap.empty) {
+        token = snap.docs[0].data().token;
+      }
+    }
+    if (!token) {
+      return res.status(404).json({
+        success: false,
+        error: 'هیچ توکن دستگاهی یافت نشد. لطفاً در برنامه روی دکمه فعال‌سازی اعلان‌ها کلیک نمایید.'
+      });
+    }
+    await firebaseMessaging.send({
+      token,
+      notification: {
+        title: "آزمایش سیستم یادآوری اقساط",
+        body: "سیستم اعلان اقساط فعال است و یادآوری‌ها در ساعت ۱۰:۰۰ صبح با موفقیت ارسال خواهند شد."
+      },
+      data: {
+        type: 'test_reminder',
+        timestamp: String(Date.now())
+      },
+      webpush: {
+        notification: {
+          title: "آزمایش سیستم یادآوری اقساط",
+          body: "سیستم اعلان اقساط فعال است و یادآوری‌ها در ساعت ۱۰:۰۰ صبح با موفقیت ارسال خواهند شد.",
+          icon: '/icon-192x192.png',
+          badge: '/favicon-96x96.png'
+        }
+      }
+    });
+    return res.status(200).json({ success: true, message: 'اعلان تست با موفقیت به دستگاه ارسال شد.' });
+  } catch (err) {
+    console.error('Test Push Error:', err);
+    return res.status(500).json({ success: false, error: err.message });
   }
 });
 
