@@ -6856,12 +6856,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.2",
-    "buildNumber": 532,
+    "buildNumber": 534,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.2",
-    "latestBuild": 532,
+    "latestBuild": 534,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7168,7 +7168,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 532;
+    const EMBEDDED_BUILD = 534;
     const EMBEDDED_VERSION = "3.3.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -8039,8 +8039,14 @@ function App() {
         const timeA = Number(a.createdAt || a.id || 0);
         const timeB = Number(b.createdAt || b.id || 0);
         cmp = timeA - timeB;
+      } else if (loanSortBy === 'remainingInstallments') {
+        const infoA = getLoanNextDueInfo(a, transactions);
+        const infoB = getLoanNextDueInfo(b, transactions);
+        const remA = typeof infoA.remainingInst === 'number' ? infoA.remainingInst : 999999;
+        const remB = typeof infoB.remainingInst === 'number' ? infoB.remainingInst : 999999;
+        cmp = remA - remB;
       } else {
-        // 'nextDue' (نزدیک‌ترین زمان سررسید قسط)
+        // 'nextDue' (زمان سررسید قسط)
         const infoA = getLoanNextDueInfo(a, transactions);
         const infoB = getLoanNextDueInfo(b, transactions);
         const daysA = typeof infoA.daysLeft === 'number' ? infoA.daysLeft : 999999;
@@ -12416,10 +12422,13 @@ function App() {
             className: "fixed inset-0 z-40",
             onClick: () => setIsLoanSortMenuOpen(false)
           }), /*#__PURE__*/React.createElement("div", {
-            className: "absolute left-0 top-11 sm:top-12 z-50 w-60 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 shadow-2xl p-2 space-y-1 text-sm font-medium animate-in fade-in zoom-in-95 duration-150 text-right"
+            className: "absolute left-0 top-11 sm:top-12 z-50 w-64 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 shadow-2xl p-2 space-y-1 text-sm font-medium animate-in fade-in zoom-in-95 duration-150 text-right"
           }, [{
             id: 'nextDue',
             label: 'زمان سررسید قسط'
+          }, {
+            id: 'remainingInstallments',
+            label: 'کمترین تعداد قسط مانده'
           }, {
             id: 'createdAt',
             label: 'زمان ثبت وام'
@@ -12432,7 +12441,7 @@ function App() {
                   setLoanSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
                 } else {
                   setLoanSortBy(opt.id);
-                  setLoanSortOrder(opt.id === 'nextDue' ? 'asc' : 'desc');
+                  setLoanSortOrder(opt.id === 'createdAt' ? 'desc' : 'asc');
                 }
               },
               className: `w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'}`
@@ -12947,10 +12956,13 @@ function App() {
         }, sortedFilteredContacts.map(contact => {
           const contactLoans = loans.filter(l => l.contactId === contact.id);
           const hasActiveLoan = contactLoans.some(l => !getLoanNextDueInfo(l, transactions).isCompleted && (l.remainingAmount === undefined || l.remainingAmount > 0));
-          const hasSettledLoan = contactLoans.some(l => getLoanNextDueInfo(l, transactions).isCompleted || l.remainingAmount !== undefined && l.remainingAmount <= 0);
-          const hasSettledDemand = getSettledPeriodCount(contact.id, 'demand') > 0;
+          const settledLoanCount = contactLoans.filter(l => getLoanNextDueInfo(l, transactions).isCompleted || l.remainingAmount !== undefined && l.remainingAmount <= 0).length;
+          const hasSettledLoan = settledLoanCount > 0;
+          const settledDemandCount = Math.max(getSettledPeriodCount(contact.id, 'demand'), completedPeriods.filter(p => p.contactId === contact.id && p.type === 'demand').length);
+          const hasSettledDemand = settledDemandCount > 0;
           const hasActiveDemand = contact.totalDemand > 0;
-          const hasSettledDebt = getSettledPeriodCount(contact.id, 'debt') > 0;
+          const settledDebtCount = Math.max(getSettledPeriodCount(contact.id, 'debt'), completedPeriods.filter(p => p.contactId === contact.id && p.type === 'debt').length);
+          const hasSettledDebt = settledDebtCount > 0;
           const hasActiveDebt = contact.totalDebt > 0;
           const avatarBg = getAvatarColor(contact.id, contact.firstName + contact.lastName);
           return /*#__PURE__*/ /*#__PURE__*/React.createElement(SwipeToDeleteItem, {
@@ -13015,14 +13027,8 @@ function App() {
           }, hasSettledLoan && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: "absolute -top-1.5 -right-1.5 w-[18px] h-[18px] bg-blue-600 text-white rounded-full flex items-center justify-center shadow-xs z-20 border-2 border-white dark:border-slate-800"
-          }, /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement(Icon, {
-            name: "check",
-            className: "w-2.5 h-2.5 text-white",
-            strokeWidth: 3.5
-          })), /*#__PURE__*/
+            className: "absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-sm z-20 border-2 border-white dark:border-slate-800 text-[11px] font-black leading-none font-numeric"
+          }, toAppDigits(settledLoanCount)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "landmark",
@@ -13042,14 +13048,8 @@ function App() {
           }, hasSettledDemand && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: "absolute -top-1.5 -right-1.5 w-[18px] h-[18px] bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xs z-20 border-2 border-white dark:border-slate-800"
-          }, /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement(Icon, {
-            name: "check",
-            className: "w-2.5 h-2.5 text-white",
-            strokeWidth: 3.5
-          })), /*#__PURE__*/
+            className: "absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-sm z-20 border-2 border-white dark:border-slate-800 text-[11px] font-black leading-none font-numeric"
+          }, toAppDigits(settledDemandCount)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-down-left",
@@ -13069,14 +13069,8 @@ function App() {
           }, hasSettledDebt && /*#__PURE__*/
           /*#__PURE__*/
           React.createElement("div", {
-            className: "absolute -top-1.5 -right-1.5 w-[18px] h-[18px] bg-rose-600 text-white rounded-full flex items-center justify-center shadow-xs z-20 border-2 border-white dark:border-slate-800"
-          }, /*#__PURE__*/
-          /*#__PURE__*/
-          React.createElement(Icon, {
-            name: "check",
-            className: "w-2.5 h-2.5 text-white",
-            strokeWidth: 3.5
-          })), /*#__PURE__*/
+            className: "absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1 bg-rose-600 text-white rounded-full flex items-center justify-center shadow-sm z-20 border-2 border-white dark:border-slate-800 text-[11px] font-black leading-none font-numeric"
+          }, toAppDigits(settledDebtCount)), /*#__PURE__*/
           /*#__PURE__*/
           React.createElement(Icon, {
             name: "arrow-up-right",
