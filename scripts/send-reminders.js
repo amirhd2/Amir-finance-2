@@ -4,24 +4,48 @@ import { getMessaging } from 'firebase-admin/messaging';
 
 const FIRESTORE_DB_ID = 'ai-studio-newfinanceapp-374c3a0a-cf0b-49f8-895c-4c25e6036db1';
 
+function parseServiceAccountKey(raw) {
+  if (!raw) return null;
+  let str = String(raw).trim();
+  // Strip outer quotes if secret was surrounded by quotes
+  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+    str = str.slice(1, -1).trim();
+  }
+  // Check if string is base64 encoded JSON
+  if (!str.startsWith('{')) {
+    try {
+      const decoded = Buffer.from(str, 'base64').toString('utf8').trim();
+      if (decoded.startsWith('{')) {
+        str = decoded;
+      }
+    } catch (_) {}
+  }
+  return JSON.parse(str);
+}
+
 async function main() {
   console.log('[Daily Reminders] Starting daily loan installment reminder check...');
+  console.log(`[Daily Reminders] Runtime: Node.js ${process.version}`);
   
-  const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-  if (!serviceAccountKey) {
-    console.warn('[Daily Reminders] FIREBASE_SERVICE_ACCOUNT_KEY is not set.');
-    console.log('[Daily Reminders] To enable remote background push, set FIREBASE_SERVICE_ACCOUNT_KEY in environment/secrets.');
+  const rawKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (!rawKey || !rawKey.trim()) {
+    console.warn('[Daily Reminders] FIREBASE_SERVICE_ACCOUNT_KEY environment secret is not set.');
+    console.log('[Daily Reminders] Please ensure FIREBASE_SERVICE_ACCOUNT_KEY is configured in GitHub Repository Secrets.');
     process.exit(0);
   }
 
   let app;
   try {
-    const serviceAccount = JSON.parse(serviceAccountKey);
+    const serviceAccount = parseServiceAccountKey(rawKey);
+    if (!serviceAccount || !serviceAccount.project_id) {
+      throw new Error("Invalid service account JSON: missing project_id");
+    }
+    console.log(`[Daily Reminders] Service Account parsed successfully for project: ${serviceAccount.project_id}`);
     app = initializeApp({
       credential: cert(serviceAccount)
     });
   } catch (err) {
-    console.error('[Daily Reminders] Error parsing FIREBASE_SERVICE_ACCOUNT_KEY or initializing app:', err);
+    console.error('[Daily Reminders] Error parsing FIREBASE_SERVICE_ACCOUNT_KEY or initializing app:', err.message);
     process.exit(1);
   }
 
