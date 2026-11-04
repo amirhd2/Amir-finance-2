@@ -78,6 +78,21 @@ async function main() {
     const numDay = parseInt(jDay, 10);
     console.log(`[Daily Reminders] Today's Jalali Date (Asia/Tehran): ${todayStr}`);
 
+    // Get current Tehran time for checking target notification hours
+    const now = new Date();
+    const tehranTimeParts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Tehran',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: false
+    }).formatToParts(now);
+    let currentTehranHour = 10, currentTehranMinute = 0;
+    tehranTimeParts.forEach(p => {
+      if (p.type === 'hour') currentTehranHour = parseInt(p.value, 10);
+      if (p.type === 'minute') currentTehranMinute = parseInt(p.value, 10);
+    });
+    const currentTehranTotalMin = currentTehranHour * 60 + currentTehranMinute;
+
     let sentCount = 0;
 
     for (const doc of snapshot.docs) {
@@ -85,6 +100,28 @@ async function main() {
       const token = data.token;
       const reminders = data.reminders || [];
       
+      // 1. Skip if user turned off reminders in settings
+      if (data.remindersEnabled === false) {
+        console.log(`[Daily Reminders] Skipping token ${token.substring(0, 10)}... (reminders disabled by user).`);
+        continue;
+      }
+
+      // 2. Skip if already notified today by server
+      if (data.lastNotifiedDate === todayStr) {
+        console.log(`[Daily Reminders] Token ${token.substring(0, 10)}... already notified today (${todayStr}).`);
+        continue;
+      }
+
+      // 3. Check requested reminder time
+      const targetHour = typeof data.reminderHour === 'number' ? data.reminderHour : 10;
+      const targetMin = typeof data.reminderMinute === 'number' ? data.reminderMinute : 0;
+      const targetTotalMin = targetHour * 60 + targetMin;
+
+      if (currentTehranTotalMin < targetTotalMin) {
+        console.log(`[Daily Reminders] Skipping token ${token.substring(0, 10)}... Requested time is ${data.reminderTime || '10:00'}, current Tehran time is ${currentTehranHour}:${String(currentTehranMinute).padStart(2, '0')}.`);
+        continue;
+      }
+
       const dueToday = reminders.filter(r => {
         if (r.isCompleted) return false;
         if (r.nextDueDateIso && r.nextDueDateIso === todayStr) return true;
@@ -124,6 +161,9 @@ async function main() {
           });
           console.log(`[Daily Reminders] Successfully sent notification to token: ${token.substring(0, 15)}...`);
           sentCount++;
+          try {
+            await doc.ref.set({ lastNotifiedDate: todayStr }, { merge: true });
+          } catch (_) {}
         } catch (e) {
           console.error(`[Daily Reminders] Failed to send push message to token ${token.substring(0, 15)}...`, e.message);
         }

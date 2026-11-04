@@ -6861,12 +6861,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.2",
-    "buildNumber": 536,
+    "buildNumber": 538,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.2",
-    "latestBuild": 536,
+    "latestBuild": 538,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7191,7 +7191,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 536;
+    const EMBEDDED_BUILD = 538;
     const EMBEDDED_VERSION = "3.3.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -7641,22 +7641,39 @@ function App() {
         };
       });
       localStorage.setItem('amir_fin_fcm_reminders', JSON.stringify(syncPayload));
+      localStorage.setItem('amir_fin_enable_reminders', JSON.stringify(enableReminders));
+      localStorage.setItem('amir_fin_reminder_time', reminderTime);
       window.dispatchEvent(new Event('amir_fin_reminders_updated'));
 
-      // Core checker for today's due loans (triggered at 10:00 AM or later)
+      // Core checker for today's due loans (triggered at configured target time or later)
       const checkAndNotifyDueToday = () => {
         try {
+          // Check if reminders are enabled by user
+          if (!enableReminders) return;
           if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+
+          // Parse target notification time
+          const [tHourStr, tMinStr] = (reminderTime || '10:00').split(':');
+          const targetHour = parseInt(tHourStr || '10', 10);
+          const targetMin = parseInt(tMinStr || '0', 10);
+          const targetTotalMin = targetHour * 60 + targetMin;
           const now = new Date();
-          const tehranHourStr = new Intl.DateTimeFormat('en-US', {
+          const tehranTimeParts = new Intl.DateTimeFormat('en-US', {
             timeZone: 'Asia/Tehran',
             hour: 'numeric',
+            minute: 'numeric',
             hour12: false
-          }).format(now);
-          const currentHour = parseInt(tehranHourStr, 10);
+          }).formatToParts(now);
+          let currentHour = 10,
+            currentMinute = 0;
+          tehranTimeParts.forEach(p => {
+            if (p.type === 'hour') currentHour = parseInt(p.value, 10);
+            if (p.type === 'minute') currentMinute = parseInt(p.value, 10);
+          });
+          const currentTotalMin = currentHour * 60 + currentMinute;
 
-          // Notifications for due installments are scheduled for 10:00 AM
-          if (currentHour < 10) return;
+          // Notifications trigger at or after the set time
+          if (currentTotalMin < targetTotalMin) return;
           const deviceDate = getDeviceJalaliDate();
           const monthNum = jalaliMonths.indexOf(deviceDate.month) + 1;
           const todayIso = `${deviceDate.year}/${String(monthNum).padStart(2, '0')}/${String(deviceDate.day).padStart(2, '0')}`;
@@ -7695,7 +7712,7 @@ function App() {
                 } catch (e) {}
               }
               localStorage.setItem('amir_fin_last_local_notify_date', todayIso);
-              console.log(`[Notification] Daily installment reminder notified for ${todayIso}:`, names);
+              console.log(`[Notification] Daily installment reminder notified for ${todayIso} at ${reminderTime}:`, names);
             }
           }
         } catch (checkErr) {
@@ -7706,7 +7723,7 @@ function App() {
       // Run immediate check
       checkAndNotifyDueToday();
 
-      // Check periodically every 30 seconds so if the app is open before 10 AM, it triggers at 10:00 AM sharp
+      // Check periodically every 30 seconds
       checkInterval = setInterval(checkAndNotifyDueToday, 30000);
     } catch (e) {
       console.error('Reminders sync error:', e);
@@ -7714,7 +7731,7 @@ function App() {
     return () => {
       if (checkInterval) clearInterval(checkInterval);
     };
-  }, [loans, transactions]);
+  }, [loans, transactions, enableReminders, reminderTime]);
   // --- End: FCM Push Notification Reminders Sync & Client-Side Trigger ---
 
   // Backup Status & Unsaved Changes Tracking State
@@ -8276,8 +8293,42 @@ function App() {
   const [showDeleteLoanModal, setShowDeleteLoanModal] = useState(false);
   const [isPlusMenuClosing, setIsPlusMenuClosing] = useState(false);
   const [pendingRestoreData, setPendingRestoreData] = useState(null);
-  const [enableReminders, setEnableReminders] = useState(true);
-  const [enableDailyAlerts, setEnableDailyAlerts] = useState(true);
+  const [enableReminders, setEnableReminders] = useState(() => {
+    try {
+      const saved = localStorage.getItem('amir_fin_enable_reminders');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch (e) {
+      return true;
+    }
+  });
+  const [reminderTime, setReminderTime] = useState(() => {
+    try {
+      const saved = localStorage.getItem('amir_fin_reminder_time');
+      return saved || '10:00';
+    } catch (e) {
+      return '10:00';
+    }
+  });
+  const handleToggleEnableReminders = () => {
+    setEnableReminders(prev => {
+      const nextVal = !prev;
+      try {
+        localStorage.setItem('amir_fin_enable_reminders', JSON.stringify(nextVal));
+      } catch (e) {}
+      window.dispatchEvent(new Event('amir_fin_reminders_updated'));
+      showToast(nextVal ? 'یادآوری سررسید اقساط فعال شد' : 'یادآوری سررسید اقساط غیرفعال شد');
+      return nextVal;
+    });
+  };
+  const handleReminderTimeChange = newTime => {
+    if (!newTime) return;
+    setReminderTime(newTime);
+    try {
+      localStorage.setItem('amir_fin_reminder_time', newTime);
+    } catch (e) {}
+    window.dispatchEvent(new Event('amir_fin_reminders_updated'));
+    showToast(`ساعت ارسال اعلان روی ${toPersianDigits(newTime)} تنظیم شد`);
+  };
   const restoreInputRef = useRef(null);
   useEffect(() => {
     if (highlightedTxId) {
@@ -15735,11 +15786,12 @@ function App() {
         /*#__PURE__*/
         React.createElement("div", {
           className: "text-[10px] text-slate-400 mt-0.5"
-        }, "\u0647\u0634\u062F\u0627\u0631 \u067E\u06CC\u0634\u200C\u0641\u0631\u0636 \u0642\u0628\u0644 \u0627\u0632 \u0633\u0631\u0631\u0633\u06CC\u062F \u0642\u0633\u0637 \u0648\u0627\u0645")), /*#__PURE__*/
+        }, "\u0641\u0639\u0627\u0644 \u0628\u0648\u062F\u0646 \u0647\u0634\u062F\u0627\u0631 \u0648 \u0646\u0648\u062A\u06CC\u0641\u06CC\u06A9\u06CC\u0634\u0646 \u0645\u0648\u0639\u062F \u0633\u0631\u0631\u0633\u06CC\u062F \u0627\u0642\u0633\u0627\u0637 \u0648\u0627\u0645\u200C\u0647\u0627")), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("button", {
-          onClick: () => setEnableReminders(!enableReminders),
-          className: `w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableReminders ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`
+          type: "button",
+          onClick: handleToggleEnableReminders,
+          className: `w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out cursor-pointer ${enableReminders ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`
         }, /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
@@ -15747,30 +15799,7 @@ function App() {
         }))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
-          className: "flex items-center justify-between p-3 bg-[#F4F7FC] dark:bg-slate-800/80 rounded-2xl border border-slate-100 dark:border-slate-700"
-        }, /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("div", null, /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("div", {
-          className: "text-xs font-bold text-slate-800 dark:text-slate-200"
-        }, "\u062E\u0644\u0627\u0635\u0647 \u0631\u0648\u0632\u0627\u0646\u0647 \u062D\u0633\u0627\u0628\u200C\u0647\u0627"), /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("div", {
-          className: "text-[10px] text-slate-400 mt-0.5"
-        }, "\u0627\u0639\u0644\u0627\u0646 \u0648\u0636\u0639\u06CC\u062A \u06A9\u0644\u06CC \u0627\u0642\u0633\u0627\u0637 \u0648 \u0633\u0631\u0631\u0633\u06CC\u062F\u0647\u0627")), /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("button", {
-          onClick: () => setEnableDailyAlerts(!enableDailyAlerts),
-          className: `w-11 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${enableDailyAlerts ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`
-        }, /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("div", {
-          className: `w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${enableDailyAlerts ? '-translate-x-5' : 'translate-x-0'}`
-        }))), /*#__PURE__*/
-        /*#__PURE__*/
-        React.createElement("div", {
-          className: "flex flex-col gap-2.5 p-3.5 bg-purple-50/60 dark:bg-purple-900/20 rounded-2xl border border-purple-100 dark:border-purple-800/50 mt-2"
+          className: "flex flex-col gap-3 p-3.5 bg-purple-50/60 dark:bg-purple-900/20 rounded-2xl border border-purple-100 dark:border-purple-800/50 mt-2"
         }, React.createElement("div", {
           className: "flex items-start gap-3"
         }, React.createElement("div", {
@@ -15784,15 +15813,40 @@ function App() {
           className: "flex items-center justify-between gap-2"
         }, React.createElement("p", {
           className: "text-xs font-bold text-slate-900 dark:text-white"
-        }, "اعلان هوشمند اقساط (Push)"), notifPermission === 'granted' ? React.createElement("span", {
+        }, "اعلان هوشمند اقساط (Push)"), !enableReminders ? React.createElement("span", {
+          className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+        }, "خاموش") : notifPermission === 'granted' ? React.createElement("span", {
           className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
-        }, "فعال (ساعت ۱۰:۰۰ صبح)") : notifPermission === 'denied' ? React.createElement("span", {
+        }, `فعال (ساعت ${toPersianDigits(reminderTime)})`) : notifPermission === 'denied' ? React.createElement("span", {
           className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
         }, "مسدود شده") : React.createElement("span", {
           className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
         }, "غیرفعال")), React.createElement("p", {
           className: "text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed"
-        }, notifPermission === 'granted' ? "سیستم اعلان فعال است. اقساط سررسید شده هر روز ساعت ۱۰:۰۰ صبح به صورت اعلان روی گوشی شما ارسال می‌شوند." : notifPermission === 'denied' ? "دسترسی به اعلان‌ها مسدود شده است. لطفاً از بخش تنظیمات سایت/مرورگر، دسترسی Notifications را مجاز کنید." : "با فعال‌سازی این بخش، موعد پرداخت اقساط هر روز در ساعت ۱۰:۰۰ صبح به عنوان اعلان یادآوری می‌شود."))), notifPermission === 'granted' ? React.createElement("div", {
+        }, !enableReminders ? "گزینه یادآوری سررسید اقساط در حال حاضر غیرفعال است. با فعال کردن آن اعلان‌ها ارسال می‌شوند." : notifPermission === 'granted' ? `سیستم اعلان فعال است. اقساط سررسید شده هر روز راس ساعت ${toPersianDigits(reminderTime)} ارسال می‌شوند.` : notifPermission === 'denied' ? "دسترسی به اعلان‌ها مسدود شده است. لطفاً از بخش تنظیمات سایت/مرورگر، دسترسی Notifications را مجاز کنید." : "با فعال‌سازی این بخش، موعد پرداخت اقساط در ساعت انتخابی شما به عنوان اعلان ارسال می‌شود."))), React.createElement("div", {
+          className: "pt-2.5 border-t border-purple-200/60 dark:border-purple-800/40 space-y-2"
+        }, React.createElement("div", {
+          className: "flex items-center justify-between gap-2"
+        }, React.createElement("label", {
+          className: "text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5"
+        }, React.createElement(Icon, {
+          name: "clock",
+          className: "w-3.5 h-3.5 text-purple-600 dark:text-purple-400"
+        }), "تنظیم ساعت دقیق ارسال اعلان:"), React.createElement("input", {
+          type: "time",
+          value: reminderTime,
+          onChange: e => handleReminderTimeChange(e.target.value),
+          className: "bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-purple-200 dark:border-purple-800/80 rounded-xl px-2.5 py-1 text-xs font-bold font-mono font-numeric focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all cursor-pointer shadow-sm dir-ltr"
+        })), React.createElement("div", {
+          className: "flex items-center gap-1.5 flex-wrap pt-0.5"
+        }, React.createElement("span", {
+          className: "text-[10px] text-slate-400 dark:text-slate-500 font-medium"
+        }, "میانبر سریع:"), ['08:00', '09:00', '10:00', '12:00', '18:00', '20:00'].map(preset => React.createElement("button", {
+          key: preset,
+          type: "button",
+          onClick: () => handleReminderTimeChange(preset),
+          className: `px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer font-mono font-numeric ${reminderTime === preset ? 'bg-purple-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-purple-100 dark:hover:bg-slate-700'}`
+        }, toPersianDigits(preset))))), notifPermission === 'granted' ? React.createElement("div", {
           className: "flex items-center gap-2 pt-1"
         }, React.createElement("button", {
           type: "button",
@@ -15819,7 +15873,7 @@ function App() {
             try {
               if (window.syncRemindersToFirestore) {
                 await window.syncRemindersToFirestore();
-                showToast('اقساط با سرور اعلان همگام شدند');
+                showToast('اقساط و تنظیمات با سرور اعلان همگام شدند');
               }
             } catch (e) {
               showToast('خطا در همگام‌سازی: ' + e.message);
@@ -15833,7 +15887,7 @@ function App() {
               const token = await window.requestNotificationPermission();
               if (token) {
                 setNotifPermission('granted');
-                showToast('اعلان‌ها با موفقیت فعال شدند (ساعت ۱۰:۰۰ صبح)');
+                showToast(`اعلان‌ها با موفقیت فعال شدند (ساعت ${toPersianDigits(reminderTime)})`);
               } else {
                 if (typeof Notification !== 'undefined') setNotifPermission(Notification.permission);
                 showToast('دسترسی اعلان تایید نشد');
@@ -15843,7 +15897,7 @@ function App() {
             }
           },
           className: "w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer mt-1"
-        }, "فعال‌سازی اعلان هوشمند اقساط (ساعت ۱۰:۰۰)"))))), /*#__PURE__*/
+        }, `فعال‌سازی اعلان هوشمند اقساط (ساعت ${toPersianDigits(reminderTime)})`))))), /*#__PURE__*/
         /*#__PURE__*/
         React.createElement("div", {
           onClick: () => toggleSettingsSection('data'),

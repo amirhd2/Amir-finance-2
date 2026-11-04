@@ -2,8 +2,8 @@ name: Daily Loan Reminders
 
 on:
   schedule:
-    # Runs at 06:30 UTC every day (which corresponds to 10:00 AM Iran Standard Time UTC+3:30)
-    - cron: '30 6 * * *'
+    # Runs every hour at :00 UTC to check custom user notification times (Tehran time GMT+3:30)
+    - cron: '0 * * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:

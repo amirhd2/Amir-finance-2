@@ -74,10 +74,47 @@ async function executeSendReminders() {
   const tehranDate = getTehranJalaliDate();
   const todayStr = tehranDate.iso;
 
+  // Get current Tehran hour & minute
+  const now = new Date();
+  const tehranTimeParts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tehran',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false
+  }).formatToParts(now);
+  let currHour = 10, currMinute = 0;
+  tehranTimeParts.forEach(p => {
+    if (p.type === 'hour') currHour = parseInt(p.value, 10);
+    if (p.type === 'minute') currMinute = parseInt(p.value, 10);
+  });
+  const currentTehranTotalMin = currHour * 60 + currMinute;
+
   for (const doc of snapshot.docs) {
     const data = doc.data();
     const token = data.token;
     const reminders = data.reminders || [];
+
+    // 1. Skip if user turned off reminders in settings
+    if (data.remindersEnabled === false) {
+      console.log(`[Reminders] Skipping token ${token.substring(0, 10)}... (reminders disabled by user).`);
+      continue;
+    }
+
+    // 2. Skip if already notified today by server
+    if (data.lastNotifiedDate === todayStr) {
+      console.log(`[Reminders] Token ${token.substring(0, 10)}... already notified today (${todayStr}).`);
+      continue;
+    }
+
+    // 3. Check requested reminder time
+    const targetHour = typeof data.reminderHour === 'number' ? data.reminderHour : 10;
+    const targetMin = typeof data.reminderMinute === 'number' ? data.reminderMinute : 0;
+    const targetTotalMin = targetHour * 60 + targetMin;
+
+    if (currentTehranTotalMin < targetTotalMin) {
+      console.log(`[Reminders] Skipping token ${token.substring(0, 10)}... Requested time is ${data.reminderTime || '10:00'}, current Tehran time is ${currHour}:${String(currMinute).padStart(2, '0')}.`);
+      continue;
+    }
 
     // Filter reminders due today: support nextDueDateIso, nextDueDateStr, year/month/day, or daysLeft === 0
     const dueToday = reminders.filter(r => {
@@ -119,6 +156,9 @@ async function executeSendReminders() {
           }
         });
         messagesSent++;
+        try {
+          await doc.ref.set({ lastNotifiedDate: todayStr }, { merge: true });
+        } catch (_) {}
       } catch (e) {
         console.error("Failed to send message to token", token, e);
         errors.push({ token: token.substring(0, 15) + '...', error: e.message });
@@ -136,15 +176,14 @@ async function executeSendReminders() {
   };
 }
 
-// Setup internal automatic cron job at 10:00 AM Asia/Tehran every day
+// Setup internal automatic cron job running every hour to check custom reminder times
 let lastCronRunDate = null;
 try {
-  cron.schedule('0 10 * * *', async () => {
+  cron.schedule('0 * * * *', async () => {
     const today = getTehranJalaliDate().iso;
-    console.log(`[Internal Cron] Running scheduled daily reminder check at 10:00 AM (Tehran Time) for date ${today}...`);
+    console.log(`[Internal Cron] Running scheduled hourly reminder check (Tehran Time) for date ${today}...`);
     try {
       const result = await executeSendReminders();
-      lastCronRunDate = today;
       console.log('[Internal Cron Result]:', result);
     } catch (err) {
       console.error('[Internal Cron Error]:', err.message);
@@ -152,40 +191,26 @@ try {
   }, {
     timezone: 'Asia/Tehran'
   });
-  console.log('[Internal Cron] Daily reminder schedule registered (10:00 AM Asia/Tehran).');
+  console.log('[Internal Cron] Hourly reminder schedule registered (Asia/Tehran).');
 } catch (cronErr) {
   console.warn('[Internal Cron] Failed to register cron schedule:', cronErr);
 }
 
-// Safety check: if server container boots up or wakes up after 10:00 AM Tehran time and today's run has not happened yet
-function checkAndRunIfMissed10AM() {
+// Safety check: check reminders periodically
+function checkAndRunHourly() {
   try {
     if (!firebaseAdminApp || !firestoreDb || !firebaseMessaging) return;
-    const now = new Date();
-    const tehranHourStr = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'Asia/Tehran',
-      hour: 'numeric',
-      hour12: false
-    }).format(now);
-    const tehranHour = parseInt(tehranHourStr, 10);
-    const today = getTehranJalaliDate().iso;
-
-    if (tehranHour >= 10 && lastCronRunDate !== today) {
-      console.log(`[Safety Check] Current Tehran hour is ${tehranHour} (>=10:00 AM) and date (${today}) not yet checked. Executing reminder check now...`);
-      lastCronRunDate = today;
-      executeSendReminders()
-        .then(res => console.log('[Safety Check Result]:', res))
-        .catch(err => {
-          lastCronRunDate = null; // allow retry if failed
-          console.error('[Safety Check Error]:', err.message);
-        });
-    }
+    executeSendReminders()
+      .then(res => {
+        if (res.count > 0) console.log('[Periodic Check Result]:', res);
+      })
+      .catch(err => console.error('[Periodic Check Error]:', err.message));
   } catch (e) {
-    console.warn('[Safety Check Error]:', e);
+    console.warn('[Periodic Check Error]:', e);
   }
 }
-setInterval(checkAndRunIfMissed10AM, 10 * 60 * 1000);
-setTimeout(checkAndRunIfMissed10AM, 4000);
+setInterval(checkAndRunHourly, 15 * 60 * 1000);
+setTimeout(checkAndRunHourly, 5000);
 
 // CORS & Middleware for API routes
 app.use((req, res, next) => {
