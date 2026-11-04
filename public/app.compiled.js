@@ -6861,12 +6861,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.2",
-    "buildNumber": 543,
+    "buildNumber": 545,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.2",
-    "latestBuild": 543,
+    "latestBuild": 545,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7232,7 +7232,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 543;
+    const EMBEDDED_BUILD = 545;
     const EMBEDDED_VERSION = "3.3.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -7729,31 +7729,34 @@ function App() {
           if (dueToday.length > 0) {
             const lastNotified = localStorage.getItem('amir_fin_last_local_notify_date');
             if (lastNotified !== todayIso) {
-              const names = dueToday.map(r => r.name || 'وام').join(' و ');
-              const title = "یادآوری اقساط وام";
-              const body = dueToday.length > 1 ? `امروز موعد پرداخت قسط وام‌های ${names} است.` : `امروز موعد پرداخت قسط وام ${names} است.`;
-              if (navigator.serviceWorker && navigator.serviceWorker.ready) {
-                navigator.serviceWorker.ready.then(reg => {
-                  reg.showNotification(title, {
-                    body: body,
-                    icon: './icon-192x192.png',
-                    badge: './favicon-96x96.png',
-                    tag: 'loan-reminder-' + todayIso,
-                    renotify: true,
-                    dir: 'rtl',
-                    lang: 'fa'
-                  });
-                }).catch(e => console.warn('SW local notification error:', e));
-              } else {
-                try {
-                  new Notification(title, {
-                    body,
-                    icon: './icon-192x192.png'
-                  });
-                } catch (e) {}
+              // Only trigger local system notification if page is currently hidden or backgrounded
+              if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+                const names = dueToday.map(r => r.name || 'وام').join(' و ');
+                const title = "یادآوری اقساط وام";
+                const body = dueToday.length > 1 ? `امروز موعد پرداخت قسط وام‌های ${names} است.` : `امروز موعد پرداخت قسط وام ${names} است.`;
+                if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+                  navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(title, {
+                      body: body,
+                      icon: './icon-192x192.png',
+                      badge: './favicon-96x96.png',
+                      tag: 'loan-reminder-' + todayIso,
+                      renotify: true,
+                      dir: 'rtl',
+                      lang: 'fa'
+                    });
+                  }).catch(e => console.warn('SW local notification error:', e));
+                } else {
+                  try {
+                    new Notification(title, {
+                      body,
+                      icon: './icon-192x192.png'
+                    });
+                  } catch (e) {}
+                }
+                console.log(`[Notification] Daily installment reminder notified in background for ${todayIso} at ${reminderTime}:`, names);
               }
               localStorage.setItem('amir_fin_last_local_notify_date', todayIso);
-              console.log(`[Notification] Daily installment reminder notified for ${todayIso} at ${reminderTime}:`, names);
             }
           }
         } catch (checkErr) {

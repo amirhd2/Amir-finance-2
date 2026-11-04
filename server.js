@@ -19,20 +19,51 @@ let firebaseAdminApp = null;
 let firestoreDb = null;
 let firebaseMessaging = null;
 
+function parseServiceAccountKey(raw) {
+  if (!raw) return null;
+  let str = String(raw).trim();
+  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+    str = str.slice(1, -1).trim();
+  }
+  if (!str.startsWith('{')) {
+    try {
+      const decoded = Buffer.from(str, 'base64').toString('utf8').trim();
+      if (decoded.startsWith('{')) str = decoded;
+    } catch (_) {}
+  }
+  return JSON.parse(str);
+}
+
 try {
-  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-    firebaseAdminApp = getApps().length > 0
-      ? getApps()[0]
-      : initializeApp({ credential: cert(serviceAccount) });
-    firestoreDb = getFirestore(firebaseAdminApp, FIRESTORE_DB_ID);
-    firebaseMessaging = getMessaging(firebaseAdminApp);
-    console.log(`Firebase Admin initialized successfully with database: ${FIRESTORE_DB_ID}`);
+  let saRaw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (!saRaw && fs.existsSync(path.join(rootPath, '.env'))) {
+    try {
+      const envContent = fs.readFileSync(path.join(rootPath, '.env'), 'utf8');
+      const match = envContent.match(/FIREBASE_SERVICE_ACCOUNT_KEY=(.+)/);
+      if (match) saRaw = match[1];
+    } catch (_) {}
+  }
+  if (!saRaw && fs.existsSync(path.join(rootPath, 'firebase-service-account.json'))) {
+    try {
+      saRaw = fs.readFileSync(path.join(rootPath, 'firebase-service-account.json'), 'utf8');
+    } catch (_) {}
+  }
+
+  if (saRaw) {
+    const serviceAccount = parseServiceAccountKey(saRaw);
+    if (serviceAccount && serviceAccount.project_id) {
+      firebaseAdminApp = getApps().length > 0
+        ? getApps()[0]
+        : initializeApp({ credential: cert(serviceAccount) });
+      firestoreDb = getFirestore(firebaseAdminApp, FIRESTORE_DB_ID);
+      firebaseMessaging = getMessaging(firebaseAdminApp);
+      console.log(`Firebase Admin initialized successfully for project ${serviceAccount.project_id} with database: ${FIRESTORE_DB_ID}`);
+    }
   } else {
-    console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is not set. Push notifications via backend will not work.");
+    console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is not set in environment or .env file. Remote FCM Push notifications via server will run via GitHub Actions.");
   }
 } catch (error) {
-  console.error("Error initializing Firebase Admin:", error);
+  console.error("Error initializing Firebase Admin:", error.message);
 }
 
 // Helper to get today's Jalali date in Asia/Tehran timezone
