@@ -1,28 +1,30 @@
-importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging-compat.js');
-
-const firebaseConfig = {
-  projectId: "gen-lang-client-0095210864",
-  apiKey: "AIzaSyDCxwfdom8Uwe5Q0C-EH7pAYNQN3B9c5gY",
-  appId: "1:759840178251:web:139a44353950e56ae34dce",
-  messagingSenderId: "759840178251"
-};
-
-firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  const notificationTitle = payload.notification?.title || payload.data?.title || 'یادآوری امیر فایننس';
+self.addEventListener('push', (event) => {
+  let title = 'یادآوری امیر فایننس';
+  let body = 'موعد قسط وام یا سررسید حساب شما فرا رسیده است.';
+  let data = {};
+  if (event.data) {
+    try {
+      const parsed = event.data.json();
+      title = parsed.notification?.title || parsed.data?.title || parsed.title || title;
+      body = parsed.notification?.body || parsed.data?.body || parsed.body || body;
+      data = parsed.data || parsed;
+    } catch (e) {
+      body = event.data.text() || body;
+    }
+  }
   const notificationOptions = {
-    body: payload.notification?.body || payload.data?.body || 'موعد قسط وام یا سررسید حساب شما فرا رسیده است.',
+    body: body,
     icon: './icon-192x192.png',
     badge: './favicon-96x96.png',
-    data: payload.data || {},
-    tag: 'loan-reminder-' + Date.now(),
-    renotify: true
+    tag: 'loan-reminder-' + (data.date || Date.now()),
+    renotify: true,
+    requireInteraction: true,
+    vibrate: [250, 100, 250],
+    dir: 'rtl',
+    lang: 'fa',
+    data: data
   };
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  event.waitUntil(self.registration.showNotification(title, notificationOptions));
 });
 
 self.addEventListener('notificationclick', (event) => {

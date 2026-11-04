@@ -6910,12 +6910,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.2",
-    "buildNumber": 546,
+    "buildNumber": 548,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.2",
-    "latestBuild": 546,
+    "latestBuild": 548,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7292,7 +7292,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 546;
+    const EMBEDDED_BUILD = 548;
     const EMBEDDED_VERSION = "3.3.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -15958,45 +15958,89 @@ function App() {
 
           notifPermission === 'granted'
             ? React.createElement("div", {
-                className: "flex items-center gap-2 pt-1"
+                className: "space-y-2 pt-1"
               },
-                React.createElement("button", {
-                  type: "button",
-                  disabled: isSendingTestNotif,
-                  onClick: async () => {
-                    setIsSendingTestNotif(true);
-                    try {
-                      if (window.sendTestNotification) {
-                        await window.sendTestNotification();
-                        showToast('اعلان آزمایشی ارسال شد');
-                      } else {
-                        showToast('سیستم اعلان در دسترس نیست');
-                      }
-                    } catch (e) {
-                      showToast(e.message || 'خطا در ارسال اعلان آزمایشی');
-                    } finally {
-                      setIsSendingTestNotif(false);
-                    }
-                  },
-                  className: "flex-1 py-2 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                React.createElement("div", {
+                  className: "flex items-center gap-2"
                 },
-                  isSendingTestNotif ? "در حال ارسال..." : "ارسال اعلان آزمایشی (تست)"
+                  React.createElement("button", {
+                    type: "button",
+                    disabled: isSendingTestNotif,
+                    onClick: async () => {
+                      setIsSendingTestNotif(true);
+                      try {
+                        if (window.sendTestNotification) {
+                          await window.sendTestNotification(0);
+                          showToast('اعلان آزمایشی فوری ارسال شد');
+                        } else {
+                          showToast('سیستم اعلان در دسترس نیست');
+                        }
+                      } catch (e) {
+                        showToast(e.message || 'خطا در ارسال اعلان آزمایشی');
+                      } finally {
+                        setIsSendingTestNotif(false);
+                      }
+                    },
+                    className: "flex-1 py-2 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  },
+                    isSendingTestNotif ? "در حال ارسال..." : "تست اعلان فوری"
+                  ),
+                  React.createElement("button", {
+                    type: "button",
+                    disabled: isSendingTestNotif,
+                    onClick: async () => {
+                      setIsSendingTestNotif(true);
+                      try {
+                        if (window.sendTestNotification) {
+                          const res = await window.sendTestNotification(8);
+                          showToast('برنامه را ببندید! اعلان تا ۸ ثانیه دیگر ارسال می‌شود...');
+                        } else {
+                          showToast('سیستم اعلان در دسترس نیست');
+                        }
+                      } catch (e) {
+                        showToast(e.message || 'خطا در ارسال اعلان آزمایشی');
+                      } finally {
+                        setIsSendingTestNotif(false);
+                      }
+                    },
+                    className: "flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  },
+                    "تست با بستن برنامه (۸ ثانیه)"
+                  )
                 ),
                 React.createElement("button", {
                   type: "button",
                   onClick: async () => {
                     try {
                       if (window.syncRemindersToFirestore) {
-                        await window.syncRemindersToFirestore();
+                        await window.syncRemindersToFirestore(true);
                         showToast('اقساط و تنظیمات با سرور اعلان همگام شدند');
                       }
                     } catch (e) {
                       showToast('خطا در همگام‌سازی: ' + e.message);
                     }
                   },
-                  className: "px-3 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1"
+                  className: "w-full py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1"
                 },
-                  "همگام‌سازی با سرور"
+                  "همگام‌سازی و بروزرسانی سرور اعلان"
+                ),
+                
+                /* Android Battery Optimization Guide Card */
+                React.createElement("div", {
+                  className: "p-3 bg-amber-50/70 dark:bg-amber-950/30 rounded-xl border border-amber-200/80 dark:border-amber-800/40 text-[11px] text-amber-900 dark:text-amber-200/90 leading-relaxed space-y-1 mt-1"
+                },
+                  React.createElement("div", {
+                    className: "font-bold flex items-center gap-1.5 text-amber-800 dark:text-amber-300 text-xs"
+                  },
+                    React.createElement(Icon, { name: "info", className: "w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" }),
+                    "نکته مهم دریافت اعلان در پس‌زمینه (اندروید):"
+                  ),
+                  React.createElement("p", null,
+                    "در گوشی‌های اندروید (به‌ویژه سامسونگ و شیائومی)، جهت دریافت به موقع اعلان‌ها در زمان بسته بودن برنامه:"
+                  ),
+                  React.createElement("p", { className: "font-mono text-[10px] bg-white/60 dark:bg-black/20 p-1.5 rounded-lg border border-amber-200/50 dark:border-amber-800/30 text-amber-950 dark:text-amber-100" },
+                    "تنظیمات گوشی ⟵ برنامه‌ها (Apps) ⟵ مرورگر کروم یا امیر فایننس ⟵ باتری (Battery) ⟵ انتخاب گزینه «بدون محدودیت» (Unrestricted)"
+                  )
                 )
               )
             : React.createElement("button", {

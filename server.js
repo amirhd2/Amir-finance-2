@@ -177,9 +177,13 @@ async function executeSendReminders() {
             title: "یادآوری اقساط وام",
             body: text
           },
+          android: {
+            priority: 'high'
+          },
           webpush: {
             headers: {
-              Urgency: 'high'
+              Urgency: 'high',
+              TTL: '86400'
             },
             notification: {
               title: "یادآوری اقساط وام",
@@ -189,6 +193,9 @@ async function executeSendReminders() {
               tag: 'loan-reminder-' + todayStr,
               renotify: true,
               requireInteraction: true
+            },
+            fcmOptions: {
+              link: '/'
             }
           }
         });
@@ -297,26 +304,65 @@ app.post('/api/send-test-push', async (req, res) => {
         error: 'هیچ توکن دستگاهی یافت نشد. لطفاً در برنامه روی دکمه فعال‌سازی اعلان‌ها کلیک نمایید.'
       });
     }
-    await firebaseMessaging.send({
-      token,
-      notification: {
-        title: "آزمایش سیستم یادآوری اقساط",
-        body: "سیستم اعلان اقساط فعال است و یادآوری‌ها در ساعت ۱۰:۰۰ صبح با موفقیت ارسال خواهند شد."
-      },
-      data: {
-        type: 'test_reminder',
-        timestamp: String(Date.now())
-      },
-      webpush: {
-        notification: {
-          title: "آزمایش سیستم یادآوری اقساط",
-          body: "سیستم اعلان اقساط فعال است و یادآوری‌ها در ساعت ۱۰:۰۰ صبح با موفقیت ارسال خواهند شد.",
-          icon: '/icon-192x192.png',
-          badge: '/favicon-96x96.png'
-        }
+    const delaySeconds = parseInt(req.body?.delaySeconds || 0, 10);
+    const sendPushFn = async () => {
+      try {
+        await firebaseMessaging.send({
+          token,
+          notification: {
+            title: "آزمایش سیستم یادآوری اقساط",
+            body: delaySeconds > 0 
+              ? `اعلان تست در حالت بسته بودن برنامه (پس‌زمینه) با موفقیت دریافت شد.`
+              : "سیستم اعلان اقساط فعال است و یادآوری‌ها با موفقیت ارسال می‌شوند."
+          },
+          data: {
+            type: 'test_reminder',
+            title: "آزمایش سیستم یادآوری اقساط",
+            body: delaySeconds > 0 
+              ? `اعلان تست در حالت بسته بودن برنامه (پس‌زمینه) با موفقیت دریافت شد.`
+              : "سیستم اعلان اقساط فعال است و یادآوری‌ها با موفقیت ارسال می‌شوند.",
+            timestamp: String(Date.now())
+          },
+          android: {
+            priority: 'high'
+          },
+          webpush: {
+            headers: {
+              Urgency: 'high',
+              TTL: '86400'
+            },
+            notification: {
+              title: "آزمایش سیستم یادآوری اقساط",
+              body: delaySeconds > 0 
+                ? `اعلان تست در حالت بسته بودن برنامه (پس‌زمینه) با موفقیت دریافت شد.`
+                : "سیستم اعلان اقساط فعال است و یادآوری‌ها با موفقیت ارسال می‌شوند.",
+              icon: '/icon-192x192.png',
+              badge: '/favicon-96x96.png',
+              tag: 'test-reminder-' + Date.now(),
+              renotify: true,
+              requireInteraction: true
+            },
+            fcmOptions: {
+              link: '/'
+            }
+          }
+        });
+        console.log(`[Test Push] Sent successfully to token ${token.substring(0, 15)}... (delay: ${delaySeconds}s)`);
+      } catch (err) {
+        console.error('[Test Push Error]:', err.message);
       }
-    });
-    return res.status(200).json({ success: true, message: 'اعلان تست با موفقیت به دستگاه ارسال شد.' });
+    };
+
+    if (delaySeconds > 0) {
+      setTimeout(sendPushFn, delaySeconds * 1000);
+      return res.status(200).json({ 
+        success: true, 
+        message: `اعلان تست تا ${delaySeconds} ثانیه دیگر ارسال می‌شود. لطفاً همین الان برنامه را ببندید.` 
+      });
+    } else {
+      await sendPushFn();
+      return res.status(200).json({ success: true, message: 'اعلان تست با موفقیت به دستگاه ارسال شد.' });
+    }
   } catch (err) {
     console.error('Test Push Error:', err);
     return res.status(500).json({ success: false, error: err.message });

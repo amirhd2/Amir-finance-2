@@ -150,9 +150,13 @@ async function main() {
               title: "یادآوری اقساط وام",
               body: bodyText
             },
+            android: {
+              priority: 'high'
+            },
             webpush: {
               headers: {
-                Urgency: 'high'
+                Urgency: 'high',
+                TTL: '86400'
               },
               notification: {
                 title: "یادآوری اقساط وام",
@@ -162,6 +166,9 @@ async function main() {
                 tag: 'loan-reminder-' + todayStr,
                 renotify: true,
                 requireInteraction: true
+              },
+              fcmOptions: {
+                link: '/'
               }
             }
           });
