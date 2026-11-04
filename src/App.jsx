@@ -6910,12 +6910,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.2",
-    "buildNumber": 542,
+    "buildNumber": 544,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.2",
-    "latestBuild": 542,
+    "latestBuild": 544,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7222,8 +7222,9 @@ function App() {
     setReminderTime(newTime);
     try {
       localStorage.setItem('amir_fin_reminder_time', newTime);
+      localStorage.removeItem('amir_fin_last_local_notify_date');
     } catch (e) {}
-    window.dispatchEvent(new Event('amir_fin_reminders_updated'));
+    window.dispatchEvent(new CustomEvent('amir_fin_reminders_updated', { detail: { resetLastNotified: true } }));
     showToast(`ساعت ارسال اعلان روی ${toPersianDigits(newTime)} تنظیم شد`);
   };
 
@@ -7291,7 +7292,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 542;
+    const EMBEDDED_BUILD = 544;
     const EMBEDDED_VERSION = "3.3.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');

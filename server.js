@@ -142,16 +142,22 @@ async function executeSendReminders() {
           data: {
             type: 'loan_reminder',
             date: todayStr,
-            names: names
+            names: names,
+            title: "یادآوری اقساط وام",
+            body: text
           },
           webpush: {
+            headers: {
+              Urgency: 'high'
+            },
             notification: {
               title: "یادآوری اقساط وام",
               body: text,
               icon: '/icon-192x192.png',
               badge: '/favicon-96x96.png',
               tag: 'loan-reminder-' + todayStr,
-              renotify: true
+              renotify: true,
+              requireInteraction: true
             }
           }
         });
@@ -176,41 +182,39 @@ async function executeSendReminders() {
   };
 }
 
-// Setup internal automatic cron job running every hour to check custom reminder times
-let lastCronRunDate = null;
+// Setup internal automatic cron job running every minute to check custom reminder times
 try {
-  cron.schedule('0 * * * *', async () => {
+  cron.schedule('* * * * *', async () => {
     const today = getTehranJalaliDate().iso;
-    console.log(`[Internal Cron] Running scheduled hourly reminder check (Tehran Time) for date ${today}...`);
     try {
       const result = await executeSendReminders();
-      console.log('[Internal Cron Result]:', result);
+      if (result.count > 0) console.log('[Internal Minute Cron Result]:', result);
     } catch (err) {
       console.error('[Internal Cron Error]:', err.message);
     }
   }, {
     timezone: 'Asia/Tehran'
   });
-  console.log('[Internal Cron] Hourly reminder schedule registered (Asia/Tehran).');
+  console.log('[Internal Cron] Minute-by-minute reminder schedule registered (Asia/Tehran).');
 } catch (cronErr) {
   console.warn('[Internal Cron] Failed to register cron schedule:', cronErr);
 }
 
-// Safety check: check reminders periodically
-function checkAndRunHourly() {
+// Safety check: check reminders every 60 seconds
+function checkAndRunMinute() {
   try {
     if (!firebaseAdminApp || !firestoreDb || !firebaseMessaging) return;
     executeSendReminders()
       .then(res => {
-        if (res.count > 0) console.log('[Periodic Check Result]:', res);
+        if (res.count > 0) console.log('[Periodic Minute Check Result]:', res);
       })
-      .catch(err => console.error('[Periodic Check Error]:', err.message));
+      .catch(err => console.error('[Periodic Minute Check Error]:', err.message));
   } catch (e) {
-    console.warn('[Periodic Check Error]:', e);
+    console.warn('[Periodic Minute Check Error]:', e);
   }
 }
-setInterval(checkAndRunHourly, 15 * 60 * 1000);
-setTimeout(checkAndRunHourly, 5000);
+setInterval(checkAndRunMinute, 60 * 1000);
+setTimeout(checkAndRunMinute, 3000);
 
 // CORS & Middleware for API routes
 app.use((req, res, next) => {

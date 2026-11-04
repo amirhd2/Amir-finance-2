@@ -146,16 +146,22 @@ async function main() {
             },
             data: {
               type: 'loan_reminder',
-              date: todayStr
+              date: todayStr,
+              title: "یادآوری اقساط وام",
+              body: bodyText
             },
             webpush: {
+              headers: {
+                Urgency: 'high'
+              },
               notification: {
                 title: "یادآوری اقساط وام",
                 body: bodyText,
                 icon: '/icon-192x192.png',
                 badge: '/favicon-96x96.png',
                 tag: 'loan-reminder-' + todayStr,
-                renotify: true
+                renotify: true,
+                requireInteraction: true
               }
             }
           });
