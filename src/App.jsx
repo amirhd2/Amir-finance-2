@@ -6910,12 +6910,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.2",
-    "buildNumber": 539,
+    "buildNumber": 542,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.2",
-    "latestBuild": 539,
+    "latestBuild": 542,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7187,6 +7187,46 @@ function App() {
   const [notifPermission, setNotifPermission] = useState(() => typeof Notification !== 'undefined' ? Notification.permission : 'default');
   const [isSendingTestNotif, setIsSendingTestNotif] = useState(false);
 
+  const [enableReminders, setEnableReminders] = useState(() => {
+    try {
+      const saved = localStorage.getItem('amir_fin_enable_reminders');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch (e) {
+      return true;
+    }
+  });
+
+  const [reminderTime, setReminderTime] = useState(() => {
+    try {
+      const saved = localStorage.getItem('amir_fin_reminder_time');
+      return saved || '10:00';
+    } catch (e) {
+      return '10:00';
+    }
+  });
+
+  const handleToggleEnableReminders = () => {
+    setEnableReminders(prev => {
+      const nextVal = !prev;
+      try {
+        localStorage.setItem('amir_fin_enable_reminders', JSON.stringify(nextVal));
+      } catch (e) {}
+      window.dispatchEvent(new Event('amir_fin_reminders_updated'));
+      showToast(nextVal ? 'یادآوری سررسید اقساط فعال شد' : 'یادآوری سررسید اقساط غیرفعال شد');
+      return nextVal;
+    });
+  };
+
+  const handleReminderTimeChange = (newTime) => {
+    if (!newTime) return;
+    setReminderTime(newTime);
+    try {
+      localStorage.setItem('amir_fin_reminder_time', newTime);
+    } catch (e) {}
+    window.dispatchEvent(new Event('amir_fin_reminders_updated'));
+    showToast(`ساعت ارسال اعلان روی ${toPersianDigits(newTime)} تنظیم شد`);
+  };
+
   useEffect(() => {
     const handlePermissionChange = (e) => {
       if (e?.detail?.permission) {
@@ -7251,7 +7291,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 539;
+    const EMBEDDED_BUILD = 542;
     const EMBEDDED_VERSION = "3.3.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -8355,45 +8395,6 @@ function App() {
   const [showDeleteLoanModal, setShowDeleteLoanModal] = useState(false);
   const [isPlusMenuClosing, setIsPlusMenuClosing] = useState(false);
   const [pendingRestoreData, setPendingRestoreData] = useState(null);
-  const [enableReminders, setEnableReminders] = useState(() => {
-    try {
-      const saved = localStorage.getItem('amir_fin_enable_reminders');
-      return saved !== null ? JSON.parse(saved) : true;
-    } catch (e) {
-      return true;
-    }
-  });
-
-  const [reminderTime, setReminderTime] = useState(() => {
-    try {
-      const saved = localStorage.getItem('amir_fin_reminder_time');
-      return saved || '10:00';
-    } catch (e) {
-      return '10:00';
-    }
-  });
-
-  const handleToggleEnableReminders = () => {
-    setEnableReminders(prev => {
-      const nextVal = !prev;
-      try {
-        localStorage.setItem('amir_fin_enable_reminders', JSON.stringify(nextVal));
-      } catch (e) {}
-      window.dispatchEvent(new Event('amir_fin_reminders_updated'));
-      showToast(nextVal ? 'یادآوری سررسید اقساط فعال شد' : 'یادآوری سررسید اقساط غیرفعال شد');
-      return nextVal;
-    });
-  };
-
-  const handleReminderTimeChange = (newTime) => {
-    if (!newTime) return;
-    setReminderTime(newTime);
-    try {
-      localStorage.setItem('amir_fin_reminder_time', newTime);
-    } catch (e) {}
-    window.dispatchEvent(new Event('amir_fin_reminders_updated'));
-    showToast(`ساعت ارسال اعلان روی ${toPersianDigits(newTime)} تنظیم شد`);
-  };
   const restoreInputRef = useRef(null);
   useEffect(() => {
     if (highlightedTxId) {
