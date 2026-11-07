@@ -17,8 +17,9 @@ function updateVersionTags() {
       if (fs.existsSync(indexHtmlPath)) {
         let html = fs.readFileSync(indexHtmlPath, 'utf8');
         html = html.replace(/app\.compiled\.js\?v=[^"']*/g, `app.compiled.js?v=${versionTag}`);
+        html = html.replace(/fcm-client\.js(\?v=[^"']*)?/g, `fcm-client.js?v=${versionTag}`);
         fs.writeFileSync(indexHtmlPath, html, 'utf8');
-        console.log(`[compile-app] Updated index.html script tag to app.compiled.js?v=${versionTag}`);
+        console.log(`[compile-app] Updated index.html script tag to app.compiled.js?v=${versionTag} & fcm-client.js?v=${versionTag}`);
       }
 
       if (fs.existsSync(swPath)) {

@@ -31,7 +31,24 @@ function parseServiceAccountKey(raw) {
       if (decoded.startsWith('{')) str = decoded;
     } catch (_) {}
   }
-  return JSON.parse(str);
+  if (str.includes('\\"') && !str.includes('"type"')) {
+    try {
+      str = JSON.parse(`"${str}"`);
+    } catch (_) {
+      str = str.replace(/\\"/g, '"');
+    }
+  }
+  let sa = null;
+  try {
+    sa = JSON.parse(str);
+  } catch (e) {
+    str = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    sa = JSON.parse(str);
+  }
+  if (sa && sa.private_key && typeof sa.private_key === 'string') {
+    sa.private_key = sa.private_key.replace(/\\n/g, '\n');
+  }
+  return sa;
 }
 
 try {

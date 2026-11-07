@@ -6861,12 +6861,12 @@ function App() {
     "appName": "Amir Finance",
     "appLogo": "apple-touch-icon.png",
     "installedVersion": "3.3.2",
-    "buildNumber": 547,
+    "buildNumber": 549,
     "releaseDate": "2026-09-02",
     "releaseChannel": "Stable",
     "channelLabel": "نسخه پایدار",
     "latestVersion": "3.3.2",
-    "latestBuild": 547,
+    "latestBuild": 549,
     "isUpdateAvailable": false,
     "history": [{
       "version": "3.3.0",
@@ -7232,7 +7232,7 @@ function App() {
         console.log('SW update check:', e.message);
       }
     }
-    const EMBEDDED_BUILD = 547;
+    const EMBEDDED_BUILD = 549;
     const EMBEDDED_VERSION = "3.3.2";
     let localBuildStr = localStorage.getItem('amir_installed_build');
     let localVersion = localStorage.getItem('amir_installed_version');
@@ -15884,19 +15884,20 @@ function App() {
             setIsSendingTestNotif(true);
             try {
               if (window.sendTestNotification) {
-                const res = await window.sendTestNotification(8);
-                showToast('برنامه را ببندید! اعلان تا ۸ ثانیه دیگر ارسال می‌شود...');
+                await window.sendTestNotification(8);
+                showToast('برنامه را فوراً ببندید! اعلان تا ۸ ثانیه دیگر ارسال می‌شود...');
+                setTimeout(() => setIsSendingTestNotif(false), 8000);
               } else {
                 showToast('سیستم اعلان در دسترس نیست');
+                setIsSendingTestNotif(false);
               }
             } catch (e) {
               showToast(e.message || 'خطا در ارسال اعلان آزمایشی');
-            } finally {
               setIsSendingTestNotif(false);
             }
           },
           className: "flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-        }, "تست با بستن برنامه (۸ ثانیه)")), React.createElement("button", {
+        }, isSendingTestNotif ? "ارسال تا ۸ ثانیه..." : "تست با بستن برنامه (۸ ثانیه)")), React.createElement("button", {
           type: "button",
           onClick: async () => {
             try {

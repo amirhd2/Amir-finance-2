@@ -20,7 +20,26 @@ function parseServiceAccountKey(raw) {
       }
     } catch (_) {}
   }
-  return JSON.parse(str);
+  // Handle escaped quotes if JSON was escaped
+  if (str.includes('\\"') && !str.includes('"type"')) {
+    try {
+      str = JSON.parse(`"${str}"`);
+    } catch (_) {
+      str = str.replace(/\\"/g, '"');
+    }
+  }
+  let sa = null;
+  try {
+    sa = JSON.parse(str);
+  } catch (e) {
+    str = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    sa = JSON.parse(str);
+  }
+  // Crucial: convert escaped literal \n in private_key to real newline characters
+  if (sa && sa.private_key && typeof sa.private_key === 'string') {
+    sa.private_key = sa.private_key.replace(/\\n/g, '\n');
+  }
+  return sa;
 }
 
 async function main() {
@@ -50,9 +69,22 @@ async function main() {
   }
 
   try {
-    const db = getFirestore(app, FIRESTORE_DB_ID);
+    let db;
+    let snapshot;
+    try {
+      console.log(`[Daily Reminders] Connecting to named database: ${FIRESTORE_DB_ID}...`);
+      db = getFirestore(app, FIRESTORE_DB_ID);
+      snapshot = await db.collection('fcm_reminders').get();
+    } catch (dbErr) {
+      console.warn(`[Daily Reminders] Named database query warning: ${dbErr.message}. Trying default database...`);
+      try {
+        db = getFirestore(app);
+        snapshot = await db.collection('fcm_reminders').get();
+      } catch (defaultDbErr) {
+        throw new Error(`Failed to query Firestore on both '${FIRESTORE_DB_ID}' and '(default)': ${dbErr.message} | ${defaultDbErr.message}`);
+      }
+    }
     const messaging = getMessaging(app);
-    const snapshot = await db.collection('fcm_reminders').get();
     
     if (snapshot.empty) {
       console.log('[Daily Reminders] No device tokens registered in fcm_reminders.');

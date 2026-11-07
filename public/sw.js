@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amir-finance-v3.3.2-b547';
+const CACHE_NAME = 'amir-finance-v3.3.2-b549';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -102,8 +102,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-first strategy for app.compiled.js to ensure fresh code on reload when online
-  if (url.pathname.endsWith('/app.compiled.js') || url.pathname.endsWith('app.compiled.js')) {
+  // Network-first strategy for app.compiled.js and fcm-client.js to ensure fresh code on reload when online
+  if (url.pathname.endsWith('/app.compiled.js') || url.pathname.endsWith('app.compiled.js') ||
+      url.pathname.endsWith('/fcm-client.js') || url.pathname.endsWith('fcm-client.js')) {
     event.respondWith(
       fetch(event.request, { cache: 'no-store' })
         .then((networkResponse) => {
@@ -113,7 +114,7 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => caches.match('./app.compiled.js') || caches.match('app.compiled.js'))
+        .catch(() => caches.match(event.request))
     );
     return;
   }
@@ -174,6 +175,34 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  if (event.data && event.data.type === 'SCHEDULE_TEST_NOTIFICATION') {
+    const delayMs = event.data.delayMs || 8000;
+    const title = event.data.title || 'آزمایش سیستم یادآوری اقساط';
+    const body = event.data.body || 'اعلان تست در حالت پس‌زمینه با موفقیت دریافت شد.';
+    
+    event.waitUntil(
+      new Promise((resolve) => {
+        setTimeout(async () => {
+          try {
+            await self.registration.showNotification(title, {
+              body: body,
+              icon: './icon-192x192.png',
+              badge: './favicon-96x96.png',
+              tag: 'test-reminder',
+              renotify: true,
+              requireInteraction: true,
+              vibrate: [250, 100, 250],
+              dir: 'rtl',
+              lang: 'fa'
+            });
+          } catch (err) {
+            console.warn('[sw.js] Error showing delayed test notification:', err);
+          }
+          resolve();
+        }, delayMs);
+      })
+    );
   }
 });
 

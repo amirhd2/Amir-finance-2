@@ -70,16 +70,26 @@ export async function requestNotificationPermission() {
     if (permission === 'granted') {
       console.log('Notification permission granted.');
       const reg = await getOrRegisterServiceWorker();
-      fcmToken = await getToken(messaging, { 
-        vapidKey: VAPID_KEY, 
-        serviceWorkerRegistration: reg || undefined 
-      });
+      try {
+        fcmToken = await getToken(messaging, { 
+          vapidKey: VAPID_KEY, 
+          serviceWorkerRegistration: reg || undefined 
+        });
+      } catch (vErr) {
+        console.warn('[FCM] getToken with VAPID key failed, trying without VAPID key:', vErr);
+        try {
+          fcmToken = await getToken(messaging, { serviceWorkerRegistration: reg || undefined });
+        } catch (dErr) {
+          console.warn('[FCM] getToken default fallback failed:', dErr);
+        }
+      }
+
       if (fcmToken) {
         localStorage.setItem('amir_fin_fcm_token', fcmToken);
         window.fcmToken = fcmToken;
         console.log('FCM Token registered and saved:', fcmToken);
-        await syncRemindersToFirestore();
       }
+      await syncRemindersToFirestore();
       window.dispatchEvent(new CustomEvent('fcm_permission_changed', { detail: { permission: 'granted', token: fcmToken } }));
       return fcmToken;
     } else {
@@ -100,28 +110,34 @@ export async function autoInitFCM() {
 
   try {
     const reg = await getOrRegisterServiceWorker();
-    const token = await getToken(messaging, {
-      vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: reg || undefined
-    });
+    let token = null;
+    try {
+      token = await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: reg || undefined
+      });
+    } catch (vErr) {
+      console.warn('[FCM] Auto-init getToken with VAPID failed, trying without VAPID key:', vErr);
+      try {
+        token = await getToken(messaging, { serviceWorkerRegistration: reg || undefined });
+      } catch (_) {}
+    }
+
     if (token) {
       fcmToken = token;
       localStorage.setItem('amir_fin_fcm_token', token);
       window.fcmToken = token;
       console.log('[FCM] Auto-initialized token:', token.substring(0, 15) + '...');
-      await syncRemindersToFirestore();
       window.dispatchEvent(new CustomEvent('fcm_token_ready', { detail: { token } }));
     }
   } catch (e) {
     console.warn('[FCM] Auto-init token warning:', e);
-    // If getting token fails, we can still use locally saved token to sync
-    if (fcmToken) {
-      await syncRemindersToFirestore();
-    }
+  } finally {
+    await syncRemindersToFirestore();
   }
 }
 
-export async function sendTestNotification() {
+export async function sendTestNotification(delaySeconds = 0) {
   if (typeof Notification === 'undefined') {
     throw new Error('مرورگر شما از اعلان‌ها پشتیبانی نمی‌کند');
   }
@@ -130,34 +146,56 @@ export async function sendTestNotification() {
     if (!res) throw new Error('دسترسی اعلان داده نشده است');
   }
 
-  // 1. Show immediate test notification via Service Worker or Notification API
   const title = 'آزمایش سیستم یادآوری اقساط';
-  const body = 'سیستم اعلان اقساط فعال است و یادآوری‌ها در ساعت ۱۰:۰۰ صبح با موفقیت ارسال خواهند شد.';
-  let shownLocally = false;
+  const body = delaySeconds > 0
+    ? 'اعلان تست در حالت پس‌زمینه با موفقیت دریافت شد.'
+    : 'سیستم اعلان اقساط فعال است و یادآوری‌ها با موفقیت ارسال می‌شوند.';
 
-  if ('serviceWorker' in navigator) {
-    try {
-      const reg = await navigator.serviceWorker.ready;
-      if (reg && reg.showNotification) {
-        await reg.showNotification(title, {
-          body,
-          icon: './icon-192x192.png',
-          badge: './favicon-96x96.png',
-          tag: 'test-reminder-' + Date.now(),
-          renotify: true
-        });
-        shownLocally = true;
+  // 1. Only show immediate client-side notification if delaySeconds is 0
+  if (!delaySeconds || delaySeconds <= 0) {
+    let shownLocally = false;
+    if ('serviceWorker' in navigator) {
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        if (reg && reg.showNotification) {
+          await reg.showNotification(title, {
+            body,
+            icon: './icon-192x192.png',
+            badge: './favicon-96x96.png',
+            tag: 'test-reminder',
+            renotify: true
+          });
+          shownLocally = true;
+        }
+      } catch (e) {
+        console.warn('SW test notification warning:', e);
       }
-    } catch (e) {
-      console.warn('SW test notification warning:', e);
     }
-  }
 
-  if (!shownLocally) {
-    try {
-      new Notification(title, { body, icon: './icon-192x192.png' });
-    } catch (e) {
-      console.warn('Direct test notification error:', e);
+    if (!shownLocally) {
+      try {
+        new Notification(title, { body, icon: './icon-192x192.png' });
+      } catch (e) {
+        console.warn('Direct test notification error:', e);
+      }
+    }
+  } else {
+    // 2. Delayed background test: Tell active Service Worker to wait and show notification after delaySeconds
+    if ('serviceWorker' in navigator) {
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        const targetWorker = reg?.active || navigator.serviceWorker.controller;
+        if (targetWorker) {
+          targetWorker.postMessage({
+            type: 'SCHEDULE_TEST_NOTIFICATION',
+            delayMs: delaySeconds * 1000,
+            title,
+            body
+          });
+        }
+      } catch (e) {
+        console.warn('Could not postMessage to SW:', e);
+      }
     }
   }
 
@@ -168,35 +206,52 @@ export async function sendTestNotification() {
     await syncRemindersToFirestore();
   }
 
-  // 3. Also ping the backend test push endpoint
+  // 3. Send test push request to backend server (server will apply delaySeconds before sending FCM message)
   try {
     const currentTok = fcmToken || localStorage.getItem('amir_fin_fcm_token');
-    await fetch('/api/send-test-push', {
+    const resp = await fetch('/api/send-test-push', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: currentTok })
+      body: JSON.stringify({ token: currentTok, delaySeconds })
     });
+    const data = await resp.json();
+    return data;
   } catch (e) {
     console.warn('Backend test push ping error (normal if local/offline):', e);
   }
 
-  return true;
+  return { success: true };
 }
 
-export async function syncRemindersToFirestore() {
+export async function syncRemindersToFirestore(resetLastNotified = false) {
   const tokenToUse = fcmToken || (typeof localStorage !== 'undefined' ? localStorage.getItem('amir_fin_fcm_token') : null);
   if (!tokenToUse) return;
   const remindersStr = localStorage.getItem('amir_fin_fcm_reminders');
+  const enableRemindersStr = localStorage.getItem('amir_fin_enable_reminders');
+  const reminderTimeStr = localStorage.getItem('amir_fin_reminder_time');
+
+  const remindersEnabled = enableRemindersStr !== null ? JSON.parse(enableRemindersStr) : true;
+  const reminderTime = reminderTimeStr || "10:00";
+  const [rHour, rMin] = reminderTime.split(':').map(n => parseInt(n, 10));
+
   if (remindersStr) {
     try {
       const reminders = JSON.parse(remindersStr);
       const docRef = doc(db, "fcm_reminders", tokenToUse);
-      await setDoc(docRef, {
+      const payload = {
         token: tokenToUse,
         updatedAt: new Date().toISOString(),
+        remindersEnabled: remindersEnabled,
+        reminderTime: reminderTime,
+        reminderHour: isNaN(rHour) ? 10 : rHour,
+        reminderMinute: isNaN(rMin) ? 0 : rMin,
         reminders: reminders
-      });
-      console.log("Reminders synced to Firebase successfully. Count:", reminders.length);
+      };
+      if (resetLastNotified) {
+        payload.lastNotifiedDate = null;
+      }
+      await setDoc(docRef, payload, { merge: true });
+      console.log("Reminders synced to Firebase successfully. Enabled:", remindersEnabled, "Time:", reminderTime);
     } catch (e) {
       console.error("Error syncing reminders to Firebase", e);
     }
@@ -214,8 +269,9 @@ if (typeof window !== 'undefined') {
 
 // Sync whenever App.jsx updates the local storage payload
 if (typeof window !== 'undefined') {
-  window.addEventListener('amir_fin_reminders_updated', () => {
-    syncRemindersToFirestore();
+  window.addEventListener('amir_fin_reminders_updated', (e) => {
+    const resetLastNotified = e?.detail?.resetLastNotified || false;
+    syncRemindersToFirestore(resetLastNotified);
   });
   window.requestNotificationPermission = requestNotificationPermission;
   window.syncRemindersToFirestore = syncRemindersToFirestore;
